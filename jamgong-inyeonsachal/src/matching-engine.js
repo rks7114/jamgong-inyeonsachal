@@ -39,6 +39,33 @@ function getEightChar(birthDateTime) {
   return solar.getLunar().getEightChar();
 }
 
+/**
+ * 오행 캘린더: 오늘부터 daysAhead일 이내에서, 그날의 일진(日辰) 오행이
+ * targetOhaeng와 일치하는 날짜들을 추천일로 반환 (최대 5일)
+ * @param {string} targetOhaeng - 부족/목표 오행 ("목"|"화"|"토"|"금"|"수")
+ * @param {number} daysAhead - 앞으로 며칠까지 볼지 (기본 30일)
+ */
+function getRecommendedDates(targetOhaeng, daysAhead = 30) {
+  const results = [];
+  const today = new Date();
+
+  for (let i = 0; i < daysAhead; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const solar = Solar.fromYmdHms(d.getFullYear(), d.getMonth() + 1, d.getDate(), 12, 0, 0);
+    const bazi = solar.getLunar().getEightChar();
+    const dayWuXing = bazi.getDayWuXing(); // 예: "木火" (일간+일지 오행 두 글자)
+    const dayElements = [...dayWuXing].map((h) => HANJA_OHAENG[h]).filter(Boolean);
+
+    if (dayElements.includes(targetOhaeng)) {
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      results.push({ date: dateStr, dayOhaeng: dayElements.join("") });
+    }
+    if (results.length >= 5) break;
+  }
+  return results;
+}
+
 /** 사주 8글자(4주 × 천간/지지) → 오행 분포 카운트 (실제 만세력 기반) */
 function calculateOhaeng(birthDateTime) {
   const bazi = getEightChar(birthDateTime);
@@ -190,10 +217,12 @@ function matchTemples(request, templeDB) {
     .slice(0, 3)
     .map((r) => ({ ...r, reason: generateReason(r, targetOhaeng, request.purpose) }));
 
-  return { distribution, weak, targetOhaeng, results: scored };
+  const recommendedDates = getRecommendedDates(targetOhaeng);
+
+  return { distribution, weak, targetOhaeng, results: scored, recommendedDates };
 }
 
-module.exports = { matchTemples, calculateOhaeng, findWeakOhaeng, scoreTemple };
+module.exports = { matchTemples, calculateOhaeng, findWeakOhaeng, scoreTemple, getRecommendedDates };
 
 // ── 테스트 실행 (이 파일을 직접 node로 실행할 때만 동작, require 시에는 실행 안 함) ─────────────────────
 if (require.main === module) {
