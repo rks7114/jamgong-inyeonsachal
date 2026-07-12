@@ -67,8 +67,25 @@ function render() {
       <div class="corner-bracket tl"></div>
       <div class="corner-bracket br"></div>
       <div class="field">
-        <label for="birth">생년월일시</label>
-        <input type="datetime-local" id="birth" required />
+        <label>생년월일시</label>
+        <div class="birth-select-grid">
+          <select id="birth-year" aria-label="연도">
+            <option value="">연도</option>
+            ${Array.from({length: 106}, (_, i) => 2025 - i).map(y => `<option value="${y}">${y}년</option>`).join("")}
+          </select>
+          <select id="birth-month" aria-label="월">
+            <option value="">월</option>
+            ${Array.from({length: 12}, (_, i) => i + 1).map(m => `<option value="${m}">${m}월</option>`).join("")}
+          </select>
+          <select id="birth-day" aria-label="일">
+            <option value="">일</option>
+            ${Array.from({length: 31}, (_, i) => i + 1).map(d => `<option value="${d}">${d}일</option>`).join("")}
+          </select>
+          <select id="birth-hour" aria-label="시">
+            <option value="">시간 모름</option>
+            ${Array.from({length: 24}, (_, i) => i).map(h => `<option value="${h}">${String(h).padStart(2,"0")}시</option>`).join("")}
+          </select>
+        </div>
       </div>
 
       <div class="field">
@@ -105,8 +122,19 @@ function render() {
 
   document.getElementById("match-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const birth = document.getElementById("birth").value;
-    if (!birth) return;
+
+    const year = document.getElementById("birth-year").value;
+    const month = document.getElementById("birth-month").value;
+    const day = document.getElementById("birth-day").value;
+    const hour = document.getElementById("birth-hour").value;
+
+    if (!year || !month || !day) {
+      alert("생년월일(연도·월·일)을 모두 선택해주세요.");
+      return;
+    }
+
+    const hh = hour !== "" ? String(hour).padStart(2, "0") : "12"; // 시간 모름이면 정오로 기본 처리
+    const birth = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T${hh}:00:00`;
 
     const submitBtn = e.target.querySelector(".submit-btn");
     submitBtn.disabled = true;
@@ -197,6 +225,8 @@ function renderResults(data) {
     ` : ""}
 
     <button class="save-btn" id="save-diary-btn">🙏 내 기록에 저장</button>
+    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
+    <button class="diary-link-btn" id="view-diary-btn">📖 내 기록 보기</button>
 
     <div class="disclaimer">${data.disclaimer}</div>
   `;
@@ -208,7 +238,62 @@ function renderResults(data) {
     btn.disabled = true;
   });
 
+  document.getElementById("share-btn").addEventListener("click", () => shareResult(data));
+  document.getElementById("view-diary-btn").addEventListener("click", () => renderDiaryView());
+
   resultsEl.scrollIntoView({ behavior: "smooth" });
+}
+
+/** 결과 공유 — Web Share API 지원 시 네이티브 공유창(카카오톡 포함), 미지원 시 클립보드 복사 */
+async function shareResult(data) {
+  const topTemple = data.results[0]?.temple.name || "";
+  const shareText = `[잼공인연사찰] 제 부족한 기운은 ${data.targetOhaeng}이고, 인연 닿는 절은 "${topTemple}"이래요. 회장님도 확인해보세요 🙏`;
+  const shareUrl = window.location.origin;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "잼공인연사찰 결과", text: shareText, url: shareUrl });
+    } catch (e) {
+      // 사용자가 공유 취소한 경우 등 — 무시
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      alert("결과가 클립보드에 복사되었습니다. 카카오톡 등에 붙여넣기 해주세요.");
+    } catch (e) {
+      alert("공유하기를 지원하지 않는 환경입니다.");
+    }
+  }
+}
+
+/** 내 기록 보기 — localStorage에 저장된 다이어리 목록을 결과 영역에 표시 */
+function renderDiaryView() {
+  const resultsEl = document.getElementById("results");
+  let entries = [];
+  try {
+    entries = JSON.parse(localStorage.getItem("jamgong-inyeonsachal-diary") || "[]");
+  } catch (e) {}
+
+  resultsEl.innerHTML = `
+    <div class="diary-view">
+      <div class="diary-view-title">내 인연사찰 기록</div>
+      ${entries.length === 0
+        ? `<div class="diary-empty">아직 저장된 기록이 없습니다.</div>`
+        : entries.map(en => `
+          <div class="diary-entry">
+            <div class="diary-entry-date">${new Date(en.savedAt).toLocaleDateString("ko-KR")}</div>
+            <div class="diary-entry-ohaeng">${en.targetOhaeng} 기운 보완</div>
+            <div class="diary-entry-temples">${en.temples.join(" · ")}</div>
+          </div>
+        `).join("")
+      }
+      <button class="save-btn" id="back-to-form-btn">← 새로 찾아보기</button>
+    </div>
+  `;
+  document.getElementById("back-to-form-btn").addEventListener("click", () => {
+    resultsEl.classList.add("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 }
 
 function formatDate(dateStr) {

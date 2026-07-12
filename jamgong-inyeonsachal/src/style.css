@@ -194,6 +194,30 @@ body {
   text-transform: uppercase;
 }
 
+.birth-select-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 1.1fr;
+  gap: 6px;
+}
+
+.birth-select-grid select {
+  width: 100%;
+  padding: 12px 8px;
+  border: 1px solid #D9CFB8;
+  border-radius: 3px;
+  background: #fff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.birth-select-grid select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,137,43,0.15);
+}
+
 .field input, .field select {
   width: 100%;
   padding: 13px 14px;
@@ -526,6 +550,53 @@ body {
 
 .save-btn:hover { background: rgba(184,137,43,0.08); transform: translateY(-1px); }
 .save-btn:disabled { border-color: var(--jade); color: var(--jade); cursor: default; transform: none; }
+
+.share-btn, .diary-link-btn {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid #D9CFB8;
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: all 0.15s ease;
+}
+
+.share-btn:hover, .diary-link-btn:hover { border-color: var(--gold); color: var(--ink); }
+
+.diary-view { padding: 20px 0; }
+
+.diary-view-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--ink);
+}
+
+.diary-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 40px 0;
+}
+
+.diary-entry {
+  background: var(--paper-warm);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+
+.diary-entry-date { font-size: 11.5px; color: var(--text-muted); margin-bottom: 4px; }
+.diary-entry-ohaeng { font-family: var(--font-display); font-weight: 700; color: var(--red); margin-bottom: 4px; }
+.diary-entry-temples { font-size: 13px; color: var(--ink); }
 
 .disclaimer {
   font-size: 11.5px;
