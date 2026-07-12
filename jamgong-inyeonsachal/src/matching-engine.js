@@ -1,0 +1,229 @@
+/**
+ * 잼공인연사찰 - 오행 매칭 엔진 프로토타입 v1.0
+ * 클(수석실장) 작성
+ *
+ * 주의: 사주 오행 계산은 간략화 버전입니다.
+ * 실제 서비스에서는 정확한 만세력 라이브러리(예: KASI 음양력 API, lunar-javascript 등)로 교체 필요.
+ */
+
+// ── 1. 오행-방위 대응표 ─────────────────────
+const OHAENG_BANGWI = {
+  목: "동", 화: "남", 토: "중앙", 금: "서", 수: "북",
+};
+
+// ── 3. 기도목적 → 관련 오행 매핑 ─────────────────────
+const PURPOSE_OHAENG = {
+  재물운: "금",
+  건강운: "토",
+  학업운: "수",
+  인연운: "화",
+  가정운: "목",
+};
+
+const { Solar } = require("lunar-javascript");
+
+// 한자 오행 → 한글 오행 변환
+const HANJA_OHAENG = { 木: "목", 火: "화", 土: "토", 金: "금", 水: "수" };
+
+/**
+ * 생년월일시 → 실제 만세력 기반 사주 팔자 산출
+ * lunar-javascript(6tail) 사용 — 절기(節氣) 기준 정밀 계산, 국내 명리 계산과 동일 방식
+ * birthDateTime: ISO 문자열 "YYYY-MM-DDTHH:mm:ss" (양력 기준 입력)
+ */
+function getEightChar(birthDateTime) {
+  const d = new Date(birthDateTime);
+  const solar = Solar.fromYmdHms(
+    d.getFullYear(), d.getMonth() + 1, d.getDate(),
+    d.getHours(), d.getMinutes(), d.getSeconds() || 0
+  );
+  return solar.getLunar().getEightChar();
+}
+
+/** 사주 8글자(4주 × 천간/지지) → 오행 분포 카운트 (실제 만세력 기반) */
+function calculateOhaeng(birthDateTime) {
+  const bazi = getEightChar(birthDateTime);
+  const dist = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
+
+  // 각 기둥의 "천간오행+지지오행" 두 글자(예: "金金")를 분해해 카운트
+  [bazi.getYearWuXing(), bazi.getMonthWuXing(), bazi.getDayWuXing(), bazi.getTimeWuXing()]
+    .forEach((pair) => {
+      [...pair].forEach((hanja) => {
+        const element = HANJA_OHAENG[hanja];
+        if (element) dist[element]++;
+      });
+    });
+
+  return dist;
+}
+
+/** 부족 오행(용신 후보) 도출 */
+function findWeakOhaeng(distribution) {
+  let weakest = null;
+  let minCount = Infinity;
+  for (const [element, count] of Object.entries(distribution)) {
+    if (count < minCount) {
+      minCount = count;
+      weakest = element;
+    }
+  }
+  return { 부족오행: weakest, 근거: `사주 8글자 중 ${weakest}(${minCount}개)이 가장 약함` };
+}
+
+/** 두 좌표 간 방위각(bearing) 계산 → 8방위 변환 */
+function calculateBearing(lat1, lng1, lat2, lng2) {
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLng = toRad(lng2 - lng1);
+  const y = Math.sin(dLng) * Math.cos(toRad(lat2));
+  const x =
+    Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+    Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLng);
+  let bearing = (Math.atan2(y, x) * 180) / Math.PI;
+  bearing = (bearing + 360) % 360;
+
+  const directions = ["북", "동북", "동", "동남", "남", "남서", "서", "북서"];
+  const index = Math.round(bearing / 45) % 8;
+  return directions[index];
+}
+
+/** 두 좌표 간 거리(km, Haversine) */
+function calculateDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/** 8방위를 오행으로 근사 매핑 (동북/동남 등 경계 방위는 인접 오행으로 절충) */
+function bearingToOhaeng(bearing) {
+  const map = {
+    동: "목", 동북: "목", 북: "수", 남서: "토",
+    남: "화", 동남: "화", 서: "금", 북서: "금",
+  };
+  return map[bearing] || "토";
+}
+
+/**
+ * 사찰 스코어링
+ * @param {object} temple - {id, name, lat, lng, verified, tags}
+ * @param {object} matchContext - {targetOhaeng, purpose, userLat, userLng}
+ */
+function scoreTemple(temple, matchContext) {
+  const { targetOhaeng, purpose, userLat, userLng } = matchContext;
+
+  // 1) 방위 적합도 (40점)
+  const bearing = calculateBearing(userLat, userLng, temple.lat, temple.lng);
+  const templeOhaeng = bearingToOhaeng(bearing);
+  const bangwiScore = templeOhaeng === targetOhaeng ? 40 : 15;
+
+  // 2) 목적 태그 일치도 (30점)
+  const purposeTagMap = {
+    재물운: ["재물", "산신각", "칠성"],
+    건강운: ["약사도량", "치유"],
+    학업운: ["문수", "학업"],
+    인연운: ["관음도량", "인연"],
+    가정운: ["평안", "가족"],
+  };
+  const relevantTags = purposeTagMap[purpose] || [];
+  const tagMatch = (temple.tags || []).some((t) => relevantTags.includes(t));
+  const purposeScore = tagMatch ? 30 : 10;
+
+  // 3) 접근성 (20점) - 가까울수록 高, 200km 이상이면 0점 처리
+  const distance = calculateDistance(userLat, userLng, temple.lat, temple.lng);
+  const distanceScore = Math.max(0, 20 - (distance / 200) * 20);
+
+  // 4) 데이터 신뢰도 (10점)
+  const trustScore = temple.verified ? 10 : 4;
+
+  const totalScore = bangwiScore + purposeScore + distanceScore + trustScore;
+
+  return {
+    temple,
+    score: Math.round(totalScore * 10) / 10,
+    detail: { bearing, templeOhaeng, bangwiScore, purposeScore, distanceScore, trustScore, distanceKm: Math.round(distance) },
+  };
+}
+
+/** 한글 받침 유무에 따라 올바른 조사를 붙임 (예: "봉은사" + [과,와] → "봉은사와") */
+function attachJosa(word, [withBatchim, withoutBatchim]) {
+  const lastChar = word[word.length - 1];
+  const code = lastChar.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return word + withoutBatchim; // 한글 아니면 기본값
+  const hasBatchim = (code - 0xac00) % 28 !== 0;
+  return word + (hasBatchim ? withBatchim : withoutBatchim);
+}
+
+/** 결과 설명 자동 생성 (템플릿 조합 - AI 생성 아님, 정직성 원칙) */
+function generateReason(result, targetOhaeng, purpose) {
+  const { temple, detail } = result;
+  const matched = detail.templeOhaeng === targetOhaeng;
+  const templeWaGwa = attachJosa(temple.name, ["과", "와"]);
+  const templeEunNeun = attachJosa(temple.name, ["은", "는"]);
+  if (matched) {
+    return `회장님은 사주에서 ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운이 부족하여, ${detail.bearing}쪽에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다. (참고용 추정치이며, 정밀 감정은 잼공 오라클 정식 사주 서비스를 이용해 주세요.)`;
+  }
+  return `${templeEunNeun} ${purpose} 목적과 관련된 특징을 지닌 사찰로 확인됩니다. (참고용 추정치)`;
+}
+
+/** 메인 매칭 함수 */
+function matchTemples(request, templeDB) {
+  const distribution = calculateOhaeng(request.birthDateTime);
+  const weak = findWeakOhaeng(distribution);
+  const targetOhaeng = PURPOSE_OHAENG[request.purpose] || weak.부족오행;
+
+  const matchContext = {
+    targetOhaeng,
+    purpose: request.purpose,
+    userLat: request.userLat,
+    userLng: request.userLng,
+  };
+
+  // 좌표 정보 없는 사찰은 방위/거리 계산이 불가하므로 매칭 대상에서 제외
+  const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
+
+  const scored = validTemples
+    .map((t) => scoreTemple(t, matchContext))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map((r) => ({ ...r, reason: generateReason(r, targetOhaeng, request.purpose) }));
+
+  return { distribution, weak, targetOhaeng, results: scored };
+}
+
+module.exports = { matchTemples, calculateOhaeng, findWeakOhaeng, scoreTemple };
+
+// ── 테스트 실행 (이 파일을 직접 node로 실행할 때만 동작, require 시에는 실행 안 함) ─────────────────────
+if (require.main === module) {
+const sampleTempleDB = [
+  { id: "t1", name: "봉은사", lat: 37.5150, lng: 127.0578, verified: true, tags: ["관음도량", "인연"] },
+  { id: "t2", name: "조계사", lat: 37.5735, lng: 126.9822, verified: true, tags: ["전통명찰"] },
+  { id: "t3", name: "도선사", lat: 37.6486, lng: 126.9847, verified: true, tags: ["기도영험", "재물"] },
+  { id: "t4", name: "화계사", lat: 37.6321, lng: 127.0016, verified: false, tags: ["약사도량"] },
+  { id: "t5", name: "진관사", lat: 37.6198, lng: 126.9284, verified: true, tags: ["평안", "가족"] },
+];
+
+const testRequest = {
+  birthDateTime: "1975-03-15T08:00:00",
+  purpose: "인연운",
+  userLat: 37.5665, // 서울시청 기준
+  userLng: 126.9780,
+};
+
+const result = matchTemples(testRequest, sampleTempleDB);
+
+console.log("=== 오행 분포 ===");
+console.log(result.distribution);
+console.log("\n=== 부족 오행(참고) ===");
+console.log(result.weak);
+console.log("\n=== 매칭 대상 오행(기도목적 기준) ===");
+console.log(result.targetOhaeng);
+console.log("\n=== 추천 결과 (상위 3곳) ===");
+result.results.forEach((r, i) => {
+  console.log(`\n${i + 1}위: ${r.temple.name} (${r.score}점)`);
+  console.log(`  방위: ${r.detail.bearing} / 사찰오행: ${r.detail.templeOhaeng} / 거리: ${r.detail.distanceKm}km`);
+  console.log(`  설명: ${r.reason}`);
+});
+}

@@ -1,0 +1,293 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+/* ── 디자인 토큰 ──────────────────────────────
+   컨셉: 단청(丹靑)의 오방색 + 한지 질감
+   - 먹빛 인디고(#1B2A41): 밤하늘 아래 산사, 사색의 배경
+   - 한지 아이보리(#EFE7D8): 종이/고요함
+   - 금박(#B8892B): 불상/전각의 금빛, 핵심 강조
+   - 단청적(#A23B2E): 포인트, 경고/강조에 절제해 사용
+   - 청록(#3C6E5E): 산사의 이끼/소나무, 보조 강조
+─────────────────────────────────────────── */
+:root {
+  --ink: #1B2A41;
+  --ink-deep: #101B2C;
+  --paper: #EFE7D8;
+  --paper-warm: #F6F0E4;
+  --gold: #B8892B;
+  --gold-bright: #D9AC4F;
+  --red: #A23B2E;
+  --jade: #3C6E5E;
+  --text-on-ink: #EFE7D8;
+  --text-muted: #8B95A6;
+
+  --font-display: 'Noto Serif KR', serif;
+  --font-body: 'Noto Sans KR', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+#app { max-width: 720px; margin: 0 auto; }
+
+/* ── 히어로 ────────────────────────────── */
+.hero {
+  background: radial-gradient(ellipse at 50% -10%, #24354f 0%, var(--ink) 55%, var(--ink-deep) 100%);
+  color: var(--text-on-ink);
+  padding: 64px 28px 56px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(184,137,43,0.10) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(60,110,94,0.12) 0%, transparent 45%);
+  pointer-events: none;
+}
+
+.hero .eyebrow {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--gold-bright);
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: 700;
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+
+.hero p {
+  font-size: 15px;
+  color: var(--text-muted);
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+/* ── 폼 카드 ────────────────────────────── */
+.form-card {
+  background: var(--paper-warm);
+  margin: -28px 20px 0;
+  border-radius: 4px;
+  padding: 28px 24px 32px;
+  box-shadow: 0 12px 32px rgba(16, 27, 44, 0.18);
+  position: relative;
+  border: 1px solid rgba(184,137,43,0.25);
+}
+
+.field { margin-bottom: 18px; }
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.field input, .field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #D9CFB8;
+  border-radius: 3px;
+  background: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.field input:focus, .field select:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+  border-color: var(--gold);
+}
+
+.purpose-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.purpose-chip {
+  border: 1px solid #D9CFB8;
+  background: #fff;
+  border-radius: 3px;
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.purpose-chip:hover { border-color: var(--gold); }
+
+.purpose-chip.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.15s ease;
+}
+
+.submit-btn:hover { background: #8B3226; }
+.submit-btn:disabled { background: #C9BBA0; cursor: not-allowed; }
+
+/* ── 결과 영역 ────────────────────────────── */
+.results { padding: 36px 20px 60px; }
+
+.results-summary {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.results-summary .label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.results-summary .ohaeng-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--red);
+}
+
+/* 시그니처 요소: 8방위 나침반 — 사용자 위치 기준 매칭 사찰 방향을 실제로 가리킴 */
+.compass-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0 32px;
+}
+
+.compass {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: radial-gradient(circle, var(--paper-warm) 0%, #E4D9BE 100%);
+}
+
+.compass .dir-label {
+  position: absolute;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  transform: translate(-50%, -50%);
+}
+
+.compass .needle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 68px;
+  background: var(--red);
+  transform-origin: bottom center;
+  transform: translate(-50%, -100%) rotate(0deg);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 2px;
+}
+
+.compass .needle::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid var(--red);
+}
+
+.compass .center-dot {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.temple-card {
+  background: var(--paper-warm);
+  border: 1px solid rgba(184,137,43,0.25);
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 14px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.temple-rank {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 32px;
+}
+
+.temple-body h3 {
+  font-family: var(--font-display);
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.temple-body .meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.temple-body .reason {
+  font-size: 14px;
+  color: #333;
+}
+
+.disclaimer {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 24px;
+  padding: 14px;
+  border-top: 1px dashed #D9CFB8;
+}
+
+.hidden { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .compass .needle { transition: none; }
+}
