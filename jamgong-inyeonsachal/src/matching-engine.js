@@ -41,11 +41,12 @@ function getEightChar(birthDateTime) {
 
 /**
  * 오행 캘린더: 오늘부터 daysAhead일 이내에서, 그날의 일진(日辰) 오행이
- * targetOhaeng와 일치하는 날짜들을 추천일로 반환 (최대 5일)
+ * targetOhaeng와 일치하는 날짜들을 추천일로 반환 (최대 maxResults개)
  * @param {string} targetOhaeng - 부족/목표 오행 ("목"|"화"|"토"|"금"|"수")
  * @param {number} daysAhead - 앞으로 며칠까지 볼지 (기본 30일)
+ * @param {number} maxResults - 최대 반환 개수 (기본 5, 멤버십은 더 크게 요청 가능)
  */
-function getRecommendedDates(targetOhaeng, daysAhead = 30) {
+function getRecommendedDates(targetOhaeng, daysAhead = 30, maxResults = 5) {
   const results = [];
   const today = new Date();
 
@@ -61,7 +62,7 @@ function getRecommendedDates(targetOhaeng, daysAhead = 30) {
       const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       results.push({ date: dateStr, dayOhaeng: dayElements.join("") });
     }
-    if (results.length >= 5) break;
+    if (results.length >= maxResults) break;
   }
   return results;
 }
@@ -226,7 +227,9 @@ function matchTemples(request, templeDB) {
     .slice(0, 3)
     .map((r) => ({ ...r, reason: generateReason(r, targetOhaeng, request.purpose) }));
 
-  const recommendedDates = getRecommendedDates(targetOhaeng);
+  // 멤버십 회원은 확장된 캘린더(15일), 비회원은 기본(3일) — 클라이언트가 알려주는 소프트 게이팅
+  const calendarCount = request.memberUnlocked ? 15 : 3;
+  const recommendedDates = getRecommendedDates(targetOhaeng, 45, calendarCount);
 
   return { distribution, weak, targetOhaeng, results: scored, recommendedDates };
 }

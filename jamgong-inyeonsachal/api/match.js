@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { birthDateTime, purpose, userLat, userLng } = req.body;
+    const { birthDateTime, purpose, userLat, userLng, memberUnlocked } = req.body;
 
     if (!birthDateTime || !purpose || userLat == null || userLng == null) {
       res.status(400).json({ error: "생년월일시, 기도목적, 위치 정보가 모두 필요합니다." });
@@ -22,7 +22,7 @@ module.exports = async function handler(req, res) {
     }
 
     const result = matchTemples(
-      { birthDateTime, purpose, userLat, userLng },
+      { birthDateTime, purpose, userLat, userLng, memberUnlocked: !!memberUnlocked },
       TEMPLE_DB
     );
 

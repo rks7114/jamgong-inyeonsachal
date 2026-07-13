@@ -295,6 +295,76 @@ body {
 /* ── 결과 영역 ────────────────────────────── */
 .results { padding: 8px 20px 60px; }
 
+.member-banner {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--jade);
+  background: rgba(60,110,94,0.1);
+  border: 1px solid rgba(60,110,94,0.35);
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 16px;
+}
+
+.member-unlock {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.member-unlock input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #D9CFB8;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: var(--font-body);
+}
+
+.member-unlock button {
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--gold-bright);
+  border: none;
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.member-unlock button:hover { background: var(--ink-deep); }
+
+.member-lock-tag {
+  font-size: 11px;
+  color: var(--gold-deep);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.patent-note {
+  font-size: 10px;
+  color: var(--gold-deep);
+  opacity: 0.75;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.patent-footer {
+  display: block;
+  margin-top: 8px;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+.calendar-more-hint {
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
 .results-summary {
   text-align: center;
   margin: 28px 0 20px;
@@ -340,6 +410,21 @@ body {
 }
 
 .oracle-card:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(16,27,44,0.3); }
+
+.oracle-card-soon { cursor: default; }
+.oracle-card-soon:hover { transform: none; box-shadow: none; }
+
+.oracle-card-badge {
+  background: rgba(184,137,43,0.2);
+  color: var(--gold-bright);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--gold-bright);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
 .oracle-card-title {
   font-family: var(--font-display);

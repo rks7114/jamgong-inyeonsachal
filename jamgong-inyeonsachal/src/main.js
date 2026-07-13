@@ -20,6 +20,23 @@ const BEARING_DEG = {
 
 const app = document.getElementById("app");
 
+// 멤버십 전용 코드 — 유튜브 채널 멤버십 회원에게 커뮤니티 공지 등으로 배포
+// 결제 시스템이 아니라 "회원 확인용 접근 코드"이므로 간단한 문자열 대조 방식
+const MEMBER_CODE = "잼공가족2026";
+const MEMBER_KEY = "jamgong-inyeonsachal-member";
+
+function isMember() {
+  return localStorage.getItem(MEMBER_KEY) === "true";
+}
+
+function tryUnlockMembership(code) {
+  if (code.trim() === MEMBER_CODE) {
+    localStorage.setItem(MEMBER_KEY, "true");
+    return true;
+  }
+  return false;
+}
+
 const FALLBACK_LOCATION = { userLat: 37.5665, userLng: 126.9780, locationLabel: "서울특별시청 (기본값)" };
 
 /** 브라우저 Geolocation API로 실제 위치 감지. 미지원/거부/타임아웃 시 서울시청으로 안전하게 폴백 */
@@ -151,7 +168,7 @@ function render() {
       const res = await fetch("/api/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ birthDateTime: birth, purpose: selectedPurpose, userLat, userLng }),
+        body: JSON.stringify({ birthDateTime: birth, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
       });
       const data = await res.json();
       renderResults(data);
@@ -170,21 +187,31 @@ function renderResults(data) {
 
   const top = data.results[0];
   const deg = BEARING_DEG[top?.detail?.bearing] ?? 0;
+  const memberUnlocked = isMember();
 
   resultsEl.innerHTML = `
     <div class="results-summary">
-      <div class="label">회장님께 지금 부족한 기운은</div>
+      <div class="label">지금 부족한 기운은</div>
       <div class="ohaeng-value">${data.targetOhaeng}(${{목:"동",화:"남",토:"중앙",금:"서",수:"북"}[data.targetOhaeng]}) 기운</div>
       <div class="ohaeng-breakdown">${Object.entries(data.distribution).map(([k,v]) => `<span>${k} ${v}</span>`).join(" · ")}</div>
     </div>
 
-    <a class="oracle-card" href="https://www.jamgong.com" target="_blank" rel="noopener">
+    ${memberUnlocked ? `
+      <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
+    ` : `
+      <div class="member-unlock">
+        <input type="text" id="member-code-input" placeholder="멤버십 코드 입력 (선택)" />
+        <button id="member-code-btn">확인</button>
+      </div>
+    `}
+
+    <div class="oracle-card oracle-card-soon">
       <div class="oracle-card-text">
         <div class="oracle-card-title">이건 간략화된 버전입니다</div>
-        <div class="oracle-card-desc">사주 전체를 정밀하게 풀어보고 싶다면 — 잼공 오라클에서 확인하세요</div>
+        <div class="oracle-card-desc">사주 전체를 정밀하게 풀어보는 잼공 오라클, 곧 만나보실 수 있습니다</div>
       </div>
-      <div class="oracle-card-arrow">→</div>
-    </a>
+      <div class="oracle-card-badge">준비중</div>
+    </div>
 
     <div class="compass-wrap">
       <div class="compass">
@@ -214,12 +241,26 @@ function renderResults(data) {
             </a>
           </h3>
           <div class="meta">${r.detail.bearing}쪽 · ${r.detail.distanceKm}km · 매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}</div>
-          ${r.detail.synergyBonus > 2.5 ? `<div class="synergy-badge">⚡ 인연 시너지 감지 — 방위와 기도목적이 겹으로 맞아떨어집니다 (+${r.detail.synergyBonus}점)</div>` : ""}
+          ${r.detail.synergyBonus > 2.5 ? `
+            <div class="synergy-badge">
+              ⚡ 인연 시너지 감지 (+${r.detail.synergyBonus}점)
+              ${memberUnlocked
+                ? ` — 방위점수 ${r.detail.bangwiScore} · 목적점수 ${r.detail.purposeScore} · 거리점수 ${Math.round(r.detail.distanceScore*10)/10}`
+                : ` <span class="member-lock-tag">🔒 상세분석은 멤버 전용</span>`}
+              <div class="patent-note">특허출원기술(10-2026-0093797 계열) 적용 · 비가산 시너지 알고리즘</div>
+            </div>
+          ` : ""}
           <div class="reason">${r.reason}</div>
           ${r.temple.history ? `
             <div class="temple-detail">
               <div class="temple-detail-label">유래·연혁</div>
-              <div class="temple-detail-text">${r.temple.history}</div>
+              <div class="temple-detail-text">
+                ${memberUnlocked
+                  ? r.temple.history
+                  : (r.temple.history.length > 35
+                      ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`
+                      : r.temple.history)}
+              </div>
               ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
             </div>
           ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
@@ -229,10 +270,11 @@ function renderResults(data) {
 
     ${data.recommendedDates && data.recommendedDates.length ? `
       <div class="calendar-card">
-        <div class="calendar-title">방문하면 좋은 날</div>
+        <div class="calendar-title">방문하면 좋은 날${memberUnlocked ? " (멤버 확장 · 45일 이내)" : ""}</div>
         <div class="calendar-dates">
           ${data.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
         </div>
+        ${!memberUnlocked ? `<div class="calendar-more-hint">🔒 멤버는 더 많은 추천일을 볼 수 있습니다</div>` : ""}
       </div>
     ` : ""}
 
@@ -240,8 +282,20 @@ function renderResults(data) {
     <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
     <button class="diary-link-btn" id="view-diary-btn">📖 내 기록 보기</button>
 
-    <div class="disclaimer">${data.disclaimer}</div>
+    <div class="disclaimer">${data.disclaimer}<br/><span class="patent-footer">본 서비스의 인연 시너지 산출 로직은 출원인 박충호의 특허출원기술(비가산 시너지 기반 지수 산출 방식)과 동일한 수학적 구조를 적용했습니다. 관련 특허는 현재 출원·심사 중이며, 등록 완료된 특허가 아닙니다.</span></div>
   `;
+
+  const codeInput = document.getElementById("member-code-input");
+  const codeBtn = document.getElementById("member-code-btn");
+  if (codeBtn) {
+    codeBtn.addEventListener("click", () => {
+      if (tryUnlockMembership(codeInput.value)) {
+        renderResults(data); // 잠금 해제 성공 시 같은 결과를 멤버 버전으로 재렌더링
+      } else {
+        alert("코드가 올바르지 않습니다. 잼공스토리 채널 멤버십 공지를 확인해주세요.");
+      }
+    });
+  }
 
   document.getElementById("save-diary-btn").addEventListener("click", () => {
     saveDiaryEntry(data);
@@ -259,7 +313,7 @@ function renderResults(data) {
 /** 결과 공유 — Web Share API 지원 시 네이티브 공유창(카카오톡 포함), 미지원 시 클립보드 복사 */
 async function shareResult(data) {
   const topTemple = data.results[0]?.temple.name || "";
-  const shareText = `[잼공인연사찰] 제 부족한 기운은 ${data.targetOhaeng}이고, 인연 닿는 절은 "${topTemple}"이래요. 회장님도 확인해보세요 🙏`;
+  const shareText = `[잼공인연사찰] 제 부족한 기운은 ${data.targetOhaeng}이고, 인연 닿는 절은 "${topTemple}"이래요. 궁금하면 확인해보세요 🙏`;
   const shareUrl = window.location.origin;
 
   if (navigator.share) {
