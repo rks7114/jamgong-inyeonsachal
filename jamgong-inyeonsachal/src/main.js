@@ -73,10 +73,10 @@ function render() {
       <div class="hero-moon"></div>
       <div class="hero-content">
         <div class="hero-seal">
-          <svg viewBox="0 0 40 40" width="26" height="26">
-            <path d="M20 6 C16 10 12 14 12 20 C12 26 16 30 20 34 C24 30 28 26 28 20 C28 14 24 10 20 6 Z
-                     M20 12 C22 14 24 17 24 20 C24 23 22 26 20 28 C18 26 16 23 16 20 C16 17 18 14 20 12 Z"
-                  fill="none" stroke="#E2BA6C" stroke-width="1.2"/>
+          <svg viewBox="0 0 40 40" width="30" height="30">
+            <path d="M20 8 C15 12 11 17 11 22 C11 28 15 32 20 32 C25 32 29 28 29 22 C29 17 25 12 20 8 Z
+                     M20 14 C22.5 17 25 20 25 22 C25 25.5 22.8 28 20 28 C17.2 28 15 25.5 15 22 C15 20 17.5 17 20 14 Z"
+                  fill="#E2BA6C"/>
           </svg>
         </div>
         <div class="eyebrow">잼공인연사찰</div>
@@ -124,23 +124,31 @@ function render() {
           <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
           <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
         </div>
-        <div class="birth-select-grid">
-          <select id="birth-year" aria-label="연도">
-            <option value="">연도</option>
-            ${Array.from({length: 106}, (_, i) => 2025 - i).map(y => `<option value="${y}">${y}년</option>`).join("")}
-          </select>
-          <select id="birth-month" aria-label="월">
-            <option value="">월</option>
-            ${Array.from({length: 12}, (_, i) => i + 1).map(m => `<option value="${m}">${m}월</option>`).join("")}
-          </select>
-          <select id="birth-day" aria-label="일">
-            <option value="">일</option>
-            ${Array.from({length: 31}, (_, i) => i + 1).map(d => `<option value="${d}">${d}일</option>`).join("")}
-          </select>
-          <select id="birth-hour" aria-label="시">
-            <option value="">시간 모름</option>
-            ${Array.from({length: 24}, (_, i) => i).map(h => `<option value="${h}">${String(h).padStart(2,"0")}시</option>`).join("")}
-          </select>
+        <div class="birth-select-grid segmented">
+          <div class="segment">
+            <select id="birth-year" aria-label="연도">
+              <option value="">연도</option>
+              ${Array.from({length: 106}, (_, i) => 2025 - i).map(y => `<option value="${y}">${y}년</option>`).join("")}
+            </select>
+          </div>
+          <div class="segment">
+            <select id="birth-month" aria-label="월">
+              <option value="">월</option>
+              ${Array.from({length: 12}, (_, i) => i + 1).map(m => `<option value="${m}">${m}월</option>`).join("")}
+            </select>
+          </div>
+          <div class="segment">
+            <select id="birth-day" aria-label="일">
+              <option value="">일</option>
+              ${Array.from({length: 31}, (_, i) => i + 1).map(d => `<option value="${d}">${d}일</option>`).join("")}
+            </select>
+          </div>
+          <div class="segment">
+            <select id="birth-hour" aria-label="시">
+              <option value="">시간 모름</option>
+              ${Array.from({length: 24}, (_, i) => i).map(h => `<option value="${h}">${String(h).padStart(2,"0")}시</option>`).join("")}
+            </select>
+          </div>
         </div>
         <label class="leap-month-check hidden" id="leap-month-wrap">
           <input type="checkbox" id="is-leap-month" /> 윤달(閏月) 생일입니다
