@@ -165,12 +165,21 @@ function scoreTemple(temple, matchContext) {
   // 4) 데이터 신뢰도 (10점)
   const trustScore = temple.verified ? 10 : 4;
 
-  const totalScore = bangwiScore + purposeScore + distanceScore + trustScore;
+  // 5) 인연 시너지항 — 잼공감(CLI)·퍼피시너지(CSI)와 동일한 비가산 시너지 수학 코어
+  //    CLI_Final = CLI_linear + β·√(W_A×W_B) 구조를 인연사찰 도메인에 적용.
+  //    방위와 목적이 "동시에" 강하게 맞을 때, 단순 합산이 아니라 기하평균 시너지로 증폭시켜
+  //    "겹으로 맞는 인연"이 단순 합보다 더 강한 인연으로 계산되도록 함.
+  const BETA = 0.35; // 시너지 가중 파라미터 (추후 실사용 데이터로 베이지안 최적화 가능)
+  const synergyBangwiPurpose = Math.sqrt((bangwiScore / 40) * (purposeScore / 30)) * 100;
+  const synergyBonus = BETA * synergyBangwiPurpose * 0.12; // 스케일 보정 (0~약 4.2점 가산)
+
+  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore;
+  const totalScore = linearScore + synergyBonus;
 
   return {
     temple,
     score: Math.round(totalScore * 10) / 10,
-    detail: { bearing, templeOhaeng, bangwiScore, purposeScore, distanceScore, trustScore, distanceKm: Math.round(distance) },
+    detail: { bearing, templeOhaeng, bangwiScore, purposeScore, distanceScore, trustScore, synergyBonus: Math.round(synergyBonus * 10) / 10, distanceKm: Math.round(distance) },
   };
 }
 
@@ -190,7 +199,7 @@ function generateReason(result, targetOhaeng, purpose) {
   const templeWaGwa = attachJosa(temple.name, ["과", "와"]);
   const templeEunNeun = attachJosa(temple.name, ["은", "는"]);
   if (matched) {
-    return `회장님은 사주에서 ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운이 부족하여, ${detail.bearing}쪽에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다. (참고용 추정치이며, 정밀 감정은 잼공 오라클 정식 사주 서비스를 이용해 주세요.)`;
+    return `사주에서 ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운이 부족하여, ${detail.bearing}쪽에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다. (참고용 추정치이며, 정밀 감정은 잼공 오라클 정식 사주 서비스를 이용해 주세요.)`;
   }
   return `${templeEunNeun} ${purpose} 목적과 관련된 특징을 지닌 사찰로 확인됩니다. (참고용 추정치)`;
 }

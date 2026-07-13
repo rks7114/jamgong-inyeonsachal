@@ -208,9 +208,21 @@ function renderResults(data) {
       <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
         <div class="temple-rank">${i + 1}</div>
         <div class="temple-body">
-          <h3>${r.temple.name}</h3>
-          <div class="meta">${r.detail.bearing}쪽 · ${r.detail.distanceKm}km · 매칭점수 ${r.score}점</div>
+          <h3>
+            <a class="temple-name-link" href="https://www.google.com/maps/search/?api=1&query=${r.temple.lat},${r.temple.lng}" target="_blank" rel="noopener">
+              ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
+            </a>
+          </h3>
+          <div class="meta">${r.detail.bearing}쪽 · ${r.detail.distanceKm}km · 매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}</div>
+          ${r.detail.synergyBonus > 2.5 ? `<div class="synergy-badge">⚡ 인연 시너지 감지 — 방위와 기도목적이 겹으로 맞아떨어집니다 (+${r.detail.synergyBonus}점)</div>` : ""}
           <div class="reason">${r.reason}</div>
+          ${r.temple.history ? `
+            <div class="temple-detail">
+              <div class="temple-detail-label">유래·연혁</div>
+              <div class="temple-detail-text">${r.temple.history}</div>
+              ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
+            </div>
+          ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
         </div>
       </div>
     `).join("")}
