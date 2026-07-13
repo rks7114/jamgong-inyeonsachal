@@ -21,7 +21,7 @@ const WEATHER_CODE_MAP = {
 async function fetchTempleWeather(lat, lng) {
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&timezone=Asia%2FSeoul`;
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
     if (!res.ok) return null;
     const data = await res.json();
     const temp = data.current?.temperature_2m;
@@ -61,7 +61,7 @@ module.exports = async function handler(req, res) {
 
     res.status(200).json({
       success: true,
-      disclaimer: "본 결과는 참고용 추정치이며, 정밀 사주 감정은 잼공 오라클 정식 서비스를 이용해 주세요.",
+      disclaimer: "본 결과는 참고용 추정치이며, 정말 사주 감정은 잼공 오라클 정식 서비스를 이용해 주세요.",
       ...result,
     });
   } catch (err) {
