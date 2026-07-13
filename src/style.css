@@ -64,14 +64,8 @@ body {
 
 .hero-moon {
   position: absolute;
-  top: 28px;
-  right: 32px;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #F3E3B8, var(--gold-bright) 70%);
-  box-shadow: 0 0 28px rgba(217,172,79,0.45);
-  opacity: 0.9;
+  top: 24px;
+  right: 26px;
 }
 
 .hero-content { position: relative; z-index: 1; padding-bottom: 28px; animation: fadeUp 0.7s ease both; }
@@ -114,9 +108,10 @@ body {
 
 .star {
   position: absolute;
-  width: 2px; height: 2px;
+  width: 3px; height: 3px;
   background: var(--gold-bright);
   border-radius: 50%;
+  box-shadow: 0 0 6px 1px rgba(217,172,79,0.8);
   animation: starTwinkle 3s ease-in-out infinite;
 }
 .star:nth-child(2) { animation-delay: 0.6s; }
@@ -125,8 +120,27 @@ body {
 .star:nth-child(5) { animation-delay: 2.4s; }
 
 @keyframes starTwinkle {
-  0%, 100% { opacity: 0.15; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.8); }
+  0%, 100% { opacity: 0.1; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(3); }
+}
+
+/* 인장 주위 회전하는 금색 점선 링 — 뚜렷하게 보이는 지속 애니메이션 */
+.hero-seal {
+  position: relative;
+}
+
+.hero-seal::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(226,186,108,0.55);
+  animation: sealSpin 8s linear infinite;
+}
+
+@keyframes sealSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .lotus-mini {
@@ -155,29 +169,86 @@ body {
 }
 
 /* 산사 실루엣 라인아트 — 히어로 하단, 폼카드와 자연스럽게 이어지는 지평선 역할 */
+.hero-mountains {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: 130px;
+  z-index: 0;
+}
+
 .hero-skyline {
-  position: relative;
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
   z-index: 1;
   width: 100%;
-  height: 64px;
+  height: 90px;
   display: block;
+}
+
+.hero { padding-bottom: 130px; }
+
+.eyebrow-en {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  font-style: italic;
+  color: rgba(226,186,108,0.6);
+  margin-top: -12px;
+  margin-bottom: 16px;
+  font-family: var(--font-display);
 }
 
 /* 금박 헤어라인 구분선 — 중앙 다이아몬드 오너먼트로 히어로/폼 경계를 고급스럽게 장식 */
 .dancheong-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+  height: 7px;
+  background: linear-gradient(90deg, #8C6A1F 0%, #E2BA6C 25%, #B8892B 50%, #E2BA6C 75%, #8C6A1F 100%);
   position: relative;
-  margin: 0 20px;
+  box-shadow: 0 2px 8px rgba(140,106,31,0.4);
 }
 
 .dancheong-divider .lotus-mini {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
+  display: none;
 }
 
 /* 한지 텍스처 — 미세한 섬유 질감을 점 패턴으로 표현 */
+.trust-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 16px 20px 8px;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+
+.trust-item { text-align: center; }
+
+.trust-number {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold-deep);
+}
+
+.trust-number span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.trust-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+}
+
+.trust-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--hairline);
+}
+
 .form-card {
   background-color: var(--paper-warm);
   background-image:
@@ -198,16 +269,26 @@ body {
   animation: fadeUp 0.7s ease 0.1s both;
 }
 
-.corner-bracket {
+.form-card::after {
+  content: "";
   position: absolute;
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--gold);
-  opacity: 0.7;
+  inset: 6px;
+  border: 1px solid rgba(184,137,43,0.35);
+  border-radius: 3px;
   pointer-events: none;
 }
-.corner-bracket.tl { top: -1px; left: -1px; border-right: none; border-bottom: none; border-radius: 6px 0 0 0; }
-.corner-bracket.br { bottom: -1px; right: -1px; border-left: none; border-top: none; border-radius: 0 0 6px 0; }
+
+.corner-cloud {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  opacity: 0.65;
+  pointer-events: none;
+}
+.corner-cloud.tl { top: 10px; left: 10px; }
+.corner-cloud.tr { top: 10px; right: 10px; }
+.corner-cloud.bl { bottom: 10px; left: 10px; }
+.corner-cloud.br { bottom: 10px; right: 10px; }
 
 .field { margin-bottom: 18px; }
 
@@ -284,8 +365,8 @@ body {
 }
 
 @keyframes moonGlow {
-  0%, 100% { box-shadow: 0 0 28px rgba(217,172,79,0.45); opacity: 0.9; }
-  50% { box-shadow: 0 0 40px rgba(217,172,79,0.65); opacity: 1; }
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
 }
 
 /* 폼 필드 순차 등장 */
@@ -305,12 +386,15 @@ body {
   position: absolute;
   top: 0; left: -60%;
   width: 40%; height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
   transform: skewX(-20deg);
-  transition: left 0.6s ease;
+  animation: btnShimmer 3.5s ease-in-out infinite;
 }
 
-.submit-btn:hover::before { left: 130%; }
+@keyframes btnShimmer {
+  0%, 40% { left: -60%; }
+  60%, 100% { left: 130%; }
+}
 
 /* 기도목적 선택 시 살짝 튀는 느낌 */
 .purpose-chip.active {
@@ -325,7 +409,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-moon, .field, .purpose-chip.active { animation: none; }
-  .submit-btn::before { transition: none; }
+  .submit-btn::before { animation: none; }
+  .hero-seal::before { animation: none; }
 }
 
 .calendar-toggle {
@@ -397,38 +482,56 @@ body {
 }
 
 .birth-select-grid {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr 1.1fr;
-  gap: 6px;
+  display: flex;
+  border: 1px solid #D9CFB8;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: inset 0 1px 3px rgba(16,27,44,0.05);
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.birth-select-grid:focus-within {
+  border-color: var(--gold);
+  box-shadow: inset 0 1px 3px rgba(16,27,44,0.05), 0 0 0 3px rgba(184,137,43,0.18);
+}
+
+.segment {
+  flex: 1;
+  position: relative;
+}
+
+.segment:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0; top: 20%;
+  height: 60%;
+  width: 1px;
+  background: #E4DAC4;
 }
 
 .birth-select-grid select {
   width: 100%;
-  padding: 13px 30px 13px 12px;
-  border: 1px solid #D9CFB8;
-  border-radius: 4px;
-  background: #FFFFFF
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23B8892B' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center;
-  background-size: 10px 6px;
+  padding: 15px 24px 15px 14px;
+  border: none;
+  border-radius: 0;
+  background: transparent
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5' viewBox='0 0 9 5'%3E%3Cpath d='M1 1l3.5 3L8 1' stroke='%23B8892B' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+  background-size: 9px 5px;
   appearance: none;
   -webkit-appearance: none;
-  font-family: var(--font-body);
-  font-size: 16.5px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
   color: var(--ink);
-  box-shadow: inset 0 1px 3px rgba(16,27,44,0.06);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  box-shadow: none;
   cursor: pointer;
 }
 
-.birth-select-grid select:hover { border-color: var(--gold); }
+.birth-select-grid select:hover { background-color: rgba(184,137,43,0.04); }
+.birth-select-grid select:focus { outline: none; }
 
-.birth-select-grid select:focus {
-  outline: none;
-  border-color: var(--gold);
-  box-shadow: inset 0 1px 3px rgba(16,27,44,0.06), 0 0 0 3px rgba(184,137,43,0.18);
-}
-
-.field input, .field select {
+.field input:not([type="checkbox"]), .field select {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid #D9CFB8;
@@ -445,7 +548,7 @@ body {
 
 .field input:hover, .field select:hover { border-color: var(--gold); }
 
-.field input:focus, .field select:focus {
+.field input:not([type="checkbox"]):focus, .field select:focus {
   outline: none;
   border-color: var(--gold);
   box-shadow: inset 0 1px 3px rgba(16,27,44,0.06), 0 0 0 3px rgba(184,137,43,0.18);
@@ -459,16 +562,41 @@ body {
 .location-input-wrap::before {
   content: "";
   position: absolute;
-  left: 14px; top: 50%;
+  left: 6px; top: 50%;
   transform: translateY(-50%);
-  width: 16px; height: 16px;
+  width: 17px; height: 17px;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8892B' stroke-width='1.8'%3E%3Cpath d='M12 21s-7-6.5-7-11a7 7 0 0114 0c0 4.5-7 11-7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.5'/%3E%3C/svg%3E") no-repeat center;
   background-size: contain;
   pointer-events: none;
   opacity: 0.85;
+  z-index: 1;
 }
 
-.location-input-wrap input { padding-left: 38px; }
+.location-input-wrap input {
+  padding: 12px 4px 12px 30px !important;
+  border: none !important;
+  border-bottom: 1.5px solid #D9CFB8 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.location-input-wrap input:focus {
+  border-bottom-color: var(--gold) !important;
+  box-shadow: none !important;
+}
+
+.location-input-wrap::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 1.5px;
+  width: 0;
+  background: var(--gold-gradient);
+  transition: width 0.3s ease;
+}
+
+.location-input-wrap:focus-within::after { width: 100%; }
 
 .purpose-grid {
   display: grid;
@@ -479,8 +607,8 @@ body {
 .purpose-chip {
   border: 1px solid #D9CFB8;
   background: #fff;
-  border-radius: 3px;
-  padding: 14px 6px 11px;
+  border-radius: 10px;
+  padding: 16px 6px 12px;
   text-align: center;
   font-size: 15.5px;
   font-weight: 500;
@@ -489,10 +617,22 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 7px;
+  gap: 5px;
+  box-shadow: 0 1px 3px rgba(16,27,44,0.04);
 }
 
 .purpose-chip svg { width: 21px; height: 21px; stroke: var(--gold-deep); transition: stroke 0.15s ease; }
+
+.purpose-en {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.purpose-chip.active .purpose-en { color: rgba(226,186,108,0.65); }
 
 .purpose-chip:hover { border-color: var(--gold); transform: translateY(-1px); }
 
@@ -528,6 +668,112 @@ body {
 
 /* ── 결과 영역 ────────────────────────────── */
 .results { padding: 8px 20px 60px; }
+
+.detail-view-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  color: var(--gold-deep);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.detail-view-btn:hover { border-color: var(--gold); background: rgba(184,137,43,0.05); }
+
+.temple-detail-page { padding: 4px 0 20px; animation: fadeUp 0.4s ease both; }
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+}
+.back-btn:hover { color: var(--gold-deep); }
+
+.detail-page-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 6px;
+}
+
+.detail-page-meta {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.detail-map-embed {
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  margin-bottom: 12px;
+  box-shadow: 0 4px 14px rgba(16,27,44,0.08);
+}
+
+.detail-page-directions {
+  display: block;
+  text-align: center;
+  background: var(--ink);
+  color: var(--gold-bright) !important;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.detail-section {
+  padding: 14px 0;
+  border-top: 1px dashed var(--hairline);
+}
+
+.detail-section-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--gold-deep);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.detail-section-text {
+  font-size: 14.5px;
+  color: #3A3226;
+  line-height: 1.6;
+}
+
+.prayer-guide {
+  background: linear-gradient(135deg, #F8F2E4, #EFE3C8);
+  border: 1px solid rgba(184,137,43,0.35);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+
+.prayer-guide-label {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  margin-bottom: 6px;
+}
+
+.prayer-guide-text {
+  font-size: 14px;
+  color: #3A3226;
+  line-height: 1.6;
+}
 
 .member-banner {
   text-align: center;
