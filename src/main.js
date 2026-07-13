@@ -171,11 +171,13 @@ function render() {
 
     <div class="trust-bar">
       <div class="trust-item">
+        <div class="trust-icon">🏯</div>
         <div class="trust-number">1,905<span>곳</span></div>
         <div class="trust-label">전국 사찰 데이터</div>
       </div>
       <div class="trust-divider"></div>
       <div class="trust-item">
+        <div class="trust-icon">📜</div>
         <div class="trust-number">1,500<span>건</span></div>
         <div class="trust-label">유래·연혁 검증완료</div>
       </div>
@@ -187,8 +189,26 @@ function render() {
       <svg class="corner-cloud bl" viewBox="0 0 40 40"><path d="M4 20 Q4 28 12 28 Q13 34 20 33 Q25 37 30 32 Q36 32 36 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
       <svg class="corner-cloud br" viewBox="0 0 40 40"><path d="M36 20 Q36 28 28 28 Q27 34 20 33 Q15 37 10 32 Q4 32 4 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
       <div class="field">
-        <label>생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
-        <div class="calendar-toggle">
+        <label>찾는 방식</label>
+        <div class="calendar-toggle" id="mode-toggle">
+          <button type="button" class="calendar-toggle-btn active" data-mode="solo">혼자 찾기</button>
+          <button type="button" class="calendar-toggle-btn" data-mode="couple">궁합사찰</button>
+        </div>
+      </div>
+
+      <div class="field" id="relationship-field" style="display:none;">
+        <label for="relationship-type">관계</label>
+        <select id="relationship-type">
+          <option value="연인">연인</option>
+          <option value="부부">부부</option>
+          <option value="가족">가족</option>
+          <option value="친구">친구</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label id="birth-a-label"><span class="birth-a-label-text">생년월일시 </span><span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
+        <div class="calendar-toggle" id="calendar-toggle-a-wrap">
           <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
           <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
         </div>
@@ -220,6 +240,43 @@ function render() {
         </div>
         <label class="leap-month-check hidden" id="leap-month-wrap">
           <input type="checkbox" id="is-leap-month" /> 윤달(閏月) 생일입니다
+        </label>
+      </div>
+
+      <div class="field" id="person-b-field" style="display:none;">
+        <label>상대방 생년월일시</label>
+        <div class="calendar-toggle" id="calendar-toggle-b">
+          <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
+          <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
+        </div>
+        <div class="birth-select-grid segmented">
+          <div class="segment">
+            <select id="birth-year-b" aria-label="상대방 연도">
+              <option value="">연도</option>
+              ${Array.from({length: 106}, (_, i) => 2025 - i).map(y => `<option value="${y}">${y}년</option>`).join("")}
+            </select>
+          </div>
+          <div class="segment">
+            <select id="birth-month-b" aria-label="상대방 월">
+              <option value="">월</option>
+              ${Array.from({length: 12}, (_, i) => i + 1).map(m => `<option value="${m}">${m}월</option>`).join("")}
+            </select>
+          </div>
+          <div class="segment">
+            <select id="birth-day-b" aria-label="상대방 일">
+              <option value="">일</option>
+              ${Array.from({length: 31}, (_, i) => i + 1).map(d => `<option value="${d}">${d}일</option>`).join("")}
+            </select>
+          </div>
+          <div class="segment">
+            <select id="birth-hour-b" aria-label="상대방 시">
+              <option value="">시간 모름</option>
+              ${Array.from({length: 24}, (_, i) => i).map(h => `<option value="${h}">${String(h).padStart(2,"0")}시</option>`).join("")}
+            </select>
+          </div>
+        </div>
+        <label class="leap-month-check hidden" id="leap-month-wrap-b">
+          <input type="checkbox" id="is-leap-month-b" /> 윤달(閏月) 생일입니다
         </label>
       </div>
 
@@ -258,14 +315,40 @@ function render() {
     });
   });
 
-  let selectedCalendar = "solar";
-  document.querySelectorAll(".calendar-toggle-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".calendar-toggle-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      selectedCalendar = btn.dataset.calendar;
-      document.getElementById("leap-month-wrap").classList.toggle("hidden", selectedCalendar !== "lunar");
+  /** 버튼 그룹 하나를 독립적으로 토글 — 다른 그룹(모드/음양력A/음양력B)과 서로 간섭하지 않도록 컨테이너 단위로 스코핑 */
+  function wireToggleGroup(containerId, onSelect) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const buttons = container.querySelectorAll(".calendar-toggle-btn");
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        buttons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        onSelect(btn);
+      });
     });
+  }
+
+  let selectedCalendarA = "solar";
+  wireToggleGroup("calendar-toggle-a-wrap", (btn) => {
+    selectedCalendarA = btn.dataset.calendar;
+    document.getElementById("leap-month-wrap").classList.toggle("hidden", selectedCalendarA !== "lunar");
+  });
+
+  let selectedCalendarB = "solar";
+  wireToggleGroup("calendar-toggle-b", (btn) => {
+    selectedCalendarB = btn.dataset.calendar;
+    document.getElementById("leap-month-wrap-b").classList.toggle("hidden", selectedCalendarB !== "lunar");
+  });
+
+  let matchMode = "solo"; // "solo" | "couple"
+  wireToggleGroup("mode-toggle", (btn) => {
+    matchMode = btn.dataset.mode;
+    const isCouple = matchMode === "couple";
+    document.getElementById("person-b-field").style.display = isCouple ? "" : "none";
+    document.getElementById("relationship-field").style.display = isCouple ? "" : "none";
+    document.querySelector(".birth-a-label-text").textContent = isCouple ? "본인 생년월일시 " : "생년월일시 ";
+    document.querySelector(".submit-btn").textContent = isCouple ? "궁합사찰 찾기" : "인연사찰 찾기";
   });
 
   document.getElementById("match-form").addEventListener("submit", async (e) => {
@@ -283,7 +366,7 @@ function render() {
     }
 
     const birthInput = {
-      calendarType: selectedCalendar, // "solar" | "lunar"
+      calendarType: selectedCalendarA, // "solar" | "lunar"
       year: parseInt(year),
       month: parseInt(month),
       day: parseInt(day),
@@ -291,6 +374,34 @@ function render() {
       minute: 0,
       isLeapMonth,
     };
+
+    const isCouple = matchMode === "couple";
+    let birthInputB = null;
+    let relationshipType = null;
+
+    if (isCouple) {
+      const yearB = document.getElementById("birth-year-b").value;
+      const monthB = document.getElementById("birth-month-b").value;
+      const dayB = document.getElementById("birth-day-b").value;
+      const hourB = document.getElementById("birth-hour-b").value;
+      const isLeapMonthB = document.getElementById("is-leap-month-b")?.checked || false;
+
+      if (!yearB || !monthB || !dayB) {
+        alert("상대방 생년월일(연도·월·일)을 모두 선택해주세요.");
+        return;
+      }
+
+      birthInputB = {
+        calendarType: selectedCalendarB,
+        year: parseInt(yearB),
+        month: parseInt(monthB),
+        day: parseInt(dayB),
+        hour: hourB !== "" ? parseInt(hourB) : 12,
+        minute: 0,
+        isLeapMonth: isLeapMonthB,
+      };
+      relationshipType = document.getElementById("relationship-type").value;
+    }
 
     const submitBtn = e.target.querySelector(".submit-btn");
     submitBtn.disabled = true;
@@ -334,10 +445,15 @@ function render() {
     submitBtn.textContent = "인연을 살피는 중...";
 
     try {
-      const res = await fetch("/api/match", {
+      const endpoint = isCouple ? "/api/match-couple" : "/api/match";
+      const body = isCouple
+        ? { birthInputA: birthInput, birthInputB, relationshipType, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }
+        : { birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() };
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       data.purpose = selectedPurpose; // 응답에 없으므로 클라이언트에서 보강 (기도 안내 등에 사용)
@@ -346,7 +462,7 @@ function render() {
       alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = "인연사찰 찾기";
+      submitBtn.textContent = isCouple ? "궁합사찰 찾기" : "인연사찰 찾기";
     }
   });
 }
@@ -378,7 +494,9 @@ function renderResults(data) {
     ${data.purposeGuide ? `
       <div class="prayer-guide">
         <div class="prayer-guide-label">🙏 이렇게 기도해보세요</div>
-        <div class="prayer-guide-text">${data.purposeGuide}</div>
+        <div class="prayer-guide-text">
+          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
+        </div>
       </div>
     ` : ""}
 
@@ -526,6 +644,27 @@ async function shareResult(data) {
   }
 }
 
+/** 특정 사찰 상세페이지 단독 공유 */
+async function shareTemple(temple) {
+  const shareText = `[잼공인연사찰] "${temple.name}" — 나와 인연이 닿는 절이래요. 🙏`;
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${temple.lat},${temple.lng}`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: `${temple.name} — 잼공인연사찰`, text: shareText, url: mapUrl });
+    } catch (e) {
+      // 취소 — 무시
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(`${shareText} ${mapUrl}`);
+      alert("사찰 정보가 클립보드에 복사되었습니다.");
+    } catch (e) {
+      alert("공유하기를 지원하지 않는 환경입니다.");
+    }
+  }
+}
+
 /** 사찰 상세페이지 — 지도 미리보기, 전체 정보를 한 화면에 모아 보여줌 */
 function renderTempleDetailPage(result, matchData, memberUnlocked) {
   const resultsEl = document.getElementById("results");
@@ -552,33 +691,108 @@ function renderTempleDetailPage(result, matchData, memberUnlocked) {
         🗺️ 길찾기로 바로가기
       </a>
 
-      ${temple.address ? `<div class="detail-section"><div class="detail-section-label">주소</div><div class="detail-section-text">📍 ${temple.address}</div></div>` : ""}
+      <div class="info-group group-gold">
+        <div class="info-group-title">🙏 인연 이야기</div>
 
-      ${temple.history ? `
-        <div class="detail-section">
-          <div class="detail-section-label">유래·연혁</div>
-          <div class="detail-section-text">
-            ${memberUnlocked ? temple.history : `${temple.history.slice(0, 60)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`}
+        <div class="info-row">
+          <div class="info-row-icon">💫</div>
+          <div class="info-row-body">
+            <div class="info-row-label">인연 근거</div>
+            <div class="info-row-text">${reason}</div>
           </div>
         </div>
-      ` : ""}
 
-      <div class="detail-section">
-        <div class="detail-section-label">인연 근거</div>
-        <div class="detail-section-text">${reason}</div>
+        ${temple.history ? `
+          <div class="info-row">
+            <div class="info-row-icon">📜</div>
+            <div class="info-row-body">
+              <div class="info-row-label">유래·연혁</div>
+              <div class="info-row-text">
+                ${memberUnlocked ? temple.history : `${temple.history.slice(0, 60)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`}
+              </div>
+            </div>
+          </div>
+        ` : ""}
+
+        <div class="info-row">
+          <div class="info-row-icon">⚡</div>
+          <div class="info-row-body">
+            <div class="info-row-label">인연 시너지 분석</div>
+            <div class="info-row-text">
+              ${memberUnlocked
+                ? `방위 ${detail.bangwiScore} · 목적 ${detail.purposeScore} · 거리 ${Math.round(detail.distanceScore*10)/10} · 신뢰도 ${detail.trustScore}점${detail.synergyBonus > 0 ? ` · 시너지 +${detail.synergyBonus}` : ""}`
+                : `종합 매칭점수 ${score}점 <span class="member-lock-tag">🔒 세부분석은 멤버 전용</span>`}
+            </div>
+          </div>
+        </div>
+
+        ${matchData.purposeGuide ? `
+          <div class="info-row">
+            <div class="info-row-icon">🕯️</div>
+            <div class="info-row-body">
+              <div class="info-row-label">이 사찰에서 이렇게 해보세요</div>
+              <div class="info-row-text">
+                ${Array.isArray(matchData.purposeGuide) ? `<ol class="prayer-steps">${matchData.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : matchData.purposeGuide}
+              </div>
+            </div>
+          </div>
+        ` : ""}
       </div>
 
-      ${detail.synergyBonus > 2.5 && memberUnlocked ? `
-        <div class="detail-section">
-          <div class="detail-section-label">시너지 상세 분석</div>
-          <div class="detail-section-text">방위점수 ${detail.bangwiScore}점 · 목적점수 ${detail.purposeScore}점 · 거리점수 ${Math.round(detail.distanceScore*10)/10}점 · 신뢰도 ${detail.trustScore}점 · 시너지 보너스 +${detail.synergyBonus}점</div>
-        </div>
-      ` : ""}
+      <div class="info-group group-jade">
+        <div class="info-group-title">🧭 방문 정보</div>
 
-      ${result.weather ? `
-        <div class="detail-section">
-          <div class="detail-section-label">현지 날씨</div>
-          <div class="detail-section-text">🌤️ ${result.weather.condition}, ${result.weather.temp}°C</div>
+        ${temple.address ? `
+          <div class="info-row">
+            <div class="info-row-icon">📍</div>
+            <div class="info-row-body">
+              <div class="info-row-label">주소</div>
+              <div class="info-row-text">${temple.address}</div>
+            </div>
+          </div>
+        ` : ""}
+
+        <div class="info-row">
+          <div class="info-row-icon">🌤️</div>
+          <div class="info-row-body">
+            <div class="info-row-label">현지 날씨</div>
+            <div class="info-row-text" id="detail-weather-text">날씨 확인 중...</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-row-icon">🚗</div>
+          <div class="info-row-body">
+            <div class="info-row-label">예상 이동시간</div>
+            <div class="info-row-text">자동차 약 ${estimateDriveMinutes(detail.distanceKm)}분 · 도보 약 ${estimateWalkMinutes(detail.distanceKm)}분 (직선거리 추정치)</div>
+          </div>
+        </div>
+
+        ${matchData.recommendedDates && matchData.recommendedDates.length ? `
+          <div class="info-row">
+            <div class="info-row-icon">📅</div>
+            <div class="info-row-body">
+              <div class="info-row-label">방문하면 좋은 날</div>
+              <div class="calendar-dates" style="margin-top:6px;">
+                ${matchData.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
+              </div>
+            </div>
+          </div>
+        ` : ""}
+      </div>
+
+      <button type="button" class="share-btn" id="detail-share-btn">📤 이 사찰 공유하기</button>
+
+      ${matchData.results.length > 1 ? `
+        <div class="detail-other-temples">
+          <div class="detail-section-label">다른 매칭 사찰</div>
+          <div class="detail-other-list">
+            ${matchData.results.map((r, i) => `
+              <button type="button" class="detail-other-item${r.temple.name === temple.name ? " current" : ""}" data-switch-index="${i}">
+                ${i + 1}위 ${r.temple.name}
+              </button>
+            `).join("")}
+          </div>
         </div>
       ` : ""}
 
@@ -589,6 +803,27 @@ function renderTempleDetailPage(result, matchData, memberUnlocked) {
   const goBack = () => renderResults(matchData);
   document.getElementById("detail-back-btn").addEventListener("click", goBack);
   document.getElementById("detail-back-btn-2").addEventListener("click", goBack);
+  document.getElementById("detail-share-btn").addEventListener("click", () => shareTemple(temple));
+
+  document.querySelectorAll(".detail-other-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.switchIndex);
+      renderTempleDetailPage(matchData.results[idx], matchData, memberUnlocked);
+    });
+  });
+
+  // 순위와 상관없이 이 사찰의 날씨를 온디맨드로 조회
+  fetch(`/api/weather?lat=${temple.lat}&lng=${temple.lng}`)
+    .then((r) => r.json())
+    .then((w) => {
+      const el = document.getElementById("detail-weather-text");
+      if (!el) return;
+      el.textContent = w.success ? `🌤️ ${w.condition}, ${w.temp}°C` : "날씨 정보를 불러오지 못했습니다.";
+    })
+    .catch(() => {
+      const el = document.getElementById("detail-weather-text");
+      if (el) el.textContent = "날씨 정보를 불러오지 못했습니다.";
+    });
 
   resultsEl.scrollIntoView({ behavior: "smooth" });
 }
@@ -621,6 +856,17 @@ function renderDiaryView() {
     resultsEl.classList.add("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+}
+
+/** 직선거리 기준 자동차/도보 이동시간 대략 추정 (실제 도로 경로 아님 — 참고용) */
+function estimateDriveMinutes(distanceKm) {
+  const avgSpeedKmh = 30; // 시내 평균 주행속도 가정
+  return Math.max(1, Math.round((distanceKm / avgSpeedKmh) * 60));
+}
+
+function estimateWalkMinutes(distanceKm) {
+  const avgWalkKmh = 4.5;
+  return Math.max(1, Math.round((distanceKm / avgWalkKmh) * 60));
 }
 
 function formatDate(dateStr) {
