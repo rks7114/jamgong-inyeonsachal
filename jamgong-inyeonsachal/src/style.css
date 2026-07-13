@@ -21,7 +21,7 @@
   --red-deep: #7C2C21;
   --jade: #3C6E5E;
   --text-on-ink: #EFE7D8;
-  --text-muted: #8B95A6;
+  --text-muted: #6B7280;
   --hairline: rgba(184,137,43,0.28);
 
   --font-display: 'Noto Serif KR', serif;
@@ -79,7 +79,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: 0.28em;
   color: var(--gold-bright);
   font-weight: 500;
@@ -104,7 +104,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 17px;
   color: var(--gold-bright);
   opacity: 0.85;
 }
@@ -119,7 +119,7 @@ body {
 }
 
 .hero p {
-  font-size: 14.5px;
+  font-size: 17px;
   color: var(--text-muted);
   max-width: 420px;
   margin: 0 auto;
@@ -150,7 +150,7 @@ body {
   transform: translate(-50%, -50%);
   background: var(--paper);
   color: var(--gold);
-  font-size: 10px;
+  font-size: 13.5px;
   padding: 0 10px;
 }
 
@@ -186,7 +186,7 @@ body {
 
 .field label {
   display: block;
-  font-size: 12.5px;
+  font-size: 15.5px;
   font-weight: 700;
   color: var(--ink);
   margin-bottom: 8px;
@@ -207,7 +207,7 @@ body {
   border-radius: 3px;
   background: #fff;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16.5px;
   color: var(--ink);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -225,7 +225,7 @@ body {
   border-radius: 3px;
   background: #fff;
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 17px;
   color: var(--ink);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -248,7 +248,7 @@ body {
   border-radius: 3px;
   padding: 14px 6px 11px;
   text-align: center;
-  font-size: 12.5px;
+  font-size: 15.5px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -279,7 +279,7 @@ body {
   color: #fff;
   border: none;
   border-radius: 3px;
-  font-size: 15.5px;
+  font-size: 17.5px;
   font-weight: 700;
   font-family: var(--font-body);
   letter-spacing: 0.04em;
@@ -297,7 +297,7 @@ body {
 
 .member-banner {
   text-align: center;
-  font-size: 13px;
+  font-size: 15.5px;
   font-weight: 700;
   color: var(--jade);
   background: rgba(60,110,94,0.1);
@@ -318,7 +318,7 @@ body {
   padding: 10px 12px;
   border: 1px solid #D9CFB8;
   border-radius: 3px;
-  font-size: 13px;
+  font-size: 15.5px;
   font-family: var(--font-body);
 }
 
@@ -328,7 +328,7 @@ body {
   color: var(--gold-bright);
   border: none;
   border-radius: 3px;
-  font-size: 13px;
+  font-size: 15.5px;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
@@ -337,14 +337,14 @@ body {
 .member-unlock button:hover { background: var(--ink-deep); }
 
 .member-lock-tag {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--gold-deep);
   font-weight: 700;
   white-space: nowrap;
 }
 
 .patent-note {
-  font-size: 10px;
+  font-size: 13.5px;
   color: var(--gold-deep);
   opacity: 0.75;
   margin-top: 4px;
@@ -354,14 +354,14 @@ body {
 .patent-footer {
   display: block;
   margin-top: 8px;
-  font-size: 10.5px;
+  font-size: 14px;
   color: var(--text-muted);
   opacity: 0.85;
 }
 
 .calendar-more-hint {
   margin-top: 10px;
-  font-size: 11.5px;
+  font-size: 14.5px;
   color: var(--text-muted);
 }
 
@@ -372,7 +372,7 @@ body {
 }
 
 .results-summary .label {
-  font-size: 12.5px;
+  font-size: 15.5px;
   letter-spacing: 0.08em;
   color: var(--text-muted);
   margin-bottom: 8px;
@@ -388,7 +388,7 @@ body {
 
 .results-summary .ohaeng-breakdown {
   margin-top: 10px;
-  font-size: 12.5px;
+  font-size: 15.5px;
   color: var(--text-muted);
   letter-spacing: 0.03em;
 }
@@ -417,7 +417,7 @@ body {
 .oracle-card-badge {
   background: rgba(184,137,43,0.2);
   color: var(--gold-bright);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   padding: 5px 12px;
   border-radius: 20px;
@@ -428,21 +428,21 @@ body {
 
 .oracle-card-title {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 16.5px;
   font-weight: 700;
   color: var(--gold-bright);
   margin-bottom: 3px;
 }
 
 .oracle-card-desc {
-  font-size: 12.5px;
+  font-size: 15.5px;
   color: var(--text-on-ink);
   opacity: 0.85;
 }
 
 .oracle-card-arrow {
   color: var(--gold-bright);
-  font-size: 20px;
+  font-size: 21.5px;
   flex-shrink: 0;
 }
 
@@ -476,7 +476,7 @@ body {
 .compass .dir-label {
   position: absolute;
   font-family: var(--font-display);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--ink);
   transform: translate(-50%, -50%);
@@ -545,7 +545,7 @@ body {
 
 .temple-rank {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--paper-warm);
   min-width: 30px;
@@ -563,7 +563,7 @@ body {
 .temple-body h3 {
   font-family: var(--font-display);
   margin: 0 0 6px;
-  font-size: 18px;
+  font-size: 19.5px;
   font-weight: 700;
   letter-spacing: -0.005em;
 }
@@ -582,21 +582,21 @@ body {
 
 .temple-name-link .map-icon {
   font-family: var(--font-body);
-  font-size: 11.5px;
+  font-size: 14.5px;
   font-weight: 500;
   color: var(--jade);
   white-space: nowrap;
 }
 
 .temple-body .meta {
-  font-size: 11.5px;
+  font-size: 14.5px;
   color: var(--text-muted);
   margin-bottom: 8px;
   letter-spacing: 0.02em;
 }
 
 .temple-body .reason {
-  font-size: 13.5px;
+  font-size: 16px;
   color: #3A3226;
   line-height: 1.55;
 }
@@ -607,7 +607,7 @@ body {
   border: 1px solid var(--gold);
   border-radius: 3px;
   padding: 5px 10px;
-  font-size: 11.5px;
+  font-size: 14.5px;
   font-weight: 700;
   color: var(--gold-deep);
   margin-bottom: 8px;
@@ -620,7 +620,7 @@ body {
 }
 
 .temple-detail-label {
-  font-size: 10.5px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: var(--gold-deep);
@@ -629,14 +629,14 @@ body {
 }
 
 .temple-detail-text {
-  font-size: 12.5px;
+  font-size: 15.5px;
   color: #5A5142;
   line-height: 1.6;
   margin-bottom: 6px;
 }
 
 .temple-detail-address {
-  font-size: 11.5px;
+  font-size: 14.5px;
   color: var(--text-muted);
 }
 
@@ -652,7 +652,7 @@ body {
 
 .calendar-title {
   font-family: var(--font-display);
-  font-size: 13.5px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--jade);
@@ -669,7 +669,7 @@ body {
 .date-chip {
   background: var(--jade);
   color: #fff;
-  font-size: 12.5px;
+  font-size: 15.5px;
   font-weight: 500;
   padding: 7px 13px;
   border-radius: 20px;
@@ -683,7 +683,7 @@ body {
   color: var(--gold-deep);
   border: 1.5px solid var(--gold);
   border-radius: 3px;
-  font-size: 13.5px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.03em;
   font-family: var(--font-body);
@@ -702,7 +702,7 @@ body {
   color: var(--text-muted);
   border: 1px solid #D9CFB8;
   border-radius: 3px;
-  font-size: 13px;
+  font-size: 15.5px;
   font-weight: 500;
   font-family: var(--font-body);
   cursor: pointer;
@@ -716,7 +716,7 @@ body {
 
 .diary-view-title {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 21.5px;
   font-weight: 700;
   text-align: center;
   margin-bottom: 20px;
@@ -726,7 +726,7 @@ body {
 .diary-empty {
   text-align: center;
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 16.5px;
   padding: 40px 0;
 }
 
@@ -738,12 +738,12 @@ body {
   margin-bottom: 10px;
 }
 
-.diary-entry-date { font-size: 11.5px; color: var(--text-muted); margin-bottom: 4px; }
+.diary-entry-date { font-size: 14.5px; color: var(--text-muted); margin-bottom: 4px; }
 .diary-entry-ohaeng { font-family: var(--font-display); font-weight: 700; color: var(--red); margin-bottom: 4px; }
-.diary-entry-temples { font-size: 13px; color: var(--ink); }
+.diary-entry-temples { font-size: 15.5px; color: var(--ink); }
 
 .disclaimer {
-  font-size: 11.5px;
+  font-size: 14.5px;
   color: var(--text-muted);
   text-align: center;
   margin-top: 20px;
