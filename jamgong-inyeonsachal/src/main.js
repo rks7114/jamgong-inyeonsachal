@@ -2,6 +2,8 @@
 
 const PURPOSES = ["재물운", "건강운", "학업운", "인연운", "가정운"];
 
+const PURPOSE_EN = { 재물운: "wealth", 건강운: "health", 학업운: "academic", 인연운: "love", 가정운: "family" };
+
 // 목적별 아이콘 (선 스타일, 획 일관성 유지) — 재물(동전꾸러미)·건강(약초잎)·학업(붓)·인연(매듭)·가정(집)
 const PURPOSE_ICONS = {
   재물운: `<circle cx="8" cy="16" r="5"/><circle cx="16" cy="8" r="5"/><path d="M8 16h.01M16 8h.01"/>`,
@@ -70,7 +72,20 @@ function render() {
         <span class="star" style="top:38%; left:35%;"></span>
         <span class="star" style="top:20%; left:88%;"></span>
       </div>
-      <div class="hero-moon"></div>
+      <svg class="hero-moon" viewBox="0 0 120 120" width="52" height="52">
+        <defs>
+          <filter id="moonHalo" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="8" />
+          </filter>
+          <radialGradient id="moonBody" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#FBF0D2"/>
+            <stop offset="60%" stop-color="#E2BA6C"/>
+            <stop offset="100%" stop-color="#B8892B"/>
+          </radialGradient>
+        </defs>
+        <circle cx="60" cy="60" r="30" fill="#E2BA6C" filter="url(#moonHalo)" opacity="0.55"/>
+        <circle cx="60" cy="60" r="24" fill="url(#moonBody)"/>
+      </svg>
       <div class="hero-content">
         <div class="hero-seal">
           <svg viewBox="0 0 40 40" width="30" height="30">
@@ -80,9 +95,39 @@ function render() {
           </svg>
         </div>
         <div class="eyebrow">잼공인연사찰</div>
+        <div class="eyebrow-en">Premium Saju Temple Fortune Service</div>
         <h1>나와 인연이 닿는<br/>절을 찾아드립니다</h1>
         <p>생년월일시의 오행 기운을 바탕으로, 지금 이 순간 당신에게 필요한 사찰을 안내합니다.</p>
       </div>
+      <!-- 안개 낀 다층 산 능선 (원경→근경 순서로 겹쳐 깊이감 연출, 블러로 대기감 표현) -->
+      <svg class="hero-mountains" viewBox="0 0 400 130" preserveAspectRatio="none">
+        <defs>
+          <filter id="fogBlurFar" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="4.5" />
+          </filter>
+          <filter id="fogBlurMid" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2.5" />
+          </filter>
+          <filter id="fogBlurNear" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="1" />
+          </filter>
+          <linearGradient id="mtFar" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4A6284"/>
+            <stop offset="100%" stop-color="#2E4162"/>
+          </linearGradient>
+          <linearGradient id="mtMid" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#324867"/>
+            <stop offset="100%" stop-color="#1B2A41"/>
+          </linearGradient>
+          <linearGradient id="mtNear" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#182538"/>
+            <stop offset="100%" stop-color="#0C1522"/>
+          </linearGradient>
+        </defs>
+        <path filter="url(#fogBlurFar)" d="M0 130 L0 68 Q50 52 100 66 Q150 46 200 63 Q250 44 300 60 Q350 50 400 58 L400 130 Z" fill="url(#mtFar)" opacity="0.5"/>
+        <path filter="url(#fogBlurMid)" d="M0 130 L0 86 Q60 70 120 84 Q170 65 230 81 Q290 63 340 79 Q370 72 400 76 L400 130 Z" fill="url(#mtMid)" opacity="0.7"/>
+        <path filter="url(#fogBlurNear)" d="M0 130 L0 104 Q70 90 140 101 Q200 86 260 99 Q320 88 400 95 L400 130 Z" fill="url(#mtNear)" opacity="0.92"/>
+      </svg>
       <!-- 사찰 전각 실루엣: 처마 곡선이 있는 2층 대웅전 + 좌우 탑 -->
       <svg class="hero-skyline" viewBox="0 0 400 90" preserveAspectRatio="none">
         <!-- 원경 산 능선 (은은하게) -->
@@ -116,8 +161,10 @@ function render() {
     </div>
 
     <form class="form-card" id="match-form">
-      <div class="corner-bracket tl"></div>
-      <div class="corner-bracket br"></div>
+      <svg class="corner-cloud tl" viewBox="0 0 40 40"><path d="M4 20 Q4 12 12 12 Q13 6 20 7 Q25 3 30 8 Q36 8 36 15" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg class="corner-cloud tr" viewBox="0 0 40 40"><path d="M36 20 Q36 12 28 12 Q27 6 20 7 Q15 3 10 8 Q4 8 4 15" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg class="corner-cloud bl" viewBox="0 0 40 40"><path d="M4 20 Q4 28 12 28 Q13 34 20 33 Q25 37 30 32 Q36 32 36 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg class="corner-cloud br" viewBox="0 0 40 40"><path d="M36 20 Q36 28 28 28 Q27 34 20 33 Q15 37 10 32 Q4 32 4 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
       <div class="field">
         <label>생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
         <div class="calendar-toggle">
@@ -162,6 +209,7 @@ function render() {
             <div class="purpose-chip${i === 0 ? " active" : ""}" data-purpose="${p}">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${PURPOSE_ICONS[p]}</svg>
               <span>${p}</span>
+              <span class="purpose-en">${PURPOSE_EN[p]}</span>
             </div>
           `).join("")}
         </div>
