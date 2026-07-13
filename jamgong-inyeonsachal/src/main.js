@@ -84,7 +84,7 @@ function render() {
       <div class="corner-bracket tl"></div>
       <div class="corner-bracket br"></div>
       <div class="field">
-        <label>생년월일시</label>
+        <label>생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
         <div class="calendar-toggle">
           <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
           <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
@@ -113,7 +113,7 @@ function render() {
       </div>
 
       <div class="field">
-        <label>기도 목적</label>
+        <label>기도 목적 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">지금 가장 채우고 싶은 기운을 골라주세요. 사주상 부족한 오행과 함께 계산에 반영됩니다.</span></span></label>
         <div class="purpose-grid" id="purpose-grid">
           ${PURPOSES.map((p, i) => `
             <div class="purpose-chip${i === 0 ? " active" : ""}" data-purpose="${p}">
@@ -125,7 +125,7 @@ function render() {
       </div>
 
       <div class="field">
-        <label for="location">현재 위치 (예: 서울특별시청)</label>
+        <label for="location">현재 위치 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사찰까지의 방위·거리 계산 기준입니다. 비워두시면 브라우저 위치를 자동 감지하고, 직접 입력하시면 그 주소를 기준으로 계산합니다.</span></span></label>
         <input type="text" id="location" placeholder="위치 입력 또는 자동 감지" />
       </div>
 
@@ -180,12 +180,42 @@ function render() {
 
     const submitBtn = e.target.querySelector(".submit-btn");
     submitBtn.disabled = true;
-    submitBtn.textContent = "위치 확인 중...";
 
-    // 사용자 실제 위치 감지 (Geolocation API) — 거부/미지원 시 서울시청 좌표로 안전하게 폴백
-    const { userLat, userLng, locationLabel } = await detectUserLocation();
-    const locationEl = document.getElementById("location");
-    if (locationEl && locationLabel) locationEl.placeholder = locationLabel;
+    // 사용자가 위치를 직접 입력했으면 그 주소를 우선 지오코딩, 비어있으면 자동감지
+    const manualLocation = document.getElementById("location").value.trim();
+    let userLat, userLng;
+
+    if (manualLocation) {
+      submitBtn.textContent = "위치 확인 중...";
+      try {
+        const geoRes = await fetch("/api/geocode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address: manualLocation }),
+        });
+        const geoData = await geoRes.json();
+        if (geoData.success) {
+          userLat = geoData.lat;
+          userLng = geoData.lng;
+        } else {
+          alert(`"${manualLocation}" 주소를 찾지 못했습니다. 위치를 비워두시면 자동으로 감지합니다.`);
+          const fallback = await detectUserLocation();
+          userLat = fallback.userLat;
+          userLng = fallback.userLng;
+        }
+      } catch (err) {
+        const fallback = await detectUserLocation();
+        userLat = fallback.userLat;
+        userLng = fallback.userLng;
+      }
+    } else {
+      submitBtn.textContent = "위치 확인 중...";
+      const detected = await detectUserLocation();
+      userLat = detected.userLat;
+      userLng = detected.userLng;
+      const locationEl = document.getElementById("location");
+      if (locationEl && detected.locationLabel) locationEl.placeholder = detected.locationLabel;
+    }
 
     submitBtn.textContent = "인연을 살피는 중...";
 

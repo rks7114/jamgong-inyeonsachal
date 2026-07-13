@@ -194,6 +194,113 @@ body {
   text-transform: uppercase;
 }
 
+/* 도움말 물음표 아이콘 — 클릭/호버 시 말풍선 툴팁 */
+.help-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: rgba(184,137,43,0.15);
+  color: var(--gold-deep);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: help;
+  position: relative;
+  vertical-align: middle;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.help-tip-bubble {
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  width: 220px;
+  background: var(--ink);
+  color: var(--text-on-ink);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 5px;
+  box-shadow: 0 8px 20px rgba(16,27,44,0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.help-tip-bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--ink);
+}
+
+.help-tip:hover .help-tip-bubble,
+.help-tip:focus .help-tip-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 달빛 은은한 펄스 — 살아있는 느낌 부여 */
+.hero-moon {
+  animation: moonGlow 4s ease-in-out infinite;
+}
+
+@keyframes moonGlow {
+  0%, 100% { box-shadow: 0 0 28px rgba(217,172,79,0.45); opacity: 0.9; }
+  50% { box-shadow: 0 0 40px rgba(217,172,79,0.65); opacity: 1; }
+}
+
+/* 폼 필드 순차 등장 */
+.field { animation: fadeUp 0.5s ease both; }
+.field:nth-of-type(1) { animation-delay: 0.15s; }
+.field:nth-of-type(2) { animation-delay: 0.22s; }
+.field:nth-of-type(3) { animation-delay: 0.29s; }
+
+/* 제출 버튼 — 은은한 광택 스윕 (hover 시) */
+.submit-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+
+.submit-btn:hover::before { left: 130%; }
+
+/* 기도목적 선택 시 살짝 튀는 느낌 */
+.purpose-chip.active {
+  animation: chipPop 0.3s ease;
+}
+
+@keyframes chipPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-moon, .field, .purpose-chip.active { animation: none; }
+  .submit-btn::before { transition: none; }
+}
+
 .calendar-toggle {
   display: flex;
   gap: 8px;
