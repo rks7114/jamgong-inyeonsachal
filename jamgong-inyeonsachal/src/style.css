@@ -735,6 +735,78 @@ body {
 
 .detail-view-btn:hover { border-color: var(--gold); background: rgba(184,137,43,0.05); }
 
+.info-group {
+  border-radius: 8px;
+  padding: 18px 16px;
+  margin-bottom: 16px;
+  border: 1px solid;
+}
+
+.group-gold {
+  background: linear-gradient(160deg, #FBF6EA 0%, #F3E7C8 100%);
+  border-color: rgba(184,137,43,0.3);
+}
+
+.group-jade {
+  background: linear-gradient(160deg, #F0F5F2 0%, #DCE9E3 100%);
+  border-color: rgba(60,110,94,0.3);
+}
+
+.info-group-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.info-row {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  background: rgba(255,255,255,0.65);
+  border-radius: 7px;
+  box-shadow: 0 2px 6px rgba(16,27,44,0.06);
+}
+
+.info-row + .info-row { margin-top: 10px; }
+
+.info-row-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 1px 4px rgba(16,27,44,0.12);
+}
+
+.group-gold .info-row-icon { border: 1px solid rgba(184,137,43,0.3); }
+.group-jade .info-row-icon { border: 1px solid rgba(60,110,94,0.3); }
+
+.info-row-body { flex: 1; min-width: 0; }
+
+.info-row-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  letter-spacing: 0.02em;
+  margin-bottom: 3px;
+}
+
+.group-jade .info-row-label { color: #2C5245; }
+
+.info-row-text {
+  font-size: 15.5px;
+  color: #3A3226;
+  line-height: 1.55;
+}
+
 .temple-detail-page { padding: 4px 0 20px; animation: fadeUp 0.4s ease both; }
 
 .back-btn {

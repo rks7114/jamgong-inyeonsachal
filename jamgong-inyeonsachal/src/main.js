@@ -577,60 +577,95 @@ function renderTempleDetailPage(result, matchData, memberUnlocked) {
         🗺️ 길찾기로 바로가기
       </a>
 
-      ${temple.address ? `<div class="detail-section"><div class="detail-section-label">주소</div><div class="detail-section-text">📍 ${temple.address}</div></div>` : ""}
+      <div class="info-group group-gold">
+        <div class="info-group-title">🙏 인연 이야기</div>
 
-      ${temple.history ? `
-        <div class="detail-section">
-          <div class="detail-section-label">유래·연혁</div>
-          <div class="detail-section-text">
-            ${memberUnlocked ? temple.history : `${temple.history.slice(0, 60)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`}
+        <div class="info-row">
+          <div class="info-row-icon">💫</div>
+          <div class="info-row-body">
+            <div class="info-row-label">인연 근거</div>
+            <div class="info-row-text">${reason}</div>
           </div>
         </div>
-      ` : ""}
 
-      <div class="detail-section">
-        <div class="detail-section-label">인연 근거</div>
-        <div class="detail-section-text">${reason}</div>
-      </div>
-
-      ${matchData.purposeGuide ? `
-        <div class="prayer-guide" style="margin: 16px 0;">
-          <div class="prayer-guide-label">🙏 이 사찰에서 이렇게 해보세요</div>
-          <div class="prayer-guide-text">
-            ${Array.isArray(matchData.purposeGuide) ? `<ol class="prayer-steps">${matchData.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : matchData.purposeGuide}
+        ${temple.history ? `
+          <div class="info-row">
+            <div class="info-row-icon">📜</div>
+            <div class="info-row-body">
+              <div class="info-row-label">유래·연혁</div>
+              <div class="info-row-text">
+                ${memberUnlocked ? temple.history : `${temple.history.slice(0, 60)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`}
+              </div>
+            </div>
           </div>
-        </div>
-      ` : ""}
+        ` : ""}
 
-      <div class="detail-section">
-        <div class="detail-section-label">인연 시너지 분석</div>
-        <div class="detail-section-text">
-          ${memberUnlocked
-            ? `방위점수 ${detail.bangwiScore}점 · 목적점수 ${detail.purposeScore}점 · 거리점수 ${Math.round(detail.distanceScore*10)/10}점 · 신뢰도 ${detail.trustScore}점${detail.synergyBonus > 0 ? ` · 시너지 보너스 +${detail.synergyBonus}점` : ""}`
-            : `종합 매칭점수 ${score}점 <span class="member-lock-tag">🔒 세부 점수 분석은 멤버 전용</span>`}
-        </div>
-      </div>
-
-      <div class="detail-section">
-        <div class="detail-section-label">현지 날씨</div>
-        <div class="detail-section-text" id="detail-weather-text">날씨 확인 중...</div>
-      </div>
-
-      <div class="detail-section">
-        <div class="detail-section-label">예상 이동시간</div>
-        <div class="detail-section-text">🚗 자동차 약 ${estimateDriveMinutes(detail.distanceKm)}분 · 🚶 도보 약 ${estimateWalkMinutes(detail.distanceKm)}분 (직선거리 기준 추정치)</div>
-      </div>
-
-      ${matchData.recommendedDates && matchData.recommendedDates.length ? `
-        <div class="detail-section">
-          <div class="detail-section-label">방문하면 좋은 날</div>
-          <div class="detail-section-text">
-            <div class="calendar-dates" style="margin-top:6px;">
-              ${matchData.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
+        <div class="info-row">
+          <div class="info-row-icon">⚡</div>
+          <div class="info-row-body">
+            <div class="info-row-label">인연 시너지 분석</div>
+            <div class="info-row-text">
+              ${memberUnlocked
+                ? `방위 ${detail.bangwiScore} · 목적 ${detail.purposeScore} · 거리 ${Math.round(detail.distanceScore*10)/10} · 신뢰도 ${detail.trustScore}점${detail.synergyBonus > 0 ? ` · 시너지 +${detail.synergyBonus}` : ""}`
+                : `종합 매칭점수 ${score}점 <span class="member-lock-tag">🔒 세부분석은 멤버 전용</span>`}
             </div>
           </div>
         </div>
-      ` : ""}
+
+        ${matchData.purposeGuide ? `
+          <div class="info-row">
+            <div class="info-row-icon">🕯️</div>
+            <div class="info-row-body">
+              <div class="info-row-label">이 사찰에서 이렇게 해보세요</div>
+              <div class="info-row-text">
+                ${Array.isArray(matchData.purposeGuide) ? `<ol class="prayer-steps">${matchData.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : matchData.purposeGuide}
+              </div>
+            </div>
+          </div>
+        ` : ""}
+      </div>
+
+      <div class="info-group group-jade">
+        <div class="info-group-title">🧭 방문 정보</div>
+
+        ${temple.address ? `
+          <div class="info-row">
+            <div class="info-row-icon">📍</div>
+            <div class="info-row-body">
+              <div class="info-row-label">주소</div>
+              <div class="info-row-text">${temple.address}</div>
+            </div>
+          </div>
+        ` : ""}
+
+        <div class="info-row">
+          <div class="info-row-icon">🌤️</div>
+          <div class="info-row-body">
+            <div class="info-row-label">현지 날씨</div>
+            <div class="info-row-text" id="detail-weather-text">날씨 확인 중...</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-row-icon">🚗</div>
+          <div class="info-row-body">
+            <div class="info-row-label">예상 이동시간</div>
+            <div class="info-row-text">자동차 약 ${estimateDriveMinutes(detail.distanceKm)}분 · 도보 약 ${estimateWalkMinutes(detail.distanceKm)}분 (직선거리 추정치)</div>
+          </div>
+        </div>
+
+        ${matchData.recommendedDates && matchData.recommendedDates.length ? `
+          <div class="info-row">
+            <div class="info-row-icon">📅</div>
+            <div class="info-row-body">
+              <div class="info-row-label">방문하면 좋은 날</div>
+              <div class="calendar-dates" style="margin-top:6px;">
+                ${matchData.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
+              </div>
+            </div>
+          </div>
+        ` : ""}
+      </div>
 
       <button type="button" class="share-btn" id="detail-share-btn">📤 이 사찰 공유하기</button>
 
