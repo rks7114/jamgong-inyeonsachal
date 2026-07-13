@@ -289,8 +289,10 @@ function matchTemples(request, templeDB) {
   return { distribution, weak, targetOhaeng, results: scored, recommendedDates, purposeGuide: PURPOSE_GUIDE[request.purpose] };
 }
 
-module.exports = { matchTemples, calculateOhaeng, findWeakOhaeng, scoreTemple, getRecommendedDates };
-
+function scoreTempleForCouple(t,cA,cB){const rA=scoreTemple(t,cA),rB=scoreTemple(t,cB),avg=(rA.score+rB.score)/2,syn=0.3*Math.sqrt(rA.score*rB.score)*0.12;return{temple:t,score:Math.round((avg+syn)*10)/10,detail:rA.detail,detailA:rA.detail,detailB:rB.detail,synergyCouple:Math.round(syn*10)/10};}
+function generateCoupleReason(r,tA,tB){const w=attachJosa(r.temple.name,["과","와"]),m=r.detailA.templeOhaeng===tA&&r.detailB.templeOhaeng===tB;if(m){const l=tA===tB?tA:`${tA}-${tB}`;return`두 분 모두에게 필요한 기운(${l})과 방향이 겹치는 ${w} 인연이 깊은 것으로 나옵니다.`;}return`${w} 두 분의 사주를 함께 고려했을 때 인연이 확인되는 사찰입니다.`;}
+function matchCoupleTemples(req,db){const{birthInputA:bA,birthInputB:bB,purpose:p,userLat:lat,userLng:lng,memberUnlocked:mu}=req,dA=calculateOhaeng(bA),dB=calculateOhaeng(bB),io=PURPOSE_OHAENG[p],tA=(dA[io]??0)<=2?io:findWeakOhaeng(dA).부족오행,tB=(dB[io]??0)<=2?io:findWeakOhaeng(dB).부족오행,cA={targetOhaeng:tA,purpose:p,userLat:lat,userLng:lng},cB={targetOhaeng:tB,purpose:p,userLat:lat,userLng:lng},vt=db.filter(t=>t.lat!=null&&t.lng!=null),sc=vt.map(t=>scoreTempleForCouple(t,cA,cB)).sort((a,b)=>b.score-a.score).slice(0,3).map(r=>({...r,reason:generateCoupleReason(r,tA,tB)})),cc=mu?15:3;return{distribution:dA,targetOhaeng:tA,distributionA:dA,distributionB:dB,targetA:tA,targetB:tB,results:sc,recommendedDates:getRecommendedDates(tA,45,cc),purposeGuide:PURPOSE_GUIDE[p]};}
+module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, scoreTemple, getRecommendedDates };
 // ── 테스트 실행 (이 파일을 직접 node로 실행할 때만 동작, require 시에는 실행 안 함) ─────────────────────
 if (require.main === module) {
 const sampleTempleDB = [
