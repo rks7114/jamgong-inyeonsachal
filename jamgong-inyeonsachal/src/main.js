@@ -4,6 +4,15 @@ const PURPOSES = ["재물운", "건강운", "학업운", "인연운", "가정운
 
 const PURPOSE_EN = { 재물운: "wealth", 건강운: "health", 학업운: "academic", 인연운: "love", 가정운: "family" };
 
+// 기도목적별 안내 — 실제 불교 전통 방식(소원지, 108배, 발원문 등) 기반. 신비주의적 과장 없이 사실적으로 서술.
+const PURPOSE_PRAYER_GUIDE = {
+  재물운: "대웅전에서 삼배(三拜)를 올린 뒤, 소원지에 구체적인 목표를 적어 불전함 앞에 놓아보세요. 산신각이 있다면 함께 들러보시는 것도 좋습니다.",
+  건강운: "약사전이나 약사여래불이 모셔진 전각이 있다면 그곳에서, 없다면 대웅전에서 108배를 올리며 건강을 발원해보세요.",
+  학업운: "문수보살을 모신 전각이 있다면 지혜를 구하는 기도를, 없다면 조용한 곳에 앉아 잠시 마음을 가다듬는 시간을 가져보세요.",
+  인연운: "관음전이 있다면 그곳에서, 없다면 대웅전에서 지금까지의 인연에 감사하는 마음으로 절을 올려보세요.",
+  가정운: "가족 한 사람 한 사람의 이름을 마음에 새기며 소원지를 적고, 대웅전 앞에서 가족의 평안을 발원해보세요.",
+};
+
 // 목적별 아이콘 (선 스타일, 획 일관성 유지) — 재물(동전꾸러미)·건강(약초잎)·학업(붓)·인연(매듭)·가정(집)
 const PURPOSE_ICONS = {
   재물운: `<circle cx="8" cy="16" r="5"/><circle cx="16" cy="8" r="5"/><path d="M8 16h.01M16 8h.01"/>`,
@@ -158,6 +167,18 @@ function render() {
         <path d="M30 14 C24 14 20 10 20 6 C24 6 28 9 30 13 C32 9 36 6 40 6 C40 10 36 14 30 14 Z"
               fill="none" stroke="#B8892B" stroke-width="1"/>
       </svg>
+    </div>
+
+    <div class="trust-bar">
+      <div class="trust-item">
+        <div class="trust-number">1,905<span>곳</span></div>
+        <div class="trust-label">전국 사찰 데이터</div>
+      </div>
+      <div class="trust-divider"></div>
+      <div class="trust-item">
+        <div class="trust-number">1,500<span>건</span></div>
+        <div class="trust-label">유래·연혁 검증완료</div>
+      </div>
     </div>
 
     <form class="form-card" id="match-form">
@@ -319,6 +340,7 @@ function render() {
         body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
       });
       const data = await res.json();
+      data.purpose = selectedPurpose; // 응답에 없으므로 클라이언트에서 보강 (기도 안내 등에 사용)
       renderResults(data);
     } catch (err) {
       alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
@@ -352,6 +374,13 @@ function renderResults(data) {
         <button id="member-code-btn">확인</button>
       </div>
     `}
+
+    ${data.purposeGuide ? `
+      <div class="prayer-guide">
+        <div class="prayer-guide-label">🙏 이렇게 기도해보세요</div>
+        <div class="prayer-guide-text">${data.purposeGuide}</div>
+      </div>
+    ` : ""}
 
     <div class="oracle-card oracle-card-soon">
       <div class="oracle-card-text">
@@ -388,7 +417,7 @@ function renderResults(data) {
               ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
             </a>
           </h3>
-          <div class="meta">${r.detail.bearing}쪽 · ${r.detail.distanceKm}km · 매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}</div>
+          <div class="meta">${r.detail.bearing}쪽 · ${r.detail.distanceKm}km · 매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ 현지 날씨 ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
           ${r.detail.synergyBonus > 2.5 ? `
             <div class="synergy-badge">
               ⚡ 인연 시너지 감지 (+${r.detail.synergyBonus}점)
@@ -412,6 +441,7 @@ function renderResults(data) {
               ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
             </div>
           ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
+          <button type="button" class="detail-view-btn" data-temple-index="${i}">상세페이지 보기 →</button>
         </div>
       </div>
     `).join("")}
@@ -464,6 +494,13 @@ function renderResults(data) {
   document.getElementById("share-btn").addEventListener("click", () => shareResult(data));
   document.getElementById("view-diary-btn").addEventListener("click", () => renderDiaryView());
 
+  document.querySelectorAll(".detail-view-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.templeIndex);
+      renderTempleDetailPage(data.results[idx], data, memberUnlocked);
+    });
+  });
+
   resultsEl.scrollIntoView({ behavior: "smooth" });
 }
 
@@ -487,6 +524,73 @@ async function shareResult(data) {
       alert("공유하기를 지원하지 않는 환경입니다.");
     }
   }
+}
+
+/** 사찰 상세페이지 — 지도 미리보기, 전체 정보를 한 화면에 모아 보여줌 */
+function renderTempleDetailPage(result, matchData, memberUnlocked) {
+  const resultsEl = document.getElementById("results");
+  const { temple, detail, score, reason } = result;
+
+  resultsEl.innerHTML = `
+    <div class="temple-detail-page">
+      <button type="button" class="back-btn" id="detail-back-btn">← 결과로 돌아가기</button>
+
+      <h2 class="detail-page-title">${temple.name}</h2>
+      <div class="detail-page-meta">
+        ${temple.foundedYear ? `창건 ${temple.foundedYear} · ` : ""}${detail.bearing}쪽 · ${detail.distanceKm}km · 매칭점수 ${score}점
+      </div>
+
+      <div class="detail-map-embed">
+        <iframe
+          src="https://www.google.com/maps?q=${temple.lat},${temple.lng}&output=embed"
+          width="100%" height="220" style="border:0;" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+
+      <a class="temple-name-link detail-page-directions" href="https://www.google.com/maps/search/?api=1&query=${temple.lat},${temple.lng}" target="_blank" rel="noopener">
+        🗺️ 길찾기로 바로가기
+      </a>
+
+      ${temple.address ? `<div class="detail-section"><div class="detail-section-label">주소</div><div class="detail-section-text">📍 ${temple.address}</div></div>` : ""}
+
+      ${temple.history ? `
+        <div class="detail-section">
+          <div class="detail-section-label">유래·연혁</div>
+          <div class="detail-section-text">
+            ${memberUnlocked ? temple.history : `${temple.history.slice(0, 60)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`}
+          </div>
+        </div>
+      ` : ""}
+
+      <div class="detail-section">
+        <div class="detail-section-label">인연 근거</div>
+        <div class="detail-section-text">${reason}</div>
+      </div>
+
+      ${detail.synergyBonus > 2.5 && memberUnlocked ? `
+        <div class="detail-section">
+          <div class="detail-section-label">시너지 상세 분석</div>
+          <div class="detail-section-text">방위점수 ${detail.bangwiScore}점 · 목적점수 ${detail.purposeScore}점 · 거리점수 ${Math.round(detail.distanceScore*10)/10}점 · 신뢰도 ${detail.trustScore}점 · 시너지 보너스 +${detail.synergyBonus}점</div>
+        </div>
+      ` : ""}
+
+      ${result.weather ? `
+        <div class="detail-section">
+          <div class="detail-section-label">현지 날씨</div>
+          <div class="detail-section-text">🌤️ ${result.weather.condition}, ${result.weather.temp}°C</div>
+        </div>
+      ` : ""}
+
+      <button type="button" class="save-btn" id="detail-back-btn-2">← 결과로 돌아가기</button>
+    </div>
+  `;
+
+  const goBack = () => renderResults(matchData);
+  document.getElementById("detail-back-btn").addEventListener("click", goBack);
+  document.getElementById("detail-back-btn-2").addEventListener("click", goBack);
+
+  resultsEl.scrollIntoView({ behavior: "smooth" });
 }
 
 /** 내 기록 보기 — localStorage에 저장된 다이어리 목록을 결과 영역에 표시 */

@@ -20,6 +20,15 @@ const PURPOSE_OHAENG = {
   가정운: "목",
 };
 
+// 기도목적별 구체적 행동 가이드 — "인연이 깊다"에서 그치지 않고 실제로 뭘 하면 좋은지 안내
+const PURPOSE_GUIDE = {
+  재물운: "대웅전에서 삼배 후, 산신각이 있다면 함께 들러보세요. 금(金) 기운을 상징하는 서쪽 방향을 바라보고 기도하면 좋습니다.",
+  건강운: "약사여래를 모신 전각이 있다면 그곳에서 기도하세요. 토(土) 기운은 중앙·안정을 뜻하니, 경내를 천천히 한 바퀴 도는 것도 도움이 됩니다.",
+  학업운: "문수보살을 모신 전각이나 탑 앞에서 기도하면 좋습니다. 수(水) 기운은 지혜를 뜻하니, 계곡이나 샘이 있다면 그 근처도 좋은 자리입니다.",
+  인연운: "관음전이 있다면 그곳에서 기도하세요. 화(火) 기운은 정열과 관계를 뜻하니, 해가 잘 드는 남향 자리에서 마음을 정리해보세요.",
+  가정운: "대웅전에서 가족 모두의 이름을 마음속으로 부르며 삼배하세요. 목(木) 기운은 성장·화합을 뜻하니, 경내의 나무 아래서 잠시 머무는 것도 좋습니다.",
+};
+
 const { Solar, Lunar } = require("lunar-javascript");
 
 // 한자 오행 → 한글 오행 변환
@@ -257,7 +266,7 @@ function matchTemples(request, templeDB) {
   const calendarCount = request.memberUnlocked ? 15 : 3;
   const recommendedDates = getRecommendedDates(targetOhaeng, 45, calendarCount);
 
-  return { distribution, weak, targetOhaeng, results: scored, recommendedDates };
+  return { distribution, weak, targetOhaeng, results: scored, recommendedDates, purposeGuide: PURPOSE_GUIDE[request.purpose] };
 }
 
 module.exports = { matchTemples, calculateOhaeng, findWeakOhaeng, scoreTemple, getRecommendedDates };

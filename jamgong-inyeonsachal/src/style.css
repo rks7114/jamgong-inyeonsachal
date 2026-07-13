@@ -211,6 +211,44 @@ body {
 }
 
 /* 한지 텍스처 — 미세한 섬유 질감을 점 패턴으로 표현 */
+.trust-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 16px 20px 8px;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+
+.trust-item { text-align: center; }
+
+.trust-number {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold-deep);
+}
+
+.trust-number span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.trust-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+}
+
+.trust-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--hairline);
+}
+
 .form-card {
   background-color: var(--paper-warm);
   background-image:
@@ -630,6 +668,112 @@ body {
 
 /* ── 결과 영역 ────────────────────────────── */
 .results { padding: 8px 20px 60px; }
+
+.detail-view-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  color: var(--gold-deep);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.detail-view-btn:hover { border-color: var(--gold); background: rgba(184,137,43,0.05); }
+
+.temple-detail-page { padding: 4px 0 20px; animation: fadeUp 0.4s ease both; }
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+}
+.back-btn:hover { color: var(--gold-deep); }
+
+.detail-page-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 6px;
+}
+
+.detail-page-meta {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.detail-map-embed {
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  margin-bottom: 12px;
+  box-shadow: 0 4px 14px rgba(16,27,44,0.08);
+}
+
+.detail-page-directions {
+  display: block;
+  text-align: center;
+  background: var(--ink);
+  color: var(--gold-bright) !important;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.detail-section {
+  padding: 14px 0;
+  border-top: 1px dashed var(--hairline);
+}
+
+.detail-section-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--gold-deep);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.detail-section-text {
+  font-size: 14.5px;
+  color: #3A3226;
+  line-height: 1.6;
+}
+
+.prayer-guide {
+  background: linear-gradient(135deg, #F8F2E4, #EFE3C8);
+  border: 1px solid rgba(184,137,43,0.35);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+
+.prayer-guide-label {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  margin-bottom: 6px;
+}
+
+.prayer-guide-text {
+  font-size: 14px;
+  color: #3A3226;
+  line-height: 1.6;
+}
 
 .member-banner {
   text-align: center;
