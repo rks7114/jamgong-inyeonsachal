@@ -85,6 +85,10 @@ function render() {
       <div class="corner-bracket br"></div>
       <div class="field">
         <label>생년월일시</label>
+        <div class="calendar-toggle">
+          <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
+          <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
+        </div>
         <div class="birth-select-grid">
           <select id="birth-year" aria-label="연도">
             <option value="">연도</option>
@@ -103,6 +107,9 @@ function render() {
             ${Array.from({length: 24}, (_, i) => i).map(h => `<option value="${h}">${String(h).padStart(2,"0")}시</option>`).join("")}
           </select>
         </div>
+        <label class="leap-month-check hidden" id="leap-month-wrap">
+          <input type="checkbox" id="is-leap-month" /> 윤달(閏月) 생일입니다
+        </label>
       </div>
 
       <div class="field">
@@ -137,6 +144,16 @@ function render() {
     });
   });
 
+  let selectedCalendar = "solar";
+  document.querySelectorAll(".calendar-toggle-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".calendar-toggle-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedCalendar = btn.dataset.calendar;
+      document.getElementById("leap-month-wrap").classList.toggle("hidden", selectedCalendar !== "lunar");
+    });
+  });
+
   document.getElementById("match-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -144,14 +161,22 @@ function render() {
     const month = document.getElementById("birth-month").value;
     const day = document.getElementById("birth-day").value;
     const hour = document.getElementById("birth-hour").value;
+    const isLeapMonth = document.getElementById("is-leap-month")?.checked || false;
 
     if (!year || !month || !day) {
       alert("생년월일(연도·월·일)을 모두 선택해주세요.");
       return;
     }
 
-    const hh = hour !== "" ? String(hour).padStart(2, "0") : "12"; // 시간 모름이면 정오로 기본 처리
-    const birth = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T${hh}:00:00`;
+    const birthInput = {
+      calendarType: selectedCalendar, // "solar" | "lunar"
+      year: parseInt(year),
+      month: parseInt(month),
+      day: parseInt(day),
+      hour: hour !== "" ? parseInt(hour) : 12, // 시간 모름이면 정오로 기본 처리
+      minute: 0,
+      isLeapMonth,
+    };
 
     const submitBtn = e.target.querySelector(".submit-btn");
     submitBtn.disabled = true;
@@ -168,7 +193,7 @@ function render() {
       const res = await fetch("/api/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ birthDateTime: birth, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
+        body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
       });
       const data = await res.json();
       renderResults(data);

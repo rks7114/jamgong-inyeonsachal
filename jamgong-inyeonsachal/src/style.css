@@ -194,6 +194,45 @@ body {
   text-transform: uppercase;
 }
 
+.calendar-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.calendar-toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #D9CFB8;
+  background: #fff;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  color: var(--ink);
+  transition: all 0.15s ease;
+}
+
+.calendar-toggle-btn.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+.leap-month-check {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  font-size: 13.5px;
+  color: var(--gold-deep);
+  cursor: pointer;
+}
+
+.leap-month-check input { width: 16px; height: 16px; cursor: pointer; }
+
 .birth-select-grid {
   display: grid;
   grid-template-columns: 1.3fr 1fr 1fr 1.1fr;
