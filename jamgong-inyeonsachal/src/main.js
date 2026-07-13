@@ -282,7 +282,16 @@ function renderResults(data) {
     <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
     <button class="diary-link-btn" id="view-diary-btn">📖 내 기록 보기</button>
 
-    <div class="disclaimer">${data.disclaimer}<br/><span class="patent-footer">본 서비스의 인연 시너지 산출 로직은 출원인 박충호의 특허출원기술(비가산 시너지 기반 지수 산출 방식)과 동일한 수학적 구조를 적용했습니다. 관련 특허는 현재 출원·심사 중이며, 등록 완료된 특허가 아닙니다.</span></div>
+    <div class="notice-box">
+      <div class="notice-item">
+        <span class="notice-icon">ℹ️</span>
+        <span>${data.disclaimer}</span>
+      </div>
+      <div class="notice-item notice-patent">
+        <span class="notice-icon">⚖️</span>
+        <span>본 서비스의 인연 시너지 산출 로직은 특허출원기술(비가산 시너지 기반 지수 산출 방식)과 동일한 수학적 구조를 적용했습니다. <span class="patent-status-tag">특허출원 중</span></span>
+      </div>
+    </div>
   `;
 
   const codeInput = document.getElementById("member-code-input");

@@ -351,13 +351,6 @@ body {
   font-weight: 500;
 }
 
-.patent-footer {
-  display: block;
-  margin-top: 8px;
-  font-size: 14px;
-  color: var(--text-muted);
-  opacity: 0.85;
-}
 
 .calendar-more-hint {
   margin-top: 10px;
@@ -742,14 +735,53 @@ body {
 .diary-entry-ohaeng { font-family: var(--font-display); font-weight: 700; color: var(--red); margin-bottom: 4px; }
 .diary-entry-temples { font-size: 15.5px; color: var(--ink); }
 
-.disclaimer {
+.notice-box {
+  margin-top: 24px;
+  background: #FFFDF8;
+  border: 1.5px solid var(--gold);
+  border-radius: 6px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 16px rgba(184,137,43,0.12);
+}
+
+.notice-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   font-size: 14.5px;
-  color: var(--text-muted);
-  text-align: center;
-  margin-top: 20px;
-  padding: 16px;
-  border-top: 1px solid var(--hairline);
+  color: #3A3226;
   line-height: 1.6;
+  font-weight: 500;
+}
+
+.notice-item + .notice-item {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--hairline);
+}
+
+.notice-icon {
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.notice-patent {
+  font-size: 13.5px;
+  color: #5A5142;
+  font-weight: 400;
+}
+
+.patent-status-tag {
+  display: inline-block;
+  background: rgba(184,137,43,0.15);
+  color: var(--gold-deep);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--gold);
+  white-space: nowrap;
 }
 
 .hidden { display: none; }
