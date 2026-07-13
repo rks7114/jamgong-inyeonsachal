@@ -171,11 +171,13 @@ function render() {
 
     <div class="trust-bar">
       <div class="trust-item">
+        <div class="trust-icon">🏯</div>
         <div class="trust-number">1,905<span>곳</span></div>
         <div class="trust-label">전국 사찰 데이터</div>
       </div>
       <div class="trust-divider"></div>
       <div class="trust-item">
+        <div class="trust-icon">📜</div>
         <div class="trust-number">1,500<span>건</span></div>
         <div class="trust-label">유래·연혁 검증완료</div>
       </div>
@@ -526,6 +528,27 @@ async function shareResult(data) {
   }
 }
 
+/** 특정 사찰 상세페이지 단독 공유 */
+async function shareTemple(temple) {
+  const shareText = `[잼공인연사찰] "${temple.name}" — 나와 인연이 닿는 절이래요. 🙏`;
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${temple.lat},${temple.lng}`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: `${temple.name} — 잼공인연사찰`, text: shareText, url: mapUrl });
+    } catch (e) {
+      // 취소 — 무시
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(`${shareText} ${mapUrl}`);
+      alert("사찰 정보가 클립보드에 복사되었습니다.");
+    } catch (e) {
+      alert("공유하기를 지원하지 않는 환경입니다.");
+    }
+  }
+}
+
 /** 사찰 상세페이지 — 지도 미리보기, 전체 정보를 한 화면에 모아 보여줌 */
 function renderTempleDetailPage(result, matchData, memberUnlocked) {
   const resultsEl = document.getElementById("results");
@@ -568,17 +591,32 @@ function renderTempleDetailPage(result, matchData, memberUnlocked) {
         <div class="detail-section-text">${reason}</div>
       </div>
 
-      ${detail.synergyBonus > 2.5 && memberUnlocked ? `
-        <div class="detail-section">
-          <div class="detail-section-label">시너지 상세 분석</div>
-          <div class="detail-section-text">방위점수 ${detail.bangwiScore}점 · 목적점수 ${detail.purposeScore}점 · 거리점수 ${Math.round(detail.distanceScore*10)/10}점 · 신뢰도 ${detail.trustScore}점 · 시너지 보너스 +${detail.synergyBonus}점</div>
+      <div class="detail-section">
+        <div class="detail-section-label">인연 시너지 분석</div>
+        <div class="detail-section-text">
+          ${memberUnlocked
+            ? `방위점수 ${detail.bangwiScore}점 · 목적점수 ${detail.purposeScore}점 · 거리점수 ${Math.round(detail.distanceScore*10)/10}점 · 신뢰도 ${detail.trustScore}점${detail.synergyBonus > 0 ? ` · 시너지 보너스 +${detail.synergyBonus}점` : ""}`
+            : `종합 매칭점수 ${score}점 <span class="member-lock-tag">🔒 세부 점수 분석은 멤버 전용</span>`}
         </div>
-      ` : ""}
+      </div>
 
-      ${result.weather ? `
-        <div class="detail-section">
-          <div class="detail-section-label">현지 날씨</div>
-          <div class="detail-section-text">🌤️ ${result.weather.condition}, ${result.weather.temp}°C</div>
+      <div class="detail-section">
+        <div class="detail-section-label">현지 날씨</div>
+        <div class="detail-section-text" id="detail-weather-text">날씨 확인 중...</div>
+      </div>
+
+      <button type="button" class="share-btn" id="detail-share-btn">📤 이 사찰 공유하기</button>
+
+      ${matchData.results.length > 1 ? `
+        <div class="detail-other-temples">
+          <div class="detail-section-label">다른 매칭 사찰</div>
+          <div class="detail-other-list">
+            ${matchData.results.map((r, i) => `
+              <button type="button" class="detail-other-item${r.temple.name === temple.name ? " current" : ""}" data-switch-index="${i}">
+                ${i + 1}위 ${r.temple.name}
+              </button>
+            `).join("")}
+          </div>
         </div>
       ` : ""}
 
@@ -589,6 +627,27 @@ function renderTempleDetailPage(result, matchData, memberUnlocked) {
   const goBack = () => renderResults(matchData);
   document.getElementById("detail-back-btn").addEventListener("click", goBack);
   document.getElementById("detail-back-btn-2").addEventListener("click", goBack);
+  document.getElementById("detail-share-btn").addEventListener("click", () => shareTemple(temple));
+
+  document.querySelectorAll(".detail-other-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.switchIndex);
+      renderTempleDetailPage(matchData.results[idx], matchData, memberUnlocked);
+    });
+  });
+
+  // 순위와 상관없이 이 사찰의 날씨를 온디맨드로 조회
+  fetch(`/api/weather?lat=${temple.lat}&lng=${temple.lng}`)
+    .then((r) => r.json())
+    .then((w) => {
+      const el = document.getElementById("detail-weather-text");
+      if (!el) return;
+      el.textContent = w.success ? `🌤️ ${w.condition}, ${w.temp}°C` : "날씨 정보를 불러오지 못했습니다.";
+    })
+    .catch(() => {
+      const el = document.getElementById("detail-weather-text");
+      if (el) el.textContent = "날씨 정보를 불러오지 못했습니다.";
+    });
 
   resultsEl.scrollIntoView({ behavior: "smooth" });
 }

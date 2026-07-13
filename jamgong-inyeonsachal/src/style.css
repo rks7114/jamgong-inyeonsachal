@@ -215,38 +215,52 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  padding: 16px 20px 8px;
+  gap: 0;
+  margin: 0 20px;
+  padding: 14px 10px;
+  background: linear-gradient(135deg, #1B2A41 0%, #0C1522 100%);
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 6px 16px rgba(16,27,44,0.25);
   animation: fadeUp 0.6s ease 0.1s both;
 }
 
-.trust-item { text-align: center; }
+.trust-item {
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.trust-icon { font-size: 18px; margin-bottom: 2px; }
 
 .trust-number {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
-  color: var(--gold-deep);
+  color: var(--gold-bright);
+  text-shadow: 0 0 12px rgba(226,186,108,0.4);
 }
 
 .trust-number span {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
-  color: var(--text-muted);
+  color: rgba(226,186,108,0.7);
   margin-left: 2px;
 }
 
 .trust-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--text-on-ink);
+  opacity: 0.75;
   letter-spacing: 0.01em;
 }
 
 .trust-divider {
   width: 1px;
-  height: 26px;
-  background: var(--hairline);
+  height: 34px;
+  background: rgba(226,186,108,0.25);
 }
 
 .form-card {
@@ -668,6 +682,41 @@ body {
 
 /* ── 결과 영역 ────────────────────────────── */
 .results { padding: 8px 20px 60px; }
+
+.detail-other-temples {
+  margin: 20px 0;
+  padding-top: 14px;
+  border-top: 1px dashed var(--hairline);
+}
+
+.detail-other-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.detail-other-item {
+  padding: 8px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 20px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.detail-other-item:hover { border-color: var(--gold); }
+
+.detail-other-item.current {
+  background: var(--ink);
+  color: var(--gold-bright);
+  border-color: var(--ink);
+  font-weight: 700;
+  cursor: default;
+}
 
 .detail-view-btn {
   margin-top: 12px;
