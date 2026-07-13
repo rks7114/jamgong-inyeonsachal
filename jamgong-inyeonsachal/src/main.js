@@ -188,8 +188,14 @@ function render() {
       <svg class="corner-cloud tr" viewBox="0 0 40 40"><path d="M36 20 Q36 12 28 12 Q27 6 20 7 Q15 3 10 8 Q4 8 4 15" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
       <svg class="corner-cloud bl" viewBox="0 0 40 40"><path d="M4 20 Q4 28 12 28 Q13 34 20 33 Q25 37 30 32 Q36 32 36 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
       <svg class="corner-cloud br" viewBox="0 0 40 40"><path d="M36 20 Q36 28 28 28 Q27 34 20 33 Q15 37 10 32 Q4 32 4 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
+
+      <div class="mode-toggle-wrap">
+        <button type="button" class="mode-toggle-btn active" data-mode="solo">🙏 혼자 찾기</button>
+        <button type="button" class="mode-toggle-btn" data-mode="couple">💑 둘이 찾기</button>
+      </div>
+
       <div class="field">
-        <label>생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
+        <label id="birth-label-a">생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
         <div class="calendar-toggle">
           <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
           <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
@@ -225,6 +231,40 @@ function render() {
         </label>
       </div>
 
+      <div class="field hidden" id="birth-b-field">
+        <label>상대방 생년월일시</label>
+        <div class="calendar-toggle">
+          <button type="button" class="calendar-toggle-btn active" data-calendar-b="solar">양력</button>
+          <button type="button" class="calendar-toggle-btn" data-calendar-b="lunar">음력</button>
+        </div>
+        <div class="birth-select-grid segmented">
+          <div class="segment">
+            <select id="birth-year-b" aria-label="상대방 연도">
+              <option value="">연도</option>
+              ${Array.from({length: 106}, (_, i) => 2025 - i).map(y => `<option value="${y}">${y}년</option>`).join("")}
+            </select>
+          </div>
+          <div class="segment">
+            <select id="birth-month-b" aria-label="상대방 월">
+              <option value="">월</option>
+              ${Array.from({length: 12}, (_, i) => i + 1).map(m => `<option value="${m}">${m}월</option>`).join("")}
+            </select>
+          </div>
+          <div class="segment">
+            <select id="birth-day-b" aria-label="상대방 일">
+              <option value="">일</option>
+              ${Array.from({length: 31}, (_, i) => i + 1).map(d => `<option value="${d}">${d}일</option>`).join("")}
+            </select>
+          </div>
+          <div class="segment">
+            <select id="birth-hour-b" aria-label="상대방 시">
+              <option value="">시간 모름</option>
+              ${Array.from({length: 24}, (_, i) => i).map(h => `<option value="${h}">${String(h).padStart(2,"0")}시</option>`).join("")}
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div class="field">
         <label>기도 목적 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">지금 가장 채우고 싶은 기운을 골라주세요. 사주상 부족한 오행과 함께 계산에 반영됩니다.</span></span></label>
         <div class="purpose-grid" id="purpose-grid">
@@ -245,7 +285,7 @@ function render() {
         </div>
       </div>
 
-      <button type="submit" class="submit-btn">인연사찰 찾기</button>
+      <button type="submit" class="submit-btn" id="submit-btn">인연사찰 찾기</button>
     </form>
 
     <section class="results hidden" id="results"></section>
@@ -261,12 +301,42 @@ function render() {
   });
 
   let selectedCalendar = "solar";
-  document.querySelectorAll(".calendar-toggle-btn").forEach((btn) => {
+  document.querySelectorAll("[data-calendar]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".calendar-toggle-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll("[data-calendar]").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       selectedCalendar = btn.dataset.calendar;
       document.getElementById("leap-month-wrap").classList.toggle("hidden", selectedCalendar !== "lunar");
+    });
+  });
+
+  let selectedCalendarB = "solar";
+  document.querySelectorAll("[data-calendar-b]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-calendar-b]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedCalendarB = btn.dataset.calendarB;
+    });
+  });
+
+  let matchMode = "solo";
+  document.querySelectorAll(".mode-toggle-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".mode-toggle-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      matchMode = btn.dataset.mode;
+      const birthBField = document.getElementById("birth-b-field");
+      const labelA = document.getElementById("birth-label-a");
+      const submitBtn = document.getElementById("submit-btn");
+      if (matchMode === "couple") {
+        birthBField.classList.remove("hidden");
+        labelA.textContent = "내 생년월일시";
+        submitBtn.textContent = "함께 인연사찰 찾기";
+      } else {
+        birthBField.classList.add("hidden");
+        labelA.innerHTML = `생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span>`;
+        submitBtn.textContent = "인연사찰 찾기";
+      }
     });
   });
 
@@ -285,19 +355,28 @@ function render() {
     }
 
     const birthInput = {
-      calendarType: selectedCalendar, // "solar" | "lunar"
+      calendarType: selectedCalendar,
       year: parseInt(year),
       month: parseInt(month),
       day: parseInt(day),
-      hour: hour !== "" ? parseInt(hour) : 12, // 시간 모름이면 정오로 기본 처리
+      hour: hour !== "" ? parseInt(hour) : 12,
       minute: 0,
       isLeapMonth,
     };
 
-    const submitBtn = e.target.querySelector(".submit-btn");
+    if (matchMode === "couple") {
+      const yearB = document.getElementById("birth-year-b").value;
+      const monthB = document.getElementById("birth-month-b").value;
+      const dayB = document.getElementById("birth-day-b").value;
+      if (!yearB || !monthB || !dayB) {
+        alert("상대방 생년월일(연도·월·일)을 모두 선택해주세요.");
+        return;
+      }
+    }
+
+    const submitBtn = document.getElementById("submit-btn");
     submitBtn.disabled = true;
 
-    // 사용자가 위치를 직접 입력했으면 그 주소를 우선 지오코딩, 비어있으면 자동감지
     const manualLocation = document.getElementById("location").value.trim();
     let userLat, userLng;
 
@@ -336,21 +415,144 @@ function render() {
     submitBtn.textContent = "인연을 살피는 중...";
 
     try {
-      const res = await fetch("/api/match", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
-      });
-      const data = await res.json();
-      data.purpose = selectedPurpose; // 응답에 없으므로 클라이언트에서 보강 (기도 안내 등에 사용)
-      renderResults(data);
+      if (matchMode === "couple") {
+        const yearB = document.getElementById("birth-year-b").value;
+        const monthB = document.getElementById("birth-month-b").value;
+        const dayB = document.getElementById("birth-day-b").value;
+        const hourB = document.getElementById("birth-hour-b").value;
+        const birthInputB = {
+          calendarType: selectedCalendarB,
+          year: parseInt(yearB),
+          month: parseInt(monthB),
+          day: parseInt(dayB),
+          hour: hourB !== "" ? parseInt(hourB) : 12,
+          minute: 0,
+          isLeapMonth: false,
+        };
+        const res = await fetch("/api/match-couple", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ birthInputA: birthInput, birthInputB, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
+        });
+        const data = await res.json();
+        data.purpose = selectedPurpose;
+        renderCoupleResults(data);
+      } else {
+        const res = await fetch("/api/match", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
+        });
+        const data = await res.json();
+        data.purpose = selectedPurpose;
+        renderResults(data);
+      }
     } catch (err) {
       alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = "인연사찰 찾기";
+      submitBtn.textContent = matchMode === "couple" ? "함께 인연사찰 찾기" : "인연사찰 찾기";
     }
   });
+}
+
+function renderCoupleResults(data) {
+  const resultsEl = document.getElementById("results");
+  resultsEl.classList.remove("hidden");
+  const memberUnlocked = isMember();
+
+  resultsEl.innerHTML = `
+    <div class="results-summary">
+      <div class="label">두 분의 함께 기운은</div>
+      <div class="ohaeng-value">💑 커플 인연사찰 매칭</div>
+      <div class="ohaeng-breakdown">
+        나: ${Object.entries(data.distributionA || {}).map(([k,v]) => `${k} ${v}`).join(" · ")} (${data.targetA || ""})
+        &nbsp;|&nbsp;
+        상대: ${Object.entries(data.distributionB || {}).map(([k,v]) => `${k} ${v}`).join(" · ")} (${data.targetB || ""})
+      </div>
+    </div>
+
+    ${memberUnlocked ? `
+      <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
+    ` : `
+      <div class="member-unlock">
+        <input type="text" id="member-code-input" placeholder="멤버십 코드 입력 (선택)" />
+        <button id="member-code-btn">확인</button>
+      </div>
+    `}
+
+    ${data.purposeGuide ? `
+      <div class="prayer-guide">
+        <div class="prayer-guide-label">🙏 함께 이렇게 기도해보세요</div>
+        <div class="prayer-guide-text">
+          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
+        </div>
+      </div>
+    ` : ""}
+
+    ${(data.results || []).map((r, i) => `
+      <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail?.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
+        <div class="temple-rank">${i + 1}</div>
+        <div class="temple-body">
+          <h3>
+            <a class="temple-name-link" href="https://www.google.com/maps/search/?api=1&query=${r.temple.lat},${r.temple.lng}" target="_blank" rel="noopener">
+              ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
+            </a>
+          </h3>
+          <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
+          ${r.synergyCouple > 0 ? `<div class="synergy-badge">💑 커플 시너지 +${r.synergyCouple}점</div>` : ""}
+          <div class="reason">${r.reason}</div>
+          ${r.temple.history ? `
+            <div class="temple-detail">
+              <div class="temple-detail-label">유래·연혁</div>
+              <div class="temple-detail-text">
+                ${memberUnlocked
+                  ? r.temple.history
+                  : (r.temple.history.length > 35
+                      ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`
+                      : r.temple.history)}
+              </div>
+              ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
+            </div>
+          ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
+        </div>
+      </div>
+    `).join("")}
+
+    ${data.recommendedDates && data.recommendedDates.length ? `
+      <div class="calendar-card">
+        <div class="calendar-title">함께 방문하면 좋은 날${memberUnlocked ? " (멤버 확장 · 45일 이내)" : ""}</div>
+        <div class="calendar-dates">
+          ${data.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
+        </div>
+        ${!memberUnlocked ? `<div class="calendar-more-hint">🔒 멤버는 더 많은 추천일을 볼 수 있습니다</div>` : ""}
+      </div>
+    ` : ""}
+
+    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
+
+    <div class="notice-box">
+      <div class="notice-item">
+        <span class="notice-icon">ℹ️</span>
+        <span>${data.disclaimer || "본 결과는 사주 오행 이론을 바탕으로 한 참고 정보입니다."}</span>
+      </div>
+    </div>
+  `;
+
+  const codeInput = document.getElementById("member-code-input");
+  const codeBtn = document.getElementById("member-code-btn");
+  if (codeBtn) {
+    codeBtn.addEventListener("click", () => {
+      if (tryUnlockMembership(codeInput.value)) {
+        renderCoupleResults(data);
+      } else {
+        alert("코드가 올바르지 않습니다. 잼공스토리 채널 멤버십 공지를 확인해주세요.");
+      }
+    });
+  }
+
+  document.getElementById("share-btn").addEventListener("click", () => shareResult(data));
+  resultsEl.scrollIntoView({ behavior: "smooth" });
 }
 
 function renderResults(data) {
