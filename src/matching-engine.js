@@ -20,22 +20,48 @@ const PURPOSE_OHAENG = {
   가정운: "목",
 };
 
-const { Solar } = require("lunar-javascript");
+const { Solar, Lunar } = require("lunar-javascript");
 
 // 한자 오행 → 한글 오행 변환
 const HANJA_OHAENG = { 木: "목", 火: "화", 土: "토", 金: "금", 水: "수" };
 
 /**
- * 생년월일시 → 실제 만세력 기반 사주 팔자 산출
+ * 생년월일시 → 실제 만세력 기반 사주 팔자 산출 (양력/음력 모두 지원)
  * lunar-javascript(6tail) 사용 — 절기(節氣) 기준 정밀 계산, 국내 명리 계산과 동일 방식
- * birthDateTime: ISO 문자열 "YYYY-MM-DDTHH:mm:ss" (양력 기준 입력)
+ *
+ * 두 가지 입력 형태를 모두 받는다 (하위 호환 유지):
+ * 1) 문자열: "YYYY-MM-DDTHH:mm:ss" (양력 기준, 기존 방식)
+ * 2) 객체: { calendarType: "solar"|"lunar", year, month, day, hour, minute, isLeapMonth }
  */
-function getEightChar(birthDateTime) {
-  const d = new Date(birthDateTime);
-  const solar = Solar.fromYmdHms(
-    d.getFullYear(), d.getMonth() + 1, d.getDate(),
-    d.getHours(), d.getMinutes(), d.getSeconds() || 0
-  );
+function getEightChar(birthInput) {
+  // 1) 문자열(기존 방식, 양력) — 하위 호환
+  if (typeof birthInput === "string") {
+    const d = new Date(birthInput);
+    const solar = Solar.fromYmdHms(
+      d.getFullYear(), d.getMonth() + 1, d.getDate(),
+      d.getHours(), d.getMinutes(), d.getSeconds() || 0
+    );
+    return solar.getLunar().getEightChar();
+  }
+
+  // 2) 객체 — 양력/음력 분기
+  const { calendarType, year, month, day, hour = 12, minute = 0, isLeapMonth = false } = birthInput;
+
+  if (calendarType === "lunar") {
+    // 음력 직접 입력 — 윤달은 월을 음수로 표기하는 라이브러리 규약을 따름
+    // Lunar.fromYmd로 날짜(연월일)만 먼저 확정 → 대응 양력 날짜를 구한 뒤
+    // 그 양력 날짜에 정확한 시각을 얹어 재계산 (시각이 포함된 정밀 계산 경로 재사용)
+    const lunarDateOnly = Lunar.fromYmd(year, isLeapMonth ? -month : month, day);
+    const correspondingSolar = lunarDateOnly.getSolar();
+    const preciseSolar = Solar.fromYmdHms(
+      correspondingSolar.getYear(), correspondingSolar.getMonth(), correspondingSolar.getDay(),
+      hour, minute, 0
+    );
+    return preciseSolar.getLunar().getEightChar();
+  }
+
+  // 기본: 양력
+  const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0);
   return solar.getLunar().getEightChar();
 }
 
@@ -207,7 +233,7 @@ function generateReason(result, targetOhaeng, purpose) {
 
 /** 메인 매칭 함수 */
 function matchTemples(request, templeDB) {
-  const distribution = calculateOhaeng(request.birthDateTime);
+  const distribution = calculateOhaeng(request.birthInput ?? request.birthDateTime);
   const weak = findWeakOhaeng(distribution);
   const targetOhaeng = PURPOSE_OHAENG[request.purpose] || weak.부족오행;
 

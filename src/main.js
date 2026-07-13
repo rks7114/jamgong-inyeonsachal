@@ -63,28 +63,67 @@ function detectUserLocation() {
 function render() {
   app.innerHTML = `
     <section class="hero">
+      <div class="hero-stars">
+        <span class="star" style="top:15%; left:12%;"></span>
+        <span class="star" style="top:28%; left:78%;"></span>
+        <span class="star" style="top:8%; left:55%;"></span>
+        <span class="star" style="top:38%; left:35%;"></span>
+        <span class="star" style="top:20%; left:88%;"></span>
+      </div>
       <div class="hero-moon"></div>
       <div class="hero-content">
-        <div class="hero-seal">卍</div>
+        <div class="hero-seal">
+          <svg viewBox="0 0 40 40" width="26" height="26">
+            <path d="M20 6 C16 10 12 14 12 20 C12 26 16 30 20 34 C24 30 28 26 28 20 C28 14 24 10 20 6 Z
+                     M20 12 C22 14 24 17 24 20 C24 23 22 26 20 28 C18 26 16 23 16 20 C16 17 18 14 20 12 Z"
+                  fill="none" stroke="#E2BA6C" stroke-width="1.2"/>
+          </svg>
+        </div>
         <div class="eyebrow">잼공인연사찰</div>
         <h1>나와 인연이 닿는<br/>절을 찾아드립니다</h1>
         <p>생년월일시의 오행 기운을 바탕으로, 지금 이 순간 당신에게 필요한 사찰을 안내합니다.</p>
       </div>
-      <svg class="hero-skyline" viewBox="0 0 400 64" preserveAspectRatio="none">
-        <path d="M0 64 L0 40 L30 40 L38 20 L46 40 L70 40 L70 30 L80 30 L80 40 L110 40 L120 15 L130 40
-                 L160 40 L168 25 L172 25 L172 40 L200 40 L212 8 L224 40
-                 L255 40 L263 25 L267 25 L267 40 L300 40 L310 22 L320 40
-                 L350 40 L358 32 L366 32 L366 40 L400 40 L400 64 Z"
-              fill="#101B2C" opacity="0.9"/>
+      <!-- 사찰 전각 실루엣: 처마 곡선이 있는 2층 대웅전 + 좌우 탑 -->
+      <svg class="hero-skyline" viewBox="0 0 400 90" preserveAspectRatio="none">
+        <!-- 원경 산 능선 (은은하게) -->
+        <path d="M0 90 L0 55 Q40 42 80 52 Q130 38 180 50 Q230 36 280 48 Q330 40 400 50 L400 90 Z"
+              fill="#0C1522" opacity="0.55"/>
+        <!-- 좌측 작은 탑 -->
+        <path d="M55 90 L55 60 L58 60 L58 55 L61 55 L61 50 L64 50 L64 45 L67 50 L70 50 L70 55 L73 55 L73 60 L76 60 L76 90 Z"
+              fill="#0C1522"/>
+        <!-- 우측 작은 탑 -->
+        <path d="M324 90 L324 60 L327 60 L327 55 L330 55 L330 50 L333 50 L333 45 L336 50 L339 50 L339 55 L342 55 L342 60 L345 60 L345 90 Z"
+              fill="#0C1522"/>
+        <!-- 중앙 대웅전: 처마가 양끝으로 솟은 2층 지붕 -->
+        <path d="M120 90 L120 68
+                 Q120 66 122 66 L138 66 L138 58
+                 Q100 56 95 44 Q98 52 138 50 L138 44 L262 44 L262 50
+                 Q302 52 305 44 Q300 56 262 58 L262 66 L278 66
+                 Q280 66 280 68 L280 90 Z"
+              fill="#101B2C"/>
+        <!-- 처마 끝 살짝 들린 디테일 -->
+        <path d="M95 44 Q92 40 88 42 Q90 44 95 44 Z M305 44 Q308 40 312 42 Q310 44 305 44 Z"
+              fill="#101B2C"/>
+        <!-- 문 -->
+        <rect x="192" y="72" width="16" height="18" fill="#0C1522"/>
       </svg>
     </section>
-    <div class="dancheong-divider"></div>
+    <div class="dancheong-divider">
+      <svg viewBox="0 0 60 16" class="lotus-mini">
+        <path d="M30 14 C24 14 20 10 20 6 C24 6 28 9 30 13 C32 9 36 6 40 6 C40 10 36 14 30 14 Z"
+              fill="none" stroke="#B8892B" stroke-width="1"/>
+      </svg>
+    </div>
 
     <form class="form-card" id="match-form">
       <div class="corner-bracket tl"></div>
       <div class="corner-bracket br"></div>
       <div class="field">
-        <label>생년월일시</label>
+        <label>생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
+        <div class="calendar-toggle">
+          <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
+          <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
+        </div>
         <div class="birth-select-grid">
           <select id="birth-year" aria-label="연도">
             <option value="">연도</option>
@@ -103,10 +142,13 @@ function render() {
             ${Array.from({length: 24}, (_, i) => i).map(h => `<option value="${h}">${String(h).padStart(2,"0")}시</option>`).join("")}
           </select>
         </div>
+        <label class="leap-month-check hidden" id="leap-month-wrap">
+          <input type="checkbox" id="is-leap-month" /> 윤달(閏月) 생일입니다
+        </label>
       </div>
 
       <div class="field">
-        <label>기도 목적</label>
+        <label>기도 목적 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">지금 가장 채우고 싶은 기운을 골라주세요. 사주상 부족한 오행과 함께 계산에 반영됩니다.</span></span></label>
         <div class="purpose-grid" id="purpose-grid">
           ${PURPOSES.map((p, i) => `
             <div class="purpose-chip${i === 0 ? " active" : ""}" data-purpose="${p}">
@@ -118,8 +160,10 @@ function render() {
       </div>
 
       <div class="field">
-        <label for="location">현재 위치 (예: 서울특별시청)</label>
-        <input type="text" id="location" placeholder="위치 입력 또는 자동 감지" />
+        <label for="location">현재 위치 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사찰까지의 방위·거리 계산 기준입니다. 비워두시면 브라우저 위치를 자동 감지하고, 직접 입력하시면 그 주소를 기준으로 계산합니다.</span></span></label>
+        <div class="location-input-wrap">
+          <input type="text" id="location" placeholder="위치 입력 또는 자동 감지" />
+        </div>
       </div>
 
       <button type="submit" class="submit-btn">인연사찰 찾기</button>
@@ -137,6 +181,16 @@ function render() {
     });
   });
 
+  let selectedCalendar = "solar";
+  document.querySelectorAll(".calendar-toggle-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".calendar-toggle-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedCalendar = btn.dataset.calendar;
+      document.getElementById("leap-month-wrap").classList.toggle("hidden", selectedCalendar !== "lunar");
+    });
+  });
+
   document.getElementById("match-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -144,23 +198,61 @@ function render() {
     const month = document.getElementById("birth-month").value;
     const day = document.getElementById("birth-day").value;
     const hour = document.getElementById("birth-hour").value;
+    const isLeapMonth = document.getElementById("is-leap-month")?.checked || false;
 
     if (!year || !month || !day) {
       alert("생년월일(연도·월·일)을 모두 선택해주세요.");
       return;
     }
 
-    const hh = hour !== "" ? String(hour).padStart(2, "0") : "12"; // 시간 모름이면 정오로 기본 처리
-    const birth = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T${hh}:00:00`;
+    const birthInput = {
+      calendarType: selectedCalendar, // "solar" | "lunar"
+      year: parseInt(year),
+      month: parseInt(month),
+      day: parseInt(day),
+      hour: hour !== "" ? parseInt(hour) : 12, // 시간 모름이면 정오로 기본 처리
+      minute: 0,
+      isLeapMonth,
+    };
 
     const submitBtn = e.target.querySelector(".submit-btn");
     submitBtn.disabled = true;
-    submitBtn.textContent = "위치 확인 중...";
 
-    // 사용자 실제 위치 감지 (Geolocation API) — 거부/미지원 시 서울시청 좌표로 안전하게 폴백
-    const { userLat, userLng, locationLabel } = await detectUserLocation();
-    const locationEl = document.getElementById("location");
-    if (locationEl && locationLabel) locationEl.placeholder = locationLabel;
+    // 사용자가 위치를 직접 입력했으면 그 주소를 우선 지오코딩, 비어있으면 자동감지
+    const manualLocation = document.getElementById("location").value.trim();
+    let userLat, userLng;
+
+    if (manualLocation) {
+      submitBtn.textContent = "위치 확인 중...";
+      try {
+        const geoRes = await fetch("/api/geocode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address: manualLocation }),
+        });
+        const geoData = await geoRes.json();
+        if (geoData.success) {
+          userLat = geoData.lat;
+          userLng = geoData.lng;
+        } else {
+          alert(`"${manualLocation}" 주소를 찾지 못했습니다. 위치를 비워두시면 자동으로 감지합니다.`);
+          const fallback = await detectUserLocation();
+          userLat = fallback.userLat;
+          userLng = fallback.userLng;
+        }
+      } catch (err) {
+        const fallback = await detectUserLocation();
+        userLat = fallback.userLat;
+        userLng = fallback.userLng;
+      }
+    } else {
+      submitBtn.textContent = "위치 확인 중...";
+      const detected = await detectUserLocation();
+      userLat = detected.userLat;
+      userLng = detected.userLng;
+      const locationEl = document.getElementById("location");
+      if (locationEl && detected.locationLabel) locationEl.placeholder = detected.locationLabel;
+    }
 
     submitBtn.textContent = "인연을 살피는 중...";
 
@@ -168,7 +260,7 @@ function render() {
       const res = await fetch("/api/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ birthDateTime: birth, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
+        body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
       });
       const data = await res.json();
       renderResults(data);
