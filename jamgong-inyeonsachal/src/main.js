@@ -605,6 +605,22 @@ function renderTempleDetailPage(result, matchData, memberUnlocked) {
         <div class="detail-section-text" id="detail-weather-text">날씨 확인 중...</div>
       </div>
 
+      <div class="detail-section">
+        <div class="detail-section-label">예상 이동시간</div>
+        <div class="detail-section-text">🚗 자동차 약 ${estimateDriveMinutes(detail.distanceKm)}분 · 🚶 도보 약 ${estimateWalkMinutes(detail.distanceKm)}분 (직선거리 기준 추정치)</div>
+      </div>
+
+      ${matchData.recommendedDates && matchData.recommendedDates.length ? `
+        <div class="detail-section">
+          <div class="detail-section-label">방문하면 좋은 날</div>
+          <div class="detail-section-text">
+            <div class="calendar-dates" style="margin-top:6px;">
+              ${matchData.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
+            </div>
+          </div>
+        </div>
+      ` : ""}
+
       <button type="button" class="share-btn" id="detail-share-btn">📤 이 사찰 공유하기</button>
 
       ${matchData.results.length > 1 ? `
@@ -680,6 +696,17 @@ function renderDiaryView() {
     resultsEl.classList.add("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+}
+
+/** 직선거리 기준 자동차/도보 이동시간 대략 추정 (실제 도로 경로 아님 — 참고용) */
+function estimateDriveMinutes(distanceKm) {
+  const avgSpeedKmh = 30; // 시내 평균 주행속도 가정
+  return Math.max(1, Math.round((distanceKm / avgSpeedKmh) * 60));
+}
+
+function estimateWalkMinutes(distanceKm) {
+  const avgWalkKmh = 4.5;
+  return Math.max(1, Math.round((distanceKm / avgWalkKmh) * 60));
 }
 
 function formatDate(dateStr) {
