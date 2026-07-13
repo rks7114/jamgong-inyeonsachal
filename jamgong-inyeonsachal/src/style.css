@@ -825,6 +825,17 @@ body {
   line-height: 1.6;
 }
 
+.prayer-steps {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.prayer-steps li {
+  margin-bottom: 8px;
+}
+
+.prayer-steps li:last-child { margin-bottom: 0; }
+
 .member-banner {
   text-align: center;
   font-size: 15.5px;
@@ -1324,4 +1335,41 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .compass .needle { transition: none; }
   .hero-content, .form-card, .results-summary, .oracle-card, .compass-wrap, .temple-card { animation: none; }
+}
+
+/* ── 모바일 화면 대응 (실제 사용자 대부분 폰으로 접속) ────────────── */
+@media (max-width: 480px) {
+  .hero { padding: 36px 18px 0; }
+  .hero h1 { font-size: 26px; }
+  .hero p { font-size: 13.5px; }
+
+  .form-card { margin: 14px 12px 0; padding: 22px 16px 26px; }
+
+  /* 생년월일 4칸을 1줄에 욱여넣지 않고 2x2로 — 손가락으로 누르기 편하게 */
+  .birth-select-grid { flex-wrap: wrap; }
+  .segment { flex: 1 1 50%; min-width: 50%; }
+  .segment:nth-child(2)::after { display: none; }
+  .segment:nth-child(1), .segment:nth-child(2) {
+    border-bottom: 1px solid #E4DAC4;
+  }
+  .segment:nth-child(3)::after { display: none; }
+  .birth-select-grid select { padding: 14px 26px 14px 14px; font-size: 16px; }
+
+  /* 기도목적 3열은 폰에서 너무 빽빽함 → 2열로 */
+  .purpose-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* 터치 타겟 최소 확보 */
+  .submit-btn, .calendar-toggle-btn, .save-btn, .share-btn, .diary-link-btn, .detail-view-btn {
+    min-height: 46px;
+  }
+
+  .detail-page-title { font-size: 24px; }
+  .detail-map-embed iframe { height: 180px !important; }
+
+  .trust-bar { gap: 0; padding: 12px 6px; }
+  .trust-number { font-size: 20px; }
+  .trust-label { font-size: 10px; }
+
+  .temple-card { padding: 16px 14px; }
+  .temple-body h3 { font-size: 17px; }
 }

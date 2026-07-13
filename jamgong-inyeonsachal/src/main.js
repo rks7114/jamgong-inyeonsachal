@@ -380,7 +380,9 @@ function renderResults(data) {
     ${data.purposeGuide ? `
       <div class="prayer-guide">
         <div class="prayer-guide-label">🙏 이렇게 기도해보세요</div>
-        <div class="prayer-guide-text">${data.purposeGuide}</div>
+        <div class="prayer-guide-text">
+          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
+        </div>
       </div>
     ` : ""}
 
@@ -590,6 +592,15 @@ function renderTempleDetailPage(result, matchData, memberUnlocked) {
         <div class="detail-section-label">인연 근거</div>
         <div class="detail-section-text">${reason}</div>
       </div>
+
+      ${matchData.purposeGuide ? `
+        <div class="prayer-guide" style="margin: 16px 0;">
+          <div class="prayer-guide-label">🙏 이 사찰에서 이렇게 해보세요</div>
+          <div class="prayer-guide-text">
+            ${Array.isArray(matchData.purposeGuide) ? `<ol class="prayer-steps">${matchData.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : matchData.purposeGuide}
+          </div>
+        </div>
+      ` : ""}
 
       <div class="detail-section">
         <div class="detail-section-label">인연 시너지 분석</div>
