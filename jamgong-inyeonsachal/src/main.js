@@ -63,22 +63,57 @@ function detectUserLocation() {
 function render() {
   app.innerHTML = `
     <section class="hero">
+      <div class="hero-stars">
+        <span class="star" style="top:15%; left:12%;"></span>
+        <span class="star" style="top:28%; left:78%;"></span>
+        <span class="star" style="top:8%; left:55%;"></span>
+        <span class="star" style="top:38%; left:35%;"></span>
+        <span class="star" style="top:20%; left:88%;"></span>
+      </div>
       <div class="hero-moon"></div>
       <div class="hero-content">
-        <div class="hero-seal">卍</div>
+        <div class="hero-seal">
+          <svg viewBox="0 0 40 40" width="26" height="26">
+            <path d="M20 6 C16 10 12 14 12 20 C12 26 16 30 20 34 C24 30 28 26 28 20 C28 14 24 10 20 6 Z
+                     M20 12 C22 14 24 17 24 20 C24 23 22 26 20 28 C18 26 16 23 16 20 C16 17 18 14 20 12 Z"
+                  fill="none" stroke="#E2BA6C" stroke-width="1.2"/>
+          </svg>
+        </div>
         <div class="eyebrow">잼공인연사찰</div>
         <h1>나와 인연이 닿는<br/>절을 찾아드립니다</h1>
         <p>생년월일시의 오행 기운을 바탕으로, 지금 이 순간 당신에게 필요한 사찰을 안내합니다.</p>
       </div>
-      <svg class="hero-skyline" viewBox="0 0 400 64" preserveAspectRatio="none">
-        <path d="M0 64 L0 40 L30 40 L38 20 L46 40 L70 40 L70 30 L80 30 L80 40 L110 40 L120 15 L130 40
-                 L160 40 L168 25 L172 25 L172 40 L200 40 L212 8 L224 40
-                 L255 40 L263 25 L267 25 L267 40 L300 40 L310 22 L320 40
-                 L350 40 L358 32 L366 32 L366 40 L400 40 L400 64 Z"
-              fill="#101B2C" opacity="0.9"/>
+      <!-- 사찰 전각 실루엣: 처마 곡선이 있는 2층 대웅전 + 좌우 탑 -->
+      <svg class="hero-skyline" viewBox="0 0 400 90" preserveAspectRatio="none">
+        <!-- 원경 산 능선 (은은하게) -->
+        <path d="M0 90 L0 55 Q40 42 80 52 Q130 38 180 50 Q230 36 280 48 Q330 40 400 50 L400 90 Z"
+              fill="#0C1522" opacity="0.55"/>
+        <!-- 좌측 작은 탑 -->
+        <path d="M55 90 L55 60 L58 60 L58 55 L61 55 L61 50 L64 50 L64 45 L67 50 L70 50 L70 55 L73 55 L73 60 L76 60 L76 90 Z"
+              fill="#0C1522"/>
+        <!-- 우측 작은 탑 -->
+        <path d="M324 90 L324 60 L327 60 L327 55 L330 55 L330 50 L333 50 L333 45 L336 50 L339 50 L339 55 L342 55 L342 60 L345 60 L345 90 Z"
+              fill="#0C1522"/>
+        <!-- 중앙 대웅전: 처마가 양끝으로 솟은 2층 지붕 -->
+        <path d="M120 90 L120 68
+                 Q120 66 122 66 L138 66 L138 58
+                 Q100 56 95 44 Q98 52 138 50 L138 44 L262 44 L262 50
+                 Q302 52 305 44 Q300 56 262 58 L262 66 L278 66
+                 Q280 66 280 68 L280 90 Z"
+              fill="#101B2C"/>
+        <!-- 처마 끝 살짝 들린 디테일 -->
+        <path d="M95 44 Q92 40 88 42 Q90 44 95 44 Z M305 44 Q308 40 312 42 Q310 44 305 44 Z"
+              fill="#101B2C"/>
+        <!-- 문 -->
+        <rect x="192" y="72" width="16" height="18" fill="#0C1522"/>
       </svg>
     </section>
-    <div class="dancheong-divider"></div>
+    <div class="dancheong-divider">
+      <svg viewBox="0 0 60 16" class="lotus-mini">
+        <path d="M30 14 C24 14 20 10 20 6 C24 6 28 9 30 13 C32 9 36 6 40 6 C40 10 36 14 30 14 Z"
+              fill="none" stroke="#B8892B" stroke-width="1"/>
+      </svg>
+    </div>
 
     <form class="form-card" id="match-form">
       <div class="corner-bracket tl"></div>
@@ -126,7 +161,9 @@ function render() {
 
       <div class="field">
         <label for="location">현재 위치 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사찰까지의 방위·거리 계산 기준입니다. 비워두시면 브라우저 위치를 자동 감지하고, 직접 입력하시면 그 주소를 기준으로 계산합니다.</span></span></label>
-        <input type="text" id="location" placeholder="위치 입력 또는 자동 감지" />
+        <div class="location-input-wrap">
+          <input type="text" id="location" placeholder="위치 입력 또는 자동 감지" />
+        </div>
       </div>
 
       <button type="submit" class="submit-btn">인연사찰 찾기</button>
