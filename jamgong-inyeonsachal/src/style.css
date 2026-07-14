@@ -2471,3 +2471,102 @@ body::before {
   letter-spacing: 0.06em !important;
   margin-top: 2px !important;
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✦ v5.0 산사(山寺) 배경 — 인연사찰 분위기 극대화
+   새벽 산안개, 청산(靑山), 단청(丹靑) 붉음, 먹빛 하늘
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 전체 배경 — 산사 새벽녘: 먹빛 + 청산 안개 */
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(30,48,80,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 10% 60%, rgba(40,70,55,0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 90% 70%, rgba(50,35,20,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 70% 20%, rgba(162,59,46,0.05) 0%, transparent 45%),
+    linear-gradient(175deg, #EAE0CC 0%, #E2D5B5 40%, #D8C99A 100%) !important;
+  min-height: 100vh !important;
+}
+
+/* 배경 오버레이 — 청산 실루엣 암시 */
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background:
+    /* 왼쪽 원경 산그림자 */
+    radial-gradient(ellipse 40% 60% at -5% 80%, rgba(50,70,55,0.13) 0%, transparent 55%),
+    /* 오른쪽 근경 산그림자 */
+    radial-gradient(ellipse 35% 55% at 105% 75%, rgba(40,55,45,0.11) 0%, transparent 50%),
+    /* 중앙 하단 지평선 안개 */
+    radial-gradient(ellipse 100% 20% at 50% 100%, rgba(230,220,195,0.6) 0%, transparent 70%),
+    /* 단청 붉음 — 멀리서 보이는 불빛 같은 */
+    radial-gradient(ellipse 25% 20% at 80% 15%, rgba(162,59,46,0.06) 0%, transparent 60%) !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+/* 앱 컨테이너 — 산사 느낌 중앙 집중 */
+#app {
+  position: relative !important;
+  z-index: 1 !important;
+  max-width: 680px !important;
+}
+
+/* 히어로 아래 → 폼 연결부: 산안개 전환 효과 */
+.trust-bar {
+  background: linear-gradient(
+    to bottom,
+    rgba(22,36,58,0.92) 0%,
+    rgba(18,28,46,0.97) 100%
+  ) !important;
+  border-bottom: 1px solid rgba(184,137,43,0.3) !important;
+}
+
+/* 폼 카드 — 한지(韓紙) 질감 + 산사 석벽 느낌 */
+.form-card {
+  background:
+    linear-gradient(160deg,
+      rgba(255,252,242,0.88) 0%,
+      rgba(248,240,218,0.92) 50%,
+      rgba(238,228,202,0.90) 100%
+    ) !important;
+  border: 1px solid rgba(184,137,43,0.30) !important;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.92) inset,
+    0 -1px 0 rgba(184,137,43,0.12) inset,
+    0 48px 96px rgba(16,24,40,0.22),
+    0 16px 40px rgba(16,24,40,0.14),
+    0 4px 12px rgba(16,24,40,0.08) !important;
+}
+
+/* 결과 영역 배경 — 산사 마당 느낌 */
+#results:not(.hidden) {
+  background:
+    linear-gradient(to bottom,
+      transparent 0%,
+      rgba(230,220,195,0.3) 100%
+    ) !important;
+}
+
+/* 사찰 카드 — 온기 있는 한지 */
+.temple-card {
+  background:
+    linear-gradient(145deg,
+      rgba(255,253,245,0.92) 0%,
+      rgba(250,242,222,0.88) 100%
+    ) !important;
+  border: 1px solid rgba(184,137,43,0.18) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.95) inset,
+    0 4px 16px rgba(16,24,40,0.08),
+    0 2px 6px rgba(16,24,40,0.05) !important;
+}
+
+/* 산사 배경 — 모바일 최적화 */
+@media (max-width: 480px) {
+  body {
+    background:
+      linear-gradient(175deg, #EAE0CC 0%, #DDD0AE 100%) !important;
+  }
+}

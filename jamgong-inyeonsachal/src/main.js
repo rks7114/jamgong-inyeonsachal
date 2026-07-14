@@ -1012,6 +1012,77 @@ function saveDiaryEntry(data) {
 
 render();
 
+/* ─────────────────────────────────────────────────────
+   ✦ 오행 칩 태깅 — data-ohaeng 속성 부여
+───────────────────────────────────────────────────── */
+function tagOhaengChips() {
+  document.querySelectorAll('.purpose-chip').forEach(chip => {
+    const t = chip.textContent;
+    if      (t.includes('재물')) chip.dataset.ohaeng = 'geum';
+    else if (t.includes('건강')) chip.dataset.ohaeng = 'to';
+    else if (t.includes('학업')) chip.dataset.ohaeng = 'su';
+    else if (t.includes('인연')) chip.dataset.ohaeng = 'hwa';
+    else if (t.includes('가정')) chip.dataset.ohaeng = 'mok';
+  });
+}
+
+/* ─────────────────────────────────────────────────────
+   ✦ SVG 테두리 조명 빔 — 폼 카드 4각을 도는 빛줄기
+───────────────────────────────────────────────────── */
+function addBorderBeam() {
+  const card = document.querySelector('.form-card');
+  if (!card) return;
+
+  // 기존 SVG 빔 제거 (중복 방지)
+  card.querySelectorAll('.form-beam-svg, .form-corner-glow').forEach(e => e.remove());
+
+  const W = card.offsetWidth, H = card.offsetHeight, R = 20;
+  const perim = Math.round(2 * (W + H) - (8 - 2 * Math.PI) * R);
+  const bLen  = Math.round(perim * 0.13);
+  const d = `M${R},.5 H${W-R} Q${W-.5},.5 ${W-.5},${R} V${H-R} Q${W-.5},${H-.5} ${W-R},${H-.5} H${R} Q.5,${H-.5} .5,${H-R} V${R} Q.5,.5 ${R},.5Z`;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', 'form-beam-svg');
+  svg.setAttribute('width',  W);
+  svg.setAttribute('height', H);
+  svg.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:8;overflow:visible;';
+
+  svg.innerHTML = `
+    <defs>
+      <filter id="bGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="3" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path d="${d}" fill="none" stroke="rgba(184,137,43,.18)" stroke-width="1.5"/>
+    <path d="${d}" fill="none" stroke="rgba(255,240,150,.92)" stroke-width="2.8"
+          filter="url(#bGlow)" stroke-linecap="round" stroke-linejoin="round"
+          stroke-dasharray="${bLen} ${perim}" stroke-dashoffset="0">
+      <animate attributeName="stroke-dashoffset" from="0" to="-${perim + bLen}"
+               dur="4s" repeatCount="indefinite" calcMode="linear"/>
+    </path>`;
+
+  card.appendChild(svg);
+
+  // 4각 코너 글로우 (CSS 클래스로 펄스 처리)
+  ['tl','tr','br','bl'].forEach(pos => {
+    const c = document.createElement('div');
+    c.className = `form-corner-glow ${pos}`;
+    card.appendChild(c);
+  });
+}
+
+// 초기 실행
+tagOhaengChips();
+addBorderBeam();
+
+// SPA 렌더링 후 재실행 (뷰 전환 감지)
+new MutationObserver(() => {
+  tagOhaengChips();
+  addBorderBeam();
+}).observe(document.getElementById('app') || document.body, { childList: true, subtree: false });
+
 // ── 인연 길잡이 ─────────────────────────────────────────────────────────
 function initGuide() {
   // 이미 초기화된 경우 중복 방지
