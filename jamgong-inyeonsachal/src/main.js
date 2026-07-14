@@ -330,10 +330,12 @@ function render() {
       const submitBtn = document.getElementById("submit-btn");
       if (matchMode === "couple") {
         birthBField.classList.remove("hidden");
+        birthBField.style.display = "flex";
         labelA.textContent = "내 생년월일시";
         submitBtn.textContent = "함께 인연사찰 찾기";
       } else {
         birthBField.classList.add("hidden");
+        birthBField.style.display = "none";
         labelA.innerHTML = `생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span>`;
         submitBtn.textContent = "인연사찰 찾기";
       }
