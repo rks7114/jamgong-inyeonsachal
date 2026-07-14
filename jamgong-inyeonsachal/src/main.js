@@ -1011,3 +1011,140 @@ function saveDiaryEntry(data) {
 }
 
 render();
+
+// ── 인연 길잡이 ─────────────────────────────────────────────────────────
+function initGuide() {
+  // 이미 초기화된 경우 중복 방지
+  if (document.getElementById("guide-fab")) return;
+
+  const botMessages = []; // { role: "user"|"assistant", content: string }
+
+  // ── 플로팅 버튼 ──
+  const fab = document.createElement("button");
+  fab.id = "guide-fab";
+  fab.innerHTML = `<span class="guide-fab-icon">🙏</span><span class="guide-fab-label">인연 길잡이</span>`;
+  fab.setAttribute("aria-label", "인연 길잡이 열기");
+  document.body.appendChild(fab);
+
+  // ── 채팅창 ──
+  const win = document.createElement("div");
+  win.id = "guide-window";
+  win.classList.add("guide-hidden");
+  win.innerHTML = `
+    <div class="guide-header">
+      <span class="guide-title">🙏 인연 길잡이</span>
+      <button class="guide-close" id="guide-close-btn" aria-label="닫기">✕</button>
+    </div>
+    <div class="guide-messages" id="guide-messages">
+      <div class="guide-msg guide-msg-bot">
+        안녕하세요! 인연 길잡이예요 😊<br>사찰이나 오행, 기도 방법 등 궁금한 것을 물어보세요.
+      </div>
+    </div>
+    <div class="guide-input-area">
+      <button class="guide-mic-btn" id="guide-mic-btn" title="음성으로 질문">🎤</button>
+      <input type="text" id="guide-input" placeholder="궁금한 것을 물어보세요..." autocomplete="off" />
+      <button class="guide-send-btn" id="guide-send-btn">전송</button>
+    </div>
+  `;
+  document.body.appendChild(win);
+
+  // ── 열기/닫기 ──
+  fab.addEventListener("click", () => {
+    win.classList.toggle("guide-hidden");
+    if (!win.classList.contains("guide-hidden")) {
+      document.getElementById("guide-input").focus();
+    }
+  });
+  document.getElementById("guide-close-btn").addEventListener("click", () => {
+    win.classList.add("guide-hidden");
+  });
+
+  // ── 메시지 추가 ──
+  function addMessage(role, text) {
+    const msgEl = document.createElement("div");
+    msgEl.className = `guide-msg guide-msg-${role === "user" ? "user" : "bot"}`;
+    msgEl.textContent = text;
+    const container = document.getElementById("guide-messages");
+    container.appendChild(msgEl);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ── TTS (음성 읽기) ──
+  function speak(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "ko-KR";
+    utter.rate = 0.95;
+    window.speechSynthesis.speak(utter);
+  }
+
+  // ── 전송 ──
+  async function sendMessage(text) {
+    if (!text.trim()) return;
+    addMessage("user", text);
+    botMessages.push({ role: "user", content: text });
+    document.getElementById("guide-input").value = "";
+
+    // 로딩 표시
+    const loadingEl = document.createElement("div");
+    loadingEl.className = "guide-msg guide-msg-bot guide-loading";
+    loadingEl.textContent = "...";
+    document.getElementById("guide-messages").appendChild(loadingEl);
+    document.getElementById("guide-messages").scrollTop = 99999;
+
+    try {
+      const res = await fetch("/api/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: botMessages }),
+      });
+      const data = await res.json();
+      loadingEl.remove();
+      const reply = data.reply || data.error || "잠시 후 다시 시도해주세요.";
+      botMessages.push({ role: "assistant", content: reply });
+      addMessage("assistant", reply);
+      speak(reply);
+    } catch {
+      loadingEl.remove();
+      addMessage("assistant", "연결이 어렵습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+
+  document.getElementById("guide-send-btn").addEventListener("click", () => {
+    sendMessage(document.getElementById("guide-input").value);
+  });
+  document.getElementById("guide-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMessage(e.target.value);
+  });
+
+  // ── STT (음성 입력) ──
+  const micBtn = document.getElementById("guide-mic-btn");
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = "ko-KR";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    let listening = false;
+    recognition.onstart = () => { listening = true; micBtn.classList.add("guide-mic-active"); micBtn.textContent = "🔴"; };
+    recognition.onend = () => { listening = false; micBtn.classList.remove("guide-mic-active"); micBtn.textContent = "🎤"; };
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      document.getElementById("guide-input").value = transcript;
+      sendMessage(transcript);
+    };
+    recognition.onerror = () => { micBtn.textContent = "🎤"; listening = false; };
+
+    micBtn.addEventListener("click", () => {
+      if (listening) { recognition.stop(); }
+      else { recognition.start(); }
+    });
+  } else {
+    micBtn.title = "이 브라우저는 음성 입력을 지원하지 않습니다";
+    micBtn.style.opacity = "0.4";
+  }
+}
+
+initGuide();
