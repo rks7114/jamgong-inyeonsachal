@@ -1073,7 +1073,16 @@ function initGuide() {
   function speak(text) {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
+    // TTS용 텍스트 정제: 마크다운·한자·특수기호 제거
+    const clean = text
+      .replace(/\*\*(.*?)\*\*/g, "$1")   // **굵게** → 굵게
+      .replace(/\*(.*?)\*/g, "$1")        // *이탤릭* → 이탤릭
+      .replace(/[（(][一-龥]{1,4}[）)]/g, "") // 한자 괄호 (木) (火) 등 제거
+      .replace(/[·•…·]/g, " ")            // 중간점·불릿을 공백으로
+      .replace(/[#>\-_`~]/g, "")          // 기타 마크다운 기호 제거
+      .replace(/\s{2,}/g, " ")            // 연속 공백 정리
+      .trim();
+    const utter = new SpeechSynthesisUtterance(clean);
     utter.lang = "ko-KR";
     utter.rate = 0.95;
     window.speechSynthesis.speak(utter);
@@ -1156,18 +1165,9 @@ function initGuide() {
       }
     };
 
-    micBtn.addEventListener("click", async () => {
-      if (listening) {
-        recognition.stop();
-        return;
-      }
-      // 마이크 권한 먼저 요청
-      try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        recognition.start();
-      } catch {
-        alert("마이크 권한이 필요합니다.\n브라우저 주소창 왼쪽 자물쇠 아이콘 → 마이크 허용 후 다시 시도해주세요.");
-      }
+    micBtn.addEventListener("click", () => {
+      if (listening) { recognition.stop(); return; }
+      try { recognition.start(); } catch(e) { console.warn("음성 인식 시작 오류:", e); }
     });
   } else {
     // SpeechRecognition 미지원 브라우저 — 클릭 시 안내
