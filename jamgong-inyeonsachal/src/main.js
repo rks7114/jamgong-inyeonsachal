@@ -297,11 +297,6 @@ function render() {
       document.querySelectorAll(".purpose-chip").forEach((c) => c.classList.remove("active"));
       chip.classList.add("active");
       selectedPurpose = chip.dataset.purpose;
-      // 결과가 이미 표시 중이면 목적 변경 시 자동 재검색
-      const resultsEl = document.getElementById("results");
-      if (resultsEl && !resultsEl.classList.contains("hidden")) {
-        document.getElementById("submit-btn")?.click();
-      }
     });
   });
 
