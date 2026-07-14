@@ -1073,7 +1073,16 @@ function initGuide() {
   function speak(text) {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
+    // TTS용 텍스트 정제: 마크다운·한자·특수기호 제거
+    const clean = text
+      .replace(/\*\*(.*?)\*\*/g, "$1")   // **굵게** → 굵게
+      .replace(/\*(.*?)\*/g, "$1")        // *이탤릭* → 이탤릭
+      .replace(/[（(][一-龥]{1,4}[）)]/g, "") // 한자 괄호 (木) (火) 등 제거
+      .replace(/[·•…·]/g, " ")            // 중간점·불릿을 공백으로
+      .replace(/[#>\-_`~]/g, "")          // 기타 마크다운 기호 제거
+      .replace(/\s{2,}/g, " ")            // 연속 공백 정리
+      .trim();
+    const utter = new SpeechSynthesisUtterance(clean);
     utter.lang = "ko-KR";
     utter.rate = 0.95;
     window.speechSynthesis.speak(utter);
