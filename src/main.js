@@ -188,27 +188,15 @@ function render() {
       <svg class="corner-cloud tr" viewBox="0 0 40 40"><path d="M36 20 Q36 12 28 12 Q27 6 20 7 Q15 3 10 8 Q4 8 4 15" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
       <svg class="corner-cloud bl" viewBox="0 0 40 40"><path d="M4 20 Q4 28 12 28 Q13 34 20 33 Q25 37 30 32 Q36 32 36 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
       <svg class="corner-cloud br" viewBox="0 0 40 40"><path d="M36 20 Q36 28 28 28 Q27 34 20 33 Q15 37 10 32 Q4 32 4 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
-      <div class="field">
-        <label>찾는 방식</label>
-        <div class="calendar-toggle" id="mode-toggle">
-          <button type="button" class="calendar-toggle-btn active" data-mode="solo">혼자 찾기</button>
-          <button type="button" class="calendar-toggle-btn" data-mode="couple">궁합사찰</button>
-        </div>
-      </div>
 
-      <div class="field" id="relationship-field" style="display:none;">
-        <label for="relationship-type">관계</label>
-        <select id="relationship-type">
-          <option value="연인">연인</option>
-          <option value="부부">부부</option>
-          <option value="가족">가족</option>
-          <option value="친구">친구</option>
-        </select>
+      <div class="mode-toggle-wrap">
+        <button type="button" class="mode-toggle-btn active" data-mode="solo">🙏 혼자 찾기</button>
+        <button type="button" class="mode-toggle-btn" data-mode="couple">💑 둘이 찾기</button>
       </div>
 
       <div class="field">
-        <label id="birth-a-label"><span class="birth-a-label-text">생년월일시 </span><span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
-        <div class="calendar-toggle" id="calendar-toggle-a-wrap">
+        <label id="birth-label-a">생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
+        <div class="calendar-toggle">
           <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
           <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
         </div>
@@ -243,11 +231,11 @@ function render() {
         </label>
       </div>
 
-      <div class="field" id="person-b-field" style="display:none;">
+      <div class="field hidden" id="birth-b-field" style="display:none">
         <label>상대방 생년월일시</label>
-        <div class="calendar-toggle" id="calendar-toggle-b">
-          <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
-          <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
+        <div class="calendar-toggle">
+          <button type="button" class="calendar-toggle-btn active" data-calendar-b="solar">양력</button>
+          <button type="button" class="calendar-toggle-btn" data-calendar-b="lunar">음력</button>
         </div>
         <div class="birth-select-grid segmented">
           <div class="segment">
@@ -275,9 +263,6 @@ function render() {
             </select>
           </div>
         </div>
-        <label class="leap-month-check hidden" id="leap-month-wrap-b">
-          <input type="checkbox" id="is-leap-month-b" /> 윤달(閏月) 생일입니다
-        </label>
       </div>
 
       <div class="field">
@@ -300,7 +285,7 @@ function render() {
         </div>
       </div>
 
-      <button type="submit" class="submit-btn">인연사찰 찾기</button>
+      <button type="submit" class="submit-btn" id="submit-btn">인연사찰 찾기</button>
     </form>
 
     <section class="results hidden" id="results"></section>
@@ -315,40 +300,46 @@ function render() {
     });
   });
 
-  /** 버튼 그룹 하나를 독립적으로 토글 — 다른 그룹(모드/음양력A/음양력B)과 서로 간섭하지 않도록 컨테이너 단위로 스코핑 */
-  function wireToggleGroup(containerId, onSelect) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const buttons = container.querySelectorAll(".calendar-toggle-btn");
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        buttons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        onSelect(btn);
-      });
+  let selectedCalendar = "solar";
+  document.querySelectorAll("[data-calendar]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-calendar]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedCalendar = btn.dataset.calendar;
+      document.getElementById("leap-month-wrap").classList.toggle("hidden", selectedCalendar !== "lunar");
     });
-  }
-
-  let selectedCalendarA = "solar";
-  wireToggleGroup("calendar-toggle-a-wrap", (btn) => {
-    selectedCalendarA = btn.dataset.calendar;
-    document.getElementById("leap-month-wrap").classList.toggle("hidden", selectedCalendarA !== "lunar");
   });
 
   let selectedCalendarB = "solar";
-  wireToggleGroup("calendar-toggle-b", (btn) => {
-    selectedCalendarB = btn.dataset.calendar;
-    document.getElementById("leap-month-wrap-b").classList.toggle("hidden", selectedCalendarB !== "lunar");
+  document.querySelectorAll("[data-calendar-b]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-calendar-b]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedCalendarB = btn.dataset.calendarB;
+    });
   });
 
-  let matchMode = "solo"; // "solo" | "couple"
-  wireToggleGroup("mode-toggle", (btn) => {
-    matchMode = btn.dataset.mode;
-    const isCouple = matchMode === "couple";
-    document.getElementById("person-b-field").style.display = isCouple ? "" : "none";
-    document.getElementById("relationship-field").style.display = isCouple ? "" : "none";
-    document.querySelector(".birth-a-label-text").textContent = isCouple ? "본인 생년월일시 " : "생년월일시 ";
-    document.querySelector(".submit-btn").textContent = isCouple ? "궁합사찰 찾기" : "인연사찰 찾기";
+  let matchMode = "solo";
+  document.querySelectorAll(".mode-toggle-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".mode-toggle-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      matchMode = btn.dataset.mode;
+      const birthBField = document.getElementById("birth-b-field");
+      const labelA = document.getElementById("birth-label-a");
+      const submitBtn = document.getElementById("submit-btn");
+      if (matchMode === "couple") {
+        birthBField.classList.remove("hidden");
+        birthBField.style.display = "flex";
+        labelA.textContent = "내 생년월일시";
+        submitBtn.textContent = "함께 인연사찰 찾기";
+      } else {
+        birthBField.classList.add("hidden");
+        birthBField.style.display = "none";
+        labelA.innerHTML = `생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span>`;
+        submitBtn.textContent = "인연사찰 찾기";
+      }
+    });
   });
 
   document.getElementById("match-form").addEventListener("submit", async (e) => {
@@ -366,47 +357,28 @@ function render() {
     }
 
     const birthInput = {
-      calendarType: selectedCalendarA, // "solar" | "lunar"
+      calendarType: selectedCalendar,
       year: parseInt(year),
       month: parseInt(month),
       day: parseInt(day),
-      hour: hour !== "" ? parseInt(hour) : 12, // 시간 모름이면 정오로 기본 처리
+      hour: hour !== "" ? parseInt(hour) : 12,
       minute: 0,
       isLeapMonth,
     };
 
-    const isCouple = matchMode === "couple";
-    let birthInputB = null;
-    let relationshipType = null;
-
-    if (isCouple) {
+    if (matchMode === "couple") {
       const yearB = document.getElementById("birth-year-b").value;
       const monthB = document.getElementById("birth-month-b").value;
       const dayB = document.getElementById("birth-day-b").value;
-      const hourB = document.getElementById("birth-hour-b").value;
-      const isLeapMonthB = document.getElementById("is-leap-month-b")?.checked || false;
-
       if (!yearB || !monthB || !dayB) {
         alert("상대방 생년월일(연도·월·일)을 모두 선택해주세요.");
         return;
       }
-
-      birthInputB = {
-        calendarType: selectedCalendarB,
-        year: parseInt(yearB),
-        month: parseInt(monthB),
-        day: parseInt(dayB),
-        hour: hourB !== "" ? parseInt(hourB) : 12,
-        minute: 0,
-        isLeapMonth: isLeapMonthB,
-      };
-      relationshipType = document.getElementById("relationship-type").value;
     }
 
-    const submitBtn = e.target.querySelector(".submit-btn");
+    const submitBtn = document.getElementById("submit-btn");
     submitBtn.disabled = true;
 
-    // 사용자가 위치를 직접 입력했으면 그 주소를 우선 지오코딩, 비어있으면 자동감지
     const manualLocation = document.getElementById("location").value.trim();
     let userLat, userLng;
 
@@ -445,26 +417,157 @@ function render() {
     submitBtn.textContent = "인연을 살피는 중...";
 
     try {
-      const endpoint = isCouple ? "/api/match-couple" : "/api/match";
-      const body = isCouple
-        ? { birthInputA: birthInput, birthInputB, relationshipType, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }
-        : { birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() };
-
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      data.purpose = selectedPurpose; // 응답에 없으므로 클라이언트에서 보강 (기도 안내 등에 사용)
-      renderResults(data);
+      if (matchMode === "couple") {
+        const yearB = document.getElementById("birth-year-b").value;
+        const monthB = document.getElementById("birth-month-b").value;
+        const dayB = document.getElementById("birth-day-b").value;
+        const hourB = document.getElementById("birth-hour-b").value;
+        const birthInputB = {
+          calendarType: selectedCalendarB,
+          year: parseInt(yearB),
+          month: parseInt(monthB),
+          day: parseInt(dayB),
+          hour: hourB !== "" ? parseInt(hourB) : 12,
+          minute: 0,
+          isLeapMonth: false,
+        };
+        const res = await fetch("/api/match-couple", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ birthInputA: birthInput, birthInputB, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
+        });
+        const data = await res.json();
+        if (data.error) {
+          alert(`오류가 발생했습니다: ${data.error}\n생년월일을 다시 확인해주세요.`);
+          return;
+        }
+        data.purpose = selectedPurpose;
+        renderCoupleResults(data);
+      } else {
+        const res = await fetch("/api/match", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
+        });
+        const data = await res.json();
+        data.purpose = selectedPurpose;
+        renderResults(data);
+      }
     } catch (err) {
       alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = isCouple ? "궁합사찰 찾기" : "인연사찰 찾기";
+      submitBtn.textContent = matchMode === "couple" ? "함께 인연사찰 찾기" : "인연사찰 찾기";
     }
   });
+}
+
+function renderCoupleResults(data) {
+  const resultsEl = document.getElementById("results");
+  resultsEl.classList.remove("hidden");
+  const memberUnlocked = isMember();
+
+  resultsEl.innerHTML = `
+    <div class="results-summary">
+      <div class="label">두 분의 함께 기운은</div>
+      <div class="ohaeng-value">💑 커플 인연사찰 매칭</div>
+      <div class="ohaeng-breakdown">
+        나: ${Object.entries(data.distributionA || {}).map(([k,v]) => `${k} ${v}`).join(" · ")} (${data.targetA || ""})
+        &nbsp;|&nbsp;
+        상대: ${Object.entries(data.distributionB || {}).map(([k,v]) => `${k} ${v}`).join(" · ")} (${data.targetB || ""})
+      </div>
+    </div>
+
+    ${memberUnlocked ? `
+      <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
+    ` : `
+      <div class="member-unlock">
+        <input type="text" id="member-code-input" placeholder="멤버십 코드 입력 (선택)" />
+        <button id="member-code-btn">확인</button>
+      </div>
+    `}
+
+    ${data.purposeGuide ? `
+      <div class="prayer-guide">
+        <div class="prayer-guide-label">🙏 함께 이렇게 기도해보세요</div>
+        <div class="prayer-guide-text">
+          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
+        </div>
+      </div>
+    ` : ""}
+
+    ${(data.results || []).map((r, i) => `
+      <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail?.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
+        <div class="temple-rank">${i + 1}</div>
+        <div class="temple-body">
+          <h3>
+            <a class="temple-name-link" href="https://www.google.com/maps/search/?api=1&query=${r.temple.lat},${r.temple.lng}" target="_blank" rel="noopener">
+              ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
+            </a>
+          </h3>
+          <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
+          ${r.synergyCouple > 0 ? `<div class="synergy-badge">💑 커플 시너지 +${r.synergyCouple}점</div>` : ""}
+          <div class="reason">${r.reason}</div>
+          ${r.temple.history ? `
+            <div class="temple-detail">
+              <div class="temple-detail-label">유래·연혁</div>
+              <div class="temple-detail-text">
+                ${memberUnlocked
+                  ? r.temple.history
+                  : (r.temple.history.length > 35
+                      ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`
+                      : r.temple.history)}
+              </div>
+              ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
+            </div>
+          ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
+          <button type="button" class="detail-view-btn couple-detail-btn" data-temple-index="${i}">상세페이지 보기 →</button>
+        </div>
+      </div>
+    `).join("")}
+
+    ${data.recommendedDates && data.recommendedDates.length ? `
+      <div class="calendar-card">
+        <div class="calendar-title">함께 방문하면 좋은 날${memberUnlocked ? " (멤버 확장 · 45일 이내)" : ""}</div>
+        <div class="calendar-dates">
+          ${data.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
+        </div>
+        ${!memberUnlocked ? `<div class="calendar-more-hint">🔒 멤버는 더 많은 추천일을 볼 수 있습니다</div>` : ""}
+      </div>
+    ` : ""}
+
+    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
+
+    <div class="notice-box">
+      <div class="notice-item">
+        <span class="notice-icon">ℹ️</span>
+        <span>${data.disclaimer || "본 결과는 사주 오행 이론을 바탕으로 한 참고 정보입니다."}</span>
+      </div>
+    </div>
+  `;
+
+  const codeInput = document.getElementById("member-code-input");
+  const codeBtn = document.getElementById("member-code-btn");
+  if (codeBtn) {
+    codeBtn.addEventListener("click", () => {
+      if (tryUnlockMembership(codeInput.value)) {
+        renderCoupleResults(data);
+      } else {
+        alert("코드가 올바르지 않습니다. 잼공스토리 채널 멤버십 공지를 확인해주세요.");
+      }
+    });
+  }
+
+  document.getElementById("share-btn").addEventListener("click", () => shareResult(data));
+
+  document.querySelectorAll(".couple-detail-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.templeIndex);
+      renderTempleDetailPage(data.results[idx], data, memberUnlocked);
+    });
+  });
+
+  resultsEl.scrollIntoView({ behavior: "smooth" });
 }
 
 function renderResults(data) {
@@ -622,47 +725,66 @@ function renderResults(data) {
   resultsEl.scrollIntoView({ behavior: "smooth" });
 }
 
-/** 결과 공유 — Web Share API 지원 시 네이티브 공유창(카카오톡 포함), 미지원 시 클립보드 복사 */
-async function shareResult(data) {
+/** 공유 모달 표시 */
+function showShareModal(text, url) {
+  const existing = document.getElementById("share-modal-overlay");
+  if (existing) existing.remove();
+
+  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  const fullText = `${text}\n${url}`;
+
+  const overlay = document.createElement("div");
+  overlay.id = "share-modal-overlay";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;";
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:24px;width:min(340px,90vw);box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+      <div style="font-size:17px;font-weight:700;margin-bottom:16px;color:#222;">공유하기</div>
+      <div style="background:#f5f5f5;border-radius:10px;padding:12px;font-size:13px;color:#222;margin-bottom:16px;word-break:break-all;">${text}<br/><span style="color:#555;">${url}</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button id="share-copy-btn" style="padding:12px;border:none;border-radius:10px;background:#B8892B;color:#fff;font-size:15px;font-weight:600;cursor:pointer;">📋 링크 복사</button>
+        ${isMobile ? `<button id="share-native-btn" style="padding:12px;border:none;border-radius:10px;background:#3C1E1E;color:#fff;font-size:15px;font-weight:600;cursor:pointer;">📤 카카오톡·기타 앱으로 공유</button>` : ""}
+        <button id="share-close-btn" style="padding:10px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:14px;cursor:pointer;">닫기</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById("share-copy-btn").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(fullText);
+      document.getElementById("share-copy-btn").textContent = "✅ 복사 완료!";
+      setTimeout(() => overlay.remove(), 1200);
+    } catch {
+      prompt("아래 텍스트를 복사하세요 (Ctrl+C):", fullText);
+    }
+  });
+
+  if (isMobile) {
+    document.getElementById("share-native-btn")?.addEventListener("click", async () => {
+      try {
+        await navigator.share({ text: fullText });
+      } catch {}
+      overlay.remove();
+    });
+  }
+
+  document.getElementById("share-close-btn").addEventListener("click", () => overlay.remove());
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+/** 결과 공유 */
+function shareResult(data) {
   const topTemple = data.results[0]?.temple.name || "";
   const shareText = `[잼공인연사찰] 제 부족한 기운은 ${data.targetOhaeng}이고, 인연 닿는 절은 "${topTemple}"이래요. 궁금하면 확인해보세요 🙏`;
-  const shareUrl = window.location.origin;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: "잼공인연사찰 결과", text: shareText, url: shareUrl });
-    } catch (e) {
-      // 사용자가 공유 취소한 경우 등 — 무시
-    }
-  } else {
-    try {
-      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-      alert("결과가 클립보드에 복사되었습니다. 카카오톡 등에 붙여넣기 해주세요.");
-    } catch (e) {
-      alert("공유하기를 지원하지 않는 환경입니다.");
-    }
-  }
+  showShareModal(shareText, window.location.origin);
 }
 
 /** 특정 사찰 상세페이지 단독 공유 */
-async function shareTemple(temple) {
+function shareTemple(temple) {
   const shareText = `[잼공인연사찰] "${temple.name}" — 나와 인연이 닿는 절이래요. 🙏`;
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${temple.lat},${temple.lng}`;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: `${temple.name} — 잼공인연사찰`, text: shareText, url: mapUrl });
-    } catch (e) {
-      // 취소 — 무시
-    }
-  } else {
-    try {
-      await navigator.clipboard.writeText(`${shareText} ${mapUrl}`);
-      alert("사찰 정보가 클립보드에 복사되었습니다.");
-    } catch (e) {
-      alert("공유하기를 지원하지 않는 환경입니다.");
-    }
-  }
+  showShareModal(shareText, mapUrl);
 }
 
 /** 사찰 상세페이지 — 지도 미리보기, 전체 정보를 한 화면에 모아 보여줌 */
@@ -891,3 +1013,421 @@ function saveDiaryEntry(data) {
 }
 
 render();
+
+/* ─────────────────────────────────────────────────────
+   ✦ 오행 칩 태깅 — data-ohaeng 속성 부여
+───────────────────────────────────────────────────── */
+function tagOhaengChips() {
+  document.querySelectorAll('.purpose-chip').forEach(chip => {
+    const t = chip.textContent;
+    if      (t.includes('재물')) chip.dataset.ohaeng = 'geum';
+    else if (t.includes('건강')) chip.dataset.ohaeng = 'to';
+    else if (t.includes('학업')) chip.dataset.ohaeng = 'su';
+    else if (t.includes('인연')) chip.dataset.ohaeng = 'hwa';
+    else if (t.includes('가정')) chip.dataset.ohaeng = 'mok';
+  });
+}
+
+/* ─────────────────────────────────────────────────────
+   ✦ SVG 테두리 조명 빔 — 폼 카드 4각을 도는 빛줄기
+───────────────────────────────────────────────────── */
+function addBorderBeam() {
+  const card = document.querySelector('.form-card');
+  if (!card) return;
+
+  // 기존 SVG 빔 제거 (중복 방지)
+  card.querySelectorAll('.form-beam-svg, .form-corner-glow').forEach(e => e.remove());
+
+  const W = card.offsetWidth, H = card.offsetHeight, R = 20;
+  const perim = Math.round(2 * (W + H) - (8 - 2 * Math.PI) * R);
+  const bLen  = Math.round(perim * 0.13);
+  const d = `M${R},.5 H${W-R} Q${W-.5},.5 ${W-.5},${R} V${H-R} Q${W-.5},${H-.5} ${W-R},${H-.5} H${R} Q.5,${H-.5} .5,${H-R} V${R} Q.5,.5 ${R},.5Z`;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', 'form-beam-svg');
+  svg.setAttribute('width',  W);
+  svg.setAttribute('height', H);
+  svg.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:8;overflow:visible;';
+
+  svg.innerHTML = `
+    <defs>
+      <filter id="bGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="3" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path d="${d}" fill="none" stroke="rgba(184,137,43,.18)" stroke-width="1.5"/>
+    <path d="${d}" fill="none" stroke="rgba(255,240,150,.92)" stroke-width="2.8"
+          filter="url(#bGlow)" stroke-linecap="round" stroke-linejoin="round"
+          stroke-dasharray="${bLen} ${perim}" stroke-dashoffset="0">
+      <animate attributeName="stroke-dashoffset" from="0" to="-${perim + bLen}"
+               dur="4s" repeatCount="indefinite" calcMode="linear"/>
+    </path>`;
+
+  card.appendChild(svg);
+
+  // 4각 코너 글로우 (CSS 클래스로 펄스 처리)
+  ['tl','tr','br','bl'].forEach(pos => {
+    const c = document.createElement('div');
+    c.className = `form-corner-glow ${pos}`;
+    card.appendChild(c);
+  });
+}
+
+// 초기 실행
+tagOhaengChips();
+addBorderBeam();
+
+// SPA 렌더링 후 재실행 (뷰 전환 감지)
+new MutationObserver(() => {
+  tagOhaengChips();
+  addBorderBeam();
+}).observe(document.getElementById('app') || document.body, { childList: true, subtree: false });
+
+// ── 인연 길잡이 ─────────────────────────────────────────────────────────
+function initGuide() {
+  // 이미 초기화된 경우 중복 방지
+  if (document.getElementById("guide-fab")) return;
+
+  const botMessages = []; // { role: "user"|"assistant", content: string }
+
+  // ── 플로팅 버튼 ──
+  const fab = document.createElement("button");
+  fab.id = "guide-fab";
+  fab.innerHTML = `<span class="guide-fab-icon">🙏</span><span class="guide-fab-label">인연 길잡이</span>`;
+  fab.setAttribute("aria-label", "인연 길잡이 열기");
+  document.body.appendChild(fab);
+
+  // ── 채팅창 ──
+  const win = document.createElement("div");
+  win.id = "guide-window";
+  win.classList.add("guide-hidden");
+  win.innerHTML = `
+    <div class="guide-header">
+      <span class="guide-title">🙏 인연 길잡이</span>
+      <button class="guide-close" id="guide-close-btn" aria-label="닫기">✕</button>
+    </div>
+    <div class="guide-messages" id="guide-messages">
+      <div class="guide-msg guide-msg-bot">
+        안녕하세요! 인연 길잡이예요 😊<br>사찰이나 오행, 기도 방법 등 궁금한 것을 물어보세요.
+      </div>
+    </div>
+    <div class="guide-input-area">
+      <button class="guide-mic-btn" id="guide-mic-btn" title="음성으로 질문">🎤</button>
+      <input type="text" id="guide-input" placeholder="궁금한 것을 물어보세요..." autocomplete="off" />
+      <button class="guide-send-btn" id="guide-send-btn">전송</button>
+    </div>
+  `;
+  document.body.appendChild(win);
+
+  // ── 열기/닫기 ──
+  fab.addEventListener("click", () => {
+    win.classList.toggle("guide-hidden");
+    if (!win.classList.contains("guide-hidden")) {
+      document.getElementById("guide-input").focus();
+    }
+  });
+  document.getElementById("guide-close-btn").addEventListener("click", () => {
+    win.classList.add("guide-hidden");
+  });
+
+  // ── 메시지 추가 ──
+  function stripMarkdown(text) {
+    return text
+      .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/[（(][一-龥]{1,4}[）)]/g, "")
+      .replace(/[·•]/g, " ")
+      .replace(/[#>`_~]/g, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }
+
+  function addMessage(role, text) {
+    const msgEl = document.createElement("div");
+    msgEl.className = `guide-msg guide-msg-${role === "user" ? "user" : "bot"}`;
+    msgEl.textContent = role === "user" ? text : stripMarkdown(text);
+    const container = document.getElementById("guide-messages");
+    container.appendChild(msgEl);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ── TTS (음성 읽기) ──
+  function speak(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    // TTS용 텍스트 정제: 마크다운·한자·특수기호 제거
+    const clean = text
+      .replace(/\*\*(.*?)\*\*/g, "$1")   // **굵게** → 굵게
+      .replace(/\*(.*?)\*/g, "$1")        // *이탤릭* → 이탤릭
+      .replace(/[（(][一-龥]{1,4}[）)]/g, "") // 한자 괄호 (木) (火) 등 제거
+      .replace(/[·•…·]/g, " ")            // 중간점·불릿을 공백으로
+      .replace(/[#>\-_`~]/g, "")          // 기타 마크다운 기호 제거
+      .replace(/\s{2,}/g, " ")            // 연속 공백 정리
+      .trim();
+    const utter = new SpeechSynthesisUtterance(clean);
+    utter.lang = "ko-KR";
+    utter.rate = 0.95;
+    window.speechSynthesis.speak(utter);
+  }
+
+  // ── 전송 ──
+  async function sendMessage(text) {
+    if (!text.trim()) return;
+    addMessage("user", text);
+    botMessages.push({ role: "user", content: text });
+    document.getElementById("guide-input").value = "";
+
+    // 로딩 표시
+    const loadingEl = document.createElement("div");
+    loadingEl.className = "guide-msg guide-msg-bot guide-loading";
+    loadingEl.textContent = "...";
+    document.getElementById("guide-messages").appendChild(loadingEl);
+    document.getElementById("guide-messages").scrollTop = 99999;
+
+    try {
+      const res = await fetch("/api/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: botMessages }),
+      });
+      const data = await res.json();
+      loadingEl.remove();
+      const reply = data.reply || data.error || "잠시 후 다시 시도해주세요.";
+      botMessages.push({ role: "assistant", content: reply });
+      addMessage("assistant", reply);
+      speak(reply);
+    } catch {
+      loadingEl.remove();
+      addMessage("assistant", "연결이 어렵습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+
+  document.getElementById("guide-send-btn").addEventListener("click", () => {
+    sendMessage(document.getElementById("guide-input").value);
+  });
+  document.getElementById("guide-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMessage(e.target.value);
+  });
+
+  // ── STT (음성 입력) ──
+  const micBtn = document.getElementById("guide-mic-btn");
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = "ko-KR";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.continuous = false;
+
+    let listening = false;
+
+    recognition.onstart = () => {
+      listening = true;
+      micBtn.classList.add("guide-mic-active");
+      micBtn.textContent = "🔴";
+      micBtn.title = "듣는 중... 클릭하면 중지";
+    };
+    recognition.onend = () => {
+      listening = false;
+      micBtn.classList.remove("guide-mic-active");
+      micBtn.textContent = "🎤";
+      micBtn.title = "음성으로 질문";
+    };
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      document.getElementById("guide-input").value = transcript;
+      sendMessage(transcript);
+    };
+    recognition.onerror = (e) => {
+      listening = false;
+      micBtn.classList.remove("guide-mic-active");
+      micBtn.textContent = "🎤";
+      if (e.error === "not-allowed") {
+        addMessage("assistant", "🔒 마이크 권한이 필요해요. 주소창 왼쪽 🔒 아이콘을 클릭해 마이크를 '허용'으로 바꾼 뒤 다시 눌러보세요.");
+      } else if (e.error === "no-speech") {
+        addMessage("assistant", "소리가 감지되지 않았어요. 마이크에 가까이 다시 말씀해 주세요.");
+      }
+    };
+
+    micBtn.addEventListener("click", () => {
+      if (listening) { recognition.stop(); return; }
+      try { recognition.start(); } catch(e) { console.warn("음성 인식 시작 오류:", e); }
+    });
+  } else {
+    // SpeechRecognition 미지원 브라우저 — 클릭 시 안내
+    micBtn.addEventListener("click", () => {
+      alert("음성 입력은 Chrome 또는 Edge 브라우저에서 지원됩니다.");
+    });
+  }
+}
+
+initGuide();
+
+// ── 프리미엄 AI 인터랙션 ─────────────────────────────
+function initPremiumEffects() {
+
+  // ① 히어로 파티클 캔버스 (금빛 · 흰빛 부유 입자)
+  const heroEl = document.querySelector('.hero');
+  if (heroEl) {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:1;width:100%;height:100%;opacity:0.7;';
+    heroEl.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    const resize = () => { canvas.width = heroEl.offsetWidth; canvas.height = heroEl.offsetHeight; };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const pts = Array.from({length: 50}, () => ({
+      x: Math.random(), y: Math.random(),
+      r: Math.random() * 2 + 0.4,
+      vy: -(Math.random() * 0.3 + 0.1),
+      vx: (Math.random() - 0.5) * 0.15,
+      life: Math.random(),
+      gold: Math.random() > 0.4,
+    }));
+
+    (function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pts.forEach(p => {
+        p.life += 0.004;
+        if (p.life >= 1) { p.life = 0; p.x = Math.random(); p.y = 1.05; }
+        const alpha = p.life < 0.15 ? p.life / 0.15
+                    : p.life > 0.8  ? (1 - p.life) / 0.2
+                    : 0.75;
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.85;
+        ctx.fillStyle = p.gold ? '#E2BA6C' : 'rgba(255,255,255,0.9)';
+        ctx.shadowBlur = p.r * 6;
+        ctx.shadowColor = p.gold ? '#B8892B' : '#fff';
+        ctx.beginPath();
+        ctx.arc(p.x * canvas.width, (1 - p.life) * canvas.height, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+      requestAnimationFrame(loop);
+    })();
+
+    // AI 스캔라인
+    const scan = document.createElement('div');
+    scan.style.cssText = 'position:absolute;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(226,186,108,0.7),transparent);pointer-events:none;z-index:2;animation:scanLine 5s ease-in-out infinite;';
+    heroEl.appendChild(scan);
+    if (!document.getElementById('scan-kf')) {
+      const s = document.createElement('style');
+      s.id = 'scan-kf';
+      s.textContent = `@keyframes scanLine{0%{top:-2%;opacity:0}5%{opacity:1}95%{opacity:.4}100%{top:105%;opacity:0}}`;
+      document.head.appendChild(s);
+    }
+  }
+
+  // ② 기도목적 칩 — 마우스 3D 틸트
+  document.addEventListener('mousemove', e => {
+    document.querySelectorAll('.purpose-chip:not(.active)').forEach(chip => {
+      const r = chip.getBoundingClientRect();
+      const mx = e.clientX - r.left - r.width / 2;
+      const my = e.clientY - r.top - r.height / 2;
+      if (Math.abs(mx) < r.width && Math.abs(my) < r.height) {
+        const rx = (my / r.height) * 14;
+        const ry = -(mx / r.width) * 14;
+        chip.style.transform = `perspective(500px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+      } else {
+        chip.style.transform = '';
+      }
+    });
+  });
+
+  // ③ 제출 버튼 클릭 리플
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.submit-btn');
+    if (!btn) return;
+    const r = btn.getBoundingClientRect();
+    const span = document.createElement('span');
+    span.style.cssText = `position:absolute;width:0;height:0;border-radius:50%;background:rgba(255,255,255,.45);left:${e.clientX-r.left}px;top:${e.clientY-r.top}px;transform:translate(-50%,-50%);animation:ripple .65s ease-out forwards;pointer-events:none;`;
+    btn.appendChild(span);
+    setTimeout(() => span.remove(), 700);
+  });
+  if (!document.getElementById('ripple-kf')) {
+    const s = document.createElement('style');
+    s.id = 'ripple-kf';
+    s.textContent = `@keyframes ripple{to{width:320px;height:320px;opacity:0}}`;
+    document.head.appendChild(s);
+  }
+
+  // ④ SVG 테두리 빔 + 4각 코너 + 오행 칩 색상 태깅
+  function addBorderBeam() {
+    const card = document.querySelector('.form-card');
+    if (!card) return;
+    // 기존 제거 후 재생성
+    card.querySelectorAll('.form-beam-svg,.form-beam-wrap,.form-corner-glow').forEach(e=>e.remove());
+
+    const W = card.offsetWidth, H = card.offsetHeight, R = 20;
+    const perim = Math.round(2*(W+H) - (8-2*Math.PI)*R);
+    const bLen  = Math.round(perim * 0.13);
+    const d = `M${R},.5 H${W-R} Q${W-.5},.5 ${W-.5},${R} V${H-R} Q${W-.5},${H-.5} ${W-R},${H-.5} H${R} Q.5,${H-.5} .5,${H-R} V${R} Q.5,.5 ${R},.5Z`;
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS,'svg');
+    svg.setAttribute('class','form-beam-svg');
+    svg.setAttribute('width',W); svg.setAttribute('height',H);
+    svg.style.cssText='position:absolute;top:0;left:0;pointer-events:none;z-index:8;overflow:visible;';
+    svg.innerHTML=`
+      <defs>
+        <filter id="bGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="2.5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <path d="${d}" fill="none" stroke="rgba(184,137,43,.2)" stroke-width="1.5"/>
+      <path d="${d}" fill="none" stroke="rgba(255,240,150,.92)" stroke-width="2.5"
+            filter="url(#bGlow)" stroke-linecap="round" stroke-linejoin="round"
+            stroke-dasharray="${bLen} ${perim}" stroke-dashoffset="0">
+        <animate attributeName="stroke-dashoffset" from="0" to="-${perim+bLen}"
+                 dur="4s" repeatCount="indefinite" calcMode="linear"/>
+      </path>`;
+    card.appendChild(svg);
+
+    // 4각 코너 글로우
+    ['tl','tr','br','bl'].forEach(p=>{
+      const c=document.createElement('div');
+      c.className=`form-corner-glow ${p}`;
+      card.appendChild(c);
+    });
+  }
+
+  function tagOhaengChips() {
+    document.querySelectorAll('.purpose-chip').forEach(chip=>{
+      const t = chip.textContent;
+      if      (t.includes('재물')) chip.dataset.ohaeng='geum';
+      else if (t.includes('건강')) chip.dataset.ohaeng='to';
+      else if (t.includes('학업')) chip.dataset.ohaeng='su';
+      else if (t.includes('인연')) chip.dataset.ohaeng='hwa';
+      else if (t.includes('가정')) chip.dataset.ohaeng='mok';
+    });
+  }
+
+  addBorderBeam(); tagOhaengChips();
+
+  new MutationObserver(()=>{ addBorderBeam(); tagOhaengChips(); })
+    .observe(document.getElementById('app')||document.body,{childList:true,subtree:false});
+
+  // ⑤ 신뢰바 카운터 애니메이션
+  document.querySelectorAll('.trust-number').forEach(el => {
+    const spanEl = el.querySelector('span');
+    const suffix = spanEl ? spanEl.outerHTML : '';
+    const target = parseInt(el.textContent.replace(/\D/g, ''));
+    if (!target) return;
+    let t0 = null;
+    const dur = 1800;
+    const tick = ts => {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.innerHTML = Math.floor(ease * target).toLocaleString() + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+initPremiumEffects();
