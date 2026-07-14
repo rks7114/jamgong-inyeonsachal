@@ -1282,32 +1282,61 @@ function initPremiumEffects() {
     document.head.appendChild(s);
   }
 
-  // ④ 폼 카드 테두리 조명 빔 + 4각 코너 글로우
+  // ④ SVG 테두리 빔 + 4각 코너 + 오행 칩 색상 태깅
   function addBorderBeam() {
     const card = document.querySelector('.form-card');
-    if (!card || card.querySelector('.form-beam-wrap')) return;
+    if (!card) return;
+    // 기존 제거 후 재생성
+    card.querySelectorAll('.form-beam-svg,.form-beam-wrap,.form-corner-glow').forEach(e=>e.remove());
 
-    // 빔 레이어 (테두리만 보이도록 마스크)
-    const wrap = document.createElement('div');
-    wrap.className = 'form-beam-wrap';
-    card.insertBefore(wrap, card.firstChild);
+    const W = card.offsetWidth, H = card.offsetHeight, R = 20;
+    const perim = Math.round(2*(W+H) - (8-2*Math.PI)*R);
+    const bLen  = Math.round(perim * 0.13);
+    const d = `M${R},.5 H${W-R} Q${W-.5},.5 ${W-.5},${R} V${H-R} Q${W-.5},${H-.5} ${W-R},${H-.5} H${R} Q.5,${H-.5} .5,${H-R} V${R} Q.5,.5 ${R},.5Z`;
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS,'svg');
+    svg.setAttribute('class','form-beam-svg');
+    svg.setAttribute('width',W); svg.setAttribute('height',H);
+    svg.style.cssText='position:absolute;top:0;left:0;pointer-events:none;z-index:8;overflow:visible;';
+    svg.innerHTML=`
+      <defs>
+        <filter id="bGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="2.5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <path d="${d}" fill="none" stroke="rgba(184,137,43,.2)" stroke-width="1.5"/>
+      <path d="${d}" fill="none" stroke="rgba(255,240,150,.92)" stroke-width="2.5"
+            filter="url(#bGlow)" stroke-linecap="round" stroke-linejoin="round"
+            stroke-dasharray="${bLen} ${perim}" stroke-dashoffset="0">
+        <animate attributeName="stroke-dashoffset" from="0" to="-${perim+bLen}"
+                 dur="4s" repeatCount="indefinite" calcMode="linear"/>
+      </path>`;
+    card.appendChild(svg);
 
-    const disc = document.createElement('div');
-    disc.className = 'form-beam-disc';
-    wrap.appendChild(disc);
-
-    // 4각 코너 조명
-    ['tl','tr','br','bl'].forEach(p => {
-      const c = document.createElement('div');
-      c.className = `form-corner-glow ${p}`;
+    // 4각 코너 글로우
+    ['tl','tr','br','bl'].forEach(p=>{
+      const c=document.createElement('div');
+      c.className=`form-corner-glow ${p}`;
       card.appendChild(c);
     });
   }
-  addBorderBeam();
 
-  // SPA 라우팅 대응 (카드 재렌더 시 재적용)
-  new MutationObserver(addBorderBeam)
-    .observe(document.getElementById('app') || document.body, {childList:true, subtree:false});
+  function tagOhaengChips() {
+    document.querySelectorAll('.purpose-chip').forEach(chip=>{
+      const t = chip.textContent;
+      if      (t.includes('재물')) chip.dataset.ohaeng='geum';
+      else if (t.includes('건강')) chip.dataset.ohaeng='to';
+      else if (t.includes('학업')) chip.dataset.ohaeng='su';
+      else if (t.includes('인연')) chip.dataset.ohaeng='hwa';
+      else if (t.includes('가정')) chip.dataset.ohaeng='mok';
+    });
+  }
+
+  addBorderBeam(); tagOhaengChips();
+
+  new MutationObserver(()=>{ addBorderBeam(); tagOhaengChips(); })
+    .observe(document.getElementById('app')||document.body,{childList:true,subtree:false});
 
   // ⑤ 신뢰바 카운터 애니메이션
   document.querySelectorAll('.trust-number').forEach(el => {
