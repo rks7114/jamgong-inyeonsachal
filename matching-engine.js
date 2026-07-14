@@ -311,22 +311,30 @@ function matchTemples(request, templeDB) {
   // 좌표 정보 없는 사찰은 방위/거리 계산이 불가하므로 매칭 대상에서 제외
   const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
 
-  // 상위 30개 후보 풀 → 생년월일 시드로 3개 선택 (1,905개 사찰을 실질적으로 활용)
-  const POOL_SIZE = 30;
-  const topPool = validTemples
+  // 기도목적별 차별화 풀 구성:
+  //   - 1군(20개): 방위가 목적 오행과 일치(bangwiScore=40) → 기도목적에 맞는 방향 사찰
+  //   - 2군(10개): 나머지 최고점 사찰 (거리·신뢰도 우수)
+  // 같은 생년월일이라도 기도목적이 다르면 1군 풀이 달라져 다른 사찰 추천
+  const allScored = validTemples
     .map((t) => scoreTemple(t, matchContext))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, POOL_SIZE);
-  const PURPOSE_OFFSET = { 재물운: 0, 건강운: 11, 학업운: 17, 인연운: 23, 가정운: 29 };
-  const purposeOff = PURPOSE_OFFSET[request.purpose] || 0;
-  const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1) + purposeOff * 7) % POOL_SIZE + POOL_SIZE) % POOL_SIZE;
-  const selectedIdx = new Set();
-  for (let i = 0; selectedIdx.size < 3; i++) {
-    selectedIdx.add((seed + i * 7) % POOL_SIZE);
-  }
-  const scored = [...selectedIdx]
-    .sort((a, b) => a - b)
-    .map((idx) => ({ ...topPool[idx], reason: generateReason(topPool[idx], targetOhaeng, request.purpose) }));
+    .sort((a, b) => b.score - a.score);
+  const tier1 = allScored.filter((t) => t.detail.bangwiScore === 40).slice(0, 20);
+  const tier2 = allScored.filter((t) => t.detail.bangwiScore < 40).slice(0, 10);
+  const topPool = [...tier1, ...tier2];
+  const POOL_SIZE = topPool.length || 30;
+
+  const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1)) % POOL_SIZE + POOL_SIZE) % POOL_SIZE;
+  // tier1에서 2개, tier2에서 1개 선발 (기도목적 방향 사찰이 반드시 포함)
+  const tier1Size = tier1.length;
+  const getIdx = (base, step, max) => ((base + step * 7) % max + max) % max;
+  const idx0 = tier1Size > 0 ? getIdx(seed, 0, Math.max(tier1Size, 1)) : 0;
+  const idx1 = tier1Size > 1 ? getIdx(seed, 1, tier1Size) : Math.min(1, tier1Size - 1);
+  const idx2 = tier2.length > 0 ? getIdx(seed, 2, tier2.length) + tier1Size : getIdx(seed, 2, POOL_SIZE);
+  const selectedIdx = [idx0, idx1 === idx0 ? (idx0 + 1) % tier1Size : idx1, idx2];
+  const scored = selectedIdx
+    .map((idx) => topPool[Math.min(idx, POOL_SIZE - 1)])
+    .filter(Boolean)
+    .map((t) => ({ ...t, reason: generateReason(t, targetOhaeng, request.purpose) }));
 
   // 멤버십 회원은 확장된 캘린더(15일), 비회원은 기본(3일) — 클라이언트가 알려주는 소프트 게이팅
   const calendarCount = request.memberUnlocked ? 15 : 3;
@@ -376,22 +384,25 @@ function matchCoupleTemples(request, templeDB) {
   const ctxA = { targetOhaeng: targetA, personalOhaeng: findWeakOhaeng(distributionA).부족오행, distribution: distributionA, purpose, userLat, userLng, birthYear: biA.year||2000, birthMonth: biA.month||1, birthDay: biA.day||1 };
   const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB).부족오행, distribution: distributionB, purpose, userLat, userLng, birthYear: biB.year||2000, birthMonth: biB.month||1, birthDay: biB.day||1 };
   const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
-  const COUPLE_POOL = 30;
-  const couplePool = validTemples
+  const allCoupleScored = validTemples
     .map((t) => scoreTempleForCouple(t, ctxA, ctxB))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, COUPLE_POOL);
+    .sort((a, b) => b.score - a.score);
+  // 두 사람 중 한 명이라도 방위 일치(detailA 또는 detailB의 bangwiScore=40)하면 1군
+  const coupleT1 = allCoupleScored.filter((t) => t.detailA.bangwiScore === 40 || t.detailB.bangwiScore === 40).slice(0, 20);
+  const coupleT2 = allCoupleScored.filter((t) => t.detailA.bangwiScore < 40 && t.detailB.bangwiScore < 40).slice(0, 10);
+  const couplePool = [...coupleT1, ...coupleT2];
+  const COUPLE_POOL_SIZE = couplePool.length || 30;
 
-  const COUPLE_PURPOSE_OFFSET = { 재물운: 0, 건강운: 11, 학업운: 17, 인연운: 23, 가정운: 29 };
-  const couplePurpOff = COUPLE_PURPOSE_OFFSET[purpose] || 0;
-  const coupleSeed = (((biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13 + couplePurpOff * 7) % COUPLE_POOL + COUPLE_POOL) % COUPLE_POOL;
-  const coupleIdx = new Set();
-  for (let i = 0; coupleIdx.size < 3; i++) {
-    coupleIdx.add((coupleSeed + i * 7) % COUPLE_POOL);
-  }
-  const scored = [...coupleIdx]
-    .sort((a, b) => a - b)
-    .map((idx) => ({ ...couplePool[idx], reason: generateCoupleReason(couplePool[idx], targetA, targetB) }));
+  const coupleSeed = (((biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13) % COUPLE_POOL_SIZE + COUPLE_POOL_SIZE) % COUPLE_POOL_SIZE;
+  const ct1Size = coupleT1.length;
+  const ci0 = ct1Size > 0 ? ((coupleSeed) % ct1Size) : 0;
+  const ci1 = ct1Size > 1 ? ((coupleSeed + 7) % ct1Size) : Math.min(1, ct1Size - 1);
+  const ci2 = coupleT2.length > 0 ? ((coupleSeed + 13) % coupleT2.length) + ct1Size : ((coupleSeed + 13) % COUPLE_POOL_SIZE);
+  const coupleIdxList = [ci0, ci1 === ci0 ? (ci0 + 1) % Math.max(ct1Size, 1) : ci1, ci2];
+  const scored = coupleIdxList
+    .map((idx) => couplePool[Math.min(idx, COUPLE_POOL_SIZE - 1)])
+    .filter(Boolean)
+        .map((t) => ({ ...t, reason: generateCoupleReason(t, targetA, targetB) }));
   const calendarCount = memberUnlocked ? 15 : 3;
   return {
     distribution: distributionA,
@@ -404,8 +415,7 @@ function matchCoupleTemples(request, templeDB) {
 }
 
 module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, scoreTemple, getRecommendedDates };
-
-// ── 테스트 실행 (이 파일을 직접 node로 실행할 때만 동작, require 시에는 실행 안 함) ─────────────────────
+── 테스트 실행 (이 파일을 직접 node로 실행할 때만 동작, require 시에는 실행 안 함) ─────────────────────
 if (require.main === module) {
 const sampleTempleDB = [
   { id: "t1", name: "봉은사", lat: 37.5150, lng: 127.0578, verified: true, tags: ["관음도량", "인연"] },
