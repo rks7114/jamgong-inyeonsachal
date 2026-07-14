@@ -203,10 +203,19 @@ function scoreTemple(temple, matchContext) {
   const bangwiScore = templeOhaeng === targetOhaeng ? 40
     : (personalOhaeng && templeOhaeng === personalOhaeng ? 28 : 15);
 
-  // 1-b) 개인 공명 점수 (0~10점) — 사주에서 이 사찰 오행이 부족할수록 가산
-  const personalResonance = distribution
-    ? Math.max(0, (4 - (distribution[templeOhaeng] || 0))) * 2.5
-    : 0;
+  // 1-b) 개인 공명 점수 (0~20점) — 사주에서 이 사찰 오행이 부족할수록 강하게 가산
+  const personalNeed = distribution ? Math.max(0, 4 - (distribution[templeOhaeng] || 0)) : 2;
+  const personalResonance = personalNeed * 5; // 0~20점
+
+  // 1-c) 생년월일 친연도 (±5점) — 같은 점수대에서 생년월일마다 다른 사찰이 나오도록
+  const birthYear = matchContext.birthYear || 2000;
+  const birthMonth = matchContext.birthMonth || 1;
+  const birthDay = matchContext.birthDay || 1;
+  const templeKey = temple.id
+    ? (parseInt(String(temple.id).replace(/\D/g, "").slice(-3)) || temple.name.length)
+    : temple.name.charCodeAt(0);
+  const affinityRaw = (birthYear * 7 + birthMonth * 13 + birthDay * 3 + templeKey * 11) % 11;
+  const birthAffinity = affinityRaw - 5; // -5 ~ +5점
 
   // 2) 목적 태그 일치도 (30점)
   const purposeTagMap = {
@@ -235,7 +244,7 @@ function scoreTemple(temple, matchContext) {
   const synergyBangwiPurpose = Math.sqrt((bangwiScore / 40) * (purposeScore / 30)) * 100;
   const synergyBonus = BETA * synergyBangwiPurpose * 0.12; // 스케일 보정 (0~약 4.2점 가산)
 
-  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore + personalResonance;
+  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore + personalResonance + birthAffinity;
   const totalScore = linearScore + synergyBonus;
 
   return {
@@ -272,6 +281,7 @@ function matchTemples(request, templeDB) {
   const weak = findWeakOhaeng(distribution);
   const targetOhaeng = PURPOSE_OHAENG[request.purpose] || weak.부족오행;
 
+  const bi = request.birthInput ?? request.birthDateTime ?? {};
   const matchContext = {
     targetOhaeng,
     personalOhaeng: weak.부족오행,
@@ -279,16 +289,28 @@ function matchTemples(request, templeDB) {
     purpose: request.purpose,
     userLat: request.userLat,
     userLng: request.userLng,
+    birthYear: bi.year || 2000,
+    birthMonth: bi.month || 1,
+    birthDay: bi.day || 1,
   };
 
   // 좌표 정보 없는 사찰은 방위/거리 계산이 불가하므로 매칭 대상에서 제외
   const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
 
-  const scored = validTemples
+  // 상위 30개 후보 풀 → 생년월일 시드로 3개 선택 (1,905개 사찰을 실질적으로 활용)
+  const POOL_SIZE = 30;
+  const topPool = validTemples
     .map((t) => scoreTemple(t, matchContext))
     .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-    .map((r) => ({ ...r, reason: generateReason(r, targetOhaeng, request.purpose) }));
+    .slice(0, POOL_SIZE);
+  const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1)) % POOL_SIZE + POOL_SIZE) % POOL_SIZE;
+  const selectedIdx = new Set();
+  for (let i = 0; selectedIdx.size < 3; i++) {
+    selectedIdx.add((seed + i * 7) % POOL_SIZE);
+  }
+  const scored = [...selectedIdx]
+    .sort((a, b) => a - b)
+    .map((idx) => ({ ...topPool[idx], reason: generateReason(topPool[idx], targetOhaeng, request.purpose) }));
 
   // 멤버십 회원은 확장된 캘린더(15일), 비회원은 기본(3일) — 클라이언트가 알려주는 소프트 게이팅
   const calendarCount = request.memberUnlocked ? 15 : 3;
@@ -333,14 +355,25 @@ function matchCoupleTemples(request, templeDB) {
   const idealOhaeng = PURPOSE_OHAENG[purpose];
   const targetA = (distributionA[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionA).부족오행;
   const targetB = (distributionB[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionB).부족오행;
-  const ctxA = { targetOhaeng: targetA, personalOhaeng: findWeakOhaeng(distributionA).부족오행, distribution: distributionA, purpose, userLat, userLng };
-  const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB).부족오행, distribution: distributionB, purpose, userLat, userLng };
+  const biA = birthInputA ?? {};
+  const biB = birthInputB ?? {};
+  const ctxA = { targetOhaeng: targetA, personalOhaeng: findWeakOhaeng(distributionA).부족오행, distribution: distributionA, purpose, userLat, userLng, birthYear: biA.year||2000, birthMonth: biA.month||1, birthDay: biA.day||1 };
+  const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB).부족오행, distribution: distributionB, purpose, userLat, userLng, birthYear: biB.year||2000, birthMonth: biB.month||1, birthDay: biB.day||1 };
   const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
-  const scored = validTemples
+  const COUPLE_POOL = 30;
+  const couplePool = validTemples
     .map((t) => scoreTempleForCouple(t, ctxA, ctxB))
     .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-    .map((r) => ({ ...r, reason: generateCoupleReason(r, targetA, targetB) }));
+    .slice(0, COUPLE_POOL);
+
+  const coupleSeed = (((biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13) % COUPLE_POOL + COUPLE_POOL) % COUPLE_POOL;
+  const coupleIdx = new Set();
+  for (let i = 0; coupleIdx.size < 3; i++) {
+    coupleIdx.add((coupleSeed + i * 7) % COUPLE_POOL);
+  }
+  const scored = [...coupleIdx]
+    .sort((a, b) => a - b)
+    .map((idx) => ({ ...couplePool[idx], reason: generateCoupleReason(couplePool[idx], targetA, targetB) }));
   const calendarCount = memberUnlocked ? 15 : 3;
   return {
     distribution: distributionA,
