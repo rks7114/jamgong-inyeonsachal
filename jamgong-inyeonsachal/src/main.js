@@ -1060,10 +1060,22 @@ function initGuide() {
   });
 
   // ── 메시지 추가 ──
+  function stripMarkdown(text) {
+    return text
+      .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/[（(][一-龥]{1,4}[）)]/g, "")
+      .replace(/[·•]/g, " ")
+      .replace(/[#>`_~]/g, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }
+
   function addMessage(role, text) {
     const msgEl = document.createElement("div");
     msgEl.className = `guide-msg guide-msg-${role === "user" ? "user" : "bot"}`;
-    msgEl.textContent = text;
+    msgEl.textContent = role === "user" ? text : stripMarkdown(text);
     const container = document.getElementById("guide-messages");
     container.appendChild(msgEl);
     container.scrollTop = container.scrollHeight;
@@ -1161,7 +1173,9 @@ function initGuide() {
       micBtn.classList.remove("guide-mic-active");
       micBtn.textContent = "🎤";
       if (e.error === "not-allowed") {
-        alert("마이크 권한이 필요합니다.\n브라우저 주소창 왼쪽 자물쇠 아이콘 → 마이크 허용 후 다시 시도해주세요.");
+        addMessage("assistant", "🔒 마이크 권한이 필요해요. 주소창 왼쪽 🔒 아이콘을 클릭해 마이크를 '허용'으로 바꾼 뒤 다시 눌러보세요.");
+      } else if (e.error === "no-speech") {
+        addMessage("assistant", "소리가 감지되지 않았어요. 마이크에 가까이 다시 말씀해 주세요.");
       }
     };
 
