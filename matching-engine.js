@@ -317,7 +317,9 @@ function matchTemples(request, templeDB) {
     .map((t) => scoreTemple(t, matchContext))
     .sort((a, b) => b.score - a.score)
     .slice(0, POOL_SIZE);
-  const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1)) % POOL_SIZE + POOL_SIZE) % POOL_SIZE;
+  const PURPOSE_OFFSET = { 재물운: 0, 건강운: 11, 학업운: 17, 인연운: 23, 가정운: 29 };
+  const purposeOff = PURPOSE_OFFSET[request.purpose] || 0;
+  const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1) + purposeOff * 7) % POOL_SIZE + POOL_SIZE) % POOL_SIZE;
   const selectedIdx = new Set();
   for (let i = 0; selectedIdx.size < 3; i++) {
     selectedIdx.add((seed + i * 7) % POOL_SIZE);
@@ -380,7 +382,9 @@ function matchCoupleTemples(request, templeDB) {
     .sort((a, b) => b.score - a.score)
     .slice(0, COUPLE_POOL);
 
-  const coupleSeed = (((biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13) % COUPLE_POOL + COUPLE_POOL) % COUPLE_POOL;
+  const COUPLE_PURPOSE_OFFSET = { 재물운: 0, 건강운: 11, 학업운: 17, 인연운: 23, 가정운: 29 };
+  const couplePurpOff = COUPLE_PURPOSE_OFFSET[purpose] || 0;
+  const coupleSeed = (((biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13 + couplePurpOff * 7) % COUPLE_POOL + COUPLE_POOL) % COUPLE_POOL;
   const coupleIdx = new Set();
   for (let i = 0; coupleIdx.size < 3; i++) {
     coupleIdx.add((coupleSeed + i * 7) % COUPLE_POOL);
