@@ -435,6 +435,10 @@ function render() {
           body: JSON.stringify({ birthInputA: birthInput, birthInputB, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember() }),
         });
         const data = await res.json();
+        if (data.error) {
+          alert(`오류가 발생했습니다: ${data.error}\n생년월일을 다시 확인해주세요.`);
+          return;
+        }
         data.purpose = selectedPurpose;
         renderCoupleResults(data);
       } else {

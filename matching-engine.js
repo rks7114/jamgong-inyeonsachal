@@ -124,7 +124,21 @@ function getRecommendedDates(targetOhaeng, daysAhead = 30, maxResults = 5) {
 
 /** 사주 8글자(4주 × 천간/지지) → 오행 분포 카운트 (실제 만세력 기반) */
 function calculateOhaeng(birthDateTime) {
-  const bazi = getEightChar(birthDateTime);
+  let bazi;
+  try {
+    bazi = getEightChar(birthDateTime);
+  } catch (e) {
+    // 음력→양력 변환 실패 시 양력으로 재시도
+    if (birthDateTime && typeof birthDateTime === "object" && birthDateTime.calendarType === "lunar") {
+      try {
+        bazi = getEightChar({ ...birthDateTime, calendarType: "solar" });
+      } catch (e2) {
+        bazi = getEightChar({ calendarType: "solar", year: birthDateTime.year || 1990, month: birthDateTime.month || 1, day: 1, hour: 12, minute: 0 });
+      }
+    } else {
+      throw e;
+    }
+  }
   const dist = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
 
   // 각 기둥의 "천간오행+지지오행" 두 글자(예: "金金")를 분해해 카운트
@@ -303,8 +317,6 @@ function matchTemples(request, templeDB) {
     .map((t) => scoreTemple(t, matchContext))
     .sort((a, b) => b.score - a.score)
     .slice(0, POOL_SIZE);
-
-  const bi = request.birthInput ?? request.birthDateTime ?? {};
   const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1)) % POOL_SIZE + POOL_SIZE) % POOL_SIZE;
   const selectedIdx = new Set();
   for (let i = 0; selectedIdx.size < 3; i++) {
