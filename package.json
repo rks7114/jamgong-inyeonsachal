@@ -1,6 +1,6 @@
 {
   "name": "jamgong-inyeonsachal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "잼공인연사찰 - 생년월일시 기반 오행 사찰 매칭 서비스",
   "scripts": {
