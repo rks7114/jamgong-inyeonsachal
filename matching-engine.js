@@ -192,15 +192,21 @@ function bearingToOhaeng(bearing) {
 /**
  * 사찰 스코어링
  * @param {object} temple - {id, name, lat, lng, verified, tags}
- * @param {object} matchContext - {targetOhaeng, purpose, userLat, userLng}
+ * @param {object} matchContext - {targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng}
  */
 function scoreTemple(temple, matchContext) {
-  const { targetOhaeng, purpose, userLat, userLng } = matchContext;
+  const { targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng } = matchContext;
 
-  // 1) 방위 적합도 (40점)
+  // 1) 방위 적합도 (40점) — 목적 오행 완전일치 40, 개인 부족오행 일치 28, 불일치 15
   const bearing = calculateBearing(userLat, userLng, temple.lat, temple.lng);
   const templeOhaeng = bearingToOhaeng(bearing);
-  const bangwiScore = templeOhaeng === targetOhaeng ? 40 : 15;
+  const bangwiScore = templeOhaeng === targetOhaeng ? 40
+    : (personalOhaeng && templeOhaeng === personalOhaeng ? 28 : 15);
+
+  // 1-b) 개인 공명 점수 (0~20점) — 사주에서 이 사찰 오행이 부족할수록 강하게 가산
+  //      방위가 맞아도 이미 그 오행이 많으면 감점, 없으면 최대 가산 → 생년월일별 차별화
+  const personalNeed = distribution ? Math.max(0, 4 - (distribution[templeOhaeng] || 0)) : 2;
+  const personalResonance = personalNeed * 5; // 0~20점
 
   // 2) 목적 태그 일치도 (30점)
   const purposeTagMap = {
@@ -229,7 +235,7 @@ function scoreTemple(temple, matchContext) {
   const synergyBangwiPurpose = Math.sqrt((bangwiScore / 40) * (purposeScore / 30)) * 100;
   const synergyBonus = BETA * synergyBangwiPurpose * 0.12; // 스케일 보정 (0~약 4.2점 가산)
 
-  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore;
+  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore + personalResonance;
   const totalScore = linearScore + synergyBonus;
 
   return {
@@ -268,6 +274,8 @@ function matchTemples(request, templeDB) {
 
   const matchContext = {
     targetOhaeng,
+    personalOhaeng: weak.부족오행,
+    distribution,
     purpose: request.purpose,
     userLat: request.userLat,
     userLng: request.userLng,
@@ -325,8 +333,8 @@ function matchCoupleTemples(request, templeDB) {
   const idealOhaeng = PURPOSE_OHAENG[purpose];
   const targetA = (distributionA[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionA).부족오행;
   const targetB = (distributionB[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionB).부족오행;
-  const ctxA = { targetOhaeng: targetA, purpose, userLat, userLng };
-  const ctxB = { targetOhaeng: targetB, purpose, userLat, userLng };
+  const ctxA = { targetOhaeng: targetA, personalOhaeng: findWeakOhaeng(distributionA).부족오행, distribution: distributionA, purpose, userLat, userLng };
+  const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB).부족오행, distribution: distributionB, purpose, userLat, userLng };
   const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
   const scored = validTemples
     .map((t) => scoreTempleForCouple(t, ctxA, ctxB))
