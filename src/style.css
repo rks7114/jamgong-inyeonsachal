@@ -1264,7 +1264,7 @@ body {
   white-space: nowrap;
 }
 
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(10px); }
