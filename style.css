@@ -2512,31 +2512,19 @@ body::before {
    새벽 산안개, 청산(靑山), 단청(丹靑) 붉음, 먹빛 하늘
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-/* 전체 배경 — 산사 새벽녘: 먹빛 + 청산 안개 */
+/* 전체 배경 — 한지 느낌의 깔끔한 베이지 */
 body {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(30,48,80,0.18) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 40% at 10% 60%, rgba(40,70,55,0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 45% at 90% 70%, rgba(50,35,20,0.10) 0%, transparent 50%),
-    radial-gradient(ellipse 40% 30% at 70% 20%, rgba(162,59,46,0.05) 0%, transparent 45%),
-    linear-gradient(175deg, #EAE0CC 0%, #E2D5B5 40%, #D8C99A 100%) !important;
+  background: linear-gradient(180deg, #E8DCC8 0%, #DDD0B4 100%) !important;
   min-height: 100vh !important;
 }
 
-/* 배경 오버레이 — 청산 실루엣 암시 */
+/* 배경 오버레이 — 최소화 (히어로와 간섭 없이) */
 body::before {
   content: "" !important;
   position: fixed !important;
   inset: 0 !important;
   background:
-    /* 왼쪽 원경 산그림자 */
-    radial-gradient(ellipse 40% 60% at -5% 80%, rgba(50,70,55,0.13) 0%, transparent 55%),
-    /* 오른쪽 근경 산그림자 */
-    radial-gradient(ellipse 35% 55% at 105% 75%, rgba(40,55,45,0.11) 0%, transparent 50%),
-    /* 중앙 하단 지평선 안개 */
-    radial-gradient(ellipse 100% 20% at 50% 100%, rgba(230,220,195,0.6) 0%, transparent 70%),
-    /* 단청 붉음 — 멀리서 보이는 불빛 같은 */
-    radial-gradient(ellipse 25% 20% at 80% 15%, rgba(162,59,46,0.06) 0%, transparent 60%) !important;
+    radial-gradient(ellipse 70% 30% at 50% 100%, rgba(184,137,43,0.07) 0%, transparent 60%) !important;
   pointer-events: none !important;
   z-index: 0 !important;
 }
