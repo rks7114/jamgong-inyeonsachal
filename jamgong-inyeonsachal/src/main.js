@@ -515,6 +515,7 @@ function renderCoupleResults(data) {
               ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
             </div>
           ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
+          <button type="button" class="detail-view-btn couple-detail-btn" data-temple-index="${i}">상세페이지 보기 →</button>
         </div>
       </div>
     `).join("")}
@@ -552,6 +553,14 @@ function renderCoupleResults(data) {
   }
 
   document.getElementById("share-btn").addEventListener("click", () => shareResult(data));
+
+  document.querySelectorAll(".couple-detail-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.templeIndex);
+      renderTempleDetailPage(data.results[idx], data, memberUnlocked);
+    });
+  });
+
   resultsEl.scrollIntoView({ behavior: "smooth" });
 }
 
