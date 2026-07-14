@@ -719,47 +719,66 @@ function renderResults(data) {
   resultsEl.scrollIntoView({ behavior: "smooth" });
 }
 
-/** 결과 공유 — Web Share API 지원 시 네이티브 공유창(카카오톡 포함), 미지원 시 클립보드 복사 */
-async function shareResult(data) {
+/** 공유 모달 표시 */
+function showShareModal(text, url) {
+  const existing = document.getElementById("share-modal-overlay");
+  if (existing) existing.remove();
+
+  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  const fullText = `${text}\n${url}`;
+
+  const overlay = document.createElement("div");
+  overlay.id = "share-modal-overlay";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;";
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:24px;width:min(340px,90vw);box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+      <div style="font-size:17px;font-weight:700;margin-bottom:16px;color:#222;">공유하기</div>
+      <div style="background:#f5f5f5;border-radius:10px;padding:12px;font-size:13px;color:#222;margin-bottom:16px;word-break:break-all;">${text}<br/><span style="color:#555;">${url}</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button id="share-copy-btn" style="padding:12px;border:none;border-radius:10px;background:#B8892B;color:#fff;font-size:15px;font-weight:600;cursor:pointer;">📋 링크 복사</button>
+        ${isMobile ? `<button id="share-native-btn" style="padding:12px;border:none;border-radius:10px;background:#3C1E1E;color:#fff;font-size:15px;font-weight:600;cursor:pointer;">📤 카카오톡·기타 앱으로 공유</button>` : ""}
+        <button id="share-close-btn" style="padding:10px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:14px;cursor:pointer;">닫기</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById("share-copy-btn").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(fullText);
+      document.getElementById("share-copy-btn").textContent = "✅ 복사 완료!";
+      setTimeout(() => overlay.remove(), 1200);
+    } catch {
+      prompt("아래 텍스트를 복사하세요 (Ctrl+C):", fullText);
+    }
+  });
+
+  if (isMobile) {
+    document.getElementById("share-native-btn")?.addEventListener("click", async () => {
+      try {
+        await navigator.share({ text: fullText });
+      } catch {}
+      overlay.remove();
+    });
+  }
+
+  document.getElementById("share-close-btn").addEventListener("click", () => overlay.remove());
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+/** 결과 공유 */
+function shareResult(data) {
   const topTemple = data.results[0]?.temple.name || "";
   const shareText = `[잼공인연사찰] 제 부족한 기운은 ${data.targetOhaeng}이고, 인연 닿는 절은 "${topTemple}"이래요. 궁금하면 확인해보세요 🙏`;
-  const shareUrl = window.location.origin;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: "잼공인연사찰 결과", text: shareText, url: shareUrl });
-    } catch (e) {
-      // 사용자가 공유 취소한 경우 등 — 무시
-    }
-  } else {
-    try {
-      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-      alert("결과가 클립보드에 복사되었습니다. 카카오톡 등에 붙여넣기 해주세요.");
-    } catch (e) {
-      alert("공유하기를 지원하지 않는 환경입니다.");
-    }
-  }
+  showShareModal(shareText, window.location.origin);
 }
 
 /** 특정 사찰 상세페이지 단독 공유 */
-async function shareTemple(temple) {
+function shareTemple(temple) {
   const shareText = `[잼공인연사찰] "${temple.name}" — 나와 인연이 닿는 절이래요. 🙏`;
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${temple.lat},${temple.lng}`;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: `${temple.name} — 잼공인연사찰`, text: shareText, url: mapUrl });
-    } catch (e) {
-      // 취소 — 무시
-    }
-  } else {
-    try {
-      await navigator.clipboard.writeText(`${shareText} ${mapUrl}`);
-      alert("사찰 정보가 클립보드에 복사되었습니다.");
-    } catch (e) {
-      alert("공유하기를 지원하지 않는 환경입니다.");
-    }
-  }
+  showShareModal(shareText, mapUrl);
 }
 
 /** 사찰 상세페이지 — 지도 미리보기, 전체 정보를 한 화면에 모아 보여줌 */
