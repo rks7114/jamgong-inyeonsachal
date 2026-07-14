@@ -311,9 +311,10 @@ function matchTemples(request, templeDB) {
   // 좌표 정보 없는 사찰은 방위/거리 계산이 불가하므로 매칭 대상에서 제외
   const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
 
-  // ── 목적 오행 방위 기반 사찰 선택 ──────────────────────────────────────
-  // 목적이 다르면 targetOhaeng이 달라지고 → purposeBearings가 달라져 → 완전히 다른 사찰 풀 구성
-  // (태그 데이터 없이도 방위만으로 5가지 목적이 서로 다른 결과를 보장)
+  // ── 목적 방위 보너스 기반 사찰 선택 ──────────────────────────────────────
+  // 방위 일치 사찰에 200점 보너스 → 목적별 방위가 달라지므로 순위가 바뀌어 다른 사찰이 나옴
+  // 보너스(200) > 개인 속성 합산 최대치(bangwi25 + purpose20 + resonance20 + affinity10 = 75)이므로
+  // 방위 일치 사찰이 항상 상위를 점유. 해당 방위 사찰이 없는 경우에만 일반 사찰로 자연 보충.
   const DIR_OHAENG = { 동:"목", 동북:"목", 북:"수", 남서:"토", 남:"화", 동남:"화", 서:"금", 북서:"금" };
   const purposeBearings = Object.keys(DIR_OHAENG).filter(k => DIR_OHAENG[k] === targetOhaeng);
 
@@ -321,24 +322,19 @@ function matchTemples(request, templeDB) {
     .map((t) => scoreTemple(t, matchContext))
     .sort((a, b) => b.score - a.score);
 
-  // 목적 방위 일치 사찰 상위 10개 → 생년월일 시드로 3개 선택
-  const dirPool = allScored.filter(t => purposeBearings.includes(t.detail.bearing)).slice(0, 10);
-  const dirOthers = allScored.filter(t => !purposeBearings.includes(t.detail.bearing));
+  // 방위 보너스 적용 후 재정렬 → 상위 20개 풀
+  const rankedPool = allScored
+    .map(t => ({ ...t, _rank: t.score + (purposeBearings.includes(t.detail.bearing) ? 200 : 0) }))
+    .sort((a, b) => b._rank - a._rank)
+    .slice(0, 20);
 
-  const poolLen = Math.max(dirPool.length, 1);
-  const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1)) % poolLen + poolLen) % poolLen;
-
-  const numFromDir = Math.min(3, dirPool.length);
-  const scored = [];
-  for (let i = 0; i < numFromDir; i++) {
-    const t = dirPool[(seed + i) % dirPool.length];
-    scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose) });
-  }
-  // 방위 일치 사찰이 3개 미만이면 다른 방위 사찰로 보충
-  for (let i = 0; scored.length < 3 && i < dirOthers.length; i++) {
-    const t = dirOthers[i];
-    scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose) });
-  }
+  // 생년월일 시드로 상위 20개 중 시작점 결정 → 생년월일별 다른 사찰
+  const PICK_POOL = Math.min(10, rankedPool.length);
+  const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1)) % PICK_POOL + PICK_POOL) % PICK_POOL;
+  const scored = [0, 1, 2].map(i => {
+    const t = rankedPool[(seed + i) % rankedPool.length];
+    return { ...t, reason: generateReason(t, targetOhaeng, request.purpose) };
+  });
 
   // 멤버십 회원은 확장된 캘린더(15일), 비회원은 기본(3일) — 클라이언트가 알려주는 소프트 게이팅
   const calendarCount = request.memberUnlocked ? 15 : 3;
@@ -389,7 +385,7 @@ function matchCoupleTemples(request, templeDB) {
   const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB).부족오행, distribution: distributionB, purpose, userLat, userLng, birthYear: biB.year||2000, birthMonth: biB.month||1, birthDay: biB.day||1 };
   const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
 
-  // 궁합: 두 사람의 목적 방위 합집합 기반으로 사찰 풀 구성 → 목적별 다른 결과 보장
+  // 궁합: 두 사람의 목적 방위 합집합에 보너스 200점 → 목적별 다른 결과 보장
   const DIR_OHAENG_C = { 동:"목", 동북:"목", 북:"수", 남서:"토", 남:"화", 동남:"화", 서:"금", 북서:"금" };
   const coupleBearings = [...new Set([
     ...Object.keys(DIR_OHAENG_C).filter(k => DIR_OHAENG_C[k] === targetA),
@@ -400,22 +396,17 @@ function matchCoupleTemples(request, templeDB) {
     .map((t) => scoreTempleForCouple(t, ctxA, ctxB))
     .sort((a, b) => b.score - a.score);
 
-  const coupleDirPool = allCoupleScored.filter(t => coupleBearings.includes(t.detail.bearing)).slice(0, 10);
-  const coupleDirOthers = allCoupleScored.filter(t => !coupleBearings.includes(t.detail.bearing));
+  const coupleRankedPool = allCoupleScored
+    .map(t => ({ ...t, _rank: t.score + (coupleBearings.includes(t.detail.bearing) ? 200 : 0) }))
+    .sort((a, b) => b._rank - a._rank)
+    .slice(0, 20);
 
-  const cPoolLen = Math.max(coupleDirPool.length, 1);
-  const coupleSeed = (((biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13) % cPoolLen + cPoolLen) % cPoolLen;
-
-  const numFromCoupleDir = Math.min(3, coupleDirPool.length);
-  const scored = [];
-  for (let i = 0; i < numFromCoupleDir; i++) {
-    const t = coupleDirPool[(coupleSeed + i) % coupleDirPool.length];
-    scored.push({ ...t, reason: generateCoupleReason(t, targetA, targetB) });
-  }
-  for (let i = 0; scored.length < 3 && i < coupleDirOthers.length; i++) {
-    const t = coupleDirOthers[i];
-    scored.push({ ...t, reason: generateCoupleReason(t, targetA, targetB) });
-  }
+  const COUPLE_PICK = Math.min(10, coupleRankedPool.length);
+  const coupleSeed = (((biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13) % COUPLE_PICK + COUPLE_PICK) % COUPLE_PICK;
+  const scored = [0, 1, 2].map(i => {
+    const t = coupleRankedPool[(coupleSeed + i) % coupleRankedPool.length];
+    return { ...t, reason: generateCoupleReason(t, targetA, targetB) };
+  });
   const calendarCount = memberUnlocked ? 15 : 3;
   return {
     distribution: distributionA,
