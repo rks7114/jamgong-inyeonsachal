@@ -1126,24 +1126,54 @@ function initGuide() {
     recognition.lang = "ko-KR";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
+    recognition.continuous = false;
 
     let listening = false;
-    recognition.onstart = () => { listening = true; micBtn.classList.add("guide-mic-active"); micBtn.textContent = "🔴"; };
-    recognition.onend = () => { listening = false; micBtn.classList.remove("guide-mic-active"); micBtn.textContent = "🎤"; };
+
+    recognition.onstart = () => {
+      listening = true;
+      micBtn.classList.add("guide-mic-active");
+      micBtn.textContent = "🔴";
+      micBtn.title = "듣는 중... 클릭하면 중지";
+    };
+    recognition.onend = () => {
+      listening = false;
+      micBtn.classList.remove("guide-mic-active");
+      micBtn.textContent = "🎤";
+      micBtn.title = "음성으로 질문";
+    };
     recognition.onresult = (e) => {
       const transcript = e.results[0][0].transcript;
       document.getElementById("guide-input").value = transcript;
       sendMessage(transcript);
     };
-    recognition.onerror = () => { micBtn.textContent = "🎤"; listening = false; };
+    recognition.onerror = (e) => {
+      listening = false;
+      micBtn.classList.remove("guide-mic-active");
+      micBtn.textContent = "🎤";
+      if (e.error === "not-allowed") {
+        alert("마이크 권한이 필요합니다.\n브라우저 주소창 왼쪽 자물쇠 아이콘 → 마이크 허용 후 다시 시도해주세요.");
+      }
+    };
 
-    micBtn.addEventListener("click", () => {
-      if (listening) { recognition.stop(); }
-      else { recognition.start(); }
+    micBtn.addEventListener("click", async () => {
+      if (listening) {
+        recognition.stop();
+        return;
+      }
+      // 마이크 권한 먼저 요청
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        recognition.start();
+      } catch {
+        alert("마이크 권한이 필요합니다.\n브라우저 주소창 왼쪽 자물쇠 아이콘 → 마이크 허용 후 다시 시도해주세요.");
+      }
     });
   } else {
-    micBtn.title = "이 브라우저는 음성 입력을 지원하지 않습니다";
-    micBtn.style.opacity = "0.4";
+    // SpeechRecognition 미지원 브라우저 — 클릭 시 안내
+    micBtn.addEventListener("click", () => {
+      alert("음성 입력은 Chrome 또는 Edge 브라우저에서 지원됩니다.");
+    });
   }
 }
 
