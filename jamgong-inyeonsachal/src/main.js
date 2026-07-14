@@ -1282,7 +1282,34 @@ function initPremiumEffects() {
     document.head.appendChild(s);
   }
 
-  // ④ 신뢰바 카운터 애니메이션
+  // ④ 폼 카드 테두리 조명 빔 + 4각 코너 글로우
+  function addBorderBeam() {
+    const card = document.querySelector('.form-card');
+    if (!card || card.querySelector('.form-beam-wrap')) return;
+
+    // 빔 레이어 (테두리만 보이도록 마스크)
+    const wrap = document.createElement('div');
+    wrap.className = 'form-beam-wrap';
+    card.insertBefore(wrap, card.firstChild);
+
+    const disc = document.createElement('div');
+    disc.className = 'form-beam-disc';
+    wrap.appendChild(disc);
+
+    // 4각 코너 조명
+    ['tl','tr','br','bl'].forEach(p => {
+      const c = document.createElement('div');
+      c.className = `form-corner-glow ${p}`;
+      card.appendChild(c);
+    });
+  }
+  addBorderBeam();
+
+  // SPA 라우팅 대응 (카드 재렌더 시 재적용)
+  new MutationObserver(addBorderBeam)
+    .observe(document.getElementById('app') || document.body, {childList:true, subtree:false});
+
+  // ⑤ 신뢰바 카운터 애니메이션
   document.querySelectorAll('.trust-number').forEach(el => {
     const spanEl = el.querySelector('span');
     const suffix = spanEl ? spanEl.outerHTML : '';
