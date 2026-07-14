@@ -311,23 +311,30 @@ function matchTemples(request, templeDB) {
   // 좌표 정보 없는 사찰은 방위/거리 계산이 불가하므로 매칭 대상에서 제외
   const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
 
-  // 기도목적별 점수로 정렬 → 상위 100개 풀 → 생년월일 시드로 3개 선택
-  // 목적이 다르면 bangwiScore·purposeScore가 달라져 순위(rank)가 달라지므로
-  // 같은 위치값(seed)이어도 다른 사찰이 선택됨
-  const POOL_SIZE = 100;
-  const topPool = validTemples
-    .map((t) => scoreTemple(t, matchContext))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, POOL_SIZE);
+  // ── 목적 방위 보너스 기반 사찰 선택 ──────────────────────────────────────
+  // 방위 일치 사찰에 200점 보너스 → 목적별 방위가 달라지므로 순위가 바뀌어 다른 사찰이 나옴
+  // 보너스(200) > 개인 속성 합산 최대치(bangwi25 + purpose20 + resonance20 + affinity10 = 75)이므로
+  // 방위 일치 사찰이 항상 상위를 점유. 해당 방위 사찰이 없는 경우에만 일반 사찰로 자연 보충.
+  const DIR_OHAENG = { 동:"목", 동북:"목", 북:"수", 남서:"토", 남:"화", 동남:"화", 서:"금", 북서:"금" };
+  const purposeBearings = Object.keys(DIR_OHAENG).filter(k => DIR_OHAENG[k] === targetOhaeng);
 
-  const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1)) % POOL_SIZE + POOL_SIZE) % POOL_SIZE;
-  // 스트라이드 31(소수): seed, seed+31, seed+62 위치 → 풀 전체에 고르게 분산
-  const selectedIdx = new Set();
-  for (let i = 0; selectedIdx.size < 3 && i < POOL_SIZE; i++) {
-    selectedIdx.add((seed + i * 31) % POOL_SIZE);
-  }
-  const scored = [...selectedIdx]
-    .map((idx) => ({ ...topPool[idx], reason: generateReason(topPool[idx], targetOhaeng, request.purpose) }));
+  const allScored = validTemples
+    .map((t) => scoreTemple(t, matchContext))
+    .sort((a, b) => b.score - a.score);
+
+  // 방위 보너스 적용 후 재정렬 → 상위 20개 풀
+  const rankedPool = allScored
+    .map(t => ({ ...t, _rank: t.score + (purposeBearings.includes(t.detail.bearing) ? 200 : 0) }))
+    .sort((a, b) => b._rank - a._rank)
+    .slice(0, 20);
+
+  // 생년월일 시드로 상위 20개 중 시작점 결정 → 생년월일별 다른 사찰
+  const PICK_POOL = Math.min(10, rankedPool.length);
+  const seed = (((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1)) % PICK_POOL + PICK_POOL) % PICK_POOL;
+  const scored = [0, 1, 2].map(i => {
+    const t = rankedPool[(seed + i) % rankedPool.length];
+    return { ...t, reason: generateReason(t, targetOhaeng, request.purpose) };
+  });
 
   // 멤버십 회원은 확장된 캘린더(15일), 비회원은 기본(3일) — 클라이언트가 알려주는 소프트 게이팅
   const calendarCount = request.memberUnlocked ? 15 : 3;
@@ -377,19 +384,29 @@ function matchCoupleTemples(request, templeDB) {
   const ctxA = { targetOhaeng: targetA, personalOhaeng: findWeakOhaeng(distributionA).부족오행, distribution: distributionA, purpose, userLat, userLng, birthYear: biA.year||2000, birthMonth: biA.month||1, birthDay: biA.day||1 };
   const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB).부족오행, distribution: distributionB, purpose, userLat, userLng, birthYear: biB.year||2000, birthMonth: biB.month||1, birthDay: biB.day||1 };
   const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
-  const COUPLE_POOL_SIZE = 100;
-  const couplePool = validTemples
-    .map((t) => scoreTempleForCouple(t, ctxA, ctxB))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, COUPLE_POOL_SIZE);
 
-  const coupleSeed = (((biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13) % COUPLE_POOL_SIZE + COUPLE_POOL_SIZE) % COUPLE_POOL_SIZE;
-  const coupleSelectedIdx = new Set();
-  for (let i = 0; coupleSelectedIdx.size < 3 && i < COUPLE_POOL_SIZE; i++) {
-    coupleSelectedIdx.add((coupleSeed + i * 31) % COUPLE_POOL_SIZE);
-  }
-  const scored = [...coupleSelectedIdx]
-    .map((idx) => ({ ...couplePool[idx], reason: generateCoupleReason(couplePool[idx], targetA, targetB) }));
+  // 궁합: 두 사람의 목적 방위 합집합에 보너스 200점 → 목적별 다른 결과 보장
+  const DIR_OHAENG_C = { 동:"목", 동북:"목", 북:"수", 남서:"토", 남:"화", 동남:"화", 서:"금", 북서:"금" };
+  const coupleBearings = [...new Set([
+    ...Object.keys(DIR_OHAENG_C).filter(k => DIR_OHAENG_C[k] === targetA),
+    ...Object.keys(DIR_OHAENG_C).filter(k => DIR_OHAENG_C[k] === targetB),
+  ])];
+
+  const allCoupleScored = validTemples
+    .map((t) => scoreTempleForCouple(t, ctxA, ctxB))
+    .sort((a, b) => b.score - a.score);
+
+  const coupleRankedPool = allCoupleScored
+    .map(t => ({ ...t, _rank: t.score + (coupleBearings.includes(t.detail.bearing) ? 200 : 0) }))
+    .sort((a, b) => b._rank - a._rank)
+    .slice(0, 20);
+
+  const COUPLE_PICK = Math.min(10, coupleRankedPool.length);
+  const coupleSeed = (((biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13) % COUPLE_PICK + COUPLE_PICK) % COUPLE_PICK;
+  const scored = [0, 1, 2].map(i => {
+    const t = coupleRankedPool[(coupleSeed + i) % coupleRankedPool.length];
+    return { ...t, reason: generateCoupleReason(t, targetA, targetB) };
+  });
   const calendarCount = memberUnlocked ? 15 : 3;
   return {
     distribution: distributionA,
@@ -405,27 +422,22 @@ module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOh
 // ── 테스트 실행 (이 파일을 직접 node로 실행할 때만 동작, require 시에는 실행 안 함) ─────────────────────
 if (require.main === module) {
 const sampleTempleDB = [
-  { id: "t1", name: "봉은사", lat: 37.5150, lng: 127.0578, verified: true, tags: ["관음도량", "인연"] },
-  { id: "t2", name: "조계사", lat: 37.5735, lng: 126.9822, verified: true, tags: ["전통명찰"] },
-  { id: "t3", name: "도선사", lat: 37.6486, lng: 126.9847, verified: true, tags: ["기도영험", "재물"] },
-  { id: "t4", name: "화계사", lat: 37.6321, lng: 127.0016, verified: false, tags: ["약사도량"] },
-  { id: "t5", name: "진관사", lat: 37.6198, lng: 126.9284, verified: true, tags: ["평안", "가족"] },
+  { id: "t1", name: "봉은사", lat: 37.5150, lng: 127.0578, verified: true, tags: [] },
+  { id: "t2", name: "조계사", lat: 37.5735, lng: 126.9822, verified: true, tags: [] },
+  { id: "t3", name: "도선사", lat: 37.6486, lng: 126.9847, verified: true, tags: [] },
+  { id: "t4", name: "화계사", lat: 37.6321, lng: 127.0016, verified: false, tags: [] },
+  { id: "t5", name: "진관사", lat: 37.6198, lng: 126.9284, verified: true, tags: [] },
 ];
-
 const testRequest = {
   birthDateTime: "1975-03-15T08:00:00",
   purpose: "인연운",
-  userLat: 37.5665, // 서울시청 기준
+  userLat: 37.5665,
   userLng: 126.9780,
 };
-
 const result = matchTemples(testRequest, sampleTempleDB);
-
 console.log("=== 오행 분포 ===");
 console.log(result.distribution);
-console.log("\n=== 부족 오행(참고) ===");
-console.log(result.weak);
-console.log("\n=== 매칭 대상 오행(기도목적 기준) ===");
+console.log("\n=== 매칭 대상 오행 ===");
 console.log(result.targetOhaeng);
 console.log("\n=== 추천 결과 (상위 3개) ===");
 result.results.forEach((r, i) => {
