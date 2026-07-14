@@ -1192,3 +1192,113 @@ function initGuide() {
 }
 
 initGuide();
+
+// ── 프리미엄 AI 인터랙션 ─────────────────────────────
+function initPremiumEffects() {
+
+  // ① 히어로 파티클 캔버스 (금빛 · 흰빛 부유 입자)
+  const heroEl = document.querySelector('.hero');
+  if (heroEl) {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:1;width:100%;height:100%;opacity:0.7;';
+    heroEl.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    const resize = () => { canvas.width = heroEl.offsetWidth; canvas.height = heroEl.offsetHeight; };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const pts = Array.from({length: 50}, () => ({
+      x: Math.random(), y: Math.random(),
+      r: Math.random() * 2 + 0.4,
+      vy: -(Math.random() * 0.3 + 0.1),
+      vx: (Math.random() - 0.5) * 0.15,
+      life: Math.random(),
+      gold: Math.random() > 0.4,
+    }));
+
+    (function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pts.forEach(p => {
+        p.life += 0.004;
+        if (p.life >= 1) { p.life = 0; p.x = Math.random(); p.y = 1.05; }
+        const alpha = p.life < 0.15 ? p.life / 0.15
+                    : p.life > 0.8  ? (1 - p.life) / 0.2
+                    : 0.75;
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.85;
+        ctx.fillStyle = p.gold ? '#E2BA6C' : 'rgba(255,255,255,0.9)';
+        ctx.shadowBlur = p.r * 6;
+        ctx.shadowColor = p.gold ? '#B8892B' : '#fff';
+        ctx.beginPath();
+        ctx.arc(p.x * canvas.width, (1 - p.life) * canvas.height, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+      requestAnimationFrame(loop);
+    })();
+
+    // AI 스캔라인
+    const scan = document.createElement('div');
+    scan.style.cssText = 'position:absolute;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(226,186,108,0.7),transparent);pointer-events:none;z-index:2;animation:scanLine 5s ease-in-out infinite;';
+    heroEl.appendChild(scan);
+    if (!document.getElementById('scan-kf')) {
+      const s = document.createElement('style');
+      s.id = 'scan-kf';
+      s.textContent = `@keyframes scanLine{0%{top:-2%;opacity:0}5%{opacity:1}95%{opacity:.4}100%{top:105%;opacity:0}}`;
+      document.head.appendChild(s);
+    }
+  }
+
+  // ② 기도목적 칩 — 마우스 3D 틸트
+  document.addEventListener('mousemove', e => {
+    document.querySelectorAll('.purpose-chip:not(.active)').forEach(chip => {
+      const r = chip.getBoundingClientRect();
+      const mx = e.clientX - r.left - r.width / 2;
+      const my = e.clientY - r.top - r.height / 2;
+      if (Math.abs(mx) < r.width && Math.abs(my) < r.height) {
+        const rx = (my / r.height) * 14;
+        const ry = -(mx / r.width) * 14;
+        chip.style.transform = `perspective(500px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+      } else {
+        chip.style.transform = '';
+      }
+    });
+  });
+
+  // ③ 제출 버튼 클릭 리플
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.submit-btn');
+    if (!btn) return;
+    const r = btn.getBoundingClientRect();
+    const span = document.createElement('span');
+    span.style.cssText = `position:absolute;width:0;height:0;border-radius:50%;background:rgba(255,255,255,.45);left:${e.clientX-r.left}px;top:${e.clientY-r.top}px;transform:translate(-50%,-50%);animation:ripple .65s ease-out forwards;pointer-events:none;`;
+    btn.appendChild(span);
+    setTimeout(() => span.remove(), 700);
+  });
+  if (!document.getElementById('ripple-kf')) {
+    const s = document.createElement('style');
+    s.id = 'ripple-kf';
+    s.textContent = `@keyframes ripple{to{width:320px;height:320px;opacity:0}}`;
+    document.head.appendChild(s);
+  }
+
+  // ④ 신뢰바 카운터 애니메이션
+  document.querySelectorAll('.trust-number').forEach(el => {
+    const spanEl = el.querySelector('span');
+    const suffix = spanEl ? spanEl.outerHTML : '';
+    const target = parseInt(el.textContent.replace(/\D/g, ''));
+    if (!target) return;
+    let t0 = null;
+    const dur = 1800;
+    const tick = ts => {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.innerHTML = Math.floor(ease * target).toLocaleString() + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+initPremiumEffects();
