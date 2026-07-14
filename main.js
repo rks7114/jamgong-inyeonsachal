@@ -1012,6 +1012,77 @@ function saveDiaryEntry(data) {
 
 render();
 
+/* ─────────────────────────────────────────────────────
+   ✦ 오행 칩 태깅 — data-ohaeng 속성 부여
+───────────────────────────────────────────────────── */
+function tagOhaengChips() {
+  document.querySelectorAll('.purpose-chip').forEach(chip => {
+    const t = chip.textContent;
+    if      (t.includes('재물')) chip.dataset.ohaeng = 'geum';
+    else if (t.includes('건강')) chip.dataset.ohaeng = 'to';
+    else if (t.includes('학업')) chip.dataset.ohaeng = 'su';
+    else if (t.includes('인연')) chip.dataset.ohaeng = 'hwa';
+    else if (t.includes('가정')) chip.dataset.ohaeng = 'mok';
+  });
+}
+
+/* ─────────────────────────────────────────────────────
+   ✦ SVG 테두리 조명 빔 — 폼 카드 4각을 도는 빛줄기
+───────────────────────────────────────────────────── */
+function addBorderBeam() {
+  const card = document.querySelector('.form-card');
+  if (!card) return;
+
+  // 기존 SVG 빔 제거 (중복 방지)
+  card.querySelectorAll('.form-beam-svg, .form-corner-glow').forEach(e => e.remove());
+
+  const W = card.offsetWidth, H = card.offsetHeight, R = 20;
+  const perim = Math.round(2 * (W + H) - (8 - 2 * Math.PI) * R);
+  const bLen  = Math.round(perim * 0.13);
+  const d = `M${R},.5 H${W-R} Q${W-.5},.5 ${W-.5},${R} V${H-R} Q${W-.5},${H-.5} ${W-R},${H-.5} H${R} Q.5,${H-.5} .5,${H-R} V${R} Q.5,.5 ${R},.5Z`;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', 'form-beam-svg');
+  svg.setAttribute('width',  W);
+  svg.setAttribute('height', H);
+  svg.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:8;overflow:visible;';
+
+  svg.innerHTML = `
+    <defs>
+      <filter id="bGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="3" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path d="${d}" fill="none" stroke="rgba(184,137,43,.18)" stroke-width="1.5"/>
+    <path d="${d}" fill="none" stroke="rgba(255,240,150,.92)" stroke-width="2.8"
+          filter="url(#bGlow)" stroke-linecap="round" stroke-linejoin="round"
+          stroke-dasharray="${bLen} ${perim}" stroke-dashoffset="0">
+      <animate attributeName="stroke-dashoffset" from="0" to="-${perim + bLen}"
+               dur="4s" repeatCount="indefinite" calcMode="linear"/>
+    </path>`;
+
+  card.appendChild(svg);
+
+  // 4각 코너 글로우 (CSS 클래스로 펄스 처리)
+  ['tl','tr','br','bl'].forEach(pos => {
+    const c = document.createElement('div');
+    c.className = `form-corner-glow ${pos}`;
+    card.appendChild(c);
+  });
+}
+
+// 초기 실행
+tagOhaengChips();
+addBorderBeam();
+
+// SPA 렌더링 후 재실행 (뷰 전환 감지)
+new MutationObserver(() => {
+  tagOhaengChips();
+  addBorderBeam();
+}).observe(document.getElementById('app') || document.body, { childList: true, subtree: false });
+
 // ── 인연 길잡이 ─────────────────────────────────────────────────────────
 function initGuide() {
   // 이미 초기화된 경우 중복 방지
@@ -1060,10 +1131,22 @@ function initGuide() {
   });
 
   // ── 메시지 추가 ──
+  function stripMarkdown(text) {
+    return text
+      .replace(/\*\*\*(.*?)\*\*\*/g, "$1")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/[（(][一-龥]{1,4}[）)]/g, "")
+      .replace(/[·•]/g, " ")
+      .replace(/[#>`_~]/g, "")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }
+
   function addMessage(role, text) {
     const msgEl = document.createElement("div");
     msgEl.className = `guide-msg guide-msg-${role === "user" ? "user" : "bot"}`;
-    msgEl.textContent = text;
+    msgEl.textContent = role === "user" ? text : stripMarkdown(text);
     const container = document.getElementById("guide-messages");
     container.appendChild(msgEl);
     container.scrollTop = container.scrollHeight;
@@ -1161,7 +1244,9 @@ function initGuide() {
       micBtn.classList.remove("guide-mic-active");
       micBtn.textContent = "🎤";
       if (e.error === "not-allowed") {
-        alert("마이크 권한이 필요합니다.\n브라우저 주소창 왼쪽 자물쇠 아이콘 → 마이크 허용 후 다시 시도해주세요.");
+        addMessage("assistant", "🔒 마이크 권한이 필요해요. 주소창 왼쪽 🔒 아이콘을 클릭해 마이크를 '허용'으로 바꾼 뒤 다시 눌러보세요.");
+      } else if (e.error === "no-speech") {
+        addMessage("assistant", "소리가 감지되지 않았어요. 마이크에 가까이 다시 말씀해 주세요.");
       }
     };
 
@@ -1178,3 +1263,169 @@ function initGuide() {
 }
 
 initGuide();
+
+// ── 프리미엄 AI 인터랙션 ─────────────────────────────
+function initPremiumEffects() {
+
+  // ① 히어로 파티클 캔버스 (금빛 · 흰빛 부유 입자)
+  const heroEl = document.querySelector('.hero');
+  if (heroEl) {
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:1;width:100%;height:100%;opacity:0.7;';
+    heroEl.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    const resize = () => { canvas.width = heroEl.offsetWidth; canvas.height = heroEl.offsetHeight; };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const pts = Array.from({length: 50}, () => ({
+      x: Math.random(), y: Math.random(),
+      r: Math.random() * 2 + 0.4,
+      vy: -(Math.random() * 0.3 + 0.1),
+      vx: (Math.random() - 0.5) * 0.15,
+      life: Math.random(),
+      gold: Math.random() > 0.4,
+    }));
+
+    (function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pts.forEach(p => {
+        p.life += 0.004;
+        if (p.life >= 1) { p.life = 0; p.x = Math.random(); p.y = 1.05; }
+        const alpha = p.life < 0.15 ? p.life / 0.15
+                    : p.life > 0.8  ? (1 - p.life) / 0.2
+                    : 0.75;
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.85;
+        ctx.fillStyle = p.gold ? '#E2BA6C' : 'rgba(255,255,255,0.9)';
+        ctx.shadowBlur = p.r * 6;
+        ctx.shadowColor = p.gold ? '#B8892B' : '#fff';
+        ctx.beginPath();
+        ctx.arc(p.x * canvas.width, (1 - p.life) * canvas.height, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+      requestAnimationFrame(loop);
+    })();
+
+    // AI 스캔라인
+    const scan = document.createElement('div');
+    scan.style.cssText = 'position:absolute;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(226,186,108,0.7),transparent);pointer-events:none;z-index:2;animation:scanLine 5s ease-in-out infinite;';
+    heroEl.appendChild(scan);
+    if (!document.getElementById('scan-kf')) {
+      const s = document.createElement('style');
+      s.id = 'scan-kf';
+      s.textContent = `@keyframes scanLine{0%{top:-2%;opacity:0}5%{opacity:1}95%{opacity:.4}100%{top:105%;opacity:0}}`;
+      document.head.appendChild(s);
+    }
+  }
+
+  // ② 기도목적 칩 — 마우스 3D 틸트
+  document.addEventListener('mousemove', e => {
+    document.querySelectorAll('.purpose-chip:not(.active)').forEach(chip => {
+      const r = chip.getBoundingClientRect();
+      const mx = e.clientX - r.left - r.width / 2;
+      const my = e.clientY - r.top - r.height / 2;
+      if (Math.abs(mx) < r.width && Math.abs(my) < r.height) {
+        const rx = (my / r.height) * 14;
+        const ry = -(mx / r.width) * 14;
+        chip.style.transform = `perspective(500px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+      } else {
+        chip.style.transform = '';
+      }
+    });
+  });
+
+  // ③ 제출 버튼 클릭 리플
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.submit-btn');
+    if (!btn) return;
+    const r = btn.getBoundingClientRect();
+    const span = document.createElement('span');
+    span.style.cssText = `position:absolute;width:0;height:0;border-radius:50%;background:rgba(255,255,255,.45);left:${e.clientX-r.left}px;top:${e.clientY-r.top}px;transform:translate(-50%,-50%);animation:ripple .65s ease-out forwards;pointer-events:none;`;
+    btn.appendChild(span);
+    setTimeout(() => span.remove(), 700);
+  });
+  if (!document.getElementById('ripple-kf')) {
+    const s = document.createElement('style');
+    s.id = 'ripple-kf';
+    s.textContent = `@keyframes ripple{to{width:320px;height:320px;opacity:0}}`;
+    document.head.appendChild(s);
+  }
+
+  // ④ SVG 테두리 빔 + 4각 코너 + 오행 칩 색상 태깅
+  function addBorderBeam() {
+    const card = document.querySelector('.form-card');
+    if (!card) return;
+    // 기존 제거 후 재생성
+    card.querySelectorAll('.form-beam-svg,.form-beam-wrap,.form-corner-glow').forEach(e=>e.remove());
+
+    const W = card.offsetWidth, H = card.offsetHeight, R = 20;
+    const perim = Math.round(2*(W+H) - (8-2*Math.PI)*R);
+    const bLen  = Math.round(perim * 0.13);
+    const d = `M${R},.5 H${W-R} Q${W-.5},.5 ${W-.5},${R} V${H-R} Q${W-.5},${H-.5} ${W-R},${H-.5} H${R} Q.5,${H-.5} .5,${H-R} V${R} Q.5,.5 ${R},.5Z`;
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS,'svg');
+    svg.setAttribute('class','form-beam-svg');
+    svg.setAttribute('width',W); svg.setAttribute('height',H);
+    svg.style.cssText='position:absolute;top:0;left:0;pointer-events:none;z-index:8;overflow:visible;';
+    svg.innerHTML=`
+      <defs>
+        <filter id="bGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="2.5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <path d="${d}" fill="none" stroke="rgba(184,137,43,.2)" stroke-width="1.5"/>
+      <path d="${d}" fill="none" stroke="rgba(255,240,150,.92)" stroke-width="2.5"
+            filter="url(#bGlow)" stroke-linecap="round" stroke-linejoin="round"
+            stroke-dasharray="${bLen} ${perim}" stroke-dashoffset="0">
+        <animate attributeName="stroke-dashoffset" from="0" to="-${perim+bLen}"
+                 dur="4s" repeatCount="indefinite" calcMode="linear"/>
+      </path>`;
+    card.appendChild(svg);
+
+    // 4각 코너 글로우
+    ['tl','tr','br','bl'].forEach(p=>{
+      const c=document.createElement('div');
+      c.className=`form-corner-glow ${p}`;
+      card.appendChild(c);
+    });
+  }
+
+  function tagOhaengChips() {
+    document.querySelectorAll('.purpose-chip').forEach(chip=>{
+      const t = chip.textContent;
+      if      (t.includes('재물')) chip.dataset.ohaeng='geum';
+      else if (t.includes('건강')) chip.dataset.ohaeng='to';
+      else if (t.includes('학업')) chip.dataset.ohaeng='su';
+      else if (t.includes('인연')) chip.dataset.ohaeng='hwa';
+      else if (t.includes('가정')) chip.dataset.ohaeng='mok';
+    });
+  }
+
+  addBorderBeam(); tagOhaengChips();
+
+  new MutationObserver(()=>{ addBorderBeam(); tagOhaengChips(); })
+    .observe(document.getElementById('app')||document.body,{childList:true,subtree:false});
+
+  // ⑤ 신뢰바 카운터 애니메이션
+  document.querySelectorAll('.trust-number').forEach(el => {
+    const spanEl = el.querySelector('span');
+    const suffix = spanEl ? spanEl.outerHTML : '';
+    const target = parseInt(el.textContent.replace(/\D/g, ''));
+    if (!target) return;
+    let t0 = null;
+    const dur = 1800;
+    const tick = ts => {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.innerHTML = Math.floor(ease * target).toLocaleString() + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+initPremiumEffects();

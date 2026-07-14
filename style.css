@@ -1668,3 +1668,940 @@ body {
   #guide-window { width: calc(100vw - 24px); right: 12px; }
   #guide-fab { right: 12px; }
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✦ v2.0 디자인 업그레이드
+   컨셉: 더 깊은 고급감 · 살아있는 인터랙션 · 금빛 중심 CTA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ── 1. 인연사찰 찾기 버튼 → 금빛 프리미엄 격상 ── */
+.submit-btn {
+  background: var(--gold-gradient) !important;
+  color: var(--ink-deep) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 18px !important;
+  padding: 18px !important;
+  letter-spacing: 0.07em !important;
+  box-shadow: 0 8px 28px rgba(140,106,31,0.45), inset 0 1px 0 rgba(255,255,255,0.35) !important;
+}
+.submit-btn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 14px 36px rgba(140,106,31,0.55), inset 0 1px 0 rgba(255,255,255,0.35) !important;
+}
+.submit-btn::before {
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent) !important;
+  animation: btnShimmer 2.2s ease-in-out infinite !important;
+}
+
+/* ── 2. 기도목적 칩 → 글래스 카드 + 금빛 선택 ── */
+.purpose-chip {
+  background: rgba(255,255,255,0.82) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1.5px solid rgba(184,137,43,0.22) !important;
+  border-radius: 14px !important;
+  padding: 18px 6px 14px !important;
+  box-shadow: 0 2px 10px rgba(16,27,44,0.07), inset 0 1px 0 rgba(255,255,255,0.95) !important;
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+.purpose-chip:hover {
+  border-color: var(--gold) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 10px 24px rgba(16,27,44,0.13), 0 0 0 3px rgba(184,137,43,0.18), inset 0 1px 0 rgba(255,255,255,0.95) !important;
+}
+.purpose-chip.active {
+  background: linear-gradient(150deg, #1E3050 0%, #0C1522 100%) !important;
+  border-color: var(--gold-bright) !important;
+  box-shadow: 0 8px 24px rgba(27,42,65,0.35), 0 0 0 2px rgba(226,186,108,0.45) !important;
+  color: var(--gold-bright) !important;
+  transform: translateY(-2px) !important;
+}
+.purpose-chip.active svg { stroke: var(--gold-bright) !important; filter: drop-shadow(0 0 4px rgba(226,186,108,0.5)); }
+
+/* ── 3. 폼 카드 → 금빛 상단 라인 + 강화된 그림자 ── */
+.form-card {
+  border-top: 3px solid transparent !important;
+  background-clip: padding-box !important;
+  box-shadow:
+    0 32px 64px rgba(16, 27, 44, 0.22),
+    0 8px 24px rgba(16,27,44,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.85) !important;
+  position: relative !important;
+}
+.form-card::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -3px; left: 0; right: 0 !important;
+  height: 3px !important;
+  background: var(--gold-gradient) !important;
+  border-radius: 6px 6px 0 0 !important;
+  z-index: 2 !important;
+  display: block !important;
+}
+
+/* ── 4. 양력/음력 토글 → 금빛 활성 ── */
+.calendar-toggle-btn {
+  border-radius: 7px !important;
+  font-size: 15.5px !important;
+  padding: 13px !important;
+  font-weight: 600 !important;
+}
+.calendar-toggle-btn.active {
+  background: var(--gold-gradient) !important;
+  border-color: transparent !important;
+  color: var(--ink-deep) !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(140,106,31,0.35) !important;
+}
+
+/* ── 5. 혼자/둘이 모드 토글 → 먹빛 활성 ── */
+.mode-toggle-btn {
+  font-size: 16px !important;
+  padding: 13px 0 !important;
+  border-radius: 9px !important;
+  letter-spacing: 0.02em !important;
+}
+.mode-toggle-btn.active {
+  background: var(--ink) !important;
+  color: var(--gold-bright) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(16,27,44,0.28) !important;
+}
+
+/* ── 6. 사찰 카드 → 드라마틱한 hover ── */
+.temple-card {
+  border-radius: 12px !important;
+  border-left-width: 4px !important;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease !important;
+}
+.temple-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 18px 36px rgba(16,27,44,0.15) !important;
+}
+
+/* ── 7. 신뢰 바 숫자 — 더 강한 인상 ── */
+.trust-bar {
+  border-radius: 0 0 12px 12px !important;
+}
+.trust-number {
+  font-size: 28px !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* ── 8. 결과 오행 값 — 임팩트 강화 ── */
+.results-summary .ohaeng-value {
+  font-size: 42px !important;
+  text-shadow: 0 3px 16px rgba(162,59,46,0.28) !important;
+}
+
+/* ── 9. 인연 길잡이 창 — 더 크고 고급스럽게 ── */
+#guide-window {
+  width: 350px !important;
+  max-height: 530px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12) !important;
+}
+.guide-header {
+  border-radius: 20px 20px 0 0 !important;
+  padding: 14px 18px !important;
+}
+.guide-msg {
+  font-size: 14.5px !important;
+  line-height: 1.68 !important;
+}
+.guide-msg-bot { border-radius: 18px 18px 18px 4px !important; }
+.guide-msg-user { border-radius: 18px 18px 4px 18px !important; }
+#guide-input { font-size: 14px !important; padding: 10px 16px !important; }
+.guide-send-btn {
+  font-size: 14px !important;
+  padding: 10px 16px !important;
+  border-radius: 22px !important;
+}
+
+/* ── 10. 나침반 — 더 섬세한 느낌 ── */
+.compass {
+  width: 200px !important;
+  height: 200px !important;
+  box-shadow: 0 12px 36px rgba(16,27,44,0.2), inset 0 0 0 1px rgba(255,255,255,0.5) !important;
+}
+
+/* ── 11. 오라클 카드 — 더 두드러지는 border ── */
+.oracle-card {
+  border-width: 1.5px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(16,27,44,0.12), inset 0 1px 0 rgba(226,186,108,0.15) !important;
+}
+
+/* ── 12. 저장·공유 버튼 — 더 고급 ── */
+.save-btn {
+  border-radius: 6px !important;
+  border-width: 2px !important;
+  font-size: 16.5px !important;
+}
+.share-btn, .diary-link-btn { border-radius: 6px !important; }
+
+/* ── 반응형 보완 ── */
+@media (max-width: 480px) {
+  .submit-btn { font-size: 16px !important; padding: 16px !important; }
+  .purpose-chip { border-radius: 10px !important; }
+  .temple-card { border-radius: 8px !important; }
+  #guide-window { width: calc(100vw - 24px) !important; border-radius: 16px !important; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✦ v3.0 PREMIUM × AI  — 박스 타파 · 깊이 · 생동감
+   "인공지능이 고른 인연의 사찰" — 전통과 미래의 교차점
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ── A. 폼 카드 — 내부 이중 박스 테두리 완전 제거 + 플로팅 ── */
+.form-card::after { display: none !important; }
+.form-card {
+  margin: -10px 16px 0 !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(184,137,43,0.22) !important;
+  padding: 32px 24px 36px !important;
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.72) 0%, rgba(248,242,228,0.88) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.9) inset,
+    0 40px 80px rgba(16,27,44,0.18),
+    0 12px 32px rgba(16,27,44,0.1),
+    0 0 0 1px rgba(255,255,255,0.5) inset !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transform: translateZ(0) !important;
+}
+
+/* 폼 카드 상단 금빛 라인 (::before 복원) */
+.form-card::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0; left: 0; right: 0 !important;
+  height: 2px !important;
+  background: var(--gold-gradient) !important;
+  border-radius: 20px 20px 0 0 !important;
+  display: block !important;
+  z-index: 1 !important;
+}
+
+/* ── B. 페이지 바디 — 미세한 그라디언트 배경 ── */
+body {
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(184,137,43,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(60,110,94,0.05) 0%, transparent 55%),
+    #EFE7D8 !important;
+}
+
+/* ── C. 인연사찰 찾기 버튼 — 금빛 · 펄스 글로우 ── */
+.submit-btn {
+  background: linear-gradient(135deg, #E8C46A 0%, #B8892B 45%, #9A7020 100%) !important;
+  color: #1B2A41 !important;
+  border: none !important;
+  border-radius: 14px !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  padding: 19px !important;
+  letter-spacing: 0.08em !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.4) inset,
+    0 10px 32px rgba(140,106,31,0.5),
+    0 4px 12px rgba(140,106,31,0.3) !important;
+  animation: goldBreath 2.8s ease-in-out infinite !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.submit-btn:hover {
+  transform: translateY(-3px) scale(1.01) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.4) inset,
+    0 16px 40px rgba(140,106,31,0.6),
+    0 6px 16px rgba(140,106,31,0.4) !important;
+}
+@keyframes goldBreath {
+  0%,100% { box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 10px 32px rgba(140,106,31,0.5), 0 0 0 0 rgba(184,137,43,0); }
+  50%      { box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 12px 36px rgba(140,106,31,0.55), 0 0 0 8px rgba(184,137,43,0); }
+}
+
+/* ── D. 기도목적 칩 — 진짜 글래스모피즘 ── */
+.purpose-chip {
+  background: rgba(255,255,255,0.6) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255,255,255,0.8) !important;
+  border-radius: 16px !important;
+  padding: 20px 6px 15px !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.9) inset,
+    0 4px 16px rgba(16,27,44,0.07),
+    0 1px 4px rgba(16,27,44,0.05) !important;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1) !important;
+  transform-style: preserve-3d !important;
+}
+.purpose-chip:hover {
+  background: rgba(255,255,255,0.85) !important;
+  border-color: rgba(184,137,43,0.5) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.9) inset,
+    0 12px 28px rgba(16,27,44,0.12),
+    0 0 0 2px rgba(184,137,43,0.2) !important;
+}
+.purpose-chip.active {
+  background: linear-gradient(150deg, #1E3152 0%, #0C1522 100%) !important;
+  border: 1px solid rgba(226,186,108,0.6) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 8px 28px rgba(16,27,44,0.4),
+    0 0 0 2px rgba(226,186,108,0.35),
+    0 0 24px rgba(184,137,43,0.15) !important;
+  color: var(--gold-bright) !important;
+}
+.purpose-chip.active svg {
+  stroke: var(--gold-bright) !important;
+  filter: drop-shadow(0 0 5px rgba(226,186,108,0.6)) !important;
+}
+
+/* ── E. 양력/음력 토글 — 세련된 세그먼트 ── */
+.calendar-toggle { gap: 4px !important; }
+.calendar-toggle-btn {
+  border-radius: 10px !important;
+  font-size: 15.5px !important;
+  padding: 13px !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(184,137,43,0.2) !important;
+  background: rgba(255,255,255,0.7) !important;
+  backdrop-filter: blur(8px) !important;
+  transition: all 0.22s ease !important;
+}
+.calendar-toggle-btn.active {
+  background: linear-gradient(135deg, #E8C46A 0%, #B8892B 100%) !important;
+  border-color: transparent !important;
+  color: var(--ink-deep) !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 16px rgba(140,106,31,0.35), 0 1px 0 rgba(255,255,255,0.4) inset !important;
+}
+
+/* ── F. 혼자/둘이 토글 ── */
+.mode-toggle-wrap {
+  background: rgba(255,255,255,0.4) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(184,137,43,0.18) !important;
+  border-radius: 14px !important;
+}
+.mode-toggle-btn { border-radius: 11px !important; font-size: 15.5px !important; }
+.mode-toggle-btn.active {
+  background: linear-gradient(135deg, #1E3152 0%, #0C1522 100%) !important;
+  color: var(--gold-bright) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 16px rgba(16,27,44,0.3) !important;
+}
+
+/* ── G. 생년월일 입력 그리드 ── */
+.birth-select-grid {
+  border-radius: 12px !important;
+  border-color: rgba(184,137,43,0.25) !important;
+  overflow: hidden !important;
+  box-shadow: 0 2px 8px rgba(16,27,44,0.06), 0 1px 0 rgba(255,255,255,0.8) inset !important;
+}
+.birth-select-grid:focus-within {
+  border-color: var(--gold) !important;
+  box-shadow: 0 2px 8px rgba(16,27,44,0.06), 0 1px 0 rgba(255,255,255,0.8) inset, 0 0 0 3px rgba(184,137,43,0.2) !important;
+}
+
+/* ── H. 사찰 카드 — 부유하는 카드 ── */
+.temple-card {
+  border-radius: 16px !important;
+  border: 1px solid rgba(184,137,43,0.15) !important;
+  border-left: 3px solid var(--accent, var(--gold)) !important;
+  background: rgba(255,255,255,0.8) !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 2px 8px rgba(16,27,44,0.06), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease !important;
+}
+.temple-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 20px 44px rgba(16,27,44,0.16), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+}
+
+/* ── I. 히어로 텍스트 — 은은한 금빛 흐름 ── */
+.hero h1 {
+  background: linear-gradient(270deg, #fff 10%, #E8C975 40%, #fff 60%, #E8C975 90%) !important;
+  background-size: 250% auto !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  animation: titleFlow 6s linear infinite !important;
+}
+@keyframes titleFlow {
+  0%   { background-position: 0% center; }
+  100% { background-position: 250% center; }
+}
+
+/* ── J. 나침반 — 외부 회전 링 ── */
+.compass {
+  width: 200px !important; height: 200px !important;
+}
+.compass::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -10px !important;
+  border-radius: 50% !important;
+  border: 1px dashed rgba(184,137,43,0.4) !important;
+  animation: compassOrbit 8s linear infinite !important;
+}
+@keyframes compassOrbit { to { transform: rotate(360deg); } }
+
+/* ── K. 신뢰바 숫자 임팩트 ── */
+.trust-number { font-size: 30px !important; letter-spacing: -0.03em !important; }
+.trust-bar { border-radius: 0 0 16px 16px !important; }
+
+/* ── L. 결과 오행 — 에너지 오러 ── */
+.results-summary .ohaeng-value {
+  font-size: 44px !important;
+  letter-spacing: -0.02em !important;
+  text-shadow: 0 4px 20px rgba(162,59,46,0.3) !important;
+}
+
+/* ── M. 오라클 카드 ── */
+.oracle-card {
+  border-radius: 14px !important;
+  border-width: 1.5px !important;
+  box-shadow: 0 6px 24px rgba(16,27,44,0.2), 0 1px 0 rgba(226,186,108,0.1) inset !important;
+}
+
+/* ── N. 인연 길잡이 창 — 진짜 고급 ── */
+#guide-window {
+  width: 360px !important;
+  max-height: 540px !important;
+  border-radius: 22px !important;
+  background: rgba(248,242,228,0.96) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(184,137,43,0.25) !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28), 0 1px 0 rgba(255,255,255,0.8) inset !important;
+}
+.guide-header { border-radius: 22px 22px 0 0 !important; }
+.guide-msg-bot { border-radius: 18px 18px 18px 4px !important; font-size: 14.5px !important; }
+.guide-msg-user { border-radius: 18px 18px 4px 18px !important; font-size: 14.5px !important; }
+
+/* ── O. FAB 버튼 — 오러 글로우 ── */
+#guide-fab {
+  border-radius: 40px !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.3), 0 0 0 3px rgba(184,137,43,0.3), 0 1px 0 rgba(255,255,255,0.35) inset !important;
+  animation: fabGlow 3.5s ease-in-out infinite !important;
+}
+@keyframes fabGlow {
+  0%,100% { box-shadow: 0 8px 28px rgba(0,0,0,0.3), 0 0 0 3px rgba(184,137,43,0.3), 0 0 0 0 rgba(184,137,43,0); }
+  50%      { box-shadow: 0 10px 32px rgba(0,0,0,0.35), 0 0 0 5px rgba(184,137,43,0.2), 0 0 20px rgba(184,137,43,0.15); }
+}
+
+/* ── 모바일 반응형 ── */
+@media (max-width: 480px) {
+  .form-card { border-radius: 16px !important; margin: -6px 12px 0 !important; }
+  .submit-btn { border-radius: 12px !important; font-size: 16px !important; padding: 17px !important; }
+  .purpose-chip { border-radius: 12px !important; }
+  .temple-card { border-radius: 12px !important; }
+  #guide-window { width: calc(100vw - 20px) !important; border-radius: 18px !important; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✦ v4.0 ULTRA PREMIUM — 촌스러운 요소 전면 제거
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ── 1. 촌스러운 코너 장식 제거 ── */
+.corner-cloud { display: none !important; }
+
+/* ── 2. 배경 — 살아있는 색채 블러 ── */
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 10%, rgba(184,137,43,0.09) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 85% 85%, rgba(60,110,94,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 60% at 60% 30%, rgba(162,59,46,0.04) 0%, transparent 60%) !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+#app { position: relative !important; z-index: 1 !important; }
+
+/* ── 3. 기도목적 칩 선택 → 금빛 그라디언트 (어두운 박스 탈출) ── */
+.purpose-chip.active {
+  background: linear-gradient(145deg, #C49830 0%, #E8C46A 38%, #B8892B 65%, #9A7020 100%) !important;
+  color: var(--ink-deep) !important;
+  border: 1px solid rgba(255,255,255,0.35) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.45) inset,
+    0 -1px 0 rgba(0,0,0,0.1) inset,
+    0 10px 32px rgba(140,106,31,0.55),
+    0 0 0 2px rgba(226,186,108,0.4),
+    0 0 28px rgba(184,137,43,0.25) !important;
+  transform: translateY(-2px) !important;
+  animation: chipShine 3s ease-in-out infinite !important;
+}
+.purpose-chip.active svg { stroke: var(--ink-deep) !important; filter: none !important; }
+.purpose-chip.active .purpose-en { color: rgba(27,42,65,0.6) !important; }
+@keyframes chipShine {
+  0%,100% { box-shadow: 0 1px 0 rgba(255,255,255,0.45) inset, 0 -1px 0 rgba(0,0,0,0.1) inset, 0 10px 32px rgba(140,106,31,0.55), 0 0 0 2px rgba(226,186,108,0.4), 0 0 28px rgba(184,137,43,0.2); }
+  50%      { box-shadow: 0 1px 0 rgba(255,255,255,0.45) inset, 0 -1px 0 rgba(0,0,0,0.1) inset, 0 14px 40px rgba(140,106,31,0.65), 0 0 0 3px rgba(226,186,108,0.5), 0 0 40px rgba(184,137,43,0.35); }
+}
+
+/* ── 4. 비선택 칩 — 더 섬세한 유리 ── */
+.purpose-chip:not(.active) {
+  background: rgba(255,255,255,0.55) !important;
+  border: 1px solid rgba(255,255,255,0.75) !important;
+  box-shadow: 0 2px 12px rgba(16,27,44,0.06), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+}
+.purpose-chip:not(.active):hover {
+  background: rgba(255,255,255,0.9) !important;
+  border: 1px solid rgba(184,137,43,0.45) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 12px 30px rgba(16,27,44,0.1), 0 0 0 2px rgba(184,137,43,0.18) !important;
+}
+
+/* ── 5. 혼자/둘이 토글 — 금빛 pill 스타일 ── */
+.mode-toggle-wrap {
+  background: rgba(255,255,255,0.35) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(184,137,43,0.2) !important;
+  border-radius: 16px !important;
+  padding: 5px !important;
+}
+.mode-toggle-btn { border-radius: 12px !important; font-size: 15.5px !important; font-weight: 600 !important; }
+.mode-toggle-btn.active {
+  background: linear-gradient(135deg, #C49830 0%, #E8C46A 50%, #B8892B 100%) !important;
+  color: var(--ink-deep) !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 18px rgba(140,106,31,0.4), 0 1px 0 rgba(255,255,255,0.4) inset !important;
+}
+
+/* ── 6. 폼 카드 — 강화된 깊이 ── */
+.form-card {
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.82) 0%, rgba(248,242,228,0.92) 60%, rgba(242,233,210,0.88) 100%) !important;
+  border: 1px solid rgba(226,186,108,0.28) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.95) inset,
+    0 -1px 0 rgba(184,137,43,0.08) inset,
+    0 48px 96px rgba(16,27,44,0.16),
+    0 16px 40px rgba(16,27,44,0.1),
+    0 4px 12px rgba(16,27,44,0.06) !important;
+}
+
+/* ── 7. 입력 필드 — 현대적으로 ── */
+.birth-select-grid {
+  border-radius: 14px !important;
+  border: 1.5px solid rgba(184,137,43,0.2) !important;
+  background: rgba(255,255,255,0.7) !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 2px 8px rgba(16,27,44,0.05) !important;
+}
+.birth-select-grid select {
+  background-color: transparent !important;
+  font-size: 15.5px !important;
+}
+
+/* ── 8. 제출 버튼 — 더 강한 광택 ── */
+.submit-btn {
+  background: linear-gradient(135deg, #D4A832 0%, #F0CC70 30%, #C49028 60%, #9A7020 100%) !important;
+  letter-spacing: 0.1em !important;
+  border-radius: 16px !important;
+  font-size: 17.5px !important;
+  padding: 20px !important;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.5) inset,
+    0 -2px 0 rgba(0,0,0,0.15) inset,
+    0 12px 36px rgba(140,106,31,0.55),
+    0 4px 12px rgba(140,106,31,0.3) !important;
+}
+
+/* ── 9. 히어로 제목 — 안전한 흰색 + 금빛 글로우 ── */
+.hero h1 {
+  font-size: clamp(30px, 7vw, 46px) !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.25 !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  animation: none !important;
+  text-shadow:
+    0 0 40px rgba(226,186,108,0.45),
+    0 0 80px rgba(226,186,108,0.2),
+    0 2px 16px rgba(0,0,0,0.35) !important;
+}
+
+/* ── 10. 사찰 카드 순위 배지 — 금빛 회전 ── */
+.temple-rank {
+  width: 34px !important;
+  height: 34px !important;
+  font-size: 15px !important;
+  box-shadow: 0 4px 12px rgba(140,106,31,0.4), 0 1px 0 rgba(255,255,255,0.4) inset !important;
+}
+
+/* ── 11. 결과 요약 카드 배경 ── */
+.results-summary .ohaeng-value {
+  font-size: 46px !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* ── 12. 서비스 로딩시 부드럽게 ── */
+#app { animation: appFadeIn 0.5s ease both !important; }
+@keyframes appFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ── 모바일 v4 ── */
+@media (max-width: 480px) {
+  .mode-toggle-wrap { border-radius: 14px !important; }
+  .mode-toggle-btn { border-radius: 10px !important; }
+  .submit-btn { border-radius: 14px !important; padding: 18px !important; font-size: 16.5px !important; }
+  .birth-select-grid { border-radius: 12px !important; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✦ 테두리 순환 조명 (Border Beam) + 4각 코너 글로우
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 폼 카드 오버플로 허용 (SVG 빔이 테두리 밖으로 약간 새어나오게) */
+.form-card { overflow: visible !important; }
+/* 구형 CSS 디스크 숨김 (SVG로 교체됨) */
+.form-beam-wrap, .form-beam-disc { display: none !important; }
+
+/* ── 빔 래퍼 (레거시 — 숨김) ── */
+.form-beam-wrap {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 22px;
+  pointer-events: none;
+  z-index: 4;
+  overflow: hidden;
+  /* 마스크: 테두리 2px만 보이고 내부 숨김 */
+  -webkit-mask:
+    linear-gradient(#fff 0 0) 2px / calc(100% - 4px) calc(100% - 4px) no-repeat center,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) 2px / calc(100% - 4px) calc(100% - 4px) no-repeat center,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+/* ── 회전하는 코닉 그라디언트 디스크 ── */
+.form-beam-disc {
+  position: absolute;
+  width: 280%;
+  height: 280%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent        0deg,
+    transparent      340deg,
+    rgba(184,137,43,.1) 345deg,
+    rgba(226,186,108,.7) 351deg,
+    rgba(255,240,160,.95) 355deg,
+    rgba(255,255,255,1)   358deg,
+    rgba(255,240,160,.95) 361deg,
+    rgba(226,186,108,.7) 365deg,
+    rgba(184,137,43,.1) 371deg,
+    transparent      376deg,
+    transparent      360deg
+  );
+  animation: beamDiscSpin 4s linear infinite;
+  transform-origin: center center;
+}
+@keyframes beamDiscSpin {
+  from { transform: translate(-50%,-50%) rotate(0deg);   }
+  to   { transform: translate(-50%,-50%) rotate(360deg); }
+}
+
+/* ── 4각 코너 글로우 ── */
+.form-corner-glow {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  z-index: 6;
+  border-radius: 0;
+}
+.form-corner-glow.tl { top: -1px; left: -1px;
+  border-top:  2px solid rgba(226,186,108,.85);
+  border-left: 2px solid rgba(226,186,108,.85);
+  border-radius: 20px 0 0 0; }
+.form-corner-glow.tr { top: -1px; right: -1px;
+  border-top:   2px solid rgba(226,186,108,.85);
+  border-right: 2px solid rgba(226,186,108,.85);
+  border-radius: 0 20px 0 0; }
+.form-corner-glow.br { bottom: -1px; right: -1px;
+  border-bottom: 2px solid rgba(226,186,108,.85);
+  border-right:  2px solid rgba(226,186,108,.85);
+  border-radius: 0 0 20px 0; }
+.form-corner-glow.bl { bottom: -1px; left: -1px;
+  border-bottom: 2px solid rgba(226,186,108,.85);
+  border-left:   2px solid rgba(226,186,108,.85);
+  border-radius: 0 0 0 20px; }
+
+.form-corner-glow {
+  animation: cornerGlowPulse 2.4s ease-in-out infinite;
+  box-shadow: 0 0 0 rgba(226,186,108,0);
+}
+.form-corner-glow.tr { animation-delay: .6s; }
+.form-corner-glow.br { animation-delay: 1.2s; }
+.form-corner-glow.bl { animation-delay: 1.8s; }
+
+@keyframes cornerGlowPulse {
+  0%,100% { opacity:.35; filter:drop-shadow(0 0 0 rgba(226,186,108,0)); }
+  50%      { opacity:1;   filter:drop-shadow(0 0 6px rgba(226,186,108,.9)) drop-shadow(0 0 12px rgba(226,186,108,.5)); }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✦ 오행별 기도목적 칩 — 5가지 고유 색상 (유료급)
+   金(재물)·土(건강)·水(학업)·火(인연)·木(가정)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ── 비활성 칩 — 오행별 고유 배경색 ── */
+
+/* 金 재물운 — 황금 */
+.purpose-chip[data-ohaeng="geum"]:not(.active) {
+  background: linear-gradient(145deg, rgba(252,238,190,0.85) 0%, rgba(238,212,140,0.70) 100%) !important;
+  border-color: rgba(184,137,43,0.50) !important;
+  box-shadow: 0 2px 10px rgba(184,137,43,0.15), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+}
+.purpose-chip[data-ohaeng="geum"] svg { stroke:#9A7020 !important; }
+
+/* 土 건강운 — 황토 */
+.purpose-chip[data-ohaeng="to"]:not(.active) {
+  background: linear-gradient(145deg, rgba(242,220,178,0.85) 0%, rgba(220,188,128,0.70) 100%) !important;
+  border-color: rgba(139,98,20,0.45) !important;
+  box-shadow: 0 2px 10px rgba(139,98,20,0.12), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+}
+.purpose-chip[data-ohaeng="to"] svg { stroke:#7A5218 !important; }
+
+/* 水 학업운 — 심청 */
+.purpose-chip[data-ohaeng="su"]:not(.active) {
+  background: linear-gradient(145deg, rgba(200,222,252,0.85) 0%, rgba(162,196,242,0.70) 100%) !important;
+  border-color: rgba(46,74,107,0.45) !important;
+  box-shadow: 0 2px 10px rgba(46,74,107,0.12), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+}
+.purpose-chip[data-ohaeng="su"] svg { stroke:#1E3E70 !important; }
+
+/* 火 인연운 — 단청 */
+.purpose-chip[data-ohaeng="hwa"]:not(.active) {
+  background: linear-gradient(145deg, rgba(252,205,195,0.85) 0%, rgba(235,162,148,0.70) 100%) !important;
+  border-color: rgba(162,59,46,0.45) !important;
+  box-shadow: 0 2px 10px rgba(162,59,46,0.12), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+}
+.purpose-chip[data-ohaeng="hwa"] svg { stroke:#8B2018 !important; }
+
+/* 木 가정운 — 청록 */
+.purpose-chip[data-ohaeng="mok"]:not(.active) {
+  background: linear-gradient(145deg, rgba(188,232,212,0.85) 0%, rgba(148,208,180,0.70) 100%) !important;
+  border-color: rgba(60,110,94,0.45) !important;
+  box-shadow: 0 2px 10px rgba(60,110,94,0.12), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+}
+.purpose-chip[data-ohaeng="mok"] svg { stroke:#246048 !important; }
+
+/* 미선택 hover: 채도 높이기 */
+.purpose-chip[data-ohaeng="geum"]:not(.active):hover { background:linear-gradient(145deg,rgba(255,242,185,0.95) 0%,rgba(242,212,120,0.85) 100%) !important; border-color:rgba(184,137,43,.70) !important; }
+.purpose-chip[data-ohaeng="to"]:not(.active):hover   { background:linear-gradient(145deg,rgba(248,225,170,0.95) 0%,rgba(225,188,108,0.85) 100%) !important; border-color:rgba(139,98,20,.65) !important; }
+.purpose-chip[data-ohaeng="su"]:not(.active):hover   { background:linear-gradient(145deg,rgba(185,215,252,0.95) 0%,rgba(140,188,245,0.85) 100%) !important; border-color:rgba(46,74,107,.65) !important; }
+.purpose-chip[data-ohaeng="hwa"]:not(.active):hover  { background:linear-gradient(145deg,rgba(255,195,182,0.95) 0%,rgba(238,148,130,0.85) 100%) !important; border-color:rgba(162,59,46,.65) !important; }
+.purpose-chip[data-ohaeng="mok"]:not(.active):hover  { background:linear-gradient(145deg,rgba(172,232,205,0.95) 0%,rgba(128,205,168,0.85) 100%) !important; border-color:rgba(60,110,94,.65) !important; }
+
+/* ── 선택: 각 오행 시그니처 컬러 ── */
+
+/* 金 재물운 — 불상 금빛 */
+.purpose-chip[data-ohaeng="geum"].active {
+  background: linear-gradient(150deg,#C49830 0%,#E8C46A 35%,#B8892B 65%,#9A7020 100%) !important;
+  color: #1B2A41 !important;
+  border-color: rgba(255,255,255,.4) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 10px 30px rgba(140,106,31,.6), 0 0 0 2px rgba(226,186,108,.45), 0 0 32px rgba(184,137,43,.3) !important;
+  animation: chipShine 3s ease-in-out infinite !important;
+}
+.purpose-chip[data-ohaeng="geum"].active svg { stroke:#1B2A41 !important; }
+.purpose-chip[data-ohaeng="geum"].active .purpose-en { color:rgba(27,42,65,.55) !important; }
+
+/* 土 건강운 — 황토 대지 */
+.purpose-chip[data-ohaeng="to"].active {
+  background: linear-gradient(150deg,#6B4810 0%,#9C6A28 35%,#7A5218 65%,#553810 100%) !important;
+  color: #FFE8C0 !important;
+  border-color: rgba(255,200,120,.35) !important;
+  box-shadow: 0 1px 0 rgba(255,200,100,.25) inset, 0 10px 30px rgba(90,60,15,.6), 0 0 0 2px rgba(180,130,50,.4), 0 0 28px rgba(140,90,20,.3) !important;
+  animation: chipShine 3.4s ease-in-out infinite !important;
+}
+.purpose-chip[data-ohaeng="to"].active svg { stroke:#FFD090 !important; }
+.purpose-chip[data-ohaeng="to"].active .purpose-en { color:rgba(255,220,150,.55) !important; }
+
+/* 水 학업운 — 심해 청색 */
+.purpose-chip[data-ohaeng="su"].active {
+  background: linear-gradient(150deg,#0D2240 0%,#1E3E70 35%,#152E58 65%,#091830 100%) !important;
+  color: #A8C8F8 !important;
+  border-color: rgba(100,160,255,.35) !important;
+  box-shadow: 0 1px 0 rgba(80,140,240,.2) inset, 0 10px 30px rgba(10,30,70,.7), 0 0 0 2px rgba(60,110,210,.4), 0 0 30px rgba(30,70,160,.35) !important;
+  animation: chipShineBlue 3.2s ease-in-out infinite !important;
+}
+.purpose-chip[data-ohaeng="su"].active svg { stroke:#8ABEFF !important; }
+.purpose-chip[data-ohaeng="su"].active .purpose-en { color:rgba(140,190,255,.55) !important; }
+@keyframes chipShineBlue {
+  0%,100% { box-shadow: 0 1px 0 rgba(80,140,240,.2) inset, 0 10px 30px rgba(10,30,70,.7), 0 0 0 2px rgba(60,110,210,.4), 0 0 28px rgba(30,70,160,.3); }
+  50%      { box-shadow: 0 1px 0 rgba(80,140,240,.2) inset, 0 14px 36px rgba(10,30,70,.8), 0 0 0 3px rgba(60,110,210,.5), 0 0 44px rgba(30,70,180,.5); }
+}
+
+/* 火 인연운 — 단청 적색 */
+.purpose-chip[data-ohaeng="hwa"].active {
+  background: linear-gradient(150deg,#6B1A14 0%,#A8302A 35%,#7C2018 65%,#501210 100%) !important;
+  color: #FFD8D4 !important;
+  border-color: rgba(255,140,130,.35) !important;
+  box-shadow: 0 1px 0 rgba(255,120,110,.2) inset, 0 10px 30px rgba(80,18,14,.7), 0 0 0 2px rgba(200,60,50,.4), 0 0 30px rgba(162,48,38,.35) !important;
+  animation: chipShineRed 3.6s ease-in-out infinite !important;
+}
+.purpose-chip[data-ohaeng="hwa"].active svg { stroke:#FFADAA !important; }
+.purpose-chip[data-ohaeng="hwa"].active .purpose-en { color:rgba(255,180,175,.55) !important; }
+@keyframes chipShineRed {
+  0%,100% { box-shadow: 0 1px 0 rgba(255,120,110,.2) inset, 0 10px 30px rgba(80,18,14,.7), 0 0 0 2px rgba(200,60,50,.4), 0 0 28px rgba(162,48,38,.3); }
+  50%      { box-shadow: 0 1px 0 rgba(255,120,110,.2) inset, 0 14px 36px rgba(80,18,14,.8), 0 0 0 3px rgba(200,60,50,.5), 0 0 44px rgba(200,48,38,.45); }
+}
+
+/* 木 가정운 — 청록 산사 */
+.purpose-chip[data-ohaeng="mok"].active {
+  background: linear-gradient(150deg,#1C3C30 0%,#2E5C4A 35%,#244838 65%,#142C22 100%) !important;
+  color: #B8E8D4 !important;
+  border-color: rgba(100,200,160,.35) !important;
+  box-shadow: 0 1px 0 rgba(80,180,140,.2) inset, 0 10px 30px rgba(20,44,34,.7), 0 0 0 2px rgba(60,120,96,.4), 0 0 30px rgba(60,110,90,.35) !important;
+  animation: chipShineGreen 3.8s ease-in-out infinite !important;
+}
+.purpose-chip[data-ohaeng="mok"].active svg { stroke:#80D4B4 !important; }
+.purpose-chip[data-ohaeng="mok"].active .purpose-en { color:rgba(140,210,180,.55) !important; }
+@keyframes chipShineGreen {
+  0%,100% { box-shadow: 0 1px 0 rgba(80,180,140,.2) inset, 0 10px 30px rgba(20,44,34,.7), 0 0 0 2px rgba(60,120,96,.4), 0 0 28px rgba(60,110,90,.3); }
+  50%      { box-shadow: 0 1px 0 rgba(80,180,140,.2) inset, 0 14px 36px rgba(20,44,34,.8), 0 0 0 3px rgba(60,120,96,.5), 0 0 44px rgba(60,130,100,.45); }
+}
+
+/* 공통 선택 칩 shimmer */
+@keyframes chipShine {
+  0%,100% { box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 10px 30px rgba(140,106,31,.6), 0 0 0 2px rgba(226,186,108,.45), 0 0 28px rgba(184,137,43,.25); }
+  50%      { box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 14px 40px rgba(140,106,31,.75), 0 0 0 3px rgba(226,186,108,.6), 0 0 44px rgba(184,137,43,.45); }
+}
+
+/* 선택된 칩 transform 통일 */
+.purpose-chip.active {
+  transform: translateY(-3px) scale(1.02) !important;
+}
+
+/* 유료 프리미엄 — 칩 레이아웃 개선 */
+.purpose-grid {
+  gap: 10px !important;
+}
+.purpose-chip {
+  padding: 22px 8px 16px !important;
+  font-size: 16px !important;
+}
+.purpose-chip svg {
+  width: 26px !important;
+  height: 26px !important;
+  margin-bottom: 2px !important;
+}
+.purpose-en {
+  font-size: 11px !important;
+  letter-spacing: 0.06em !important;
+  margin-top: 2px !important;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✦ v5.0 산사(山寺) 배경 — 인연사찰 분위기 극대화
+   새벽 산안개, 청산(靑山), 단청(丹靑) 붉음, 먹빛 하늘
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 전체 배경 — 산사 새벽녘: 먹빛 + 청산 안개 */
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(30,48,80,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 10% 60%, rgba(40,70,55,0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 90% 70%, rgba(50,35,20,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 70% 20%, rgba(162,59,46,0.05) 0%, transparent 45%),
+    linear-gradient(175deg, #EAE0CC 0%, #E2D5B5 40%, #D8C99A 100%) !important;
+  min-height: 100vh !important;
+}
+
+/* 배경 오버레이 — 청산 실루엣 암시 */
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background:
+    /* 왼쪽 원경 산그림자 */
+    radial-gradient(ellipse 40% 60% at -5% 80%, rgba(50,70,55,0.13) 0%, transparent 55%),
+    /* 오른쪽 근경 산그림자 */
+    radial-gradient(ellipse 35% 55% at 105% 75%, rgba(40,55,45,0.11) 0%, transparent 50%),
+    /* 중앙 하단 지평선 안개 */
+    radial-gradient(ellipse 100% 20% at 50% 100%, rgba(230,220,195,0.6) 0%, transparent 70%),
+    /* 단청 붉음 — 멀리서 보이는 불빛 같은 */
+    radial-gradient(ellipse 25% 20% at 80% 15%, rgba(162,59,46,0.06) 0%, transparent 60%) !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+/* 앱 컨테이너 — 산사 느낌 중앙 집중 */
+#app {
+  position: relative !important;
+  z-index: 1 !important;
+  max-width: 680px !important;
+}
+
+/* 히어로 아래 → 폼 연결부: 산안개 전환 효과 */
+.trust-bar {
+  background: linear-gradient(
+    to bottom,
+    rgba(22,36,58,0.92) 0%,
+    rgba(18,28,46,0.97) 100%
+  ) !important;
+  border-bottom: 1px solid rgba(184,137,43,0.3) !important;
+}
+
+/* 폼 카드 — 한지(韓紙) 질감 + 산사 석벽 느낌 */
+.form-card {
+  background:
+    linear-gradient(160deg,
+      rgba(255,252,242,0.88) 0%,
+      rgba(248,240,218,0.92) 50%,
+      rgba(238,228,202,0.90) 100%
+    ) !important;
+  border: 1px solid rgba(184,137,43,0.30) !important;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.92) inset,
+    0 -1px 0 rgba(184,137,43,0.12) inset,
+    0 48px 96px rgba(16,24,40,0.22),
+    0 16px 40px rgba(16,24,40,0.14),
+    0 4px 12px rgba(16,24,40,0.08) !important;
+}
+
+/* 결과 영역 배경 — 산사 마당 느낌 */
+#results:not(.hidden) {
+  background:
+    linear-gradient(to bottom,
+      transparent 0%,
+      rgba(230,220,195,0.3) 100%
+    ) !important;
+}
+
+/* 사찰 카드 — 온기 있는 한지 */
+.temple-card {
+  background:
+    linear-gradient(145deg,
+      rgba(255,253,245,0.92) 0%,
+      rgba(250,242,222,0.88) 100%
+    ) !important;
+  border: 1px solid rgba(184,137,43,0.18) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.95) inset,
+    0 4px 16px rgba(16,24,40,0.08),
+    0 2px 6px rgba(16,24,40,0.05) !important;
+}
+
+/* 산사 배경 — 모바일 최적화 */
+@media (max-width: 480px) {
+  body {
+    background:
+      linear-gradient(175deg, #EAE0CC 0%, #DDD0AE 100%) !important;
+  }
+}
