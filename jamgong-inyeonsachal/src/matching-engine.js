@@ -192,15 +192,21 @@ function bearingToOhaeng(bearing) {
 /**
  * 사찰 스코어링
  * @param {object} temple - {id, name, lat, lng, verified, tags}
- * @param {object} matchContext - {targetOhaeng, purpose, userLat, userLng}
+ * @param {object} matchContext - {targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng}
  */
 function scoreTemple(temple, matchContext) {
-  const { targetOhaeng, purpose, userLat, userLng } = matchContext;
+  const { targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng } = matchContext;
 
-  // 1) 방위 적합도 (40점)
+  // 1) 방위 적합도 (40점) — 목적 오행 완전일치 40, 개인 부족오행 일치 28, 불일치 15
   const bearing = calculateBearing(userLat, userLng, temple.lat, temple.lng);
   const templeOhaeng = bearingToOhaeng(bearing);
-  const bangwiScore = templeOhaeng === targetOhaeng ? 40 : 15;
+  const bangwiScore = templeOhaeng === targetOhaeng ? 40
+    : (personalOhaeng && templeOhaeng === personalOhaeng ? 28 : 15);
+
+  // 1-b) 개인 공명 점수 (0~10점) — 사주에서 이 사찰 오행이 부족할수록 가산
+  const personalResonance = distribution
+    ? Math.max(0, (4 - (distribution[templeOhaeng] || 0))) * 2.5
+    : 0;
 
   // 2) 목적 태그 일치도 (30점)
   const purposeTagMap = {
@@ -229,7 +235,7 @@ function scoreTemple(temple, matchContext) {
   const synergyBangwiPurpose = Math.sqrt((bangwiScore / 40) * (purposeScore / 30)) * 100;
   const synergyBonus = BETA * synergyBangwiPurpose * 0.12; // 스케일 보정 (0~약 4.2점 가산)
 
-  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore;
+  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore + personalResonance;
   const totalScore = linearScore + synergyBonus;
 
   return {
@@ -268,6 +274,8 @@ function matchTemples(request, templeDB) {
 
   const matchContext = {
     targetOhaeng,
+    personalOhaeng: weak.부족오행,
+    distribution,
     purpose: request.purpose,
     userLat: request.userLat,
     userLng: request.userLng,
@@ -289,10 +297,63 @@ function matchTemples(request, templeDB) {
   return { distribution, weak, targetOhaeng, results: scored, recommendedDates, purposeGuide: PURPOSE_GUIDE[request.purpose] };
 }
 
-function scoreTempleForCouple(t,cA,cB){const rA=scoreTemple(t,cA),rB=scoreTemple(t,cB),avg=(rA.score+rB.score)/2,syn=0.3*Math.sqrt(rA.score*rB.score)*0.12;return{temple:t,score:Math.round((avg+syn)*10)/10,detail:rA.detail,detailA:rA.detail,detailB:rB.detail,synergyCouple:Math.round(syn*10)/10};}
-function generateCoupleReason(r,tA,tB){const w=attachJosa(r.temple.name,["과","와"]),m=r.detailA.templeOhaeng===tA&&r.detailB.templeOhaeng===tB;if(m){const l=tA===tB?tA:`${tA}-${tB}`;return`두 분 모두에게 필요한 기운(${l})과 방향이 겹치는 ${w} 인연이 깊은 것으로 나옵니다.`;}return`${w} 두 분의 사주를 함께 고려했을 때 인연이 확인되는 사찰입니다.`;}
-function matchCoupleTemples(req,db){const{birthInputA:bA,birthInputB:bB,purpose:p,userLat:lat,userLng:lng,memberUnlocked:mu}=req,dA=calculateOhaeng(bA),dB=calculateOhaeng(bB),io=PURPOSE_OHAENG[p],tA=(dA[io]??0)<=2?io:findWeakOhaeng(dA).부족오행,tB=(dB[io]??0)<=2?io:findWeakOhaeng(dB).부족오행,cA={targetOhaeng:tA,purpose:p,userLat:lat,userLng:lng},cB={targetOhaeng:tB,purpose:p,userLat:lat,userLng:lng},vt=db.filter(t=>t.lat!=null&&t.lng!=null),sc=vt.map(t=>scoreTempleForCouple(t,cA,cB)).sort((a,b)=>b.score-a.score).slice(0,3).map(r=>({...r,reason:generateCoupleReason(r,tA,tB)})),cc=mu?15:3;return{distribution:dA,targetOhaeng:tA,distributionA:dA,distributionB:dB,targetA:tA,targetB:tB,results:sc,recommendedDates:getRecommendedDates(tA,45,cc),purposeGuide:PURPOSE_GUIDE[p]};}
+/** 궁합사찰 점수 계산 */
+function scoreTempleForCouple(temple, matchContextA, matchContextB) {
+  const resultA = scoreTemple(temple, matchContextA);
+  const resultB = scoreTemple(temple, matchContextB);
+  const avgScore = (resultA.score + resultB.score) / 2;
+  const BETA_COUPLE = 0.3;
+  const synergyCouple = BETA_COUPLE * Math.sqrt(resultA.score * resultB.score) * 0.12;
+  return {
+    temple,
+    score: Math.round((avgScore + synergyCouple) * 10) / 10,
+    detail: resultA.detail,
+    detailA: resultA.detail,
+    detailB: resultB.detail,
+    synergyCouple: Math.round(synergyCouple * 10) / 10,
+  };
+}
+
+function generateCoupleReason(result, targetA, targetB) {
+  const { temple, detailA, detailB } = result;
+  const templeWaGwa = attachJosa(temple.name, ["과", "와"]);
+  const bothMatch = detailA.templeOhaeng === targetA && detailB.templeOhaeng === targetB;
+  if (bothMatch) {
+    const label = targetA === targetB ? targetA : `${targetA}-${targetB}`;
+    return `두 분 모두에게 필요한 기운(${label})과 방향이 겹치는 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.`;
+  }
+  return `${templeWaGwa} 두 분의 사주를 함께 고려했을 때 인연이 확인되는 사찰입니다.`;
+}
+
+/** 궁합사찰 매칭 메인 함수 */
+function matchCoupleTemples(request, templeDB) {
+  const { birthInputA, birthInputB, purpose, userLat, userLng, memberUnlocked } = request;
+  const distributionA = calculateOhaeng(birthInputA);
+  const distributionB = calculateOhaeng(birthInputB);
+  const idealOhaeng = PURPOSE_OHAENG[purpose];
+  const targetA = (distributionA[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionA).부족오행;
+  const targetB = (distributionB[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionB).부족오행;
+  const ctxA = { targetOhaeng: targetA, personalOhaeng: findWeakOhaeng(distributionA).부족오행, distribution: distributionA, purpose, userLat, userLng };
+  const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB).부족오행, distribution: distributionB, purpose, userLat, userLng };
+  const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
+  const scored = validTemples
+    .map((t) => scoreTempleForCouple(t, ctxA, ctxB))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map((r) => ({ ...r, reason: generateCoupleReason(r, targetA, targetB) }));
+  const calendarCount = memberUnlocked ? 15 : 3;
+  return {
+    distribution: distributionA,
+    targetOhaeng: targetA,
+    distributionA, distributionB, targetA, targetB,
+    results: scored,
+    recommendedDates: getRecommendedDates(targetA, 45, calendarCount),
+    purposeGuide: PURPOSE_GUIDE[purpose],
+  };
+}
+
 module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, scoreTemple, getRecommendedDates };
+
 // ── 테스트 실행 (이 파일을 직접 node로 실행할 때만 동작, require 시에는 실행 안 함) ─────────────────────
 if (require.main === module) {
 const sampleTempleDB = [
