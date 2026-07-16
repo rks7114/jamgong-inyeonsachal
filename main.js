@@ -499,7 +499,7 @@ function renderCoupleResults(data) {
         <div class="temple-rank">${i + 1}</div>
         <div class="temple-body">
           <h3>
-            <a class="temple-name-link" href="https://www.google.com/maps/search/?api=1&query=${r.temple.lat},${r.temple.lng}" target="_blank" rel="noopener">
+            <a class="temple-name-link" href="https://www.map.naver.com/v5/search/${r.temple.lat},${r.temple.lng}" target="_blank" rel="noopener">
               ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
             </a>
           </h3>
@@ -632,7 +632,7 @@ function renderResults(data) {
         <div class="temple-rank">${i + 1}</div>
         <div class="temple-body">
           <h3>
-            <a class="temple-name-link" href="https://www.google.com/maps/search/?api=1&query=${r.temple.lat},${r.temple.lng}" target="_blank" rel="noopener">
+            <a class="temple-name-link" href="https://www.map.naver.com/v5/search/${r.temple.lat},${r.temple.lng}" target="_blank" rel="noopener">
               ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
             </a>
           </h3>
@@ -781,7 +781,7 @@ function shareResult(data) {
 /** 특정 사찰 상세페이지 단독 공유 */
 function shareTemple(temple) {
   const shareText = `[잼공인연사찰] "${temple.name}" — 나와 인연이 닿는 절이래요. 🙏`;
-  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${temple.lat},${temple.lng}`;
+  const mapUrl = `https://www.map.naver.com/v5/search/${temple.lat},${temple.lng}`;
   showShareModal(shareText, mapUrl);
 }
 
@@ -807,7 +807,7 @@ function renderTempleDetailPage(result, matchData, memberUnlocked) {
         </iframe>
       </div>
 
-      <a class="temple-name-link detail-page-directions" href="https://www.google.com/maps/search/?api=1&query=${temple.lat},${temple.lng}" target="_blank" rel="noopener">
+      <a class="temple-name-link detail-page-directions" href="https://www.map.naver.com/v5/search/${temple.lat},${temple.lng}" target="_blank" rel="noopener">
         🗺️ 길찾기로 바로가기
       </a>
 
