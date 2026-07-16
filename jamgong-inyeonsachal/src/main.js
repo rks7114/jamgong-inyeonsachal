@@ -1,4 +1,3 @@
-
 // src/main.js — 잼공인연사찰 MVP 프론트엔드 (vanilla JS)
 
 // 챗봇에 전달할 사주 컨텍스트 (renderSajuPage 호출 시 저장)
