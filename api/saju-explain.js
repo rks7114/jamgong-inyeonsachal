@@ -116,7 +116,7 @@ function generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInp
   // 6. 인연사찰 안내
   text += `**인연사찰과 기운 보완**\n`;
   if (weakInfo) {
-    text += `${ohKor[weakOh] || weakOh}(${weakOh}) 기운을 보완하려면 ${ohDesc[weakOh] || "해당 오행의 기운이 강한"} 사찰, 정기적인 사찰 방문과 함께 마음을 고요히 하는 기도가 부족한 오행의 기운을 채워줍니다.\n\n`;
+    text += `${ohKor[weakOh] || weakOh}(${weakOh}) 기운을 보완하려면 ${OH_DESC[weakOh]?.temple || "해당 오행의 기운이 강한"} 사찰, 정기적인 사찰 방문과 함께 마음을 고요히 하는 기도가 부족한 오행의 기운을 채워줍니다.\n\n`;
   }
 
   // 7. 마음에 새길 한마디
