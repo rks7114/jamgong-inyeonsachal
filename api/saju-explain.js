@@ -144,7 +144,10 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
   try {
     const body = req.body || {};
-    const { ec, dist, weakOh, daYun, samjae, birthInput } = body;
+    const ec     = body.ec     || body.eightChar   || {};
+    const dist   = body.dist   || body.distribution || {};
+    const weakOh = body.weakOh || body.weak?.부족오행  || body.weak?.weakest || "";
+    const { daYun, samjae, birthInput } = body;
     let explanation = "";
     if (process.env.ANTHROPIC_API_KEY) {
       try {
