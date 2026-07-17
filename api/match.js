@@ -2,10 +2,19 @@
 // Vercel Serverless Function — 오행 매칭 API
 // 프론트엔드는 이 엔드포인트만 호출하고, 사찰 DB/오행 로직은 서버에서만 실행 (데이터·로직 노출 방지)
 
-const { matchTemples } = require("../src/matching-engine.js");
-
-// 행정안전부_문화_전통사찰 공식 데이터 1,905건 (2026.07 정제)
-const TEMPLE_DB = require("../src/temple-db.full.js");
+let matchTemples, TEMPLE_DB;
+try {
+  matchTemples = require("../src/matching-engine.js").matchTemples;
+} catch(e) {
+  matchTemples = null;
+  console.error("matching-engine load error:", e.message);
+}
+try {
+  TEMPLE_DB = require("../src/temple-db.full.js");
+} catch(e) {
+  TEMPLE_DB = [];
+  console.error("temple-db load error:", e.message);
+}
 
 const WEATHER_CODE_MAP = {
   0: "맑음", 1: "대체로 맑음", 2: "구름 조금", 3: "흐림",
@@ -50,6 +59,11 @@ module.exports = async function handler(req, res) {
     // 위치 정보 없으면 서울시청 기본값으로 폴백
     const safeUserLat = userLat ?? 37.5665;
     const safeUserLng = userLng ?? 126.9780;
+
+    if (!matchTemples) {
+      res.status(500).json({ error: "matching-engine load failed" });
+      return;
+    }
 
     const result = matchTemples(
       { birthDateTime, birthInput, purpose, userLat: safeUserLat, userLng: safeUserLng, memberUnlocked: !!memberUnlocked, region: region || "", maxDistanceKm: maxDistanceKm || null },
