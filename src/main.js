@@ -1232,6 +1232,14 @@ function buildSajuDetailCards(data, birthInput) {
   ];
   const chungs = CHUNG.filter(h => allJiFull.includes(h.a) && allJiFull.includes(h.b));
 
+  // 세운(歲運) 지지 vs 원국 지지 충 — 원국 내 충과 중복 제거
+  const sesunChungs = CHUNG.filter(h => {
+    const syIsA = h.a === SY_JI && allJiFull.includes(h.b);
+    const syIsB = h.b === SY_JI && allJiFull.includes(h.a);
+    const alreadyInner = chungs.some(c => c.a === h.a && c.b === h.b);
+    return (syIsA || syIsB) && !alreadyInner;
+  });
+
   // 지지 암합(暗合) — 각 지지의 정기(正氣) 천간끼리 천간합을 이루는 경우
   // 예: 卯(정기 乙) + 申(정기 庚) → 乙庚합(금합) = 卯申 암합
   const AMHAP = [
@@ -1295,7 +1303,19 @@ function buildSajuDetailCards(data, birthInput) {
     ${ganHams.length===0 && samHapFound.length===0 && yukHams.length===0 && amhaps.length===0 && chungs.length===0
       ? '<div style="font-size:12px;color:rgba(255,255,255,0.35);padding:8px 0;">원국 내 주요 합·충이 없습니다 — 대운·세운에서 형성될 때 주목하세요.</div>'
       : ''}
-    <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.55);">💡 2026 丙午년: 午를 포함한 寅午戌 화국(火局) 가능성 체크</div>
+
+    ${sesunChungs.length > 0 ? `
+    <div style="margin-top:12px;border-top:1px solid rgba(255,82,82,0.25);padding-top:12px;">
+      <div style="font-size:12px;font-weight:700;color:rgba(255,138,101,0.95);margin-bottom:6px;">⚡ 2026년 세운 ${SY_GAN}${SY_JI}와 원국 충(沖)</div>
+      ${sesunChungs.map(h => {
+        const partnerJi = h.a === SY_JI ? h.b : h.a;
+        const cnt = allJiFull.filter(z => z === partnerJi).length;
+        return `<div style="background:rgba(255,82,82,0.07);border:1px solid rgba(255,82,82,0.22);border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:12px;color:rgba(255,255,255,0.8);">
+          <span style="font-size:14px;font-weight:800;color:#FF8A65;margin-right:8px;">세운 ${SY_JI} ↔ 원국 ${partnerJi}${cnt >= 2 ? ` ×${cnt}` : ''}</span>${h.desc}
+          ${cnt >= 2 ? `<div style="margin-top:4px;font-size:11px;color:#FF7043;font-weight:600;">⚠️ 원국에 ${partnerJi}가 ${cnt}개 — 충의 영향이 배가됩니다. 이동·변화 시 신중히 판단하세요.</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>` : `<div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4);">💡 2026년 세운 ${SY_GAN}${SY_JI}: 원국과의 지지 충 없음</div>`}
   </div>`;
 
   /* ── 원진살·귀문관살 ── */
