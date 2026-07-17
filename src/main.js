@@ -2665,7 +2665,7 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
       "<span style=\"font-size:20px;\">" + emoji2 + "</span>" +
       "<span style=\"font-size:16px;font-weight:800;color:" + ohaengColor + ";letter-spacing:0.5px;\">" + mo + "/" + dy + "</span>" +
       "<span style=\"font-size:12px;font-weight:700;color:" + yoilColor + ";\">" + "(" + yoil + ")" + "</span>" +
-      (d2.dayOhaeng ? "<span style=\"font-size:10px;background:" + ohaengColor + "22;color:" + ohaengColor + ";border-radius:8px;padding:2px 7px;\">" + d2.dayOhaeng + "일</span>" : "") +
+      (d2.dayOhaeng ? "<span style=\"font-size:10px;background:" + ohaengColor + "22;color:" + ohaengColor + ";border-radius:8px;padding:2px 7px;\">" + [...d2.dayOhaeng].join("·") + "일</span>" : "") +
       "</div>";
   }).join("");
   const datesWrapper = "<div style=\"display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;\">" + datesHtml + "</div>" +
