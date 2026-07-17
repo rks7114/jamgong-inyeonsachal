@@ -2,8 +2,6 @@
 
 // 챗봇에 전달할 사주 컨텍스트 (renderSajuPage 호출 시 저장)
 let _sajuContext = null;
-// 사주 페이지 복귀용 인자 저장
-let _sajuPageArgs = null;
 
 const PURPOSES = ["재물운", "건강운", "학업운", "인연운", "가정운", "수험합격", "취업운", "출산기도"];
 
@@ -159,30 +157,6 @@ const BEARING_DEG = {
   북: 0, 동북: 45, 동: 90, 동남: 135,
   남: 180, 남서: 225, 서: 270, 북서: 315,
 };
-
-function buildCompassSVG(deg) {
-  const rad = (deg - 90) * Math.PI / 180;
-  const cx = 60, cy = 60, r = 48;
-  const needleLen = 38;
-  const nx = cx + needleLen * Math.cos(rad);
-  const ny = cy + needleLen * Math.sin(rad);
-  const tx = cx - needleLen * 0.6 * Math.cos(rad);
-  const ty = cy - needleLen * 0.6 * Math.sin(rad);
-  const label = Object.entries(BEARING_DEG).find(([,v]) => v === deg)?.[0] || "";
-  return `<div style="display:flex;flex-direction:column;align-items:center;margin:8px 0 16px;">
-    <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(0,210,255,0.25)" stroke-width="2"/>
-      <circle cx="${cx}" cy="${cy}" r="4" fill="#00D2FF"/>
-      <text x="${cx}" y="10" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="11" font-family="sans-serif">북</text>
-      <text x="${cx}" y="116" text-anchor="middle" fill="rgba(0,210,255,0.5)" font-size="10" font-family="sans-serif">남</text>
-      <text x="8" y="${cy+4}" text-anchor="middle" fill="rgba(0,210,255,0.5)" font-size="10" font-family="sans-serif">서</text>
-      <text x="112" y="${cy+4}" text-anchor="middle" fill="rgba(0,210,255,0.5)" font-size="10" font-family="sans-serif">동</text>
-      <line x1="${tx}" y1="${ty}" x2="${nx}" y2="${ny}" stroke="#00D2FF" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="${nx}" cy="${ny}" r="5" fill="#00D2FF"/>
-    </svg>
-    ${label ? `<div style="font-size:13px;color:rgba(0,210,255,0.9);margin-top:-4px;">${label}쪽 방향 사찰이 인연</div>` : ""}
-  </div>`;
-}
 
 const app = document.getElementById("app");
 
@@ -782,7 +756,7 @@ function render() {
             fetch("/api/match", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ birthInput, purpose: selectedPurpose || "인연운", userLat: matchLat, userLng: matchLng }),
+              body: JSON.stringify({ birthInput, userLat: matchLat, userLng: matchLng, purpose: "인연운" }),
             }),
             Promise.race([
               fetch("/api/saju-explain", {
@@ -810,53 +784,6 @@ function render() {
 
         clearInterval(loadingInterval);
         renderSajuPage(sajuData, birthInput, matchData, explainData?.explanation || null);
-
-        // AI 풀이 백그라운드 재시도 (초기 타임아웃/실패 시)
-        if (!explainData?.explanation) {
-          (async () => {
-            try {
-              const r2 = await fetch("/api/saju-explain", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  eightChar: sajuData.eightChar,
-                  distribution: sajuData.distribution,
-                  weak: sajuData.weak,
-                  daYun: sajuData.daYun
-                    ? { ...sajuData.daYun, list: sajuData.daYun.list?.filter(d => d.isCurrent || (d.startAge >= 30)) }
-                    : null,
-                  samjae: sajuData.samjae,
-                  birthInput,
-                }),
-              });
-              let d2 = null;
-              let errMsg = `HTTP ${r2.status}`;
-              if (r2.ok) {
-                d2 = await r2.json();
-              } else {
-                try { const eb = await r2.json(); errMsg = eb?.error || eb?.message || errMsg; } catch(_) {}
-              }
-              const el = document.getElementById("saju-ai-explanation");
-              if (!el) return;
-              if (d2?.explanation) {
-                el.innerHTML = d2.explanation
-                  .replace(/^#{1,3}\s+(.+)$/gm, '<h3 class="saju-explain-h3">$1</h3>')
-                  .replace(/^---+$/gm, '<hr style="border:none;border-top:1px solid rgba(0,210,255,0.15);margin:12px 0;">')
-                  .replace(/\*\*(.+?)\*\*/g, '<strong class="saju-explain-heading">$1</strong>')
-                  .replace(/\n\n/g, '</p><p>')
-                  .replace(/\n/g, '<br>')
-                  .replace(/^/, '<p>').replace(/$/, '</p>')
-                  .replace(/<p>\s*(<h3|<hr)/g, '$1')
-                  .replace(/(<\/h3>|<hr[^>]*>)\s*<\/p>/g, '$1');
-              } else {
-                el.innerHTML = `<div style="font-size:13px;color:rgba(255,255,255,0.45);padding:12px 0;text-align:center;">AI 사주 풀이를 불러오지 못했습니다.<br><span style="font-size:11px;color:rgba(255,100,100,0.6);display:block;margin-top:4px;">[오류: ${errMsg}]</span><button onclick="location.reload()" style="margin-top:8px;background:none;border:1px solid rgba(0,210,255,0.35);color:rgba(0,210,255,0.7);border-radius:8px;padding:5px 14px;cursor:pointer;font-size:12px;">↻ 새로고침해서 다시 시도</button></div>`;
-              }
-            } catch(fetchErr) {
-              const el = document.getElementById("saju-ai-explanation");
-              if (el) el.innerHTML = `<div style="font-size:13px;color:rgba(255,255,255,0.45);padding:12px 0;text-align:center;">AI 사주 풀이를 불러오지 못했습니다.<br><span style="font-size:11px;color:rgba(255,100,100,0.6);display:block;margin-top:4px;">[오류: ${fetchErr.message}]</span><button onclick="location.reload()" style="margin-top:8px;background:none;border:1px solid rgba(0,210,255,0.35);color:rgba(0,210,255,0.7);border-radius:8px;padding:5px 14px;cursor:pointer;font-size:12px;">↻ 새로고침해서 다시 시도</button></div>`;
-            }
-          })();
-        }
       } catch (err) {
         clearInterval(loadingInterval);
         resultsEl.classList.add("hidden");
@@ -981,23 +908,8 @@ function buildSajuDetailCards(data, birthInput) {
     { label:'월(月)', gan:monthGan, ji:monthJi, ss: getSS(monthGan) },
     { label:'년(年)', gan:yearGan,  ji:yearJi,  ss: getSS(yearGan)  },
   ];
-  // 지지 정기(正氣) → 십신 집계
-  const JI_JEONGGI = {
-    子:'壬',丑:'己',寅:'甲',卯:'乙',辰:'戊',巳:'丙',
-    午:'丁',未:'己',申:'庚',酉:'辛',戌:'戊',亥:'壬'
-  };
   const ssCount = {};
-  // 천간 십신 (일원(日元)은 비견으로 카운팅)
-  ssCols.forEach(c => {
-    const ss = c.ss === '일원(日元)' ? '비견' : c.ss;
-    if (ss) ssCount[ss] = (ssCount[ss]||0)+1;
-  });
-  // 지지 십신 (정기 기준) — 년지·월지·일지·시지 포함
-  [yearJi, monthJi, dayJi, timeJi].forEach(ji => {
-    const jeonggi = JI_JEONGGI[ji];
-    const jiSS = jeonggi ? getSS(jeonggi) : '';
-    if (jiSS && jiSS !== '일원(日元)') ssCount[jiSS] = (ssCount[jiSS]||0)+1;
-  });
+  ssCols.forEach(c => { if (c.ss && c.ss !== '일원(日元)') ssCount[c.ss] = (ssCount[c.ss]||0)+1; });
 
   const sipsinHtml = `
   <div class="saju-card" style="margin-bottom:16px;">
@@ -1190,10 +1102,10 @@ function buildSajuDetailCards(data, birthInput) {
              </div>`}
       </div>
     </div>
-    ${gmInChart.length > 0 ? `<div style="display:flex;flex-direction:column;gap:8px;">
-      ${gmInChart.map(z=>`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7;">${GONGMANG_DESC[z]||''}</div>`).join('')}
-    </div>` : ''}
-    ${gongmangZhi.length > 0 ? `
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${gongmangZhi.map(z=>`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7;">${GONGMANG_DESC[z]||''}</div>`).join('')}
+    </div>
+    ${gmInChart.length === 0 && gongmangZhi.length > 0 ? `
     <div style="margin-top:12px;background:rgba(255,193,7,0.06);border:1px solid rgba(255,193,7,0.2);border-radius:10px;padding:12px 14px;">
       <div style="font-size:12px;font-weight:700;color:#FFD54F;margin-bottom:6px;">⏰ 세운 공망 경고</div>
       <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.85;">
@@ -1253,38 +1165,6 @@ function buildSajuDetailCards(data, birthInput) {
   ];
   const chungs = CHUNG.filter(h => allJiFull.includes(h.a) && allJiFull.includes(h.b));
 
-  // 세운(歲運) 지지 vs 원국 지지 충 — 원국 내 충과 중복 제거
-  const sesunChungs = CHUNG.filter(h => {
-    const syIsA = h.a === SY_JI && allJiFull.includes(h.b);
-    const syIsB = h.b === SY_JI && allJiFull.includes(h.a);
-    const alreadyInner = chungs.some(c => c.a === h.a && c.b === h.b);
-    return (syIsA || syIsB) && !alreadyInner;
-  });
-
-  // 자형살(自刑) — 같은 지지끼리 자기 충돌
-  const JACHUNG_DESC = {
-    午:'오오 자형살(午午 自刑) — 火 기운이 극도로 과열됩니다. 과로·감정 폭발·심장 과부하 주의.',
-    酉:'유유 자형살(酉酉 自刑) — 金 기운이 지나치게 예리해집니다. 인간관계 마찰·고집 주의.',
-    亥:'해해 자형살(亥亥 自刑) — 水 기운이 넘쳐 판단이 흐려집니다. 과음·의존성 주의.',
-    辰:'진진 자형살(辰辰 自刑) — 土 기운이 고착화됩니다. 고집·변화 거부·막힘 주의.',
-  };
-  // 원국 내 자형살 (같은 지지 2개 이상)
-  const innerJachung = Object.keys(JACHUNG_DESC).filter(ji => allJiFull.filter(z=>z===ji).length>=2);
-  // 세운 자형살 (세운 지지가 원국에 있어서 자형 형성)
-  const sesunJachung = (JACHUNG_DESC[SY_JI] && allJiFull.includes(SY_JI)) ? SY_JI : null;
-
-  // 지지 암합(暗合) — 각 지지의 정기(正氣) 천간끼리 천간합을 이루는 경우
-  // 예: 卯(정기 乙) + 申(정기 庚) → 乙庚합(금합) = 卯申 암합
-  const AMHAP = [
-    {a:'寅',b:'丑',result:'土합',desc:'인축 암합(寅丑暗合) — 寅의 정기 甲(목)과 丑의 정기 己(토)가 甲己합을 이룹니다. 겉으로 드러나지 않는 끈끈한 결속으로, 서로 다른 기운이 깊은 내면에서 화합하는 형태입니다. 사업상 파트너십, 숨겨진 인연에서 강하게 발동합니다.'},
-    {a:'卯',b:'申',result:'金합',desc:'묘신 암합(卯申暗合) — 卯의 정기 乙(목)과 申의 정기 庚(금)이 乙庚합을 이룹니다. 이 사주에서 가장 강력한 숨은 결합으로, 유연함과 결단력이 내면에서 하나로 녹아듭니다. 원진·귀문과 함께 걸려 강한 흡인력과 갈등이 공존하는 복잡한 관계 에너지를 형성합니다.'},
-    {a:'巳',b:'酉',result:'水합',desc:'사유 암합(巳酉暗合) — 巳의 정기 丙(화)과 酉의 정기 辛(금)이 丙辛합을 이룹니다. 열정과 예리함이 물처럼 흘러 전략적 통찰과 분석력으로 변환됩니다. 학문·기획 분야에서 잠재력이 발현되는 구조입니다.'},
-    {a:'午',b:'亥',result:'木합',desc:'오해 암합(午亥暗合) — 午의 정기 丁(화)과 亥의 정기 壬(수)이 丁壬합을 이룹니다. 감수성과 지혜가 창의적 목기(木氣)로 변환되어 예술·인문 분야의 특출한 재능을 숨겨두고 있습니다.'},
-    {a:'子',b:'辰',result:'火합',desc:'자진 암합(子辰暗合) — 子의 정기 癸(수)와 辰의 정기 戊(토)가 戊癸합을 이룹니다. 직관과 현실감이 불꽃(화기)으로 변환되어, 결정적 순간에 강한 행동력과 카리스마가 폭발합니다.'},
-    {a:'子',b:'戌',result:'火합',desc:'자술 암합(子戌暗合) — 子의 정기 癸(수)와 戌의 정기 戊(토)가 戊癸합을 이룹니다. 깊은 내면의 지혜와 현실 감각이 화기(火氣)로 응축됩니다. 겉은 조용하지만 내면에 강한 열정과 추진력을 감추고 있습니다.'},
-  ];
-  const amhaps = AMHAP.filter(h => allJiFull.includes(h.a) && allJiFull.includes(h.b));
-
   const hamChungHtml = `
   <div class="saju-card" style="margin-bottom:16px;">
     <div class="saju-card-title">🔗 합(合)·충(沖) — 글자끼리의 화학반응</div>
@@ -1316,15 +1196,6 @@ function buildSajuDetailCards(data, birthInput) {
       </div>`).join('')}
     </div>` : ''}
 
-    ${amhaps.length > 0 ? `
-    <div style="margin-bottom:12px;">
-      <div style="font-size:12px;font-weight:700;color:rgba(255,183,77,0.9);margin-bottom:6px;">🔐 지지 암합(暗合) — 지장간 정기끼리의 숨은 결합</div>
-      ${amhaps.map(h=>`<div style="background:rgba(255,152,0,0.05);border:1px solid rgba(255,152,0,0.2);border-radius:10px;padding:12px;margin-bottom:6px;">
-        <div style="margin-bottom:5px;"><span style="font-size:14px;font-weight:800;color:#FFB74D;margin-right:8px;">${h.a}↔${h.b}</span><span style="font-size:12px;color:rgba(255,255,255,0.4);">→ ${h.result}</span></div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.72);line-height:1.7;">${h.desc}</div>
-      </div>`).join('')}
-    </div>` : ''}
-
     ${chungs.length > 0 ? `
     <div>
       <div style="font-size:12px;font-weight:700;color:rgba(244,67,54,0.9);margin-bottom:6px;">⚡ 지지 충(沖) — 원국 내 충돌</div>
@@ -1333,34 +1204,10 @@ function buildSajuDetailCards(data, birthInput) {
       </div>`).join('')}
     </div>` : ''}
 
-    ${ganHams.length===0 && samHapFound.length===0 && yukHams.length===0 && amhaps.length===0 && chungs.length===0
+    ${ganHams.length===0 && samHapFound.length===0 && yukHams.length===0 && chungs.length===0
       ? '<div style="font-size:12px;color:rgba(255,255,255,0.35);padding:8px 0;">원국 내 주요 합·충이 없습니다 — 대운·세운에서 형성될 때 주목하세요.</div>'
       : ''}
-
-    ${sesunChungs.length > 0 ? `
-    <div style="margin-top:12px;border-top:1px solid rgba(255,82,82,0.25);padding-top:12px;">
-      <div style="font-size:12px;font-weight:700;color:rgba(255,138,101,0.95);margin-bottom:6px;">⚡ 2026년 세운 ${SY_GAN}${SY_JI}와 원국 충(沖)</div>
-      ${sesunChungs.map(h => {
-        const partnerJi = h.a === SY_JI ? h.b : h.a;
-        const cnt = allJiFull.filter(z => z === partnerJi).length;
-        return `<div style="background:rgba(255,82,82,0.07);border:1px solid rgba(255,82,82,0.22);border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:12px;color:rgba(255,255,255,0.8);">
-          <span style="font-size:14px;font-weight:800;color:#FF8A65;margin-right:8px;">세운 ${SY_JI} ↔ 원국 ${partnerJi}${cnt >= 2 ? ` ×${cnt}` : ''}</span>${h.desc}
-          ${cnt >= 2 ? `<div style="margin-top:4px;font-size:11px;color:#FF7043;font-weight:600;">⚠️ 원국에 ${partnerJi}가 ${cnt}개 — 충의 영향이 배가됩니다. 이동·변화 시 신중히 판단하세요.</div>` : ''}
-        </div>`;
-      }).join('')}
-    </div>` : `<div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4);">💡 2026년 세운 ${SY_GAN}${SY_JI}: 원국과의 지지 충 없음</div>`}
-
-    ${(innerJachung.length > 0 || sesunJachung) ? `
-    <div style="margin-top:12px;border-top:1px solid rgba(255,152,0,0.25);padding-top:12px;">
-      <div style="font-size:12px;font-weight:700;color:rgba(255,183,77,0.95);margin-bottom:6px;">🔥 자형살(自刑) — 같은 글자끼리 자기 충돌</div>
-      ${innerJachung.map(ji=>`<div style="background:rgba(255,152,0,0.07);border:1px solid rgba(255,152,0,0.25);border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:12px;color:rgba(255,255,255,0.8);">
-        <span style="font-size:14px;font-weight:800;color:#FFB74D;margin-right:8px;">원국 ${ji}+${ji}</span>${JACHUNG_DESC[ji]}
-      </div>`).join('')}
-      ${sesunJachung && !innerJachung.includes(sesunJachung) ? `<div style="background:rgba(255,82,0,0.08);border:1px solid rgba(255,82,0,0.28);border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:12px;color:rgba(255,255,255,0.85);">
-        <span style="font-size:14px;font-weight:800;color:#FF8A65;margin-right:8px;">⚠️ 세운 ${SY_JI} + 원국 ${sesunJachung}</span>${JACHUNG_DESC[sesunJachung]}
-        <div style="margin-top:4px;font-size:11px;color:#FF7043;font-weight:700;">2026년 丙午 세운에서 자형살 발동 — 건강·과로·감정 조절에 특히 주의하세요.</div>
-      </div>` : ''}
-    </div>` : ''}
+    <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.55);">💡 2026 丙午년: 午를 포함한 寅午戌 화국(火局) 가능성 체크</div>
   </div>`;
 
   /* ── 원진살·귀문관살 ── */
@@ -1934,8 +1781,6 @@ function buildLifeGuideCards(data, birthInput) {
 }
 
 function renderSajuPage(data, birthInput, matchData, explanation) {
-  // 페이지 복귀용 인자 저장
-  _sajuPageArgs = { data, birthInput, matchData, explanation };
   // 챗봇에 사주 컨텍스트 저장
   _sajuContext = {
     eightChar: data.eightChar,
@@ -2015,17 +1860,16 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
   const ohColor = {목:'#4CAF50',화:'#FF5722',토:'#FF9800',금:'#9E9E9E',수:'#2196F3'};
   const ohChinese = {목:'木',화:'火',토:'土',금:'金',수:'水'};
   const matchResults = matchData?.results || [];
-  const targetOh = matchData?.targetOhaeng || weakOh; // 실제 추천 기준 오행
   const templeHtml = matchResults.length > 0 ? `
     <div class="saju-dist-section" style="border-color:rgba(0,210,255,0.3);">
       <div class="saju-dist-title">🏯 나의 인연사찰 추천
-        ${targetOh ? `<span style="font-size:12px;font-weight:400;color:${ohColor[targetOh]||'#00d2ff'};margin-left:8px;">· ${ohChinese[targetOh]||''}(${targetOh}) 기운 ${targetOh === weakOh ? '보완' : '기도 방위'}</span>` : ''}
+        ${weakOh ? `<span style="font-size:12px;font-weight:400;color:${ohColor[weakOh]||'#00d2ff'};margin-left:8px;">· ${weakOh}(${ohChinese[weakOh]||''}) 기운 보완</span>` : ''}
       </div>
       ${matchResults.slice(0,5).map((r,i)=>{
         const t = r.temple || {};
         const distKm = r.detail?.distanceKm;
         return `
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 12px;margin-top:8px;background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.12);border-radius:12px;cursor:pointer;" class="saju-temple-card" data-temple-index="${i}">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 12px;margin-top:8px;background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.12);border-radius:12px;">
           <div style="font-size:24px;min-width:34px;text-align:center;">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}</div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:16px;font-weight:800;color:#fff;">${t.name||''}</div>
@@ -2036,7 +1880,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
           <div style="text-align:right;flex-shrink:0;">
             <div style="font-size:20px;font-weight:900;color:var(--cyan);">${r.score||''}</div>
             <div style="font-size:10px;color:rgba(255,255,255,0.3);">점</div>
-            <div style="font-size:10px;color:rgba(0,210,255,0.6);margin-top:4px;">상세 ›</div>
           </div>
         </div>`;
       }).join('')}
@@ -2084,16 +1927,16 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       </div>
     </details>` : '';
 
-  // ── 삼재 (접힘 처리) ──
-  const samjaeHtml = data.samjae ? `
-    <details>
-      <summary style="cursor:pointer;padding:14px 18px;background:rgba(13,30,60,0.8);border:1.5px solid rgba(255,255,255,0.07);border-radius:14px;font-size:14px;font-weight:700;color:rgba(255,255,255,0.7);list-style:none;display:flex;justify-content:space-between;align-items:center;">
-        <span>⚡ 삼재(三災) 안내</span>
+  // ── 삼재 상세 안내 접힌 블록 ──────────────────────────────────────────
+  const samjaeDetailHtml = data.samjae ? `
+    <details class="samjae-section">
+      <summary style="cursor:pointer;padding:14px 18px;background:rgba(220,50,50,0.08);border:1.5px solid rgba(220,80,80,0.25);border-radius:14px;font-size:14px;font-weight:700;color:rgba(255,200,200,0.8);list-style:none;display:flex;justify-content:space-between;align-items:center;">
+        <span>⚠️ 삼재(三災) — ${data.samjae?.animalsKo || ''}띠 해당</span>
         <span style="font-size:11px;color:rgba(255,255,255,0.3);">클릭해서 보기 ▼</span>
       </summary>
-      <div class="saju-dist-section" style="margin-top:4px;">
-        <div class="samjae-info">
-          <span class="samjae-birth">${birthInput.gender==='female'?'여':'남'} · 띠: <strong>${data.samjae.birthZhiCn||data.samjae.birthZhi}</strong>(${data.samjae.birthZhiKo})</span>
+      <div class="saju-dist-section" style="margin-top:4px;border-radius:0 0 14px 14px;">
+        <div style="padding:8px 2px;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center;">
           <span class="samjae-target">삼재 해: <strong>${data.samjae.samjaeTarget}</strong>년</span>
         </div>
         ${data.samjae.groups.map((grp)=>{
@@ -2143,14 +1986,8 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
   const isSamjaeNow = data.samjae?.groups?.some(g => g.some(y => Math.abs(y.year - currentYear2) <= 1));
   const samjaeAlertHtml = isSamjaeNow ? (() => {
     const nowGrp = data.samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear2) <= 1)) || [];
-    // 그룹 내 현재 연도의 위치(인덱스)로 단계 판정 — Math.abs 방식은 이전 연도를 먼저 반환해 단계가 밀리는 버그 있음
-    const nowGrpIdx = nowGrp.findIndex(y => y.year === currentYear2);
-    const SAMJAE_STEPS = ["들삼재", "눌삼재(삼재 중반)", "날삼재(마무리 단계)"];
-    const step = nowGrpIdx >= 0
-      ? SAMJAE_STEPS[nowGrpIdx]
-      : nowGrp.findIndex(y => y.year === currentYear2 + 1) === 0
-        ? "들삼재 진입 직전"
-        : "날삼재 마무리 후";
+    const nowY = nowGrp.find(y => Math.abs(y.year - currentYear2) <= 1);
+    const step = nowY?.year < currentYear2 ? "들삼재 마무리 단계" : nowY?.year === currentYear2 ? "눌삼재(삼재 중반)" : "날삼재(삼재 마무리)";
     return `<div style="background:rgba(220,50,50,0.1);border:1.5px solid rgba(220,80,80,0.4);border-radius:14px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;">
       <span style="font-size:24px;">⚠️</span>
       <div>
@@ -2171,8 +2008,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       <div id="saju-noprint-top">${samjaeAlertHtml}</div>
       ${explanationHtml}
       ${buildSajuDetailCards(data, birthInput)}
-      ${daYunHtml}
-      ${samjaeHtml}
       ${buildLifeGuideCards(data, birthInput)}
       <div id="saju-noprint-bottom">${templeHtml}${sajuSummaryHtml}</div>
     </div>`;
@@ -2185,19 +2020,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
     const formEl = document.getElementById("match-form");
     if (formEl) formEl.style.display = "";
     document.getElementById("app")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-
-  // 사주 페이지 사찰 카드 클릭 → 상세 페이지
-  const _matchResults = matchData?.results || [];
-  document.querySelectorAll(".saju-temple-card").forEach(card => {
-    card.addEventListener("click", () => {
-      const idx = parseInt(card.dataset.templeIndex);
-      if (_matchResults[idx]) {
-        renderTempleDetailPage(_matchResults[idx], null, isMember(), () => {
-          if (_sajuPageArgs) renderSajuPage(_sajuPageArgs.data, _sajuPageArgs.birthInput, _sajuPageArgs.matchData, _sajuPageArgs.explanation);
-        });
-      }
-    });
   });
 
   // 📥 결과 다운받기 — 인쇄용 새 창 (PDF 저장 가능)
@@ -2310,14 +2132,13 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       const { userLat, userLng } = await detectUserLocation();
       const res = await fetch("/api/match", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ birthInput, userLat, userLng, purpose: selectedPurpose || "인연운" }),
+        body: JSON.stringify({ birthInput, userLat, userLng, purpose: "healing" }),
       });
       const md = await res.json();
       if (!md.error) renderSajuPage(data, birthInput, md, explanation);
     } catch(_) { btn.textContent = "🔄 다시 찾기"; btn.disabled = false; }
   });
 }
-
 
 function renderResults(data) {
   const resultsEl = document.getElementById("results");
@@ -2367,7 +2188,7 @@ function renderResults(data) {
         <div class="temple-rank">${i + 1}</div>
         <div class="temple-body">
           <h3>
-            <a class="temple-name-link" href="https://map.naver.com/v5/search/${encodeURIComponent((r.temple.name || '') + ' ' + (r.temple.address || ''))}" target="_blank" rel="noopener">
+            <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
               ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
             </a>
           </h3>
@@ -2377,7 +2198,7 @@ function renderResults(data) {
             <div class="temple-detail">
               <div class="temple-detail-label">유래·연혁</div>
               <div class="temple-detail-text">
-                ${memberUnlocked ? r.temple.history : (r.temple.history.length > 35 ? r.temple.history.slice(0, 35) + '… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>' : r.temple.history)}
+                ${memberUnlocked ? r.temple.history : (r.temple.history.length > 35 ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>` : r.temple.history)}
               </div>
               ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
             </div>
@@ -2437,8 +2258,8 @@ function renderResults(data) {
   document.getElementById("demo-detail-btn")?.addEventListener("click", () => {
     const demoResult = {
       score: 94,
-      reason: "수(水) 기운이 부족한 사주에 이 사찰의 강한 수 기운이 지혜와 학업 운을 보완해줍니다.",
-      temple: { name: "통도사", address: "경상남도 양산시 하북면 통도사로 108", lat: 35.489166, lng: 129.058611, foundedYear: 646, history: "신라 선덕여왕 15년(646) 자장율사가 창건한 한국 3보 사찰" },
+      reason: "수(水) 기운이 부족한 사주에 이 사찰의 강한 수 기운이 보완해줍니다.",
+      temple: { name: "통도사", address: "경상남도 양산시 하북면 통도사로 108", lat: 35.489166, lng: 129.058611, foundedYear: 646 },
       detail: { templeOhaeng: "수", bearing: "북", distanceKm: 12.3 },
       weather: { condition: "맑음", temp: 24 },
     };
@@ -2488,7 +2309,7 @@ function renderCoupleResults(data) {
         <div class="temple-rank">${i + 1}</div>
         <div class="temple-body">
           <h3>
-            <a class="temple-name-link" href="https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + (r.temple.address ? ' ' + r.temple.address : ''))}" target="_blank" rel="noopener">
+            <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
               ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
             </a>
           </h3>
@@ -2515,13 +2336,12 @@ function renderCoupleResults(data) {
 
     ${data.recommendedDates && data.recommendedDates.length ? `
       <div class="calendar-card">
-        <div class="calendar-title">함께 방문하면 좋은 날${memberUnlocked ? " (멤버 확장 · 45일 이내)" : ""}</div>
-        <div class="calendar-dates">
-          ${data.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
+        <div class="calendar-title">📅 좋은 방문 날짜 추천</div>
+        <div class="calendar-items">
+          ${data.recommendedDates.map(d => `<div class="calendar-item"><span class="cal-date">${d.date}</span>${d.reason ? `<span class="cal-reason">${d.reason}</span>` : ''}</div>`).join('')}
         </div>
-        ${!memberUnlocked ? `<div class="calendar-more-hint">🔒 멤버는 더 많은 추천일을 볼 수 있습니다</div>` : ""}
       </div>
-    ` : ""}
+    ` : ''}
 
     <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
 
@@ -2548,14 +2368,14 @@ function renderCoupleResults(data) {
     codeBtn.addEventListener("click", () => {
       if (codeInput && codeInput.value.trim() === MEMBER_CODE) {
         tryUnlockMembership(codeInput.value.trim());
-        renderCoupleResults(data);
+        renderResults(data);
       } else {
         alert("코드가 올바르지 않습니다.");
       }
     });
   }
 
-  document.querySelectorAll(".couple-detail-btn").forEach(btn => {
+  document.querySelectorAll(".detail-view-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const idx = parseInt(btn.dataset.templeIndex);
       renderTempleDetailPage(data.results[idx], data, memberUnlocked);
@@ -2564,232 +2384,31 @@ function renderCoupleResults(data) {
 
   document.getElementById("share-btn")?.addEventListener("click", () => {
     if (navigator.share) {
-      navigator.share({ title: "잼공인연사찰 커플 매칭 결과", url: window.location.href });
+      navigator.share({ title: "잼공인연사찰 매칭 결과", url: window.location.href });
     } else {
       navigator.clipboard.writeText(window.location.href).then(() => alert("링크가 복사되었습니다."));
     }
   });
 
-  resultsEl.scrollIntoView({ behavior: "smooth" });
-}
-
-
-
-
-
-// ═══════════════════════════════════════════════════════════════════
-// ── 사찰 상세페이지 ── (절대 삭제 금지: 여기서 관리)
-// ═══════════════════════════════════════════════════════════════════
-function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
-  const resultsEl = document.getElementById("results");
-  resultsEl.classList.remove("hidden");
-  const formEl = document.getElementById("match-form");
-  if (formEl) formEl.style.display = "none";
-
-  const t = result.temple || {};
-  const d = result.detail || {};
-  const ohaengColor = OHAENG_COLOR[d.templeOhaeng] || "var(--gold)";
-  const mapUrl = "https://map.naver.com/v5/search/" + encodeURIComponent((t.name || "") + " " + (t.address || ""));
-  const distText = d.distanceKm != null
-    ? (d.distanceKm < 1 ? Math.round(d.distanceKm * 1000) + "m" : d.distanceKm.toFixed(1) + "km")
-    : "";
-  const score = result.score || 0;
-
-  // 오행 의미
-  const OHAENG_MEANING = {
-    목: "성장·창의·도전",
-    화: "열정·명예·활력",
-    토: "안정·신뢰·중심",
-    금: "결실·의지·재물",
-    수: "지혜·학업·직관"
-  };
-
-  // 오행 설명
-  const OHAENG_DESC = {
-    목: "새로운 일을 시작하거나 창의적인 활동에 힘을 불어넣어 줍니다. 성장과 도전의 기운이 강합니다.",
-    화: "이름을 알리고 사람들 사이에서 빛나게 해주는 기운입니다. 열정과 활력을 불어넣습니다.",
-    토: "흔들리는 마음을 안정시키고 근본을 다지게 해줍니다. 신뢰와 지속성의 기운입니다.",
-    금: "결실을 맺고 재물과 의지력을 강화시켜 줍니다. 결단력과 실행력의 기운입니다.",
-    수: "지혜와 직관을 높여주고 학업·시험에 도움이 됩니다. 깊이 생각하는 힘의 기운입니다."
-  };
-
-  const dist = parentData?.distribution || {};
-  const distHtml = Object.entries(dist).map(function([k,v]) {
-    const isTarget = k === d.templeOhaeng;
-    return '<span style="display:inline-block;padding:3px 10px;border-radius:12px;margin:2px;font-weight:700;font-size:13px;' +
-      'background:' + (isTarget ? ohaengColor + "22" : "rgba(255,255,255,0.06)") + ';' +
-      'border:1px solid ' + (isTarget ? ohaengColor : "rgba(255,255,255,0.1)") + ';' +
-      'color:' + (isTarget ? ohaengColor : "rgba(255,255,255,0.65)") + ';">' +
-      k + " " + v + (isTarget ? " ✦" : "") + "</span>";
-  }).join(" ");
-
-  const purposeGuide = parentData?.purposeGuide || [];
-  const guideHtml = Array.isArray(purposeGuide) && purposeGuide.length
-    ? "<ol class=\"prayer-steps\">" + purposeGuide.map(function(s){ return "<li>" + s + "</li>"; }).join("") + "</ol>"
-    : "";
-
-  const historyFull = t.history || "";
-  const historyHtml = memberUnlocked
-    ? historyFull
-    : (historyFull.length > 80
-        ? historyFull.slice(0, 80) + '… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>'
-        : historyFull || "정보 없음");
-
-  const weatherHtml = result.weather
-    ? '<div class="temple-detail-weather">🌤️ ' + result.weather.condition + " " + result.weather.temp + "°C</div>"
-    : "";
-
-  const purposeLabel = parentData?.purpose || "";
-
-  // 추천 방문 날짜
-  const recDates = parentData?.recommendedDates || [];
-  const dateCount = memberUnlocked ? recDates.length : Math.min(3, recDates.length);
-  const datesHtml = recDates.slice(0, dateCount).map(function(d2) {
-    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">' +
-      '<span style="font-size:13px;font-weight:700;color:' + ohaengColor + ';min-width:90px;">' + d2.date + '</span>' +
-      (d2.reason ? '<span style="font-size:12px;color:rgba(255,255,255,0.55);">' + d2.reason + '</span>' : '') +
-      '</div>';
-  }).join('');
-
-  let html = "";
-  html += '<div class="temple-detail-page">';
-  html += '<button class="back-btn" id="detail-back-btn">← 목록으로</button>';
-
-  // ─── Hero ───
-  html += '<div class="temple-detail-hero" style="border-top:4px solid ' + ohaengColor + ';">';
-  html += '<div class="temple-detail-name temple-name-glow">' + (t.name || "사찰") + "</div>";
-  if (t.foundedYear) html += '<div class="temple-detail-addr" style="font-size:12px;opacity:0.6;">창건 ' + t.foundedYear + '년</div>';
-  html += '<div class="temple-detail-addr" style="color:' + ohaengColor + ';font-weight:700;font-size:14px;margin:4px 0;">';
-  html += (d.templeOhaeng || "") + " 기운 · " + (OHAENG_MEANING[d.templeOhaeng] || "");
-  html += "</div>";
-  html += weatherHtml;
-  // 점수 게이지
-  html += '<div style="margin-top:14px;">';
-  html += '<div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:4px;"><span>인연 매칭 점수</span><span style="color:' + ohaengColor + ';font-weight:800;">' + score + '점</span></div>';
-  html += '<div style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">';
-  html += '<div style="height:100%;width:' + Math.min(score, 100) + '%;background:linear-gradient(90deg,' + ohaengColor + ',rgba(255,255,255,0.6));border-radius:4px;transition:width 1s ease;"></div>';
-  html += "</div></div>";
-  html += "</div>";
-
-  // ─── 기본 정보 카드 ───
-  html += '<div class="temple-detail-section">';
-  html += '<div class="temple-detail-section-title">🏯 사찰 기본 정보</div>';
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
-  const infoItems = [
-    { icon: "🧭", label: "방위", val: d.bearing || "정보 없음" },
-    { icon: "📏", label: "거리", val: distText || "정보 없음" },
-    { icon: "🔥", label: "오행 기운", val: (d.templeOhaeng || "") + " (" + (OHAENG_MEANING[d.templeOhaeng] || "") + ")" },
-    { icon: "⭐", label: "매칭 점수", val: score + "점" },
-  ];
-  infoItems.forEach(function(item) {
-    html += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;">';
-    html += '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px;">' + item.icon + " " + item.label + '</div>';
-    html += '<div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85);">' + item.val + '</div>';
-    html += '</div>';
+  // 데모 상세페이지 버튼 (비멤버에게만 표시됨)
+  document.getElementById("demo-detail-btn")?.addEventListener("click", () => {
+    const demoResult = {
+      score: 94,
+      reason: "수(水) 기운이 부족한 사주에 이 사찰의 강한 수 기운이 지혜와 학업 운을 보완해줍니다. 북쪽 방위의 청정한 기운이 집중력을 높여줍니다.",
+      temple: {
+        name: "통도사",
+        address: "경상남도 양산시 하북면 통도사로 108",
+        lat: 35.489166,
+        lng: 129.058611,
+        foundedYear: 646,
+        history: "신라 선덕여왕 15년(646) 자장율사가 창건한 한국 3보 사찰",
+      },
+      detail: { templeOhaeng: "수", bearing: "북", distanceKm: 12.3 },
+      weather: { condition: "맑음", temp: 24 },
+    };
+    const demoMatchData = { purpose: "학업운", distribution: { 목:1, 화:2, 토:2, 금:2, 수:1 }, targetOhaeng: "수", purposeGuide: [] };
+    renderTempleDetailPage(demoResult, demoMatchData, true);
   });
-  html += '</div></div>';
-
-  // ─── 위치 ───
-  html += '<div class="temple-detail-section">';
-  html += '<div class="temple-detail-section-title">📍 위치 &amp; 방문 안내</div>';
-  if (t.address) html += '<div class="temple-detail-section-body temple-detail-addr" style="margin-bottom:10px;">' + t.address + "</div>";
-  html += '<a class="map-link-btn" href="' + mapUrl + '" target="_blank" rel="noopener">🗺️ 네이버 지도에서 길찾기</a>';
-  html += "</div>";
-
-  // ─── 오행 의미 ───
-  if (d.templeOhaeng && OHAENG_DESC[d.templeOhaeng]) {
-    html += '<div class="temple-detail-section" style="border-left:3px solid ' + ohaengColor + ';">';
-    html += '<div class="temple-detail-section-title" style="color:' + ohaengColor + ';">✦ ' + d.templeOhaeng + '(오행) 기운이란?</div>';
-    html += '<div class="temple-detail-section-body">' + OHAENG_DESC[d.templeOhaeng] + '</div>';
-    html += '</div>';
-  }
-
-  // ─── 인연 이유 ───
-  html += '<div class="temple-detail-section">';
-  html += '<div class="temple-detail-section-title">✨ 나와의 인연 이유</div>';
-  html += '<div class="temple-detail-section-body" style="line-height:1.8;">' + (result.reason || "") + "</div>";
-  html += "</div>";
-
-  // ─── 기도 목적 ───
-  if (purposeLabel) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">🎯 기도 목적</div>';
-    html += '<div class="temple-detail-section-body"><span style="background:' + ohaengColor + '22;border:1px solid ' + ohaengColor + '55;color:' + ohaengColor + ';border-radius:20px;padding:5px 16px;font-weight:700;font-size:14px;">' + purposeLabel + "</span></div>";
-    html += "</div>";
-  }
-
-  // ─── 기도 가이드 ───
-  if (guideHtml) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">🙏 이렇게 기도해보세요</div>';
-    html += '<div class="temple-detail-section-body">' + guideHtml + "</div>";
-    html += "</div>";
-  }
-
-  // ─── 유래·연혁 ───
-  if (historyFull) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">📜 유래 · 연혁</div>';
-    html += '<div class="temple-detail-section-body" style="line-height:1.8;">' + historyHtml + "</div>";
-    html += "</div>";
-  }
-
-  // ─── 방문 추천 날짜 ───
-  if (recDates.length > 0) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">📅 추천 방문 날짜' + (!memberUnlocked ? ' <span style="font-size:11px;opacity:0.5;">(상위 3일 · 전체는 멤버 전용)</span>' : '') + '</div>';
-    html += '<div class="temple-detail-section-body">' + datesHtml + "</div>";
-    html += "</div>";
-  }
-
-  // ─── 오행 분포 ───
-  if (Object.keys(dist).length) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">🔥 나의 사주 오행 분포</div>';
-    html += '<div class="temple-detail-section-body" style="margin-bottom:8px;">' + distHtml + "</div>";
-    html += '<div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:6px;">✦ 표시된 기운이 이 사찰의 오행으로, 나의 부족한 <strong style="color:' + ohaengColor + ';">' + (d.templeOhaeng || "") + '</strong> 기운을 보완해 줍니다.</div>';
-    html += "</div>";
-  }
-
-  // ─── 멤버십 잠금 배너 ───
-  if (!memberUnlocked) {
-    html += '<div class="temple-detail-section" style="border-color:rgba(212,175,55,0.3);background:rgba(212,175,55,0.04);text-align:center;padding:24px 18px;">';
-    html += '<div style="font-size:28px;margin-bottom:8px;">🔒</div>';
-    html += '<div class="temple-detail-section-title" style="color:#D4AF37;border:none;padding:0;margin-bottom:6px;">멤버십 전용 콘텐츠</div>';
-    html += '<div class="temple-detail-section-body" style="margin-bottom:14px;">유래 전문 · 방문 날짜 전체 · 맞춤 기도문을 볼 수 있습니다.</div>';
-    html += '<div class="member-unlock">';
-    html += '<input type="text" id="detail-member-code-input" placeholder="멤버십 코드 입력" />';
-    html += '<button id="detail-member-code-btn">확인</button>';
-    html += "</div></div>";
-  }
-
-  html += "</div>"; // temple-detail-page 닫기
-
-  resultsEl.innerHTML = html;
-
-  document.getElementById("detail-back-btn")?.addEventListener("click", () => {
-    if (typeof onBack === "function") {
-      onBack();
-    } else {
-      resultsEl.innerHTML = "";
-      resultsEl.classList.add("hidden");
-      if (formEl) formEl.style.display = "";
-      document.getElementById("app")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  });
-
-  const detailCodeBtn = document.getElementById("detail-member-code-btn");
-  const detailCodeInput = document.getElementById("detail-member-code-input");
-  if (detailCodeBtn) {
-    detailCodeBtn.addEventListener("click", () => {
-      if (detailCodeInput && detailCodeInput.value.trim() === MEMBER_CODE) {
-        tryUnlockMembership(detailCodeInput.value.trim());
-        renderTempleDetailPage(result, parentData, true, onBack);
-      } else {
-        alert("코드가 올바르지 않습니다.");
-      }
-    });
-  }
 
   resultsEl.scrollIntoView({ behavior: "smooth" });
 }
@@ -2799,3 +2418,4 @@ const HIGHLIGHT_BADGE = (word) =>
   `<span style="color:#FFB347;font-size:11px;font-weight:800;background:rgba(255,179,71,0.12);border-radius:8px;padding:2px 7px;margin:0 2px;">${word}</span>`;
 // ── 앱 진입점 ──
 render();
+
