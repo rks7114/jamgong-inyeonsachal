@@ -829,7 +829,13 @@ function render() {
                   birthInput,
                 }),
               });
-              const d2 = r2.ok ? await r2.json() : null;
+              let d2 = null;
+              let errMsg = `HTTP ${r2.status}`;
+              if (r2.ok) {
+                d2 = await r2.json();
+              } else {
+                try { const eb = await r2.json(); errMsg = eb?.error || eb?.message || errMsg; } catch(_) {}
+              }
               const el = document.getElementById("saju-ai-explanation");
               if (!el) return;
               if (d2?.explanation) {
@@ -843,11 +849,11 @@ function render() {
                   .replace(/<p>\s*(<h3|<hr)/g, '$1')
                   .replace(/(<\/h3>|<hr[^>]*>)\s*<\/p>/g, '$1');
               } else {
-                el.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,0.45);padding:12px 0;text-align:center;">AI 사주 풀이를 불러오지 못했습니다.<br><button onclick="location.reload()" style="margin-top:8px;background:none;border:1px solid rgba(0,210,255,0.35);color:rgba(0,210,255,0.7);border-radius:8px;padding:5px 14px;cursor:pointer;font-size:12px;">↻ 새로고침해서 다시 시도</button></div>';
+                el.innerHTML = `<div style="font-size:13px;color:rgba(255,255,255,0.45);padding:12px 0;text-align:center;">AI 사주 풀이를 불러오지 못했습니다.<br><span style="font-size:11px;color:rgba(255,100,100,0.6);display:block;margin-top:4px;">[오류: ${errMsg}]</span><button onclick="location.reload()" style="margin-top:8px;background:none;border:1px solid rgba(0,210,255,0.35);color:rgba(0,210,255,0.7);border-radius:8px;padding:5px 14px;cursor:pointer;font-size:12px;">↻ 새로고침해서 다시 시도</button></div>`;
               }
-            } catch(_) {
+            } catch(fetchErr) {
               const el = document.getElementById("saju-ai-explanation");
-              if (el) el.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,0.45);padding:12px 0;text-align:center;">AI 사주 풀이를 불러오지 못했습니다.<br><button onclick="location.reload()" style="margin-top:8px;background:none;border:1px solid rgba(0,210,255,0.35);color:rgba(0,210,255,0.7);border-radius:8px;padding:5px 14px;cursor:pointer;font-size:12px;">↻ 새로고침해서 다시 시도</button></div>';
+              if (el) el.innerHTML = `<div style="font-size:13px;color:rgba(255,255,255,0.45);padding:12px 0;text-align:center;">AI 사주 풀이를 불러오지 못했습니다.<br><span style="font-size:11px;color:rgba(255,100,100,0.6);display:block;margin-top:4px;">[오류: ${fetchErr.message}]</span><button onclick="location.reload()" style="margin-top:8px;background:none;border:1px solid rgba(0,210,255,0.35);color:rgba(0,210,255,0.7);border-radius:8px;padding:5px 14px;cursor:pointer;font-size:12px;">↻ 새로고침해서 다시 시도</button></div>`;
             }
           })();
         }
