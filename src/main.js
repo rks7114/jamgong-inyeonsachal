@@ -1232,6 +1232,18 @@ function buildSajuDetailCards(data, birthInput) {
   ];
   const chungs = CHUNG.filter(h => allJiFull.includes(h.a) && allJiFull.includes(h.b));
 
+  // 지지 암합(暗合) — 각 지지의 정기(正氣) 천간끼리 천간합을 이루는 경우
+  // 예: 卯(정기 乙) + 申(정기 庚) → 乙庚합(금합) = 卯申 암합
+  const AMHAP = [
+    {a:'寅',b:'丑',result:'土합',desc:'인축 암합(寅丑暗合) — 寅의 정기 甲(목)과 丑의 정기 己(토)가 甲己합을 이룹니다. 겉으로 드러나지 않는 끈끈한 결속으로, 서로 다른 기운이 깊은 내면에서 화합하는 형태입니다. 사업상 파트너십, 숨겨진 인연에서 강하게 발동합니다.'},
+    {a:'卯',b:'申',result:'金합',desc:'묘신 암합(卯申暗合) — 卯의 정기 乙(목)과 申의 정기 庚(금)이 乙庚합을 이룹니다. 이 사주에서 가장 강력한 숨은 결합으로, 유연함과 결단력이 내면에서 하나로 녹아듭니다. 원진·귀문과 함께 걸려 강한 흡인력과 갈등이 공존하는 복잡한 관계 에너지를 형성합니다.'},
+    {a:'巳',b:'酉',result:'水합',desc:'사유 암합(巳酉暗合) — 巳의 정기 丙(화)과 酉의 정기 辛(금)이 丙辛합을 이룹니다. 열정과 예리함이 물처럼 흘러 전략적 통찰과 분석력으로 변환됩니다. 학문·기획 분야에서 잠재력이 발현되는 구조입니다.'},
+    {a:'午',b:'亥',result:'木합',desc:'오해 암합(午亥暗合) — 午의 정기 丁(화)과 亥의 정기 壬(수)이 丁壬합을 이룹니다. 감수성과 지혜가 창의적 목기(木氣)로 변환되어 예술·인문 분야의 특출한 재능을 숨겨두고 있습니다.'},
+    {a:'子',b:'辰',result:'火합',desc:'자진 암합(子辰暗合) — 子의 정기 癸(수)와 辰의 정기 戊(토)가 戊癸합을 이룹니다. 직관과 현실감이 불꽃(화기)으로 변환되어, 결정적 순간에 강한 행동력과 카리스마가 폭발합니다.'},
+    {a:'子',b:'戌',result:'火합',desc:'자술 암합(子戌暗合) — 子의 정기 癸(수)와 戌의 정기 戊(토)가 戊癸합을 이룹니다. 깊은 내면의 지혜와 현실 감각이 화기(火氣)로 응축됩니다. 겉은 조용하지만 내면에 강한 열정과 추진력을 감추고 있습니다.'},
+  ];
+  const amhaps = AMHAP.filter(h => allJiFull.includes(h.a) && allJiFull.includes(h.b));
+
   const hamChungHtml = `
   <div class="saju-card" style="margin-bottom:16px;">
     <div class="saju-card-title">🔗 합(合)·충(沖) — 글자끼리의 화학반응</div>
@@ -1263,6 +1275,15 @@ function buildSajuDetailCards(data, birthInput) {
       </div>`).join('')}
     </div>` : ''}
 
+    ${amhaps.length > 0 ? `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:700;color:rgba(255,183,77,0.9);margin-bottom:6px;">🔐 지지 암합(暗合) — 지장간 정기끼리의 숨은 결합</div>
+      ${amhaps.map(h=>`<div style="background:rgba(255,152,0,0.05);border:1px solid rgba(255,152,0,0.2);border-radius:10px;padding:12px;margin-bottom:6px;">
+        <div style="margin-bottom:5px;"><span style="font-size:14px;font-weight:800;color:#FFB74D;margin-right:8px;">${h.a}↔${h.b}</span><span style="font-size:12px;color:rgba(255,255,255,0.4);">→ ${h.result}</span></div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.72);line-height:1.7;">${h.desc}</div>
+      </div>`).join('')}
+    </div>` : ''}
+
     ${chungs.length > 0 ? `
     <div>
       <div style="font-size:12px;font-weight:700;color:rgba(244,67,54,0.9);margin-bottom:6px;">⚡ 지지 충(沖) — 원국 내 충돌</div>
@@ -1271,7 +1292,7 @@ function buildSajuDetailCards(data, birthInput) {
       </div>`).join('')}
     </div>` : ''}
 
-    ${ganHams.length===0 && samHapFound.length===0 && yukHams.length===0 && chungs.length===0
+    ${ganHams.length===0 && samHapFound.length===0 && yukHams.length===0 && amhaps.length===0 && chungs.length===0
       ? '<div style="font-size:12px;color:rgba(255,255,255,0.35);padding:8px 0;">원국 내 주요 합·충이 없습니다 — 대운·세운에서 형성될 때 주목하세요.</div>'
       : ''}
     <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.55);">💡 2026 丙午년: 午를 포함한 寅午戌 화국(火局) 가능성 체크</div>
@@ -2410,160 +2431,4 @@ function renderResults(data) {
         <div class="temple-rank">${i + 1}</div>
         <div class="temple-body">
           <h3>
-            <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
-              ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
-            </a>
-          </h3>
-          <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
-          <div class="reason">${r.reason}</div>
-          ${r.temple.history ? `
-            <div class="temple-detail">
-              <div class="temple-detail-label">유래·연혁</div>
-              <div class="temple-detail-text">
-                ${memberUnlocked
-                  ? r.temple.history
-                  : (r.temple.history.length > 35
-                      ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`
-                      : r.temple.history)}
-              </div>
-              ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
-            </div>
-          ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
-          <button type="button" class="detail-view-btn" data-temple-index="${i}">상세페이지 보기 →</button>
-        </div>
-      </div>
-    `).join("")}
-
-    ${data.recommendedDates && data.recommendedDates.length ? `
-      <div class="calendar-card">
-        <div class="calendar-title">방문하면 좋은 날${memberUnlocked ? " (멤버 확장 · 45일 이내)" : ""}</div>
-        <div class="calendar-dates">
-          ${data.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
-        </div>
-        ${!memberUnlocked ? `<div class="calendar-more-hint">🔒 멤버는 더 많은 추천일을 볼 수 있습니다</div>` : ""}
-      </div>
-    ` : ""}
-
-    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
-
-    <div class="notice-box">
-      <div class="notice-item">
-        <span class="notice-icon">ℹ️</span>
-        <span>${data.disclaimer || "본 결과는 사주 오행 이론을 바탕으로 한 참고 정보입니다."}</span>
-      </div>
-    </div>
-
-    <div class="patent-notice-banner">
-      <div class="patent-notice-icon">⚖️</div>
-      <div class="patent-notice-body">
-        <div class="patent-notice-title">지식재산권 안내</div>
-        <div class="patent-notice-text">본 서비스의 <strong>인연 시너지 산출 로직</strong>은 비가산 시너지 기반 지수 산출 방식을 적용한 독자 기술입니다.</div>
-        <span class="patent-num">특허출원 중</span>
-      </div>
-    </div>
-  `;
-
-  const codeInput = document.getElementById("member-code-input");
-  const codeBtn   = document.getElementById("member-code-btn");
-  if (codeBtn) {
-    codeBtn.addEventListener("click", () => {
-      if (codeInput && codeInput.value.trim() === MEMBER_CODE) {
-        tryUnlockMembership(codeInput.value.trim());
-        renderResults(data);
-      } else {
-        alert("코드가 올바르지 않습니다.");
-      }
-    });
-  }
-
-  document.querySelectorAll(".detail-view-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const idx = parseInt(btn.dataset.templeIndex);
-      renderTempleDetailPage(data.results[idx], data, memberUnlocked);
-    });
-  });
-
-  document.getElementById("share-btn")?.addEventListener("click", () => {
-    if (navigator.share) {
-      navigator.share({ title: "잼공인연사찰 매칭 결과", url: window.location.href });
-    } else {
-      navigator.clipboard.writeText(window.location.href).then(() => alert("링크가 복사되었습니다."));
-    }
-  });
-
-  // 데모 상세페이지 버튼 (비멤버에게만 표시됨)
-  document.getElementById("demo-detail-btn")?.addEventListener("click", () => {
-    const demoResult = {
-      score: 94,
-      reason: "수(水) 기운이 부족한 사주에 이 사찰의 강한 수 기운이 지혜와 학업 운을 보완해줍니다. 북쪽 방위의 청정한 기운이 집중력을 높여줍니다.",
-      temple: {
-        name: "통도사",
-        address: "경상남도 양산시 하북면 통도사로 108",
-        history: "646년(신라 선덕여왕 15) 자장율사가 창건한 사찰로 부처님 진신사리와 가사를 봉안하여 불보사찰(佛寶寺刹)로 불린다. 경내에는 대웅전, 관음전, 약사전, 산신각, 나한전, 지장전, 문수전 등 다수의 전각이 있다.",
-        lat: 35.489166,
-        lng: 129.058611,
-        foundedYear: 646,
-      },
-      detail: { templeOhaeng: "수", bearing: "북", distanceKm: 12.3 },
-      weather: { condition: "맑음", temp: 24 },
-    };
-    const demoMatchData = { purpose: "학업운", distribution: { 목:1, 화:2, 토:2, 금:2, 수:1 }, targetOhaeng: "수", purposeGuide: [] };
-    renderTempleDetailPage(demoResult, demoMatchData, true);
-  });
-
-  resultsEl.scrollIntoView({ behavior: "smooth" });
-}
-
-// ── "핵심" 등 중요 키워드 강조 헬퍼 ──────────────────────────────
-const HIGHLIGHT_BADGE = (word) =>
-  `<span style="color:#FFB347;font-size:11px;font-weight:800;background:rgba(255,179,71,0.12);border-radius:8px;padding:2px 7px;margin:0 2px;">${word}</span>`;
-// ── 날짜 포맷 헬퍼 ──
-function formatDate(dateStr) {
-  if (!dateStr) return "";
-  try {
-    const d = new Date(dateStr);
-    const days = ["일","월","화","수","목","금","토"];
-    return `${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
-  } catch(e) { return dateStr; }
-}
-
-// ── 사찰 상세 페이지 ──
-function renderTempleDetailPage(result, matchData, memberUnlocked, onBack) {
-  const resultsEl = document.getElementById("results");
-  if (!resultsEl) return;
-  const t = result.temple;
-  const mapUrl = (t.lat && t.lng)
-    ? `https://map.naver.com/v5/entry/coordinates/${t.lng},${t.lat}?placeName=${encodeURIComponent(t.name)}&entry=plt`
-    : `https://map.naver.com/v5/search/${encodeURIComponent((t.name||"")+" "+(t.address||""))}`;
-  resultsEl.innerHTML = `
-    <div class="temple-detail-page" style="padding:16px 0;">
-      <button id="back-btn" style="background:none;border:1.5px solid rgba(0,210,255,0.4);color:rgba(0,210,255,0.9);
-        border-radius:20px;padding:7px 18px;cursor:pointer;margin-bottom:20px;font-size:13px;">← 목록으로</button>
-      <h2 style="font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;">${t.name||""}</h2>
-      <div style="color:rgba(255,255,255,0.55);font-size:13px;margin-bottom:14px;">매칭점수 ${result.score||""}점 · ${result.detail?.templeOhaeng||""}(${result.detail?.bearing||""}) 기운</div>
-      ${t.address ? `<div style="color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:10px;">📍 ${t.address}</div>` : ""}
-      ${t.foundedYear ? `<div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:10px;">🏛️ 창건 ${t.foundedYear}년</div>` : ""}
-      ${result.reason ? `<div style="background:rgba(0,210,255,0.07);border:1px solid rgba(0,210,255,0.18);border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:14px;line-height:1.7;color:rgba(255,255,255,0.85);">${result.reason}</div>` : ""}
-      ${t.history ? `<div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
-        <div style="font-size:12px;color:rgba(0,210,255,0.7);margin-bottom:6px;">유래·연혁</div>
-        <div style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.75);">${memberUnlocked ? t.history : (t.history.length > 80 ? t.history.slice(0,80)+"… 🔒 멤버 전용" : t.history)}</div>
-      </div>` : ""}
-      <a href="${mapUrl}" target="_blank" rel="noopener" style="display:block;text-align:center;background:rgba(0,210,255,0.12);
-        border:1.5px solid rgba(0,210,255,0.35);border-radius:14px;padding:13px;color:rgba(0,210,255,0.9);
-        text-decoration:none;font-size:14px;font-weight:600;margin-bottom:16px;">🗺️ 네이버 지도로 길찾기</a>
-    </div>
-  `;
-  document.getElementById("back-btn")?.addEventListener("click", () => {
-    if (onBack) {
-      onBack();
-    } else if (matchData) {
-      renderResults(matchData);
-    } else {
-      resultsEl.classList.add("hidden");
-    }
-  });
-  resultsEl.scrollIntoView({ behavior: "smooth" });
-}
-
-// ── 앱 진입점 ──
-render();
+            <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComp
