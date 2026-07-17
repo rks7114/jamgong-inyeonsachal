@@ -865,7 +865,7 @@ function render() {
         renderResults(data);
       }
     } catch (err) {
-      alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      alert("매칭 오류 [디버그]: " + err.message + "\n" + err.stack?.split('\n')[1]);
     } finally {
       clearInterval(msgInterval);
       submitBtn.disabled = false;
