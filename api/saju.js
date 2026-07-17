@@ -41,9 +41,9 @@ module.exports = async function handler(req, res) {
     const gender = birthInput.gender || "male"; // "male" | "female"
     const genderNum = gender === "male" ? 1 : 0;
 
-    // 오행 분포
-    const distribution = calculateOhaeng(birthInput);
-    const weak = findWeakOhaeng(distribution);
+    // 오행 분포 (지장간 보정 포함)
+    const { distribution, branches } = calculateOhaeng(birthInput);
+    const weak = findWeakOhaeng(distribution, branches);
 
     // 사주 팔자 + 대운
     let eightChar = null;
