@@ -159,6 +159,6 @@ module.exports = async function handler(req, res) {
 
   } catch (err) {
     console.error("사주 API 오류:", err);
-    return res.status(500).json({ error: "사주 계산 중 오류가 발생했습니다." });
+    return res.status(500).json({ error: "사주 계산 중 오류가 발생했습니다.", detail: err?.message || String(err) });
   }
 };
