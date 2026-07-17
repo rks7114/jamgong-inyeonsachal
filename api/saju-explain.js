@@ -116,113 +116,56 @@ function generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInp
   // 6. 인연사찰 안내
   text += `**인연사찰과 기운 보완**\n`;
   if (weakInfo) {
-    text += `${ohKor[weakOh]} 기운을 보완하려면 ${weakInfo.temple} `;
-    text += `정기적인 사찰 방문과 함께 마음을 고요히 하는 기도가 부족한 오행의 기운을 채워줍니다.\n\n`;
-  } else {
-    text += `오행이 균형 잡힌 사주입니다. 자신의 마음 상태에 따라 편안함을 느끼는 사찰을 찾아 감사와 서원(誓願)을 올리세요. 어떤 사찰이든 진심 어린 마음이 인연을 만듭니다.\n\n`;
+    text += `${ohKor[weakOh] || weakOh}(${weakOh}) 기운을 보완하려면 ${ohDesc[weakOh] || "해당 오행의 기운이 강한"} 사찰, 정기적인 사찰 방문과 함께 마음을 고요히 하는 기도가 부족한 오행의 기운을 채워줍니다.\n\n`;
   }
 
   // 7. 마음에 새길 한마디
+  const heavenly = ec?.year?.charAt(0) || "";
+  const closing = {
+    甲:"리더십과 도전 정신을 타고난 당신은 이미 삶의 방향을 알고 있습니다.",
+    乙:"유연함과 인내심이 당신의 가장 큰 자산입니다. 때를 기다리면 반드시 꽃을 피웁니다.",
+    丙:"태양처럼 밝은 당신의 기운이 주변을 따뜻하게 합니다. 흔들려도 다시 빛납니다.",
+    丁:"섬세하고 깊은 불꽃처럼, 당신의 진심은 반드시 상대에게 닿습니다.",
+    戊:"대지처럼 묵직한 당신은 흔들리지 않는 중심이 됩니다. 꾸준함이 모든 것을 이깁니다.",
+    己:"부드러운 토양처럼 모든 것을 품어내는 당신은 귀한 인연을 끌어당깁니다.",
+    庚:"강철같은 의지와 결단력이 당신의 무기입니다. 한 번 정한 길을 흔들리지 말고 가세요.",
+    辛:"날카롭고 순수한 금의 기운처럼, 당신의 직관과 감각은 남다릅니다.",
+    壬:"깊은 바다처럼 지혜롭고 포용력이 큰 당신은 어떤 상황도 헤쳐나갑니다.",
+    癸:"조용히 스며드는 빗물처럼, 당신의 섬세한 배려와 통찰이 세상을 촉촉하게 합니다.",
+  };
   text += `**마음에 새길 한마디**\n`;
-  const closings = [
-    `${ilgan}(${ganDesc.split("—")[0].trim()})의 기운을 타고난 당신은 이미 삶의 중심을 갖추고 있습니다. 흔들리는 날도 결국 당신만의 방식으로 길을 찾을 것입니다.`,
-    `당신의 사주는 꾸준함과 깊이를 강점으로 합니다. 남과 비교하지 말고 자신의 속도로 걸어가세요 — 그것이 가장 빠른 길입니다.`,
-    `지금 이 순간의 선택이 미래를 만듭니다. 인연 닿는 사찰에서 마음을 내려놓고 새로운 시작의 씨앗을 심으세요.`,
-  ];
-  text += closings[Math.floor((ilgan.charCodeAt(0) + ilji.charCodeAt(0)) % closings.length)];
+  text += closing[heavenly] || `${heavenly || ""}의 기운을 타고난 당신은 이미 삶의 중심을 갖추고 있습니다. 흔들리는 날도 결국 당신만의 방식으로 길을 찾을 것입니다.`;
+  text += "\n";
 
   return text;
 }
 
-module.exports = async function handler(req, res) {
+module.exports = { handler: async function(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
-
   try {
-    const { eightChar: ec, distribution: dist, weak, daYun, samjae, birthInput } = req.body;
-    if (!ec) return res.status(400).json({ error: "사주 데이터가 없습니다." });
-
-    const weakOh = weak?.부족오행 ?? "";
-
-    // API 키가 있으면 AI 풀이 시도, 없으면 템플릿으로 바로 응답
+    const body = req.body || {};
+    const { ec, dist, weakOh, daYun, samjae, birthInput } = body;
+    let explanation = "";
     if (process.env.ANTHROPIC_API_KEY) {
       try {
         const Anthropic = require("@anthropic-ai/sdk");
-        const currentYear = new Date().getFullYear();
-        const currentDaYun = daYun?.list?.find(d => d.isCurrent);
-        const currentLiuNian = currentDaYun?.liuNian?.find(ln => ln.year === currentYear);
-        const nextDaYun = daYun?.list?.find(d => d.startYear > (currentDaYun?.startYear || 0));
-        const ohKor = { 목:"木(목)", 화:"火(화)", 토:"土(토)", 금:"金(금)", 수:"水(수)" };
-        const distText = Object.entries(dist || {}).map(([k,v]) => `${ohKor[k]||k} ${v}개`).join(", ");
-        const gender = birthInput?.gender === "female" ? "여성" : "남성";
-        const ilgan = ec.day?.[0] ?? "";
-        const ilji  = ec.day?.[1] ?? "";
-        const ganDesc = GAN_DESC[ilgan] || `${ilgan}의 기운`;
-        const jiDesc  = JI_DESC[ilji]  || `${ilji}의 기운`;
-        const weakDesc = weakOh ? OH_DESC[weakOh] : null;
-        const isSamjae = samjae?.groups?.some(g => g.some(y => Math.abs(y.year - currentYear) <= 1));
-        const samjaeInfo = isSamjae ? (() => {
-          const nowGrp = samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear) <= 1)) || [];
-          const nowY = nowGrp.find(y => y.year === currentYear || y.year === currentYear - 1 || y.year === currentYear + 1);
-          return `현재 삼재(三災) 기간 — ${nowY?.year}년 ${nowY?.year < currentYear ? "날삼재" : nowY?.year === currentYear ? "눌삼재(중반)" : "들삼재"}`;
-        })() : null;
-
-        const prompt = `당신은 한국 전통 사주 상담가입니다. 아래 사주를 쉬운 우리말로 풀어주세요.
-각 항목 제목은 **제목** 형식으로 쓰고, 각 항목마다 2~3문장으로 간결하게 완성해 주세요. 한자가 나오면 반드시 괄호로 뜻을 붙여주세요.
-
-【사주 정보】
-성별: ${gender}
-팔자: 년주 ${ec.year} / 월주 ${ec.month} / 일주 ${ec.day} / 시주 ${ec.time}
-오행: ${distText} / 부족: ${weakOh ? ohKor[weakOh] : "균형"}
-일간: ${ganDesc.split('—')[0].trim()} / 일지: ${jiDesc.split('—')[0].trim()}
-현재 대운: ${currentDaYun ? `${currentDaYun.startAge}~${currentDaYun.endAge}세 ${currentDaYun.ganZhi}` : "정보 없음"}
-올해(${currentYear}) 세운: ${currentLiuNian ? `${currentLiuNian.ganZhi} (${currentLiuNian.age}세)` : "정보 없음"}
-${isSamjae ? `⚠️ 삼재: ${samjaeInfo}` : ""}
-
-【대운 (30세 이후)】
-${(daYun?.list || []).filter(dy => dy.startAge >= 30).map(dy => {
-  const label = dy.isCurrent ? '▶현재' : dy.startYear < currentYear ? '과거' : '미래';
-  return `${label}: ${dy.startAge}~${dy.endAge}세 ${dy.ganZhi}`;
-}).join(' | ')}
-
-**타고난 기질과 성격**
-일주 ${ec.day}의 타고난 성품, 강점, 주의점을 2~3문장으로 설명해 주세요.
-
-**오행 에너지와 삶의 패턴**
-오행 분포와 부족한 ${weakOh ? ohKor[weakOh] : "기운"}이 삶에 미치는 영향을 2~3문장으로 설명해 주세요.
-
-**대운 흐름**
-지나간 대운은 한 줄씩, 현재 대운(${currentDaYun?.ganZhi || ""})은 3문장, 다음 대운은 한 줄로 써주세요.
-
-**올해 ${currentYear}년 운세**
-현재 대운과 세운 ${currentLiuNian?.ganZhi || ""}을 건강·재물·관계로 나눠 2~3문장으로 써주세요.
-
-${isSamjae ? `**삼재 주의사항**\n삼재 기간 중 주의점과 대처법을 2문장으로 써주세요.\n\n` : ""}**인연사찰과 기운 보완**
-부족한 ${weakOh ? ohKor[weakOh] : "오행"} 기운 보완을 위한 사찰 유형과 기도 방법을 2문장으로 안내해 주세요.${weakDesc ? ` ${weakDesc.temple}` : ""}
-
-**마음에 새길 한마디**
-이 분의 사주를 종합해 따뜻한 말로 1~2문장으로 마무리해 주세요.`;
-
-        const client = new Anthropic();
+        const client = new Anthropic.default ? new Anthropic.default() : new Anthropic();
+        const prompt = buildPrompt(body);
         const message = await client.messages.create({
           model: "claude-haiku-4-5-20251001",
           max_tokens: 2000,
-          messages: [{ role: "user", content: prompt }],
+          messages: [{ role: "user", content: prompt }]
         });
-        const explanation = message.content[0]?.text || "";
-        if (explanation) {
-          return res.status(200).json({ success: true, explanation, source: "ai" });
-        }
-      } catch (aiErr) {
+        explanation = message.content?.[0]?.text || "";
+        if (explanation) return res.status(200).json({ success: true, explanation, source: "ai" });
+      } catch(aiErr) {
         console.error("AI 풀이 실패, 템플릿으로 대체:", aiErr.message);
       }
     }
-
-    // 템플릿 fallback
-    const explanation = generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInput });
+    explanation = generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInput });
     return res.status(200).json({ success: true, explanation, source: "template" });
-
-  } catch (err) {
-    console.error("사주 풀이 오류:", err);
+  } catch(err) {
+    console.error("saju-explain 오류:", err);
     return res.status(500).json({ error: "사주 풀이 생성 중 오류가 발생했습니다." });
   }
-};
+}, generateTemplateExplanation };
