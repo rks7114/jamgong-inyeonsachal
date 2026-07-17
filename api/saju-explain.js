@@ -120,7 +120,7 @@ function generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInp
   }
 
   // 7. 마음에 새길 한마디
-  const heavenly = ec?.year?.charAt(0) || "";
+  const heavenly = ec?.day?.charAt(0) || "";  // 일간(日干) 기준 — 년간 아님
   const closing = {
     甲:"리더십과 도전 정신을 타고난 당신은 이미 삶의 방향을 알고 있습니다.",
     乙:"유연함과 인내심이 당신의 가장 큰 자산입니다. 때를 기다리면 반드시 꽃을 피웁니다.",
