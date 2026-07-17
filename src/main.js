@@ -987,8 +987,11 @@ function buildSajuDetailCards(data, birthInput) {
     午:'丁',未:'己',申:'庚',酉:'辛',戌:'戊',亥:'壬'
   };
   const ssCount = {};
-  // 천간 십신
-  ssCols.forEach(c => { if (c.ss && c.ss !== '일원(日元)') ssCount[c.ss] = (ssCount[c.ss]||0)+1; });
+  // 천간 십신 (일원(日元)은 비견으로 카운팅)
+  ssCols.forEach(c => {
+    const ss = c.ss === '일원(日元)' ? '비견' : c.ss;
+    if (ss) ssCount[ss] = (ssCount[ss]||0)+1;
+  });
   // 지지 십신 (정기 기준) — 년지·월지·일지·시지 포함
   [yearJi, monthJi, dayJi, timeJi].forEach(ji => {
     const jeonggi = JI_JEONGGI[ji];
@@ -1258,6 +1261,18 @@ function buildSajuDetailCards(data, birthInput) {
     return (syIsA || syIsB) && !alreadyInner;
   });
 
+  // 자형살(自刑) — 같은 지지끼리 자기 충돌
+  const JACHUNG_DESC = {
+    午:'오오 자형살(午午 自刑) — 火 기운이 극도로 과열됩니다. 과로·감정 폭발·심장 과부하 주의.',
+    酉:'유유 자형살(酉酉 自刑) — 金 기운이 지나치게 예리해집니다. 인간관계 마찰·고집 주의.',
+    亥:'해해 자형살(亥亥 自刑) — 水 기운이 넘쳐 판단이 흐려집니다. 과음·의존성 주의.',
+    辰:'진진 자형살(辰辰 自刑) — 土 기운이 고착화됩니다. 고집·변화 거부·막힘 주의.',
+  };
+  // 원국 내 자형살 (같은 지지 2개 이상)
+  const innerJachung = Object.keys(JACHUNG_DESC).filter(ji => allJiFull.filter(z=>z===ji).length>=2);
+  // 세운 자형살 (세운 지지가 원국에 있어서 자형 형성)
+  const sesunJachung = (JACHUNG_DESC[SY_JI] && allJiFull.includes(SY_JI)) ? SY_JI : null;
+
   // 지지 암합(暗合) — 각 지지의 정기(正氣) 천간끼리 천간합을 이루는 경우
   // 예: 卯(정기 乙) + 申(정기 庚) → 乙庚합(금합) = 卯申 암합
   const AMHAP = [
@@ -1334,6 +1349,18 @@ function buildSajuDetailCards(data, birthInput) {
         </div>`;
       }).join('')}
     </div>` : `<div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4);">💡 2026년 세운 ${SY_GAN}${SY_JI}: 원국과의 지지 충 없음</div>`}
+
+    ${(innerJachung.length > 0 || sesunJachung) ? `
+    <div style="margin-top:12px;border-top:1px solid rgba(255,152,0,0.25);padding-top:12px;">
+      <div style="font-size:12px;font-weight:700;color:rgba(255,183,77,0.95);margin-bottom:6px;">🔥 자형살(自刑) — 같은 글자끼리 자기 충돌</div>
+      ${innerJachung.map(ji=>`<div style="background:rgba(255,152,0,0.07);border:1px solid rgba(255,152,0,0.25);border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:12px;color:rgba(255,255,255,0.8);">
+        <span style="font-size:14px;font-weight:800;color:#FFB74D;margin-right:8px;">원국 ${ji}+${ji}</span>${JACHUNG_DESC[ji]}
+      </div>`).join('')}
+      ${sesunJachung && !innerJachung.includes(sesunJachung) ? `<div style="background:rgba(255,82,0,0.08);border:1px solid rgba(255,82,0,0.28);border-radius:10px;padding:10px 12px;margin-bottom:6px;font-size:12px;color:rgba(255,255,255,0.85);">
+        <span style="font-size:14px;font-weight:800;color:#FF8A65;margin-right:8px;">⚠️ 세운 ${SY_JI} + 원국 ${sesunJachung}</span>${JACHUNG_DESC[sesunJachung]}
+        <div style="margin-top:4px;font-size:11px;color:#FF7043;font-weight:700;">2026년 丙午 세운에서 자형살 발동 — 건강·과로·감정 조절에 특히 주의하세요.</div>
+      </div>` : ''}
+    </div>` : ''}
   </div>`;
 
   /* ── 원진살·귀문관살 ── */
@@ -1988,10 +2015,11 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
   const ohColor = {목:'#4CAF50',화:'#FF5722',토:'#FF9800',금:'#9E9E9E',수:'#2196F3'};
   const ohChinese = {목:'木',화:'火',토:'土',금:'金',수:'水'};
   const matchResults = matchData?.results || [];
+  const targetOh = matchData?.targetOhaeng || weakOh; // 실제 추천 기준 오행
   const templeHtml = matchResults.length > 0 ? `
     <div class="saju-dist-section" style="border-color:rgba(0,210,255,0.3);">
       <div class="saju-dist-title">🏯 나의 인연사찰 추천
-        ${weakOh ? `<span style="font-size:12px;font-weight:400;color:${ohColor[weakOh]||'#00d2ff'};margin-left:8px;">· ${weakOh}(${ohChinese[weakOh]||''}) 기운 보완</span>` : ''}
+        ${targetOh ? `<span style="font-size:12px;font-weight:400;color:${ohColor[targetOh]||'#00d2ff'};margin-left:8px;">· ${ohChinese[targetOh]||''}(${targetOh}) 기운 ${targetOh === weakOh ? '보완' : '기도 방위'}</span>` : ''}
       </div>
       ${matchResults.slice(0,5).map((r,i)=>{
         const t = r.temple || {};
