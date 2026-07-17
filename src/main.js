@@ -981,8 +981,20 @@ function buildSajuDetailCards(data, birthInput) {
     { label:'월(月)', gan:monthGan, ji:monthJi, ss: getSS(monthGan) },
     { label:'년(年)', gan:yearGan,  ji:yearJi,  ss: getSS(yearGan)  },
   ];
+  // 지지 정기(正氣) → 십신 집계
+  const JI_JEONGGI = {
+    子:'壬',丑:'己',寅:'甲',卯:'乙',辰:'戊',巳:'丙',
+    午:'丁',未:'己',申:'庚',酉:'辛',戌:'戊',亥:'壬'
+  };
   const ssCount = {};
+  // 천간 십신
   ssCols.forEach(c => { if (c.ss && c.ss !== '일원(日元)') ssCount[c.ss] = (ssCount[c.ss]||0)+1; });
+  // 지지 십신 (정기 기준) — 년지·월지·일지·시지 포함
+  [yearJi, monthJi, dayJi, timeJi].forEach(ji => {
+    const jeonggi = JI_JEONGGI[ji];
+    const jiSS = jeonggi ? getSS(jeonggi) : '';
+    if (jiSS && jiSS !== '일원(日元)') ssCount[jiSS] = (ssCount[jiSS]||0)+1;
+  });
 
   const sipsinHtml = `
   <div class="saju-card" style="margin-bottom:16px;">
