@@ -2,6 +2,8 @@
 
 // 챗봇에 전달할 사주 컨텍스트 (renderSajuPage 호출 시 저장)
 let _sajuContext = null;
+// 사주 페이지 복귀용 인자 저장
+let _sajuPageArgs = null;
 
 const PURPOSES = ["재물운", "건강운", "학업운", "인연운", "가정운", "수험합격", "취업운", "출산기도"];
 
@@ -780,7 +782,7 @@ function render() {
             fetch("/api/match", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ birthInput, userLat: matchLat, userLng: matchLng, purpose: "인연운" }),
+              body: JSON.stringify({ birthInput, userLat: matchLat, userLng: matchLng }),
             }),
             Promise.race([
               fetch("/api/saju-explain", {
@@ -808,6 +810,47 @@ function render() {
 
         clearInterval(loadingInterval);
         renderSajuPage(sajuData, birthInput, matchData, explainData?.explanation || null);
+
+        // AI 풀이 백그라운드 재시도 (초기 타임아웃/실패 시)
+        if (!explainData?.explanation) {
+          (async () => {
+            try {
+              const r2 = await fetch("/api/saju-explain", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  eightChar: sajuData.eightChar,
+                  distribution: sajuData.distribution,
+                  weak: sajuData.weak,
+                  daYun: sajuData.daYun
+                    ? { ...sajuData.daYun, list: sajuData.daYun.list?.filter(d => d.isCurrent || (d.startAge >= 30)) }
+                    : null,
+                  samjae: sajuData.samjae,
+                  birthInput,
+                }),
+              });
+              const d2 = r2.ok ? await r2.json() : null;
+              const el = document.getElementById("saju-ai-explanation");
+              if (!el) return;
+              if (d2?.explanation) {
+                el.innerHTML = d2.explanation
+                  .replace(/^#{1,3}\s+(.+)$/gm, '<h3 class="saju-explain-h3">$1</h3>')
+                  .replace(/^---+$/gm, '<hr style="border:none;border-top:1px solid rgba(0,210,255,0.15);margin:12px 0;">')
+                  .replace(/\*\*(.+?)\*\*/g, '<strong class="saju-explain-heading">$1</strong>')
+                  .replace(/\n\n/g, '</p><p>')
+                  .replace(/\n/g, '<br>')
+                  .replace(/^/, '<p>').replace(/$/, '</p>')
+                  .replace(/<p>\s*(<h3|<hr)/g, '$1')
+                  .replace(/(<\/h3>|<hr[^>]*>)\s*<\/p>/g, '$1');
+              } else {
+                el.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,0.45);padding:12px 0;text-align:center;">AI 사주 풀이를 불러오지 못했습니다.<br><button onclick="location.reload()" style="margin-top:8px;background:none;border:1px solid rgba(0,210,255,0.35);color:rgba(0,210,255,0.7);border-radius:8px;padding:5px 14px;cursor:pointer;font-size:12px;">↻ 새로고침해서 다시 시도</button></div>';
+              }
+            } catch(_) {
+              const el = document.getElementById("saju-ai-explanation");
+              if (el) el.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,0.45);padding:12px 0;text-align:center;">AI 사주 풀이를 불러오지 못했습니다.<br><button onclick="location.reload()" style="margin-top:8px;background:none;border:1px solid rgba(0,210,255,0.35);color:rgba(0,210,255,0.7);border-radius:8px;padding:5px 14px;cursor:pointer;font-size:12px;">↻ 새로고침해서 다시 시도</button></div>';
+            }
+          })();
+        }
       } catch (err) {
         clearInterval(loadingInterval);
         resultsEl.classList.add("hidden");
@@ -1127,7 +1170,7 @@ function buildSajuDetailCards(data, birthInput) {
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
-      ${gongmangZhi.map(z=>`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7;">${GONGMANG_DESC[z]||''}</div>`).join('')}
+      ${(gmInChart.length > 0 ? gmInChart : gongmangZhi).map(z=>`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7;">${GONGMANG_DESC[z]||''}</div>`).join('')}
     </div>
     ${gmInChart.length === 0 && gongmangZhi.length > 0 ? `
     <div style="margin-top:12px;background:rgba(255,193,7,0.06);border:1px solid rgba(255,193,7,0.2);border-radius:10px;padding:12px 14px;">
@@ -1805,6 +1848,8 @@ function buildLifeGuideCards(data, birthInput) {
 }
 
 function renderSajuPage(data, birthInput, matchData, explanation) {
+  // 페이지 복귀용 인자 저장
+  _sajuPageArgs = { data, birthInput, matchData, explanation };
   // 챗봇에 사주 컨텍스트 저장
   _sajuContext = {
     eightChar: data.eightChar,
@@ -1893,7 +1938,7 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
         const t = r.temple || {};
         const distKm = r.detail?.distanceKm;
         return `
-        <div style="display:flex;align-items:center;gap:12px;padding:14px 12px;margin-top:8px;background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.12);border-radius:12px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 12px;margin-top:8px;background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.12);border-radius:12px;cursor:pointer;" class="saju-temple-card" data-temple-index="${i}">
           <div style="font-size:24px;min-width:34px;text-align:center;">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}</div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:16px;font-weight:800;color:#fff;">${t.name||''}</div>
@@ -1904,6 +1949,7 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
           <div style="text-align:right;flex-shrink:0;">
             <div style="font-size:20px;font-weight:900;color:var(--cyan);">${r.score||''}</div>
             <div style="font-size:10px;color:rgba(255,255,255,0.3);">점</div>
+            <div style="font-size:10px;color:rgba(0,210,255,0.6);margin-top:4px;">상세 ›</div>
           </div>
         </div>`;
       }).join('')}
@@ -2010,8 +2056,14 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
   const isSamjaeNow = data.samjae?.groups?.some(g => g.some(y => Math.abs(y.year - currentYear2) <= 1));
   const samjaeAlertHtml = isSamjaeNow ? (() => {
     const nowGrp = data.samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear2) <= 1)) || [];
-    const nowY = nowGrp.find(y => Math.abs(y.year - currentYear2) <= 1);
-    const step = nowY?.year < currentYear2 ? "들삼재 마무리 단계" : nowY?.year === currentYear2 ? "눌삼재(삼재 중반)" : "날삼재(삼재 마무리)";
+    // 그룹 내 현재 연도의 위치(인덱스)로 단계 판정 — Math.abs 방식은 이전 연도를 먼저 반환해 단계가 밀리는 버그 있음
+    const nowGrpIdx = nowGrp.findIndex(y => y.year === currentYear2);
+    const SAMJAE_STEPS = ["들삼재", "눌삼재(삼재 중반)", "날삼재(마무리 단계)"];
+    const step = nowGrpIdx >= 0
+      ? SAMJAE_STEPS[nowGrpIdx]
+      : nowGrp.findIndex(y => y.year === currentYear2 + 1) === 0
+        ? "들삼재 진입 직전"
+        : "날삼재 마무리 후";
     return `<div style="background:rgba(220,50,50,0.1);border:1.5px solid rgba(220,80,80,0.4);border-radius:14px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;">
       <span style="font-size:24px;">⚠️</span>
       <div>
@@ -2032,6 +2084,8 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       <div id="saju-noprint-top">${samjaeAlertHtml}</div>
       ${explanationHtml}
       ${buildSajuDetailCards(data, birthInput)}
+      ${daYunHtml}
+      ${samjaeHtml}
       ${buildLifeGuideCards(data, birthInput)}
       <div id="saju-noprint-bottom">${templeHtml}${sajuSummaryHtml}</div>
     </div>`;
@@ -2044,6 +2098,19 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
     const formEl = document.getElementById("match-form");
     if (formEl) formEl.style.display = "";
     document.getElementById("app")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  // 사주 페이지 사찰 카드 클릭 → 상세 페이지
+  const _matchResults = matchData?.results || [];
+  document.querySelectorAll(".saju-temple-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const idx = parseInt(card.dataset.templeIndex);
+      if (_matchResults[idx]) {
+        renderTempleDetailPage(_matchResults[idx], null, isMember(), () => {
+          if (_sajuPageArgs) renderSajuPage(_sajuPageArgs.data, _sajuPageArgs.birthInput, _sajuPageArgs.matchData, _sajuPageArgs.explanation);
+        });
+      }
+    });
   });
 
   // 📥 결과 다운받기 — 인쇄용 새 창 (PDF 저장 가능)
@@ -2461,7 +2528,7 @@ function formatDate(dateStr) {
 }
 
 // ── 사찰 상세 페이지 ──
-function renderTempleDetailPage(result, matchData, memberUnlocked) {
+function renderTempleDetailPage(result, matchData, memberUnlocked, onBack) {
   const resultsEl = document.getElementById("results");
   if (!resultsEl) return;
   const t = result.temple;
@@ -2487,7 +2554,9 @@ function renderTempleDetailPage(result, matchData, memberUnlocked) {
     </div>
   `;
   document.getElementById("back-btn")?.addEventListener("click", () => {
-    if (matchData) {
+    if (onBack) {
+      onBack();
+    } else if (matchData) {
       renderResults(matchData);
     } else {
       resultsEl.classList.add("hidden");
