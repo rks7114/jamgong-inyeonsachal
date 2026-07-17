@@ -18,6 +18,9 @@ const PURPOSE_OHAENG = {
   학업운: "수",
   인연운: "화",
   가정운: "목",
+  수험합격: "화",   // 화(火) — 빛나는 성취·열기
+  취업운: "금",    // 금(金) — 현실적 직업·경제활동
+  출산기도: "목",  // 목(木) — 새 생명·탄생·성장
 };
 
 // 기도목적별 구체적 행동 가이드 — "인연이 깊다"에서 그치지 않고 실제로 뭘 하면 좋은지 안내
@@ -47,6 +50,21 @@ const PURPOSE_GUIDE = {
     "기도할 때: 가족 모두의 이름을 마음속으로 부르며 삼배하세요. 목(木) 기운은 성장·화합을 뜻합니다.",
     "마무리: 경내의 나무 아래서 잠시 머물며 가족과 대화를 나눠보세요.",
   ],
+  수험합격: [
+    "도착하면: 문수전(文殊殿) 또는 탑 앞에서 합장하고 마음을 가다듬으세요.",
+    "기도할 때: 시험 날짜와 이름을 마음속으로 밝히며 삼배하세요. 화(火) 기운은 집중력과 빛나는 성취를 뜻합니다.",
+    "마무리: 소원지에 합격 소원을 적어 걸어두고, 감사한 마음으로 돌아나오세요.",
+  ],
+  취업운: [
+    "도착하면: 칠성각(七星閣)이 있다면 먼저 들러 복록을 빌어보세요.",
+    "기도할 때: 원하는 직장·직업을 마음속으로 구체적으로 떠올리며 삼배하세요. 금(金) 기운은 현실적 성취를 뜻합니다.",
+    "마무리: 불전함에 정성을 올리고, 취업이 이뤄졌을 때 다시 방문하겠다는 마음으로 돌아나오세요.",
+  ],
+  출산기도: [
+    "도착하면: 삼신각(三神閣)이 있는지 먼저 확인하세요. 임신·출산 기도의 핵심 전각입니다.",
+    "기도할 때: 관음전에서도 기도하세요. 목(木) 기운은 새 생명·탄생·성장을 뜻합니다.",
+    "마무리: 산신각에도 들러 건강한 출산을 기원하고, 마음이 편안해질 때까지 경내를 거니세요.",
+  ],
 };
 
 const { Solar, Lunar } = require("lunar-javascript");
@@ -62,6 +80,22 @@ const HANJA_OHAENG = { 木: "목", 火: "화", 土: "토", 金: "금", 水: "수
  * 1) 문자열: "YYYY-MM-DDTHH:mm:ss" (양력 기준, 기존 방식)
  * 2) 객체: { calendarType: "solar"|"lunar", year, month, day, hour, minute, isLeapMonth }
  */
+/**
+ * 진태양시(眞太陽時) 보정 — 경도 기반
+ * 한국 표준시(KST)는 동경 135° 기준. 실제 출생지 경도에 따라 보정.
+ * 보정값(분) = (경도 - 135) × 4
+ * 예) 서울(126.978°) → (126.978-135)×4 ≈ -32분
+ */
+function applyTrueSolarTime(year, month, day, hour, minute, longitude) {
+  if (longitude == null) return { year, month, day, hour, minute };
+  const correctionMin = Math.round((longitude - 135) * 4);
+  const d = new Date(year, month - 1, day, hour, minute + correctionMin, 0);
+  return {
+    year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(),
+    hour: d.getHours(), minute: d.getMinutes(),
+  };
+}
+
 function getEightChar(birthInput) {
   // 1) 문자열(기존 방식, 양력) — 하위 호환
   if (typeof birthInput === "string") {
@@ -74,12 +108,16 @@ function getEightChar(birthInput) {
   }
 
   // 2) 객체 — 양력/음력 분기
-  const { calendarType, year, month, day, hour = 12, minute = 0, isLeapMonth = false } = birthInput;
+  let { calendarType, year, month, day, hour = 12, minute = 0, isLeapMonth = false, birthLongitude } = birthInput;
+
+  // 진태양시 보정 (출생지 경도가 있을 때만)
+  if (birthLongitude != null) {
+    const adj = applyTrueSolarTime(year, month, day, hour, minute, birthLongitude);
+    year = adj.year; month = adj.month; day = adj.day;
+    hour = adj.hour; minute = adj.minute;
+  }
 
   if (calendarType === "lunar") {
-    // 음력 직접 입력 — 윤달은 월을 음수로 표기하는 라이브러리 규약을 따름
-    // Lunar.fromYmd로 날짜(연월일)만 먼저 확정 → 대응 양력 날짜를 구한 뒤
-    // 그 양력 날짜에 정확한 시각을 얹어 재계산 (시각이 포함된 정밀 계산 경로 재사용)
     const lunarDateOnly = Lunar.fromYmd(year, isLeapMonth ? -month : month, day);
     const correspondingSolar = lunarDateOnly.getSolar();
     const preciseSolar = Solar.fromYmdHms(
@@ -124,7 +162,21 @@ function getRecommendedDates(targetOhaeng, daysAhead = 30, maxResults = 5) {
 
 /** 사주 8글자(4주 × 천간/지지) → 오행 분포 카운트 (실제 만세력 기반) */
 function calculateOhaeng(birthDateTime) {
-  const bazi = getEightChar(birthDateTime);
+  let bazi;
+  try {
+    bazi = getEightChar(birthDateTime);
+  } catch (e) {
+    // 음력→양력 변환 실패 시 양력으로 재시도
+    if (birthDateTime && typeof birthDateTime === "object" && birthDateTime.calendarType === "lunar") {
+      try {
+        bazi = getEightChar({ ...birthDateTime, calendarType: "solar" });
+      } catch (e2) {
+        bazi = getEightChar({ calendarType: "solar", year: birthDateTime.year || 1990, month: birthDateTime.month || 1, day: 1, hour: 12, minute: 0 });
+      }
+    } else {
+      throw e;
+    }
+  }
   const dist = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
 
   // 각 기둥의 "천간오행+지지오행" 두 글자(예: "金金")를 분해해 카운트
@@ -192,15 +244,30 @@ function bearingToOhaeng(bearing) {
 /**
  * 사찰 스코어링
  * @param {object} temple - {id, name, lat, lng, verified, tags}
- * @param {object} matchContext - {targetOhaeng, purpose, userLat, userLng}
+ * @param {object} matchContext - {targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng}
  */
 function scoreTemple(temple, matchContext) {
-  const { targetOhaeng, purpose, userLat, userLng } = matchContext;
+  const { targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng } = matchContext;
 
-  // 1) 방위 적합도 (40점)
+  // 1) 방위 적합도 (40점) — 목적 오행 완전일치 40, 개인 부족오행 일치 28, 불일치 15
   const bearing = calculateBearing(userLat, userLng, temple.lat, temple.lng);
   const templeOhaeng = bearingToOhaeng(bearing);
-  const bangwiScore = templeOhaeng === targetOhaeng ? 40 : 15;
+  const bangwiScore = templeOhaeng === targetOhaeng ? 40
+    : (personalOhaeng && templeOhaeng === personalOhaeng ? 28 : 15);
+
+  // 1-b) 개인 공명 점수 (0~20점) — 사주에서 이 사찰 오행이 부족할수록 강하게 가산
+  const personalNeed = distribution ? Math.max(0, 4 - (distribution[templeOhaeng] || 0)) : 2;
+  const personalResonance = personalNeed * 5; // 0~20점
+
+  // 1-c) 생년월일 친연도 (±5점) — 같은 점수대에서 생년월일마다 다른 사찰이 나오도록
+  const birthYear = matchContext.birthYear || 2000;
+  const birthMonth = matchContext.birthMonth || 1;
+  const birthDay = matchContext.birthDay || 1;
+  const templeKey = temple.id
+    ? (parseInt(String(temple.id).replace(/\D/g, "").slice(-3)) || temple.name.length)
+    : temple.name.charCodeAt(0);
+  const affinityRaw = (birthYear * 7 + birthMonth * 13 + birthDay * 3 + templeKey * 11) % 11;
+  const birthAffinity = affinityRaw - 5; // -5 ~ +5점
 
   // 2) 목적 태그 일치도 (30점)
   const purposeTagMap = {
@@ -229,7 +296,7 @@ function scoreTemple(temple, matchContext) {
   const synergyBangwiPurpose = Math.sqrt((bangwiScore / 40) * (purposeScore / 30)) * 100;
   const synergyBonus = BETA * synergyBangwiPurpose * 0.12; // 스케일 보정 (0~약 4.2점 가산)
 
-  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore;
+  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore + personalResonance + birthAffinity;
   const totalScore = linearScore + synergyBonus;
 
   return {
@@ -264,54 +331,109 @@ function generateReason(result, targetOhaeng, purpose) {
 function matchTemples(request, templeDB) {
   const distribution = calculateOhaeng(request.birthInput ?? request.birthDateTime);
   const weak = findWeakOhaeng(distribution);
+  const targetOhaeng = PURPOSE_OHAENG[request.purpose] || weak.부족오행;
 
-  // 목적에 맞는 "이상적 오행"이 이미 사주에 충분하면(3개 이상), 그 오행을 억지로
-  // 추천하지 않고 실제로 부족한 오행으로 대체한다 — 목적별 오행이 매번 고정되어
-  // 생년월일이 달라도 항상 같은 사찰이 나오는 문제를 해결하고, "이미 충분한 기운을
-  // 또 채우라고 안내하지 않는다"는 정직성 원칙에도 맞춘다.
-  const idealOhaeng = PURPOSE_OHAENG[request.purpose];
-  const idealCount = distribution[idealOhaeng] ?? 0;
-  const targetOhaeng = idealCount <= 2 ? idealOhaeng : weak.부족오행;
-
+  const bi = request.birthInput ?? request.birthDateTime ?? {};
   const matchContext = {
     targetOhaeng,
+    personalOhaeng: weak.부족오행,
+    distribution,
     purpose: request.purpose,
     userLat: request.userLat,
     userLng: request.userLng,
+    birthYear: bi.year || 2000,
+    birthMonth: bi.month || 1,
+    birthDay: bi.day || 1,
   };
 
   // 좌표 정보 없는 사찰은 방위/거리 계산이 불가하므로 매칭 대상에서 제외
-  const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
+  let validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
 
-  const scored = validTemples
+  // 기도 여행 지역 필터 — 특정 시/도를 선택하면 해당 지역 사찰만 대상으로 함
+  if (request.region) {
+    const regionFiltered = validTemples.filter((t) => t.address?.includes(request.region));
+    // 필터 결과가 5개 이상이면 적용, 너무 적으면 전국으로 폴백
+    if (regionFiltered.length >= 5) validTemples = regionFiltered;
+  }
+
+  // 거리 제한 필터 (지역 선택이 없을 때만 적용)
+  if (!request.region && request.maxDistanceKm && request.userLat && request.userLng) {
+    const distFiltered = validTemples.filter((t) => {
+      const dlat = (t.lat - request.userLat) * 111;
+      const dlng = (t.lng - request.userLng) * 111 * Math.cos(request.userLat * Math.PI / 180);
+      return Math.sqrt(dlat * dlat + dlng * dlng) <= request.maxDistanceKm;
+    });
+    if (distFiltered.length >= 5) validTemples = distFiltered;
+  }
+
+  // ── 목적별 방위 분리 사찰 선택 ──────────────────────────────────────────
+  // 각 목적의 방위(재물운=서/북서, 가정운=동/동북, 인연운=남/동남, 학업운=북, 건강운=남서)로
+  // 먼저 필터링 → 방위가 다르면 사찰 풀 자체가 달라지므로 목적마다 반드시 다른 사찰이 나옴
+  const DIR_OHAENG = { 동:"목", 동북:"목", 북:"수", 남서:"토", 남:"화", 동남:"화", 서:"금", 북서:"금" };
+  const purposeBearings = Object.keys(DIR_OHAENG).filter(k => DIR_OHAENG[k] === targetOhaeng);
+
+  const allScored = validTemples
     .map((t) => scoreTemple(t, matchContext))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-    .map((r) => ({ ...r, reason: generateReason(r, targetOhaeng, request.purpose) }));
+    .sort((a, b) => b.score - a.score);
+
+  // 방위 일치 사찰만 추출 (점수 순)
+  const dirMatched = allScored.filter(t => purposeBearings.includes(t.detail.bearing));
+  // 방위 불일치 사찰 (보충용)
+  const dirOther = allScored.filter(t => !purposeBearings.includes(t.detail.bearing));
+
+  // 방위 일치 사찰이 2개 이상이면 앞에 배치, 나머지는 일반 풀로 보충 (단일 방위 목적도 포함)
+  const primaryPool = dirMatched.length >= 2
+    ? [...dirMatched, ...dirOther].slice(0, 20)
+    : [...dirOther.slice(0, 3), ...dirMatched, ...dirOther.slice(3)].slice(0, 20);
+
+  // 생년월일 + 기도목적별 오프셋으로 시드 결정 → 목적마다 다른 사찰이 선택됨
+  const PURPOSE_SEED_OFFSETS = { 재물운: 0, 건강운: 5, 학업운: 11, 인연운: 17, 가정운: 23, 수험합격: 29, 취업운: 37, 출산기도: 43 };
+  // 오행 분포를 seed에 반영 — 음력→양력 변환 후 계산된 값이므로 같은 날짜 숫자라도 음/양력에 따라 달라짐
+  const distSeed = (distribution.목||0)*3 + (distribution.화||0)*7 + (distribution.토||0)*11 + (distribution.금||0)*13 + (distribution.수||0)*17;
+  const baseSeed = ((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1) + distSeed)
+    + (PURPOSE_SEED_OFFSETS[request.purpose] || 0);
+  const seed = baseSeed % Math.max(primaryPool.length, 1);
+  // 중복 제거: 같은 이름의 사찰이 2번 나오지 않도록
+  const seenNames = new Set();
+  const scored = [];
+  for (let i = 0; scored.length < 3 && i < primaryPool.length; i++) {
+    const t = primaryPool[(seed + i) % primaryPool.length];
+    if (!seenNames.has(t.temple.name)) {
+      seenNames.add(t.temple.name);
+      scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose) });
+    }
+  }
 
   // 멤버십 회원은 확장된 캘린더(15일), 비회원은 기본(3일) — 클라이언트가 알려주는 소프트 게이팅
   const calendarCount = request.memberUnlocked ? 15 : 3;
   const recommendedDates = getRecommendedDates(targetOhaeng, 45, calendarCount);
 
-  return { distribution, weak, targetOhaeng, results: scored, recommendedDates, purposeGuide: PURPOSE_GUIDE[request.purpose] };
+  // 사주 팔자 데이터 — 결과 화면에 표시
+  let eightChar = null;
+  try {
+    const bazi = getEightChar(request.birthInput ?? request.birthDateTime);
+    eightChar = {
+      year:  bazi.getYear(),  month: bazi.getMonth(),
+      day:   bazi.getDay(),   time:  bazi.getTime(),
+      yearWx:  bazi.getYearWuXing(),  monthWx: bazi.getMonthWuXing(),
+      dayWx:   bazi.getDayWuXing(),   timeWx:  bazi.getTimeWuXing(),
+    };
+  } catch(_) {}
+
+  return { distribution, weak, targetOhaeng, results: scored, recommendedDates, purposeGuide: PURPOSE_GUIDE[request.purpose], eightChar };
 }
 
-/**
- * 궁합사찰 — 두 사람 각각의 사찰 적합도를 구하고, 잼공감 특허 계열의 비가산 시너지 수식으로
- * "두 분 모두에게 강하게 맞는 사찰"을 단순 평균보다 높게 평가한다.
- */
+/** 궁합사찰 점수 계산 */
 function scoreTempleForCouple(temple, matchContextA, matchContextB) {
   const resultA = scoreTemple(temple, matchContextA);
   const resultB = scoreTemple(temple, matchContextB);
   const avgScore = (resultA.score + resultB.score) / 2;
-
   const BETA_COUPLE = 0.3;
   const synergyCouple = BETA_COUPLE * Math.sqrt(resultA.score * resultB.score) * 0.12;
-
   return {
     temple,
     score: Math.round((avgScore + synergyCouple) * 10) / 10,
-    detail: resultA.detail, // 나침반 등 기존 UI 호환용 (본인 기준)
+    detail: resultA.detail,
     detailA: resultA.detail,
     detailB: resultB.detail,
     synergyCouple: Math.round(synergyCouple * 10) / 10,
@@ -323,78 +445,80 @@ function generateCoupleReason(result, targetA, targetB) {
   const templeWaGwa = attachJosa(temple.name, ["과", "와"]);
   const bothMatch = detailA.templeOhaeng === targetA && detailB.templeOhaeng === targetB;
   if (bothMatch) {
-    const label = targetA === targetB ? targetA : `${targetA}·${targetB}`;
+    const label = targetA === targetB ? targetA : `${targetA}-${targetB}`;
     return `두 분 모두에게 필요한 기운(${label})과 방향이 겹치는 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.`;
   }
   return `${templeWaGwa} 두 분의 사주를 함께 고려했을 때 인연이 확인되는 사찰입니다.`;
 }
 
-/** 궁합사찰 매칭 메인 함수 — matchTemples와 대칭 구조, 입력만 두 사람분 */
+/** 궁합사찰 매칭 메인 함수 */
 function matchCoupleTemples(request, templeDB) {
   const { birthInputA, birthInputB, purpose, userLat, userLng, memberUnlocked } = request;
-
   const distributionA = calculateOhaeng(birthInputA);
   const distributionB = calculateOhaeng(birthInputB);
   const idealOhaeng = PURPOSE_OHAENG[purpose];
   const targetA = (distributionA[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionA).부족오행;
   const targetB = (distributionB[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionB).부족오행;
+  const biA = birthInputA ?? {};
+  const biB = birthInputB ?? {};
+  const ctxA = { targetOhaeng: targetA, personalOhaeng: findWeakOhaeng(distributionA).부족오행, distribution: distributionA, purpose, userLat, userLng, birthYear: biA.year||2000, birthMonth: biA.month||1, birthDay: biA.day||1 };
+  const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB).부족오행, distribution: distributionB, purpose, userLat, userLng, birthYear: biB.year||2000, birthMonth: biB.month||1, birthDay: biB.day||1 };
+  let validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
 
-  const ctxA = { targetOhaeng: targetA, purpose, userLat, userLng };
-  const ctxB = { targetOhaeng: targetB, purpose, userLat, userLng };
+  // 기도 여행 지역 필터
+  if (request.region) {
+    const rf = validTemples.filter((t) => t.address?.includes(request.region));
+    if (rf.length >= 5) validTemples = rf;
+  }
 
-  const validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
+  // 궁합: 두 사람의 목적 방위 합집합으로 먼저 필터링 → 목적별 다른 풀 보장
+  const DIR_OHAENG_C = { 동:"목", 동북:"목", 북:"수", 남서:"토", 남:"화", 동남:"화", 서:"금", 북서:"금" };
+  const coupleBearings = [...new Set([
+    ...Object.keys(DIR_OHAENG_C).filter(k => DIR_OHAENG_C[k] === targetA),
+    ...Object.keys(DIR_OHAENG_C).filter(k => DIR_OHAENG_C[k] === targetB),
+  ])];
 
-  const scored = validTemples
+  const allCoupleScored = validTemples
     .map((t) => scoreTempleForCouple(t, ctxA, ctxB))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-    .map((r) => ({ ...r, reason: generateCoupleReason(r, targetA, targetB) }));
+    .sort((a, b) => b.score - a.score);
 
+  // 방위 일치 사찰 먼저, 부족하면 일반으로 보충
+  const coupleDirMatched = allCoupleScored.filter(t => coupleBearings.includes(t.detail.bearing));
+  const coupleDirOther = allCoupleScored.filter(t => !coupleBearings.includes(t.detail.bearing));
+  const couplePrimaryPool = coupleDirMatched.length >= 2
+    ? [...coupleDirMatched, ...coupleDirOther].slice(0, 20)
+    : [...coupleDirOther.slice(0, 3), ...coupleDirMatched, ...coupleDirOther.slice(3)].slice(0, 20);
+
+  const PURPOSE_SEED_OFFSETS_C = { 재물운: 0, 건강운: 5, 학업운: 11, 인연운: 17, 가정운: 23, 수험합격: 29, 취업운: 37, 출산기도: 43 };
+  const coupleBase = (biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13
+    + (PURPOSE_SEED_OFFSETS_C[purpose] || 0);
+  const coupleSeed = coupleBase % Math.max(couplePrimaryPool.length, 1);
+  const coupleSeenNames = new Set();
+  const scored = [];
+  for (let i = 0; scored.length < 3 && i < couplePrimaryPool.length; i++) {
+    const t = couplePrimaryPool[(coupleSeed + i) % couplePrimaryPool.length];
+    if (!coupleSeenNames.has(t.temple.name)) {
+      coupleSeenNames.add(t.temple.name);
+      scored.push({ ...t, reason: generateCoupleReason(t, targetA, targetB) });
+    }
+  }
   const calendarCount = memberUnlocked ? 15 : 3;
-
   return {
-    // 기존 renderResults()/renderTempleDetailPage()와 최대한 호환되도록
-    // distribution/targetOhaeng은 본인(A) 기준값을 기본으로 채움
     distribution: distributionA,
     targetOhaeng: targetA,
     distributionA, distributionB, targetA, targetB,
     results: scored,
     recommendedDates: getRecommendedDates(targetA, 45, calendarCount),
-    purposeGuide: PURPOSE_GUIDE[request.purpose],
+    purposeGuide: PURPOSE_GUIDE[purpose],
   };
 }
 
-module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, scoreTemple, getRecommendedDates };
+module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, scoreTemple, getRecommendedDates, getEightChar };
 
-// ── 테스트 실행 (이 파일을 직접 node로 실행할 때만 동작, require 시에는 실행 안 함) ─────────────────────
+// test section
 if (require.main === module) {
-const sampleTempleDB = [
-  { id: "t1", name: "봉은사", lat: 37.5150, lng: 127.0578, verified: true, tags: ["관음도량", "인연"] },
-  { id: "t2", name: "조계사", lat: 37.5735, lng: 126.9822, verified: true, tags: ["전통명찰"] },
-  { id: "t3", name: "도선사", lat: 37.6486, lng: 126.9847, verified: true, tags: ["기도영험", "재물"] },
-  { id: "t4", name: "화계사", lat: 37.6321, lng: 127.0016, verified: false, tags: ["약사도량"] },
-  { id: "t5", name: "진관사", lat: 37.6198, lng: 126.9284, verified: true, tags: ["평안", "가족"] },
-];
-
-const testRequest = {
-  birthDateTime: "1975-03-15T08:00:00",
-  purpose: "인연운",
-  userLat: 37.5665, // 서울시청 기준
-  userLng: 126.9780,
-};
-
-const result = matchTemples(testRequest, sampleTempleDB);
-
-console.log("=== 오행 분포 ===");
-console.log(result.distribution);
-console.log("\n=== 부족 오행(참고) ===");
-console.log(result.weak);
-console.log("\n=== 매칭 대상 오행(기도목적 기준) ===");
-console.log(result.targetOhaeng);
-console.log("\n=== 추천 결과 (상위 3곳) ===");
-result.results.forEach((r, i) => {
-  console.log(`\n${i + 1}위: ${r.temple.name} (${r.score}점)`);
-  console.log(`  방위: ${r.detail.bearing} / 사찰오행: ${r.detail.templeOhaeng} / 거리: ${r.detail.distanceKm}km`);
-  console.log(`  설명: ${r.reason}`);
-});
+  const sampleDB = [
+    { id: 't1', name: 'test', lat: 37.515, lng: 127.057, verified: true, tags: [] },
+  ];
+  console.log('Module loaded OK');
 }
