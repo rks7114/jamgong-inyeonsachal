@@ -41,6 +41,12 @@ const OH_DESC = {
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
 
+  // ANTHROPIC_API_KEY 환경변수 체크
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.error("ANTHROPIC_API_KEY 환경변수가 설정되지 않았습니다.");
+    return res.status(500).json({ error: "API_KEY_MISSING", message: "ANTHROPIC_API_KEY가 Vercel 환경변수에 없습니다." });
+  }
+
   try {
     const { eightChar: ec, distribution: dist, weak, daYun, samjae, birthInput } = req.body;
     if (!ec) return res.status(400).json({ error: "사주 데이터가 없습니다." });
