@@ -2536,6 +2536,7 @@ function renderCoupleResults(data) {
 
 
 
+
 // ═══════════════════════════════════════════════════════════════════
 // ── 사찰 상세페이지 ── (절대 삭제 금지: 여기서 관리)
 // ═══════════════════════════════════════════════════════════════════
@@ -2552,10 +2553,35 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   const distText = d.distanceKm != null
     ? (d.distanceKm < 1 ? Math.round(d.distanceKm * 1000) + "m" : d.distanceKm.toFixed(1) + "km")
     : "";
+  const score = result.score || 0;
+
+  // 오행 의미
+  const OHAENG_MEANING = {
+    목: "성장·창의·도전",
+    화: "열정·명예·활력",
+    토: "안정·신뢰·중심",
+    금: "결실·의지·재물",
+    수: "지혜·학업·직관"
+  };
+
+  // 오행 설명
+  const OHAENG_DESC = {
+    목: "새로운 일을 시작하거나 창의적인 활동에 힘을 불어넣어 줍니다. 성장과 도전의 기운이 강합니다.",
+    화: "이름을 알리고 사람들 사이에서 빛나게 해주는 기운입니다. 열정과 활력을 불어넣습니다.",
+    토: "흔들리는 마음을 안정시키고 근본을 다지게 해줍니다. 신뢰와 지속성의 기운입니다.",
+    금: "결실을 맺고 재물과 의지력을 강화시켜 줍니다. 결단력과 실행력의 기운입니다.",
+    수: "지혜와 직관을 높여주고 학업·시험에 도움이 됩니다. 깊이 생각하는 힘의 기운입니다."
+  };
+
   const dist = parentData?.distribution || {};
   const distHtml = Object.entries(dist).map(function([k,v]) {
-    return '<span style="color:' + (OHAENG_COLOR[k] || "#ccc") + ';font-weight:700;">' + k + " " + v + "</span>";
-  }).join("&nbsp;·&nbsp;");
+    const isTarget = k === d.templeOhaeng;
+    return '<span style="display:inline-block;padding:3px 10px;border-radius:12px;margin:2px;font-weight:700;font-size:13px;' +
+      'background:' + (isTarget ? ohaengColor + "22" : "rgba(255,255,255,0.06)") + ';' +
+      'border:1px solid ' + (isTarget ? ohaengColor : "rgba(255,255,255,0.1)") + ';' +
+      'color:' + (isTarget ? ohaengColor : "rgba(255,255,255,0.65)") + ';">' +
+      k + " " + v + (isTarget ? " ✦" : "") + "</span>";
+  }).join(" ");
 
   const purposeGuide = parentData?.purposeGuide || [];
   const guideHtml = Array.isArray(purposeGuide) && purposeGuide.length
@@ -2565,8 +2591,8 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   const historyFull = t.history || "";
   const historyHtml = memberUnlocked
     ? historyFull
-    : (historyFull.length > 60
-        ? historyFull.slice(0, 60) + '… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>'
+    : (historyFull.length > 80
+        ? historyFull.slice(0, 80) + '… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>'
         : historyFull || "정보 없음");
 
   const weatherHtml = result.weather
@@ -2575,39 +2601,80 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
 
   const purposeLabel = parentData?.purpose || "";
 
+  // 추천 방문 날짜
+  const recDates = parentData?.recommendedDates || [];
+  const dateCount = memberUnlocked ? recDates.length : Math.min(3, recDates.length);
+  const datesHtml = recDates.slice(0, dateCount).map(function(d2) {
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">' +
+      '<span style="font-size:13px;font-weight:700;color:' + ohaengColor + ';min-width:90px;">' + d2.date + '</span>' +
+      (d2.reason ? '<span style="font-size:12px;color:rgba(255,255,255,0.55);">' + d2.reason + '</span>' : '') +
+      '</div>';
+  }).join('');
+
   let html = "";
   html += '<div class="temple-detail-page">';
   html += '<button class="back-btn" id="detail-back-btn">← 목록으로</button>';
 
   // ─── Hero ───
   html += '<div class="temple-detail-hero" style="border-top:4px solid ' + ohaengColor + ';">';
-  html += '<div class="temple-detail-score">매칭 ' + (result.score || "-") + "점";
-  if (t.foundedYear) html += " · 창건 " + t.foundedYear + "년";
-  html += "</div>";
   html += '<div class="temple-detail-name temple-name-glow">' + (t.name || "사찰") + "</div>";
-  html += '<div class="temple-detail-addr" style="color:' + ohaengColor + ';font-weight:700;">' + (d.templeOhaeng || "") + " 기운의 사찰</div>";
-  if (d.bearing) html += '<div class="temple-detail-addr">방위: ' + d.bearing + (distText ? " · " + distText : "") + "</div>";
-  html += weatherHtml;
+  if (t.foundedYear) html += '<div class="temple-detail-addr" style="font-size:12px;opacity:0.6;">창건 ' + t.foundedYear + '년</div>';
+  html += '<div class="temple-detail-addr" style="color:' + ohaengColor + ';font-weight:700;font-size:14px;margin:4px 0;">';
+  html += (d.templeOhaeng || "") + " 기운 · " + (OHAENG_MEANING[d.templeOhaeng] || "");
   html += "</div>";
+  html += weatherHtml;
+  // 점수 게이지
+  html += '<div style="margin-top:14px;">';
+  html += '<div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:4px;"><span>인연 매칭 점수</span><span style="color:' + ohaengColor + ';font-weight:800;">' + score + '점</span></div>';
+  html += '<div style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">';
+  html += '<div style="height:100%;width:' + Math.min(score, 100) + '%;background:linear-gradient(90deg,' + ohaengColor + ',rgba(255,255,255,0.6));border-radius:4px;transition:width 1s ease;"></div>';
+  html += "</div></div>";
+  html += "</div>";
+
+  // ─── 기본 정보 카드 ───
+  html += '<div class="temple-detail-section">';
+  html += '<div class="temple-detail-section-title">🏯 사찰 기본 정보</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
+  const infoItems = [
+    { icon: "🧭", label: "방위", val: d.bearing || "정보 없음" },
+    { icon: "📏", label: "거리", val: distText || "정보 없음" },
+    { icon: "🔥", label: "오행 기운", val: (d.templeOhaeng || "") + " (" + (OHAENG_MEANING[d.templeOhaeng] || "") + ")" },
+    { icon: "⭐", label: "매칭 점수", val: score + "점" },
+  ];
+  infoItems.forEach(function(item) {
+    html += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;">';
+    html += '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px;">' + item.icon + " " + item.label + '</div>';
+    html += '<div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85);">' + item.val + '</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
 
   // ─── 위치 ───
   html += '<div class="temple-detail-section">';
   html += '<div class="temple-detail-section-title">📍 위치 &amp; 방문 안내</div>';
-  if (t.address) html += '<div class="temple-detail-section-body temple-detail-addr">' + t.address + "</div>";
-  html += '<a class="map-link-btn" href="' + mapUrl + '" target="_blank" rel="noopener" style="margin-top:12px;">🗺️ 네이버 지도에서 길찾기</a>';
+  if (t.address) html += '<div class="temple-detail-section-body temple-detail-addr" style="margin-bottom:10px;">' + t.address + "</div>";
+  html += '<a class="map-link-btn" href="' + mapUrl + '" target="_blank" rel="noopener">🗺️ 네이버 지도에서 길찾기</a>';
   html += "</div>";
+
+  // ─── 오행 의미 ───
+  if (d.templeOhaeng && OHAENG_DESC[d.templeOhaeng]) {
+    html += '<div class="temple-detail-section" style="border-left:3px solid ' + ohaengColor + ';">';
+    html += '<div class="temple-detail-section-title" style="color:' + ohaengColor + ';">✦ ' + d.templeOhaeng + '(오행) 기운이란?</div>';
+    html += '<div class="temple-detail-section-body">' + OHAENG_DESC[d.templeOhaeng] + '</div>';
+    html += '</div>';
+  }
 
   // ─── 인연 이유 ───
   html += '<div class="temple-detail-section">';
   html += '<div class="temple-detail-section-title">✨ 나와의 인연 이유</div>';
-  html += '<div class="temple-detail-section-body">' + (result.reason || "") + "</div>";
+  html += '<div class="temple-detail-section-body" style="line-height:1.8;">' + (result.reason || "") + "</div>";
   html += "</div>";
 
   // ─── 기도 목적 ───
   if (purposeLabel) {
     html += '<div class="temple-detail-section">';
     html += '<div class="temple-detail-section-title">🎯 기도 목적</div>';
-    html += '<div class="temple-detail-section-body"><span class="member-lock-tag" style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);color:#D4AF37;border-radius:20px;padding:4px 14px;font-weight:700;">' + purposeLabel + "</span></div>";
+    html += '<div class="temple-detail-section-body"><span style="background:' + ohaengColor + '22;border:1px solid ' + ohaengColor + '55;color:' + ohaengColor + ';border-radius:20px;padding:5px 16px;font-weight:700;font-size:14px;">' + purposeLabel + "</span></div>";
     html += "</div>";
   }
 
@@ -2623,7 +2690,15 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   if (historyFull) {
     html += '<div class="temple-detail-section">';
     html += '<div class="temple-detail-section-title">📜 유래 · 연혁</div>';
-    html += '<div class="temple-detail-section-body">' + historyHtml + "</div>";
+    html += '<div class="temple-detail-section-body" style="line-height:1.8;">' + historyHtml + "</div>";
+    html += "</div>";
+  }
+
+  // ─── 방문 추천 날짜 ───
+  if (recDates.length > 0) {
+    html += '<div class="temple-detail-section">';
+    html += '<div class="temple-detail-section-title">📅 추천 방문 날짜' + (!memberUnlocked ? ' <span style="font-size:11px;opacity:0.5;">(상위 3일 · 전체는 멤버 전용)</span>' : '') + '</div>';
+    html += '<div class="temple-detail-section-body">' + datesHtml + "</div>";
     html += "</div>";
   }
 
@@ -2631,18 +2706,18 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   if (Object.keys(dist).length) {
     html += '<div class="temple-detail-section">';
     html += '<div class="temple-detail-section-title">🔥 나의 사주 오행 분포</div>';
-    html += '<div class="temple-detail-section-body">' + distHtml + "</div>";
-    html += '<div class="temple-detail-section-body" style="margin-top:8px;font-size:13px;color:rgba(255,255,255,0.55);">';
-    html += '부족한 기운: <strong style="color:' + ohaengColor + ';">' + (parentData?.targetOhaeng || "") + "</strong> → 이 사찰이 보완해줍니다";
-    html += "</div></div>";
+    html += '<div class="temple-detail-section-body" style="margin-bottom:8px;">' + distHtml + "</div>";
+    html += '<div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:6px;">✦ 표시된 기운이 이 사찰의 오행으로, 나의 부족한 <strong style="color:' + ohaengColor + ';">' + (d.templeOhaeng || "") + '</strong> 기운을 보완해 줍니다.</div>';
+    html += "</div>";
   }
 
   // ─── 멤버십 잠금 배너 ───
   if (!memberUnlocked) {
-    html += '<div class="temple-detail-section" style="border-color:rgba(212,175,55,0.3);background:rgba(212,175,55,0.05);">';
-    html += '<div class="temple-detail-section-title" style="color:#D4AF37;">🔒 멤버십 전용 콘텐츠</div>';
-    html += '<div class="temple-detail-section-body">멤버십 가입 시 유래 전문, 방문 날짜 추천, 기도문 전체를 볼 수 있습니다.</div>';
-    html += '<div class="member-unlock" style="margin-top:12px;">';
+    html += '<div class="temple-detail-section" style="border-color:rgba(212,175,55,0.3);background:rgba(212,175,55,0.04);text-align:center;padding:24px 18px;">';
+    html += '<div style="font-size:28px;margin-bottom:8px;">🔒</div>';
+    html += '<div class="temple-detail-section-title" style="color:#D4AF37;border:none;padding:0;margin-bottom:6px;">멤버십 전용 콘텐츠</div>';
+    html += '<div class="temple-detail-section-body" style="margin-bottom:14px;">유래 전문 · 방문 날짜 전체 · 맞춤 기도문을 볼 수 있습니다.</div>';
+    html += '<div class="member-unlock">';
     html += '<input type="text" id="detail-member-code-input" placeholder="멤버십 코드 입력" />';
     html += '<button id="detail-member-code-btn">확인</button>';
     html += "</div></div>";
