@@ -2776,7 +2776,7 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
       html += '<div class="ds-card" style="background:rgba(' + c_g.r + ',0.07);border:1px solid rgba(' + c_g.r + ',0.25);border-left:4px solid ' + c_g.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
       html += '<div style="font-size:14px;font-weight:800;color:' + c_g.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_g.r + ',0.2);">🕯️ 맞춤 기도문</div>';
       html += '<div style="font-size:14px;color:#94A3B8;line-height:2;background:rgba(0,0,0,0.2);border-radius:12px;padding:16px;filter:blur(2px);pointer-events:none;">' + gidoText.slice(0, 80) + '…</div>';
-      html += '<div style="margin-top:12px;text-align:center;font-size:13px;color:rgba(255,255,255,0.4);">🔒 전체 기도문은 멤버십 전용입니다</div>';
+      html += '<div style="margin-top:14px;text-align:center;font-size:13px;font-weight:700;color:#FCD34D;background:rgba(252,211,77,0.1);border:1px solid rgba(252,211,77,0.35);border-radius:10px;padding:10px 16px;">🔒 전체 기도문은 멤버십 전용입니다</div>';
       html += '</div>';
     }
   }
