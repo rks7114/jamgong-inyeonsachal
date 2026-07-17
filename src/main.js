@@ -158,6 +158,30 @@ const BEARING_DEG = {
   남: 180, 남서: 225, 서: 270, 북서: 315,
 };
 
+function buildCompassSVG(deg) {
+  const rad = (deg - 90) * Math.PI / 180;
+  const cx = 60, cy = 60, r = 48;
+  const needleLen = 38;
+  const nx = cx + needleLen * Math.cos(rad);
+  const ny = cy + needleLen * Math.sin(rad);
+  const tx = cx - needleLen * 0.6 * Math.cos(rad);
+  const ty = cy - needleLen * 0.6 * Math.sin(rad);
+  const label = Object.entries(BEARING_DEG).find(([,v]) => v === deg)?.[0] || "";
+  return `<div style="display:flex;flex-direction:column;align-items:center;margin:8px 0 16px;">
+    <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(0,210,255,0.25)" stroke-width="2"/>
+      <circle cx="${cx}" cy="${cy}" r="4" fill="#00D2FF"/>
+      <text x="${cx}" y="10" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="11" font-family="sans-serif">북</text>
+      <text x="${cx}" y="116" text-anchor="middle" fill="rgba(0,210,255,0.5)" font-size="10" font-family="sans-serif">남</text>
+      <text x="8" y="${cy+4}" text-anchor="middle" fill="rgba(0,210,255,0.5)" font-size="10" font-family="sans-serif">서</text>
+      <text x="112" y="${cy+4}" text-anchor="middle" fill="rgba(0,210,255,0.5)" font-size="10" font-family="sans-serif">동</text>
+      <line x1="${tx}" y1="${ty}" x2="${nx}" y2="${ny}" stroke="#00D2FF" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="${nx}" cy="${ny}" r="5" fill="#00D2FF"/>
+    </svg>
+    ${label ? `<div style="font-size:13px;color:rgba(0,210,255,0.9);margin-top:-4px;">${label}쪽 방향 사찰이 인연</div>` : ""}
+  </div>`;
+}
+
 const app = document.getElementById("app");
 
 // 멤버십 전용 코드 — 유튜브 채널 멤버십 회원에게 커뮤니티 공지 등으로 배포
@@ -865,7 +889,7 @@ function render() {
         renderResults(data);
       }
     } catch (err) {
-      alert("디버그 오류: " + (err?.message || String(err)));
+      alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     } finally {
       clearInterval(msgInterval);
       submitBtn.disabled = false;
