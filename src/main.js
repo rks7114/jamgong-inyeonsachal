@@ -862,7 +862,8 @@ function render() {
         resultsEl.classList.add("hidden");
         resultsEl.innerHTML = "";
         if (formEl) formEl.style.display = "";
-        alert("사주 계산 중 오류가 발생했습니다.");
+        console.error("사주 오류:", err);
+        alert("사주 계산 중 오류가 발생했습니다.\n\n[" + (err?.message || String(err)) + "]");
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "🔮 사주 팔자 확인";
