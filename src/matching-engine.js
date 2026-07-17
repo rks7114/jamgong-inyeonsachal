@@ -209,14 +209,14 @@ function findWeakOhaeng(distribution, branches) {
   };
   const GAN_OH = { '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수' };
 
-  // 중기(中氣)에 0.5점 가중치 추가 — 申의 壬水처럼 겉에 안 보이는 숨은 기운 반영
+  // 중기(中氣)에 1.0점 가중치 추가 — 申의 壬水·寅의 丙火처럼 겉에 안 보이는 숨은 기운 반영
   const bonus = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
   if (Array.isArray(branches)) {
     for (const ji of branches) {
       const stems = JJG[ji] || [];
       if (stems.length === 3) {
         const midOh = GAN_OH[stems[1]];
-        if (midOh) bonus[midOh] += 0.5;
+        if (midOh) bonus[midOh] += 1.0;
       }
     }
   }
