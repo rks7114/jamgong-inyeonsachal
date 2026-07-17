@@ -542,5 +542,14 @@ function matchCoupleTemples(request, templeDB) {
   }
   const calendarCount = memberUnlocked ? 15 : 3;
   return {
-    distribution: distributionA,
-    targ
+    distributionA,
+    distributionB,
+    targetA,
+    targetB,
+    results: scored,
+    recommendedDates: getRecommendedDates(targetA, 45, calendarCount),
+    purposeGuide: PURPOSE_GUIDE[purpose],
+  };
+}
+
+module.exports = { matchTemples, matchCoupleTemples };
