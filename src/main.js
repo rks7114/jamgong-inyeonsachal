@@ -766,7 +766,7 @@ function render() {
           clearInterval(loadingInterval);
           resultsEl.classList.add("hidden");
           if (formEl) formEl.style.display = "";
-          alert(sajuData.error);
+          alert(sajuData.error + (sajuData.detail ? "\n\n[" + sajuData.detail + "]" : ""));
           return;
         }
 
