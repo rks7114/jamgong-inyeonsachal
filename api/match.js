@@ -40,15 +40,19 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { birthDateTime, birthInput, purpose, userLat, userLng, memberUnlocked } = req.body;
+    const { birthDateTime, birthInput, purpose, userLat, userLng, memberUnlocked, region, maxDistanceKm } = req.body;
 
-    if ((!birthDateTime && !birthInput) || !purpose || userLat == null || userLng == null) {
-      res.status(400).json({ error: "생년월일시, 기도목적, 위치 정보가 모두 필요합니다." });
+    if ((!birthDateTime && !birthInput) || !purpose) {
+      res.status(400).json({ error: "생년월일시, 기도목적 정보가 필요합니다." });
       return;
     }
 
+    // 위치 정보 없으면 서울시청 기본값으로 폴백
+    const safeUserLat = userLat ?? 37.5665;
+    const safeUserLng = userLng ?? 126.9780;
+
     const result = matchTemples(
-      { birthDateTime, birthInput, purpose, userLat, userLng, memberUnlocked: !!memberUnlocked },
+      { birthDateTime, birthInput, purpose, userLat: safeUserLat, userLng: safeUserLng, memberUnlocked: !!memberUnlocked, region: region || "", maxDistanceKm: maxDistanceKm || null },
       TEMPLE_DB
     );
 
