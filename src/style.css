@@ -986,6 +986,36 @@ select:disabled, input:disabled { opacity:0.35; cursor:not-allowed; }
   transition: all .18s ease;
 }
 .map-link-btn:hover { background: rgba(0,210,255,0.25); }
+
+/* ─── Premium Detail Sections (new) ─── */
+.detail-section {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-left-width: 3px;
+  border-radius: 16px;
+  padding: 18px 18px 18px 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05);
+  transition: box-shadow .2s;
+}
+.detail-section:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07);
+}
+.detail-section-title {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 700;
+  color: #E2E8F0;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  letter-spacing: .02em;
+}
+.detail-section-body {
+  font-size: 13.5px;
+  color: #CBD5E1;
+  line-height: 1.75;
+}
 .region-filter-row {
   display: flex; gap: 10px; flex-wrap: wrap;
 }
