@@ -316,13 +316,19 @@ function attachJosa(word, [withBatchim, withoutBatchim]) {
 }
 
 /** 결과 설명 자동 생성 (템플릿 조합 - AI 생성 아님, 정직성 원칙) */
-function generateReason(result, targetOhaeng, purpose) {
+function generateReason(result, targetOhaeng, purpose, personalOhaeng) {
   const { temple, detail } = result;
   const matched = detail.templeOhaeng === targetOhaeng;
   const templeWaGwa = attachJosa(temple.name, ["과", "와"]);
   const templeEunNeun = attachJosa(temple.name, ["은", "는"]);
   if (matched) {
-    return `사주에서 ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운이 부족하여, ${detail.bearing}쪽에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.`;
+    if (personalOhaeng && personalOhaeng === targetOhaeng) {
+      // 사주 부족 오행 = 목적 오행이 일치할 때만 "사주에서 부족하여" 표현 사용
+      return `사주에서 ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운이 부족하여, ${detail.bearing}쪽에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.`;
+    } else {
+      // 목적 기반 오행으로 선택: 사주 부족 오행과 무관하게 기도 목적 방위가 맞는 사찰
+      return `${purpose} 기도에 적합한 방위(${detail.bearing}쪽, ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운)에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.`;
+    }
   }
   return `${templeEunNeun} ${purpose} 목적과 관련된 특징을 지닌 사찰로 확인됩니다.`;
 }
@@ -400,7 +406,7 @@ function matchTemples(request, templeDB) {
     const t = primaryPool[(seed + i) % primaryPool.length];
     if (!seenNames.has(t.temple.name)) {
       seenNames.add(t.temple.name);
-      scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose) });
+      scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose, weak.부족오행) });
     }
   }
 
