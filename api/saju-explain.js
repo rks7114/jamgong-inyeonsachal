@@ -1,6 +1,4 @@
-// api/saju-explain.js — Claude AI로 사주 풀이 결과지 생성
-
-const Anthropic = require("@anthropic-ai/sdk");
+// api/saju-explain.js — 사주 풀이 (AI 우선, 템플릿 fallback)
 
 const GAN_DESC = {
   甲:"갑목(甲木) — 곧게 뻗은 나무처럼 강직하고 진취적인 기상을 지닙니다. 리더십이 강하고 새로운 일을 시작하는 데 탁월하지만, 고집이 세고 타협이 어려울 수 있습니다.",
@@ -31,52 +29,144 @@ const JI_DESC = {
 };
 
 const OH_DESC = {
-  목: { name:"木(목)", strong:"창의적이고 성장 지향적이며 새로운 시작을 잘 이끕니다. 인자하고 어진 마음이 넘칩니다.", weak:"시작은 잘 하지만 마무리가 약할 수 있고, 결단력과 추진력이 부족할 수 있습니다.", temple:"산속 깊은 숲 기운의 사찰, 봄철 방문이 특히 좋습니다." },
-  화: { name:"火(화)", strong:"열정적이고 표현력이 풍부하며 카리스마가 있습니다. 사람들과의 교류에서 에너지를 얻습니다.", weak:"감정 기복이 있거나 지구력이 부족할 수 있으며, 서두르다 실수하는 경향이 있습니다.", temple:"남향의 따뜻한 햇빛이 드는 사찰, 붉은 단청이 선명한 사찰이 기운을 보완합니다." },
-  토: { name:"土(토)", strong:"안정적이고 포용력이 크며 신뢰감을 줍니다. 중심을 잡아주는 역할을 잘 합니다.", weak:"변화에 느리고 고집스럽게 보일 수 있으며, 새로운 환경 적응에 시간이 걸립니다.", temple:"황토 흙의 기운이 있는 고찰, 암벽 옆 사찰이나 넓은 마당이 있는 사찰이 좋습니다." },
-  금: { name:"金(금)", strong:"의지가 강하고 결단력이 있으며 정확합니다. 원칙을 중시하고 목표를 향해 꾸준히 나아갑니다.", weak:"융통성이 부족하거나 냉정하게 보일 수 있으며, 인간관계에서 딱딱한 인상을 줄 수 있습니다.", temple:"바위산의 강인한 기운을 가진 사찰, 종소리가 청명한 금속 기운의 사찰이 도움이 됩니다." },
-  수: { name:"水(수)", strong:"지혜롭고 유연하며 깊이 생각합니다. 통찰력이 있고 어떤 상황에도 흘러가는 적응력을 가집니다.", weak:"결단력이 부족하거나 우유부단할 수 있으며, 지나친 걱정과 두려움이 앞설 수 있습니다.", temple:"계곡물이 흐르는 사찰, 연못이나 샘이 있는 수기(水氣) 가득한 사찰을 찾으세요." },
+  목: { name:"木(목)", strong:"창의적이고 성장 지향적이며 새로운 시작을 잘 이끕니다.", weak:"목 기운이 부족하면 추진력과 결단력이 흔들릴 수 있습니다. 시작보다 마무리에 더 신경 쓰세요.", temple:"산속 깊은 숲 기운의 사찰, 봄철 방문이 특히 좋습니다." },
+  화: { name:"火(화)", strong:"열정적이고 표현력이 풍부하며 카리스마가 있습니다.", weak:"화 기운이 부족하면 열정이 식거나 사람들과의 교류에서 에너지가 부족해집니다. 밝은 환경과 적극적인 소통이 보완책입니다.", temple:"남향의 따뜻한 햇빛이 드는 사찰, 붉은 단청이 선명한 사찰이 기운을 보완합니다." },
+  토: { name:"土(토)", strong:"안정적이고 포용력이 크며 신뢰감을 줍니다.", weak:"토 기운이 부족하면 중심이 흔들리거나 결정을 자꾸 미루게 됩니다. 규칙적인 생활과 루틴이 중심을 잡아줍니다.", temple:"황토 흙의 기운이 있는 고찰, 암벽 옆 사찰이나 넓은 마당이 있는 사찰이 좋습니다." },
+  금: { name:"金(금)", strong:"의지가 강하고 결단력이 있으며 정확합니다.", weak:"금 기운이 부족하면 추진력과 판단력이 약해질 수 있습니다. 원칙을 세우고 지키는 훈련이 도움됩니다.", temple:"바위산의 강인한 기운을 가진 사찰, 종소리가 청명한 금속 기운의 사찰이 도움이 됩니다." },
+  수: { name:"水(수)", strong:"지혜롭고 유연하며 깊이 생각합니다.", weak:"수 기운이 부족하면 지혜와 유연성이 떨어져 고집스럽게 보일 수 있습니다. 물과 가까운 환경에서 사색하는 시간이 필요합니다.", temple:"계곡물이 흐르는 사찰, 연못이나 샘이 있는 수기(水氣) 가득한 사찰을 찾으세요." },
 };
+
+/** 템플릿 기반 사주 풀이 생성 (API 불필요) */
+function generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInput }) {
+  const currentYear = new Date().getFullYear();
+  const gender = birthInput?.gender === "female" ? "여성" : "남성";
+  const ilgan = ec.day?.[0] ?? "";
+  const ilji  = ec.day?.[1] ?? "";
+  const ganDesc = GAN_DESC[ilgan] || "";
+  const jiDesc  = JI_DESC[ilji]  || "";
+  const weakInfo = weakOh ? OH_DESC[weakOh] : null;
+  const ohKor = { 목:"木(목)", 화:"火(화)", 토:"土(토)", 금:"金(금)", 수:"水(수)" };
+
+  const currentDaYun = daYun?.list?.find(d => d.isCurrent);
+  const nextDaYun    = daYun?.list?.find(d => d.startYear > (currentDaYun?.startYear || 0));
+  const currentLiuNian = currentDaYun?.liuNian?.find(ln => ln.year === currentYear);
+
+  const isSamjae = samjae?.groups?.some(g => g.some(y => Math.abs(y.year - currentYear) <= 1));
+  const nowGrp   = isSamjae ? (samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear) <= 1)) || []) : [];
+  const nowY     = nowGrp.find(y => y.year === currentYear || y.year === currentYear - 1 || y.year === currentYear + 1);
+  const samjaeStep = nowY ? (nowY.year < currentYear ? "날삼재(마무리)" : nowY.year === currentYear ? "눌삼재(중반)" : "들삼재(시작)") : "";
+
+  const pastDayuns = (daYun?.list || []).filter(dy => !dy.isCurrent && dy.startYear < currentYear && dy.startAge >= 20);
+
+  let text = "";
+
+  // 1. 타고난 기질과 성격
+  text += `**타고난 기질과 성격**\n`;
+  text += `일주 ${ec.day}는 ${ganDesc.split("—")[1]?.trim() || "강한 기운을 지닌 일주입니다."} ${jiDesc.split("—")[1]?.trim() || ""} ${gender === "여성" ? "특히 내면의 섬세함과 배려심이 돋보이며, 주변 사람들에게 신뢰를 줍니다." : "남성적 추진력과 원칙에 대한 강한 신념이 삶의 주요 원동력이 됩니다."}\n\n`;
+
+  // 2. 오행 에너지
+  text += `**오행 에너지와 삶의 패턴**\n`;
+  const distArr = Object.entries(dist || {}).sort((a,b) => b[1]-a[1]);
+  const strongOh = distArr[0]?.[0];
+  const strongInfo = strongOh ? OH_DESC[strongOh] : null;
+  if (strongInfo) {
+    text += `이 사주는 ${ohKor[strongOh] || strongOh} 기운이 중심을 이룹니다. ${strongInfo.strong} `;
+  }
+  if (weakInfo) {
+    text += `반면 ${ohKor[weakOh]} 기운이 상대적으로 부족합니다. ${weakInfo.weak}\n\n`;
+  } else {
+    text += `전반적으로 오행이 고르게 분포되어 안정된 삶의 토대를 갖추고 있습니다.\n\n`;
+  }
+
+  // 3. 대운 흐름
+  text += `**대운 흐름**\n`;
+  if (pastDayuns.length > 0) {
+    text += pastDayuns.map(dy => `과거 ${dy.startAge}~${dy.endAge}세(${dy.ganZhi}) 대운을 지나왔습니다.`).join(" ");
+    text += " ";
+  }
+  if (currentDaYun) {
+    text += `현재는 ${currentDaYun.startAge}~${currentDaYun.endAge}세 ${currentDaYun.ganZhi} 대운입니다. 이 시기는 지금까지 쌓아온 경험이 열매를 맺는 구간으로, 과거의 노력이 결실로 이어지는 흐름을 보입니다. 안정을 기반으로 한 도전이 가장 좋은 성과를 냅니다. `;
+    if (nextDaYun) {
+      text += `다음 ${nextDaYun.startAge}세부터 시작하는 ${nextDaYun.ganZhi} 대운에서 새로운 전환이 기대됩니다.\n\n`;
+    } else {
+      text += "\n\n";
+    }
+  } else {
+    text += `대운 정보가 확인되지 않아 자세한 흐름은 생략합니다.\n\n`;
+  }
+
+  // 4. 올해 운세
+  text += `**올해 ${currentYear}년 운세**\n`;
+  if (currentLiuNian) {
+    text += `${currentYear}년 ${currentLiuNian.ganZhi} 세운은 현재 ${currentDaYun?.ganZhi || ""} 대운과 맞물려 `;
+    text += `건강 면에서는 과로와 무리한 일정을 피하고 꾸준한 관리가 중요합니다. `;
+    text += `재물 면에서는 충동적인 투자보다 안정적인 수입 구조 유지에 집중하는 것이 유리합니다. `;
+    text += `관계 면에서는 진실된 소통이 오해를 줄이고 인연을 깊게 합니다.\n\n`;
+  } else {
+    text += `올해의 세운 정보가 확인되지 않습니다. 현재 대운의 흐름에 맞춰 안정을 중시하고, 새로운 도전보다는 기존 관계와 사업을 내실 있게 다지는 해로 삼으세요.\n\n`;
+  }
+
+  // 5. 삼재 (해당 시)
+  if (isSamjae && nowY) {
+    text += `**삼재(三災) 주의사항**\n`;
+    text += `현재 ${samjaeStep} 기간입니다. 삼재 기간에는 무리한 확장, 큰 이동, 새로운 사업 시작을 자제하고 기존의 것을 안전하게 지키는 전략이 최선입니다. `;
+    text += `사찰 참배와 기도를 통해 삼재의 기운을 다스리고 마음의 평정을 유지하세요.\n\n`;
+  }
+
+  // 6. 인연사찰 안내
+  text += `**인연사찰과 기운 보완**\n`;
+  if (weakInfo) {
+    text += `${ohKor[weakOh]} 기운을 보완하려면 ${weakInfo.temple} `;
+    text += `정기적인 사찰 방문과 함께 마음을 고요히 하는 기도가 부족한 오행의 기운을 채워줍니다.\n\n`;
+  } else {
+    text += `오행이 균형 잡힌 사주입니다. 자신의 마음 상태에 따라 편안함을 느끼는 사찰을 찾아 감사와 서원(誓願)을 올리세요. 어떤 사찰이든 진심 어린 마음이 인연을 만듭니다.\n\n`;
+  }
+
+  // 7. 마음에 새길 한마디
+  text += `**마음에 새길 한마디**\n`;
+  const closings = [
+    `${ilgan}(${ganDesc.split("—")[0].trim()})의 기운을 타고난 당신은 이미 삶의 중심을 갖추고 있습니다. 흔들리는 날도 결국 당신만의 방식으로 길을 찾을 것입니다.`,
+    `당신의 사주는 꾸준함과 깊이를 강점으로 합니다. 남과 비교하지 말고 자신의 속도로 걸어가세요 — 그것이 가장 빠른 길입니다.`,
+    `지금 이 순간의 선택이 미래를 만듭니다. 인연 닿는 사찰에서 마음을 내려놓고 새로운 시작의 씨앗을 심으세요.`,
+  ];
+  text += closings[Math.floor((ilgan.charCodeAt(0) + ilji.charCodeAt(0)) % closings.length)];
+
+  return text;
+}
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
-
-  // ANTHROPIC_API_KEY 환경변수 체크
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.error("ANTHROPIC_API_KEY 환경변수가 설정되지 않았습니다.");
-    return res.status(500).json({ error: "API_KEY_MISSING", message: "ANTHROPIC_API_KEY가 Vercel 환경변수에 없습니다." });
-  }
 
   try {
     const { eightChar: ec, distribution: dist, weak, daYun, samjae, birthInput } = req.body;
     if (!ec) return res.status(400).json({ error: "사주 데이터가 없습니다." });
 
-    const gender = birthInput?.gender === "female" ? "여성" : "남성";
     const weakOh = weak?.부족오행 ?? "";
-    const ohKor = { 목:"木(목)", 화:"火(화)", 토:"土(토)", 금:"金(금)", 수:"水(수)" };
 
-    const currentYear = new Date().getFullYear();
-    const currentDaYun = daYun?.list?.find(d => d.isCurrent);
-    const currentLiuNian = currentDaYun?.liuNian?.find(ln => ln.year === currentYear);
-    const prevDaYun = daYun?.list?.filter(d => d.startYear < (currentDaYun?.startYear || 9999)).slice(-1)[0];
-    const nextDaYun = daYun?.list?.find(d => d.startYear > (currentDaYun?.startYear || 0));
+    // API 키가 있으면 AI 풀이 시도, 없으면 템플릿으로 바로 응답
+    if (process.env.ANTHROPIC_API_KEY) {
+      try {
+        const Anthropic = require("@anthropic-ai/sdk");
+        const currentYear = new Date().getFullYear();
+        const currentDaYun = daYun?.list?.find(d => d.isCurrent);
+        const currentLiuNian = currentDaYun?.liuNian?.find(ln => ln.year === currentYear);
+        const nextDaYun = daYun?.list?.find(d => d.startYear > (currentDaYun?.startYear || 0));
+        const ohKor = { 목:"木(목)", 화:"火(화)", 토:"土(토)", 금:"金(금)", 수:"水(수)" };
+        const distText = Object.entries(dist || {}).map(([k,v]) => `${ohKor[k]||k} ${v}개`).join(", ");
+        const gender = birthInput?.gender === "female" ? "여성" : "남성";
+        const ilgan = ec.day?.[0] ?? "";
+        const ilji  = ec.day?.[1] ?? "";
+        const ganDesc = GAN_DESC[ilgan] || `${ilgan}의 기운`;
+        const jiDesc  = JI_DESC[ilji]  || `${ilji}의 기운`;
+        const weakDesc = weakOh ? OH_DESC[weakOh] : null;
+        const isSamjae = samjae?.groups?.some(g => g.some(y => Math.abs(y.year - currentYear) <= 1));
+        const samjaeInfo = isSamjae ? (() => {
+          const nowGrp = samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear) <= 1)) || [];
+          const nowY = nowGrp.find(y => y.year === currentYear || y.year === currentYear - 1 || y.year === currentYear + 1);
+          return `현재 삼재(三災) 기간 — ${nowY?.year}년 ${nowY?.year < currentYear ? "날삼재" : nowY?.year === currentYear ? "눌삼재(중반)" : "들삼재"}`;
+        })() : null;
 
-    const distText = Object.entries(dist || {}).map(([k,v]) => `${ohKor[k]||k} ${v}개`).join(", ");
-
-    const ilgan = ec.day?.[0] ?? "";
-    const ilji  = ec.day?.[1] ?? "";
-    const ganDesc = GAN_DESC[ilgan] || `${ilgan}의 기운`;
-    const jiDesc  = JI_DESC[ilji]  || `${ilji}의 기운`;
-    const weakDesc = weakOh ? OH_DESC[weakOh] : null;
-
-    const isSamjae = samjae?.groups?.some(g => g.some(y => Math.abs(y.year - currentYear) <= 1));
-    const samjaeInfo = isSamjae ? (() => {
-      const nowGrp = samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear) <= 1)) || [];
-      const nowY = nowGrp.find(y => y.year === currentYear || y.year === currentYear - 1 || y.year === currentYear + 1);
-      return `현재 삼재(三災) 기간입니다 — ${nowY?.year}년 ${nowY?.zhiKo ? `(${nowY.zhiKo}) ` : ""}${nowY?.year < currentYear ? "들삼재가 지나고" : nowY?.year === currentYear ? "눌삼재(삼재 중반)" : "날삼재(삼재 마무리)"}`;
-    })() : null;
-
-    const prompt = `당신은 한국 전통 사주 상담가입니다. 아래 사주를 쉬운 우리말로 풀어주세요.
+        const prompt = `당신은 한국 전통 사주 상담가입니다. 아래 사주를 쉬운 우리말로 풀어주세요.
 각 항목 제목은 **제목** 형식으로 쓰고, 각 항목마다 2~3문장으로 간결하게 완성해 주세요. 한자가 나오면 반드시 괄호로 뜻을 붙여주세요.
 
 【사주 정보】
@@ -106,27 +196,33 @@ ${(daYun?.list || []).filter(dy => dy.startAge >= 30).map(dy => {
 **올해 ${currentYear}년 운세**
 현재 대운과 세운 ${currentLiuNian?.ganZhi || ""}을 건강·재물·관계로 나눠 2~3문장으로 써주세요.
 
-${isSamjae ? `**삼재 주의사항**
-삼재 기간 중 주의점과 대처법을 2문장으로 써주세요.
-
-` : ""}**인연사찰과 기운 보완**
+${isSamjae ? `**삼재 주의사항**\n삼재 기간 중 주의점과 대처법을 2문장으로 써주세요.\n\n` : ""}**인연사찰과 기운 보완**
 부족한 ${weakOh ? ohKor[weakOh] : "오행"} 기운 보완을 위한 사찰 유형과 기도 방법을 2문장으로 안내해 주세요.${weakDesc ? ` ${weakDesc.temple}` : ""}
 
 **마음에 새길 한마디**
 이 분의 사주를 종합해 따뜻한 말로 1~2문장으로 마무리해 주세요.`;
 
-    const client = new Anthropic();
-    const message = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 2000,
-      messages: [{ role: "user", content: prompt }],
-    });
+        const client = new Anthropic();
+        const message = await client.messages.create({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 2000,
+          messages: [{ role: "user", content: prompt }],
+        });
+        const explanation = message.content[0]?.text || "";
+        if (explanation) {
+          return res.status(200).json({ success: true, explanation, source: "ai" });
+        }
+      } catch (aiErr) {
+        console.error("AI 풀이 실패, 템플릿으로 대체:", aiErr.message);
+      }
+    }
 
-    const explanation = message.content[0]?.text || "";
-    return res.status(200).json({ success: true, explanation });
+    // 템플릿 fallback
+    const explanation = generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInput });
+    return res.status(200).json({ success: true, explanation, source: "template" });
 
   } catch (err) {
-    console.error("사주 풀이 생성 오류:", err);
+    console.error("사주 풀이 오류:", err);
     return res.status(500).json({ error: "사주 풀이 생성 중 오류가 발생했습니다." });
   }
 };
