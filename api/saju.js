@@ -123,8 +123,8 @@ module.exports = async function handler(req, res) {
         if (samjaeZhiList) {
           const currentYear = new Date().getFullYear();
           const samjaeYears = [];
-          // 현재 및 ±12년 범위에서 삼재 해 찾기
-          for (let y = currentYear - 2; y <= currentYear + 14; y++) {
+          // 현재 및 ±12년 범위에서 삼재 해 찾기 (-6: 직전 삼재 사이클 전체 포착)
+          for (let y = currentYear - 6; y <= currentYear + 14; y++) {
             const yZhi = getCurrentYearZhi(y);
             if (samjaeZhiList.includes(yZhi)) {
               samjaeYears.push({ year: y, zhi: zhiKoToCn(yZhi), zhiKo: yZhi });
