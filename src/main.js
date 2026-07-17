@@ -1169,10 +1169,10 @@ function buildSajuDetailCards(data, birthInput) {
              </div>`}
       </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:8px;">
-      ${(gmInChart.length > 0 ? gmInChart : gongmangZhi).map(z=>`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7;">${GONGMANG_DESC[z]||''}</div>`).join('')}
-    </div>
-    ${gmInChart.length === 0 && gongmangZhi.length > 0 ? `
+    ${gmInChart.length > 0 ? `<div style="display:flex;flex-direction:column;gap:8px;">
+      ${gmInChart.map(z=>`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7;">${GONGMANG_DESC[z]||''}</div>`).join('')}
+    </div>` : ''}
+    ${gongmangZhi.length > 0 ? `
     <div style="margin-top:12px;background:rgba(255,193,7,0.06);border:1px solid rgba(255,193,7,0.2);border-radius:10px;padding:12px 14px;">
       <div style="font-size:12px;font-weight:700;color:#FFD54F;margin-bottom:6px;">⏰ 세운 공망 경고</div>
       <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.85;">
