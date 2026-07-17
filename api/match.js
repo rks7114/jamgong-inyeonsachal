@@ -70,6 +70,6 @@ module.exports = async function handler(req, res) {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "매칭 처리 중 오류가 발생했습니다." });
+    res.status(500).json({ error: `[${err.constructor?.name}] ${err.message}` });
   }
 };
