@@ -33,7 +33,7 @@ const PURPOSE_ICONS = {
   출산기도: `<path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4z"/><path d="M6 20v-1a6 6 0 0112 0v1"/><path d="M12 14v6"/>`,
 };
 
-const OHAENG_COLOR = { 목: "#3C6E5E", 화: "#A23B2E", 토: "#B8892B", 금: "#8A8F98", 수: "#2E4A6B" };
+const OHAENG_COLOR = { 목: "#4ADE80", 화: "#F97316", 토: "#FACC15", 금: "#D4AF37", 수: "#38BDF8" };
 
 // 오행별 부족 기운 분석 — 방문자가 이 사이트에서만 얻을 수 있는 정보
 const OHAENG_DEFICIENCY_INFO = {
@@ -2667,20 +2667,21 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
       ? '<div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.35);text-align:center;">🔒 멤버십 회원은 최대 15일 추천 날짜 제공</div>'
       : '');
 
-  // 섹션 빌더
+  // 섹션 빌더 — 오행 색상 뚜렷하게
   function section(titleHtml, bodyHtml) {
-    return '<div class="detail-section" style="border-left:3px solid ' + oc + ';">'
-      + '<div class="detail-section-title">' + titleHtml + '</div>'
-      + '<div class="detail-section-body">' + bodyHtml + '</div>'
+    return '<div class="detail-section" style="background:linear-gradient(145deg,' + oc + '22,' + oc + '0C,rgba(0,0,0,0));border:1px solid ' + oc + '55;border-left:4px solid ' + oc + ';box-shadow:0 4px 24px ' + oc + '20,inset 0 1px 0 ' + oc + '15;">'
+      + '<div class="detail-section-title" style="color:' + oc + ';font-size:15px;font-weight:800;letter-spacing:.04em;">' + titleHtml + '</div>'
+      + '<div class="detail-section-body" style="color:#F1F5F9;font-size:14px;line-height:1.85;">' + bodyHtml + '</div>'
       + '</div>';
   }
   function infoCard(icon, label, val, highlight) {
-    const bc = highlight ? oc + '22' : 'rgba(255,255,255,0.05)';
-    const br = highlight ? '1.5px solid ' + oc + '66' : '1px solid rgba(255,255,255,0.1)';
-    const vc = highlight ? oc : 'rgba(255,255,255,0.92)';
-    return '<div style="background:' + bc + ';border:' + br + ';border-radius:14px;padding:14px 16px;box-shadow:' + (highlight ? '0 0 16px ' + oc + '22' : 'none') + ';">'
-      + '<div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:6px;letter-spacing:.06em;">' + icon + ' ' + label + '</div>'
-      + '<div style="font-size:14px;font-weight:800;color:' + vc + ';line-height:1.3;">' + val + '</div>'
+    const bc = highlight ? oc + '30' : 'rgba(255,255,255,0.07)';
+    const br = highlight ? '1.5px solid ' + oc + '88' : '1px solid rgba(255,255,255,0.14)';
+    const vc = highlight ? oc : '#F1F5F9';
+    const shadow = highlight ? '0 0 22px ' + oc + '35,inset 0 1px 0 ' + oc + '20' : 'inset 0 1px 0 rgba(255,255,255,0.05)';
+    return '<div style="background:' + bc + ';border:' + br + ';border-radius:14px;padding:15px 17px;box-shadow:' + shadow + ';">'
+      + '<div style="font-size:11px;color:rgba(255,255,255,0.55);margin-bottom:7px;letter-spacing:.08em;text-transform:uppercase;">' + icon + ' ' + label + '</div>'
+      + '<div style="font-size:15px;font-weight:800;color:' + vc + ';line-height:1.3;">' + val + '</div>'
       + '</div>';
   }
 
@@ -2697,8 +2698,8 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   html += weatherHtml;
   html += '<div style="margin-top:18px;">';
   html += '<div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:6px;"><span>인연 매칭 점수</span><span style="color:' + oc + ';font-weight:800;font-size:13px;">' + score + '점</span></div>';
-  html += '<div style="height:10px;background:rgba(255,255,255,0.07);border-radius:5px;overflow:hidden;">';
-  html += '<div style="height:100%;width:' + Math.min(score, 100) + '%;background:linear-gradient(90deg,' + oc + ',' + oc + 'AA,rgba(255,255,255,.6));border-radius:5px;box-shadow:0 0 10px ' + oc + '88;"></div>';
+  html += '<div style="height:12px;background:rgba(255,255,255,0.08);border-radius:6px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.4);">';
+  html += '<div style="height:100%;width:' + Math.min(score, 100) + '%;background:linear-gradient(90deg,' + oc + 'BB,' + oc + ',rgba(255,255,255,.85));border-radius:6px;box-shadow:0 0 16px ' + oc + 'CC,0 0 6px rgba(255,255,255,.3);transition:width 1.2s ease;"></div>';
   html += '</div></div></div>';
 
   // 기본 정보
