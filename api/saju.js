@@ -1,6 +1,16 @@
 // api/saju.js — 사주 팔자 + 대운 + 삼재 조회
 
-const { calculateOhaeng, findWeakOhaeng, getEightChar } = require("../src/matching-engine.js");
+let calculateOhaeng, findWeakOhaeng, getEightChar;
+try {
+  const me = require("../src/matching-engine.js");
+  calculateOhaeng = me.calculateOhaeng;
+  findWeakOhaeng  = me.findWeakOhaeng;
+  getEightChar    = me.getEightChar;
+  if (!calculateOhaeng) throw new Error("calculateOhaeng not exported");
+} catch(loadErr) {
+  console.error("[saju] matching-engine load error:", loadErr.message);
+  // 로드 오류를 전역에 기록, 핸들러에서 체크
+}
 
 // 삼재(三災) 계산 — 띠별 삼재 해(年)
 // 삼재는 12지지 중 4그룹, 각 그룹마다 3년 삼재
@@ -42,6 +52,9 @@ module.exports = async function handler(req, res) {
     const genderNum = gender === "male" ? 1 : 0;
 
     // 오행 분포 (지장간 보정 포함)
+    if (typeof calculateOhaeng !== 'function') {
+      return res.status(500).json({ error: "사주 계산 중 오류가 발생했습니다.", detail: "matching-engine load failed: calculateOhaeng is " + typeof calculateOhaeng });
+    }
     const { distribution, branches } = calculateOhaeng(birthInput);
     const weak = findWeakOhaeng(distribution, branches);
 
