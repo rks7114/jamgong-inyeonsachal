@@ -782,7 +782,7 @@ function render() {
             fetch("/api/match", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ birthInput, userLat: matchLat, userLng: matchLng }),
+              body: JSON.stringify({ birthInput, purpose: selectedPurpose || "인연운", userLat: matchLat, userLng: matchLng }),
             }),
             Promise.race([
               fetch("/api/saju-explain", {
@@ -2244,7 +2244,7 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       const { userLat, userLng } = await detectUserLocation();
       const res = await fetch("/api/match", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ birthInput, userLat, userLng, purpose: "healing" }),
+        body: JSON.stringify({ birthInput, userLat, userLng, purpose: selectedPurpose || "인연운" }),
       });
       const md = await res.json();
       if (!md.error) renderSajuPage(data, birthInput, md, explanation);
