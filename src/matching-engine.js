@@ -221,17 +221,31 @@ function findWeakOhaeng(distribution, branches) {
     }
   }
 
+  // 月令(월령) 가중치 +2 — 명리학 정통 기준: 월지 정기(正氣) 오행이 사주에서 가장 강한 기운
+  // 예: 寅月 → 甲(목) → bonus.목 += 2 → 목이 월령의 힘을 받아 약하지 않음 판정
+  const JEONGGI_MAP = {
+    子:'癸',丑:'己',寅:'甲',卯:'乙',辰:'戊',巳:'丙',
+    午:'丁',未:'己',申:'庚',酉:'辛',戌:'戊',亥:'壬'
+  };
+  const monthBranch = Array.isArray(branches) ? branches[1] : null; // 월지(月支)
+  const monthJeonggi = monthBranch ? JEONGGI_MAP[monthBranch] : null;
+  const monthJeonggiOh = monthJeonggi ? GAN_OH[monthJeonggi] : null;
+  if (monthJeonggiOh) bonus[monthJeonggiOh] += 2.0;
+
+  // 동점 시 표면 카운트가 더 낮은 오행을 약한 것으로 판정
   let weakest = null;
   let minScore = Infinity;
+  let minSurface = Infinity;
   for (const [element, count] of Object.entries(distribution)) {
     const score = count + (bonus[element] || 0);
-    if (score < minScore) {
+    if (score < minScore || (score === minScore && count < minSurface)) {
       minScore = score;
+      minSurface = count;
       weakest = element;
     }
   }
-  const bonusNote = bonus[weakest] > 0 ? ` + 지장간 ${bonus[weakest]}` : "";
-  return { 부족오행: weakest, 근거: `지장간 보정 포함 — ${weakest}(표면 ${distribution[weakest]}개${bonusNote})이 가장 약함` };
+  const bonusNote = bonus[weakest] > 0 ? ` + 지장간·월령 ${bonus[weakest]}` : "";
+  return { 부족오행: weakest, 근거: `지장간·월령 보정 포함 — ${weakest}(표면 ${distribution[weakest]}개${bonusNote})이 가장 약함` };
 }
 
 /** 두 좌표 간 방위각(bearing) 계산 → 8방위 변환 */
@@ -441,6 +455,9 @@ function matchTemples(request, templeDB) {
     }
   }
 
+  // 점수 내림차순 정렬 보장 (seed 오프셋으로 뽑아도 1위가 최고점)
+  scored.sort((a, b) => b.score - a.score);
+
   // 멤버십 회원은 확장된 캘린더(15일), 비회원은 기본(3일) — 클라이언트가 알려주는 소프트 게이팅
   const calendarCount = request.memberUnlocked ? 15 : 3;
   const recommendedDates = getRecommendedDates(targetOhaeng, 45, calendarCount);
@@ -541,6 +558,7 @@ function matchCoupleTemples(request, templeDB) {
       scored.push({ ...t, reason: generateCoupleReason(t, targetA, targetB) });
     }
   }
+  scored.sort((a, b) => b.score - a.score);
   const calendarCount = memberUnlocked ? 15 : 3;
   return {
     distributionA,
