@@ -2743,6 +2743,105 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
       '<div style="font-size:14px;line-height:1.9;">' + guideHtml + '</div>');
   }
 
+
+  // 기도문 (목적별 맞춤 기도문 - 멤버: 전체+복사 / 비멤버: 미리보기)
+  const GIDO = {
+    '재물운': function(nm) {
+      return nm + ' 삼보님께 귀의합니다.\n\n' +
+        '자비하신 부처님, 오늘 저는 ' + nm + '의 금(金) 기운이 가득한 이 도량에서 간절히 발원하오니,\n' +
+        '저의 부족한 재물운이 열려 정직하고 성실한 노력에 합당한 결실을 맺게 하여 주시옵소서.\n' +
+        '헛된 탐욕이 아닌, 가족과 이웃이 함께 나눌 수 있는 올바른 재물이 넘쳐흘러\n' +
+        '삶이 안온하게 하여 주시옵소서.\n' +
+        '제가 얻은 것으로 보시하고 덕을 쌓아 더 큰 복으로 돌아오게 하여 주시옵소서.\n\n' +
+        '나무아미타불 관세음보살.';
+    },
+    '건강운': function(nm) {
+      return nm + ' 삼보님께 귀의합니다.\n\n' +
+        '자비하신 약사여래 부처님, 오늘 저는 ' + nm + '의 토(土) 기운이 깃든 이 청정 도량에서 발원하오니,\n' +
+        '몸과 마음의 모든 병이 사라지고 건강한 기운이 충만하게 하여 주시옵소서.\n' +
+        '바른 음식, 바른 생각, 바른 쉼으로 이 몸을 아끼고 사랑하여\n' +
+        '오래도록 가족 곁에 있게 하여 주시옵소서.\n' +
+        '병마와 고통으로 힘든 모든 이들도 함께 쾌유하게 하여 주시옵소서.\n\n' +
+        '나무약사유리광여래.';
+    },
+    '학업운': function(nm) {
+      return nm + ' 삼보님께 귀의합니다.\n\n' +
+        '지혜의 문수보살님, 오늘 저는 ' + nm + '의 수(水) 기운이 흐르는 이 도량에서 간절히 발원하오니,\n' +
+        '배움에 대한 집중력과 기억력이 밝아지고 깊은 지혜가 열리게 하여 주시옵소서.\n' +
+        '공부하는 이 시간 동안 흔들림 없는 마음으로 정진하여\n' +
+        '목표한 결과를 이루게 하여 주시옵소서.\n' +
+        '합격의 기쁨을 가족과 함께 나눌 수 있도록 이끌어 주시옵소서.\n\n' +
+        '나무대지문수사리보살.';
+    },
+    '인연운': function(nm) {
+      return nm + ' 삼보님께 귀의합니다.\n\n' +
+        '자비로우신 관세음보살님, 오늘 저는 ' + nm + '의 화(火) 기운이 충만한 이 도량에서 발원하오니,\n' +
+        '저와 진정으로 인연이 맞는 소중한 사람과의 만남이 이루어지게 하여 주시옵소서.\n' +
+        '서로 존중하고 아끼며, 함께 성장하고 행복할 수 있는 깊은 인연을 맺게 하여 주시옵소서.\n' +
+        '인연을 소중히 여기는 마음을 갖추어 좋은 관계가 오래 이어지게 하여 주시옵소서.\n\n' +
+        '나무대자대비관세음보살.';
+    },
+    '가정운': function(nm) {
+      return nm + ' 삼보님께 귀의합니다.\n\n' +
+        '자비하신 부처님, 오늘 저는 ' + nm + '의 목(木) 기운이 가득한 이 도량에서 온 가족을 위해 발원하오니,\n' +
+        '저희 가정에 화목과 평안이 넘치게 하여 주시옵소서.\n' +
+        '가족 한 사람 한 사람이 각자의 자리에서 건강하고 행복하며,\n' +
+        '서로 배려하고 사랑하는 마음이 깊어지게 하여 주시옵소서.\n' +
+        '어떤 어려움이 닥쳐도 함께 이겨낼 수 있는 끈끈한 가족의 힘을 주시옵소서.\n\n' +
+        '나무아미타불.';
+    },
+    '수험합격': function(nm) {
+      return nm + ' 삼보님께 귀의합니다.\n\n' +
+        '문수보살님, 오늘 저는 ' + nm + '의 화(火) 기운이 빛나는 이 도량에서 간절히 발원하오니,\n' +
+        '다가오는 시험에서 저의 능력을 온전히 발휘하여 합격의 기쁨을 얻게 하여 주시옵소서.\n' +
+        '지금까지 흘린 땀과 노력이 시험장에서 빛을 발하고,\n' +
+        '침착하고 자신 있게 문제를 풀어낼 수 있도록 이끌어 주시옵소서.\n' +
+        '합격 후 세상에 보탬이 되는 사람으로 살겠습니다.\n\n' +
+        '나무석가모니불.';
+    },
+    '취업운': function(nm) {
+      return nm + ' 삼보님께 귀의합니다.\n\n' +
+        '자비하신 부처님, 오늘 저는 ' + nm + '의 금(金) 기운이 빛나는 이 도량에서 발원하오니,\n' +
+        '저의 능력과 열정을 알아봐 주는 좋은 직장과의 인연이 이루어지게 하여 주시옵소서.\n' +
+        '두려움 없이 도전하고 면접에서 저의 진심이 전해지게 하여 주시옵소서.\n' +
+        '취업 후에는 성실하게 일하며 조직에 기여하고 스스로도 성장하는 사람이 되겠습니다.\n\n' +
+        '나무아미타불.';
+    },
+    '출산기도': function(nm) {
+      return nm + ' 삼보님께 귀의합니다.\n\n' +
+        '자비하신 부처님과 칠성님께, 오늘 저는 ' + nm + '의 목(木) 기운이 가득한 이 도량에서 간절히 발원하오니,\n' +
+        '건강하고 복된 새 생명이 저희 품에 안기게 하여 주시옵소서.\n' +
+        '잉태에서 출산까지 모든 과정이 순조롭고 산모와 아기 모두 건강하게 하여 주시옵소서.\n' +
+        '이 아이가 세상에 태어나 밝은 빛이 되어 살아가게 하여 주시옵소서.\n\n' +
+        '나무관세음보살.';
+    }
+  };
+
+  const gidoFn = purposeLabel ? GIDO[purposeLabel] : null;
+  if (gidoFn) {
+    const gidoText = gidoFn(t.name || '이 사찰');
+    const previewLen = 90;
+    const gidoPreviewHtml = gidoText.slice(0, previewLen).replace(/\n/g, '<br>');
+    const gidoAllHtml = gidoText.replace(/\n/g, '<br>');
+
+    if (memberUnlocked) {
+      html += '<div class="detail-section" style="border-left:3px solid ' + oc + ';">';
+      html += '<div class="detail-section-title">🕯️ 맞춤 기도문</div>';
+      html += '<div class="detail-section-body">';
+      html += '<div id="gido-text" style="font-size:14px;line-height:2.1;color:rgba(255,255,255,0.9);letter-spacing:.04em;white-space:pre-line;">' + gidoAllHtml + '</div>';
+      html += '<button id="gido-copy-btn" style="margin-top:16px;display:inline-flex;align-items:center;gap:7px;background:' + oc + '22;border:1.5px solid ' + oc + '66;color:' + oc + ';border-radius:18px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;">📋 기도문 복사</button>';
+      html += '<textarea id="gido-raw" style="position:absolute;left:-9999px;opacity:0;" readonly>' + gidoText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
+      html += '</div></div>';
+    } else {
+      html += '<div class="detail-section" style="border-left:3px solid ' + oc + ';">';
+      html += '<div class="detail-section-title">🕯️ 맞춤 기도문</div>';
+      html += '<div class="detail-section-body">';
+      html += '<div style="font-size:14px;line-height:2;color:rgba(255,255,255,0.88);letter-spacing:.04em;">' + gidoPreviewHtml + '…</div>';
+      html += '<div style="margin-top:12px;padding:14px 16px;background:rgba(212,175,55,0.07);border:1px solid rgba(212,175,55,0.25);border-radius:12px;text-align:center;font-size:13px;color:rgba(255,255,255,0.5);">🔒 전체 기도문 및 복사 기능은 멤버십 전용입니다</div>';
+      html += '</div></div>';
+    }
+  }
+
   // 유래·연혁
   if (historyFull) {
     html += section('📜 유래 · 연혁',
@@ -2774,13 +2873,32 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
     html += '<div class="detail-section" style="border:1.5px solid rgba(212,175,55,.35);border-left:3px solid #D4AF37;background:rgba(212,175,55,.05);text-align:center;padding:28px 18px;">';
     html += '<div style="font-size:32px;margin-bottom:10px;">🔒</div>';
     html += '<div class="detail-section-title" style="color:#D4AF37;border:none;padding:0;margin-bottom:8px;">멤버십 전용 콘텐츠</div>';
-    html += '<div class="detail-section-body" style="color:rgba(255,255,255,0.6);margin-bottom:16px;">유래 전문 · 방문 날짜 전체(최대 15일) · 맞춤 기도문을 확인할 수 있습니다.</div>';
+    html += '<div class="detail-section-body" style="color:rgba(255,255,255,0.6);margin-bottom:16px;">유래 전문 · 방문 날짜 전체(최대 15일) · 기도문 전체 보기 및 복사를 이용할 수 있습니다.</div>';
     html += '<div class="member-unlock"><input type="text" id="detail-member-code-input" placeholder="멤버십 코드 입력" /><button id="detail-member-code-btn">확인</button></div>';
     html += '</div>';
   }
 
   html += '</div>';
   resultsEl.innerHTML = html;
+
+  // 기도문 복사 버튼
+  const gidoCopyBtn = document.getElementById('gido-copy-btn');
+  const gidoRaw = document.getElementById('gido-raw');
+  if (gidoCopyBtn && gidoRaw) {
+    gidoCopyBtn.addEventListener('click', function() {
+      navigator.clipboard.writeText(gidoRaw.value).then(function() {
+        gidoCopyBtn.textContent = '✓ 복사됨!';
+        gidoCopyBtn.style.background = oc + '44';
+        setTimeout(function() {
+          gidoCopyBtn.innerHTML = '📋 기도문 복사';
+          gidoCopyBtn.style.background = oc + '22';
+        }, 2000);
+      }).catch(function() {
+        gidoRaw.select();
+        document.execCommand('copy');
+      });
+    });
+  }
 
   document.getElementById('detail-back-btn')?.addEventListener('click', () => {
     if (typeof onBack === 'function') {
