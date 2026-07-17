@@ -633,4 +633,4 @@ function matchCoupleTemples(request, templeDB) {
   };
 }
 
-module.exports = { matchTemples, matchCoupleTemples };
+module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, getEightChar };
