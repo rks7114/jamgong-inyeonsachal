@@ -2596,28 +2596,50 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   const d = result.detail || {};
   const score = result.score || 0;
 
-  // 오행별 rgba 색상 (hex 이어붙이기 대신 명시적 rgba)
-  const OHAENG_RGBA = {
-    '목': { c:'#4ADE80', bg:'rgba(74,222,128,0.13)', bdr:'rgba(74,222,128,0.55)', glow:'rgba(74,222,128,0.22)', mid:'rgba(74,222,128,0.28)' },
-    '화': { c:'#F97316', bg:'rgba(249,115,22,0.13)',  bdr:'rgba(249,115,22,0.55)',  glow:'rgba(249,115,22,0.22)',  mid:'rgba(249,115,22,0.28)' },
-    '토': { c:'#FACC15', bg:'rgba(250,204,21,0.13)',  bdr:'rgba(250,204,21,0.55)',  glow:'rgba(250,204,21,0.22)',  mid:'rgba(250,204,21,0.28)' },
-    '금': { c:'#D4AF37', bg:'rgba(212,175,55,0.13)',  bdr:'rgba(212,175,55,0.55)',  glow:'rgba(212,175,55,0.22)',  mid:'rgba(212,175,55,0.28)' },
-    '수': { c:'#38BDF8', bg:'rgba(56,189,248,0.13)',  bdr:'rgba(56,189,248,0.55)',  glow:'rgba(56,189,248,0.22)',  mid:'rgba(56,189,248,0.28)' }
+  // 오행 팔레트
+  const OHAENG_PAL = {
+    '목': { c:'#4ADE80', r:'74,222,128'  },
+    '화': { c:'#FB923C', r:'251,146,60'  },
+    '토': { c:'#FACC15', r:'250,204,21'  },
+    '금': { c:'#F0C060', r:'240,192,96'  },
+    '수': { c:'#38BDF8', r:'56,189,248'  }
   };
-  const os = OHAENG_RGBA[d.templeOhaeng] || OHAENG_RGBA['금'];
-  const oc = os.c;
+  const op = OHAENG_PAL[d.templeOhaeng] || OHAENG_PAL['금'];
+  const oc = op.c;
+  const or_ = op.r;
 
+  // 섹션별 고정 색상 팔레트
+  const COL = {
+    info:    { c:'#60A5FA', r:'96,165,250'   },  // 기본정보 - 파랑
+    loc:     { c:'#F87171', r:'248,113,113'  },  // 위치 - 빨강
+    ohaeng:  { c:oc,        r:or_            },  // 오행 - 오행색
+    reason:  { c:'#C084FC', r:'192,132,252'  },  // 인연이유 - 보라
+    purpose: { c:oc,        r:or_            },  // 기도목적 - 오행색
+    guide:   { c:'#34D399', r:'52,211,153'   },  // 기도가이드 - 민트
+    gido:    { c:'#FCD34D', r:'252,211,77'   },  // 기도문 - 앰버
+    history: { c:'#D97706', r:'217,119,6'    },  // 유래 - 갈색
+    date:    { c:'#818CF8', r:'129,140,248'  },  // 날짜 - 인디고
+    dist:    { c:oc,        r:or_            }   // 오행분포 - 오행색
+  };
+
+  // 섹션 헬퍼 — 색상 파라미터 받음
+  function sec(col, titleHtml, bodyHtml) {
+    return '<div class="ds-card" style="background:rgba(' + col.r + ',0.06);border:1px solid rgba(' + col.r + ',0.22);border-left:4px solid ' + col.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">'
+      + '<div style="font-size:14px;font-weight:800;color:' + col.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + col.r + ',0.2);letter-spacing:.05em;">' + titleHtml + '</div>'
+      + '<div style="font-size:14px;color:#E2E8F0;line-height:1.9;">' + bodyHtml + '</div>'
+      + '</div>';
+  }
+
+  const OHAENG_EMOJI = { '목':'🌿','화':'🔥','토':'🌍','금':'✨','수':'💧' };
   const OHAENG_MEANING = { '목':'성장·창의·도전','화':'열정·명예·활력','토':'안정·신뢰·중심','금':'결실·의지·재물','수':'지혜·학업·직관' };
-  const OHAENG_EMOJI_D = { '목':'🌿','화':'🔥','토':'🌍','금':'✨','수':'💧' };
   const OHAENG_DESC = {
-    '목':'새로운 일을 시작하거나 창의적인 활동에 힘을 불어넣어 줍니다. 성장과 도전의 기운이 강합니다.',
-    '화':'이름을 알리고 사람들 사이에서 빛나게 해주는 기운입니다. 열정과 활력을 불어넣습니다.',
-    '토':'흔들리는 마음을 안정시키고 근본을 다지게 해줍니다. 신뢰와 지속성의 기운입니다.',
-    '금':'결실을 맺고 재물과 의지력을 강화시켜 줍니다. 결단력과 실행력의 기운입니다.',
-    '수':'지혜와 직관을 높여주고 학업·시험에 도움이 됩니다. 깊이 생각하는 힘의 기운입니다.'
+    '목':'새로운 일을 시작하거나 창의적인 활동에 힘을 불어넣어 줍니다.',
+    '화':'이름을 알리고 사람들 사이에서 빛나게 해주는 기운입니다.',
+    '토':'흔들리는 마음을 안정시키고 근본을 다지게 해줍니다.',
+    '금':'결실을 맺고 재물과 의지력을 강화시켜 줍니다.',
+    '수':'지혜와 직관을 높여주고 학업·시험에 도움이 됩니다.'
   };
-
-  const ohaengEmoji = OHAENG_EMOJI_D[d.templeOhaeng] || '✦';
+  const ohaengEmoji = OHAENG_EMOJI[d.templeOhaeng] || '✦';
   const dist = parentData ? (parentData.distribution || {}) : {};
   const purposeLabel = parentData ? (parentData.purpose || '') : '';
   const purposeGuide = parentData ? (parentData.purposeGuide || []) : [];
@@ -2627,7 +2649,7 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   const historyHtml = memberUnlocked
     ? historyFull
     : (historyFull.length > 120
-        ? historyFull.slice(0, 120) + '… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>'
+        ? historyFull.slice(0, 120) + '… <span style="color:rgba(255,255,255,0.35);font-size:12px;">🔒 전체보기는 멤버 전용</span>'
         : historyFull || '정보 없음');
   const mapUrl = 'https://map.naver.com/v5/search/' + encodeURIComponent((t.name || '') + ' ' + (t.address || ''));
   const distText = d.distanceKm != null
@@ -2636,188 +2658,193 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
 
   // 날씨
   const weatherHtml = result.weather
-    ? '<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(0,180,255,0.18);border:1px solid rgba(0,210,255,0.45);border-radius:20px;padding:6px 16px;font-size:13px;color:rgba(0,210,255,1);margin-top:10px;">🌤️ <strong>' + result.weather.condition + '</strong>&nbsp;' + result.weather.temp + '°C</div>'
+    ? '<div style="display:inline-flex;align-items:center;gap:7px;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);border-radius:20px;padding:5px 14px;font-size:13px;color:#7DD3FA;margin-top:10px;">🌤 <b>' + result.weather.condition + '</b>&nbsp;' + result.weather.temp + '°C</div>'
     : '';
-
-  // 오행 분포
-  const distHtml = Object.entries(dist).map(function([k, v]) {
-    const isTarget = k === d.templeOhaeng;
-    const ks = OHAENG_RGBA[k] || OHAENG_RGBA['금'];
-    return '<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 16px;border-radius:22px;margin:4px;font-weight:800;font-size:14px;'
-      + 'background:' + (isTarget ? ks.mid : 'rgba(255,255,255,0.07)') + ';'
-      + 'border:1.5px solid ' + (isTarget ? ks.bdr : 'rgba(255,255,255,0.15)') + ';'
-      + 'color:' + (isTarget ? ks.c : 'rgba(255,255,255,0.65)') + ';'
-      + 'box-shadow:' + (isTarget ? '0 0 14px ' + ks.glow : 'none') + ';">'
-      + (OHAENG_EMOJI_D[k] || '') + ' ' + k + ' ' + v + (isTarget ? ' ✦' : '') + '</span>';
-  }).join('');
-
-  // 기도 가이드
-  const guideHtml = Array.isArray(purposeGuide) && purposeGuide.length
-    ? '<ol class="prayer-steps">' + purposeGuide.map(function(s) { return '<li>' + s + '</li>'; }).join('') + '</ol>'
-    : '';
-
-  // 날짜 카드
-  const YOIL = ['일','월','화','수','목','금','토'];
-  const datesHtml = recDates.slice(0, dateCount).map(function(d2) {
-    const parts = d2.date.split('-');
-    const mo = parseInt(parts[1]);
-    const dy = parseInt(parts[2]);
-    const dateObj = new Date(parseInt(parts[0]), mo - 1, dy);
-    const yoil = YOIL[dateObj.getDay()];
-    const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
-    const firstOhaeng = d2.dayOhaeng ? d2.dayOhaeng[0] : '';
-    const ds = OHAENG_RGBA[firstOhaeng] || os;
-    const emoji2 = OHAENG_EMOJI_D[firstOhaeng] || '✶';
-    const yoilColor = isWeekend ? '#FF8080' : 'rgba(255,255,255,0.85)';
-    return '<div style="display:inline-flex;flex-direction:column;align-items:center;gap:6px;'
-      + 'background:linear-gradient(160deg,' + ds.mid + ',' + ds.bg + ');'
-      + 'border:1.5px solid ' + ds.bdr + ';'
-      + 'border-radius:20px;padding:16px 22px;margin:5px;min-width:82px;'
-      + 'box-shadow:0 4px 18px ' + ds.glow + ',inset 0 1px 0 rgba(255,255,255,0.08);">'
-      + '<span style="font-size:22px;">' + emoji2 + '</span>'
-      + '<span style="font-size:17px;font-weight:900;color:' + ds.c + ';letter-spacing:0.5px;">' + mo + '/' + dy + '</span>'
-      + '<span style="font-size:12px;font-weight:700;color:' + yoilColor + ';">(' + yoil + ')</span>'
-      + (d2.dayOhaeng ? '<span style="font-size:10px;background:' + ds.bg + ';color:' + ds.c + ';border-radius:8px;padding:2px 8px;font-weight:700;">' + Array.from(d2.dayOhaeng).join('·') + '일</span>' : '')
-      + '</div>';
-  }).join('');
-  const datesWrapper = '<div style="display:flex;flex-wrap:wrap;gap:2px;margin-top:4px;">' + datesHtml + '</div>'
-    + (!memberUnlocked && recDates.length >= 3
-      ? '<div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.4);text-align:center;">🔒 멤버십 회원은 최대 15일 추천 날짜 제공</div>'
-      : '');
-
-  // 섹션 빌더 — 배경 중립, 오행색은 왼쪽 테두리+제목만
-  function section(titleHtml, bodyHtml) {
-    return '<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.11);border-left:5px solid ' + oc + ';border-radius:16px;padding:18px 18px 18px 20px;margin-bottom:14px;">'
-      + '<div style="font-family:var(--serif);font-size:15px;font-weight:800;color:' + oc + ';margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1);letter-spacing:.04em;">' + titleHtml + '</div>'
-      + '<div style="font-size:14px;color:#F1F5F9;line-height:1.85;">' + bodyHtml + '</div>'
-      + '</div>';
-  }
-  function infoCard(icon, label, val, highlight) {
-    const s = highlight ? os : null;
-    const bc = highlight ? os.mid : 'rgba(255,255,255,0.07)';
-    const br = highlight ? '1.5px solid ' + os.bdr : '1px solid rgba(255,255,255,0.14)';
-    const vc = highlight ? oc : '#F1F5F9';
-    const sh = highlight ? '0 0 22px ' + os.glow : 'none';
-    return '<div style="background:' + bc + ';border:' + br + ';border-radius:14px;padding:15px 17px;box-shadow:' + sh + ';">'
-      + '<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:7px;letter-spacing:.08em;text-transform:uppercase;">' + icon + ' ' + label + '</div>'
-      + '<div style="font-size:15px;font-weight:800;color:' + vc + ';line-height:1.3;">' + val + '</div>'
-      + '</div>';
-  }
 
   let html = '<div class="temple-detail-page">';
+  html += '<style>'
+    + '.ds-card{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;cursor:default;}'
+    + '.ds-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.35);border-color:rgba(255,255,255,0.28) !important;}'
+    + '.ds-card:hover .ds-title{letter-spacing:.07em;}'
+    + '#detail-back-btn:hover{background:rgba(255,255,255,0.16);}'
+    + '.detail-date-card{transition:transform .15s,box-shadow .15s;}'
+    + '.detail-date-card:hover{transform:translateY(-4px) scale(1.06);box-shadow:0 8px 24px rgba(0,0,0,.4);}'
+    + '</style>';
 
   // 뒤로가기
-  html += '<button id="detail-back-btn" style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.35);color:rgba(255,255,255,0.92);border-radius:22px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:20px;">← 목록으로</button>';
+  html += '<button id="detail-back-btn" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:18px;transition:background .15s;">← 목록으로</button>';
 
-  // Hero
-  html += '<div style="background:' + os.bg + ';border:1.5px solid ' + os.bdr + ';border-top:4px solid ' + oc + ';border-radius:22px;padding:30px 22px 24px;margin-bottom:20px;text-align:center;box-shadow:0 0 60px ' + os.glow + ',inset 0 1px 0 rgba(255,255,255,0.08);">';
-  html += '<div style="font-size:11px;letter-spacing:.18em;color:' + oc + ';text-transform:uppercase;margin-bottom:10px;font-weight:700;">' + ohaengEmoji + ' ' + (d.templeOhaeng || '') + '(오행) 기운 · ' + (OHAENG_MEANING[d.templeOhaeng] || '') + '</div>';
-  html += '<div class="temple-detail-name" style="font-family:var(--serif);font-size:clamp(26px,5.5vw,38px);font-weight:800;color:#fff;margin-bottom:8px;text-shadow:0 0 20px ' + oc + ',0 0 50px ' + os.glow + ',0 2px 4px rgba(0,0,0,.6);">' + (t.name || '사찰') + '</div>';
-  if (t.foundedYear) html += '<div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;">창건 ' + t.foundedYear + '년</div>';
+  // ── HERO ──
+  html += '<div style="background:linear-gradient(160deg,rgba(' + or_ + ',0.18) 0%,rgba(0,0,0,0) 70%);border:1px solid rgba(' + or_ + ',0.35);border-top:3px solid ' + oc + ';border-radius:22px;padding:28px 22px 22px;margin-bottom:16px;text-align:center;">';
+  html += '<div style="font-size:11px;letter-spacing:.2em;color:' + oc + ';text-transform:uppercase;margin-bottom:8px;font-weight:700;opacity:.9;">' + ohaengEmoji + '  ' + (d.templeOhaeng || '') + '(오행) · ' + (OHAENG_MEANING[d.templeOhaeng] || '') + '</div>';
+  html += '<div style="font-size:clamp(28px,5vw,40px);font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.5px;text-shadow:0 0 30px rgba(' + or_ + ',.4);">' + (t.name || '사찰') + '</div>';
+  if (t.foundedYear) html += '<div style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:4px;">창건 ' + t.foundedYear + '년</div>';
   html += weatherHtml;
+  // 점수바
   html += '<div style="margin-top:18px;">';
-  html += '<div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:7px;"><span>인연 매칭 점수</span><span style="color:' + oc + ';font-weight:800;font-size:14px;">' + score + '점</span></div>';
-  html += '<div style="height:12px;background:rgba(0,0,0,0.35);border-radius:6px;overflow:hidden;box-shadow:inset 0 2px 5px rgba(0,0,0,.5);">';
-  html += '<div style="height:100%;width:' + Math.min(score, 100) + '%;background:linear-gradient(90deg,' + oc + ',' + os.bdr + ',rgba(255,255,255,.8));border-radius:6px;box-shadow:0 0 18px ' + oc + ',0 0 6px rgba(255,255,255,.2);"></div>';
+  html += '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:rgba(255,255,255,0.45);">인연 매칭 점수</span><span style="color:' + oc + ';font-weight:800;font-size:15px;">' + score + '점</span></div>';
+  html += '<div style="height:10px;background:rgba(0,0,0,0.4);border-radius:5px;overflow:hidden;">';
+  html += '<div style="height:100%;width:' + Math.min(score, 100) + '%;background:linear-gradient(90deg,' + oc + ' 0%,#fff 120%);border-radius:5px;box-shadow:0 0 12px rgba(' + or_ + ',.7);"></div>';
   html += '</div></div></div>';
 
-  // 기본 정보
-  html += '<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.11);border-left:5px solid ' + oc + ';border-radius:16px;padding:18px 18px 18px 20px;margin-bottom:14px;">';
-  html += '<div style="font-family:var(--serif);font-size:15px;font-weight:800;color:' + oc + ';margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1);">🏯 사찰 기본 정보</div>';
+  // ── 기본정보 ──
+  const c_info = COL.info;
+  html += '<div class="ds-card" style="background:rgba(' + c_info.r + ',0.06);border:1px solid rgba(' + c_info.r + ',0.22);border-left:4px solid ' + c_info.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+  html += '<div style="font-size:14px;font-weight:800;color:' + c_info.c + ';margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_info.r + ',0.2);letter-spacing:.05em;">🏯 사찰 기본 정보</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
-  html += infoCard('🧭', '방위', d.bearing || '정보 없음', false);
-  html += infoCard('📏', '거리', distText, false);
-  html += infoCard(ohaengEmoji, '오행 기운', (d.templeOhaeng || '-') + ' · ' + (OHAENG_MEANING[d.templeOhaeng] || '-'), true);
-  html += infoCard('⭐', '매칭 점수', score + '점', true);
+  // 카드 - 방위
+  html += '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;">';
+  html += '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;letter-spacing:.1em;">🧭 방위</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:#E2E8F0;">' + (d.bearing || '—') + '</div></div>';
+  // 카드 - 거리
+  html += '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;">';
+  html += '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;letter-spacing:.1em;">📏 거리</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:#E2E8F0;">' + distText + '</div></div>';
+  // 카드 - 오행 (highlight)
+  html += '<div style="background:rgba(' + or_ + ',0.1);border:1px solid rgba(' + or_ + ',0.35);border-radius:12px;padding:14px;">';
+  html += '<div style="font-size:11px;color:rgba(' + or_ + ',.6);margin-bottom:6px;letter-spacing:.1em;">' + ohaengEmoji + ' 오행 기운</div>';
+  html += '<div style="font-size:15px;font-weight:800;color:' + oc + ';">' + (d.templeOhaeng || '—') + ' · ' + (OHAENG_MEANING[d.templeOhaeng] || '—') + '</div></div>';
+  // 카드 - 점수 (highlight)
+  html += '<div style="background:rgba(' + or_ + ',0.1);border:1px solid rgba(' + or_ + ',0.35);border-radius:12px;padding:14px;">';
+  html += '<div style="font-size:11px;color:rgba(' + or_ + ',.6);margin-bottom:6px;letter-spacing:.1em;">⭐ 매칭 점수</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:' + oc + ';">' + score + '점</div></div>';
   html += '</div></div>';
 
-  // 위치
-  html += '<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.11);border-left:5px solid ' + oc + ';border-radius:16px;padding:18px 18px 18px 20px;margin-bottom:14px;">';
-  html += '<div style="font-family:var(--serif);font-size:15px;font-weight:800;color:' + oc + ';margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1);">📍 위치 &amp; 방문 안내</div>';
-  if (t.address) html += '<div style="font-size:14px;color:#F1F5F9;margin-bottom:14px;line-height:1.7;">' + t.address + '</div>';
-  html += '<a class="map-link-btn" style="background:' + os.bg + ';border:1.5px solid ' + os.bdr + ';color:' + oc + ';font-weight:700;" href="' + mapUrl + '" target="_blank" rel="noopener">🗺️ 네이버 지도에서 길찾기</a>';
+  // ── 위치 ──
+  const c_loc = COL.loc;
+  html += '<div class="ds-card" style="background:rgba(' + c_loc.r + ',0.06);border:1px solid rgba(' + c_loc.r + ',0.22);border-left:4px solid ' + c_loc.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+  html += '<div style="font-size:14px;font-weight:800;color:' + c_loc.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_loc.r + ',0.2);">📍 위치 &amp; 방문 안내</div>';
+  if (t.address) html += '<div style="font-size:14px;color:#CBD5E1;margin-bottom:14px;line-height:1.7;">' + t.address + '</div>';
+  html += '<a href="' + mapUrl + '" target="_blank" rel="noopener" style="display:block;text-align:center;background:rgba(' + c_loc.r + ',0.12);border:1px solid rgba(' + c_loc.r + ',0.35);color:' + c_loc.c + ';border-radius:12px;padding:12px;font-weight:700;font-size:14px;text-decoration:none;">🗺️ 네이버 지도에서 길찾기</a>';
   html += '</div>';
 
-  // 오행 기운
+  // ── 오행기운 ──
   if (d.templeOhaeng && OHAENG_DESC[d.templeOhaeng]) {
-    html += section(ohaengEmoji + ' ' + d.templeOhaeng + '(오행) 기운이란?',
+    html += sec(COL.ohaeng, ohaengEmoji + ' ' + d.templeOhaeng + '(오행) 기운이란?',
       '<p style="margin:0;">' + OHAENG_DESC[d.templeOhaeng] + '</p>');
   }
 
-  // 인연 이유
+  // ── 인연이유 ──
   if (result.reason) {
-    html += section('✨ 나와의 인연 이유',
+    html += sec(COL.reason, '✨ 나와의 인연 이유',
       '<p style="margin:0;">' + result.reason + '</p>');
   }
 
-  // 기도 목적
+  // ── 기도목적 ──
   if (purposeLabel) {
-    html += section('🎯 기도 목적',
-      '<span style="display:inline-block;background:' + os.mid + ';border:1.5px solid ' + os.bdr + ';color:' + oc + ';border-radius:22px;padding:8px 24px;font-weight:800;font-size:16px;box-shadow:0 0 14px ' + os.glow + ';">' + purposeLabel + '</span>');
+    const c_p = COL.purpose;
+    html += '<div class="ds-card" style="background:rgba(' + c_p.r + ',0.06);border:1px solid rgba(' + c_p.r + ',0.22);border-left:4px solid ' + c_p.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+    html += '<div style="font-size:14px;font-weight:800;color:' + c_p.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_p.r + ',0.2);">🎯 기도 목적</div>';
+    html += '<span style="display:inline-block;background:rgba(' + c_p.r + ',0.18);border:1.5px solid rgba(' + c_p.r + ',0.5);color:' + c_p.c + ';border-radius:24px;padding:9px 26px;font-weight:800;font-size:16px;">' + purposeLabel + '</span>';
+    html += '</div>';
   }
 
-  // 기도 가이드
-  if (guideHtml) {
-    html += section('🙏 이렇게 기도해보세요', '<div>' + guideHtml + '</div>');
+  // ── 기도가이드 ──
+  if (Array.isArray(purposeGuide) && purposeGuide.length) {
+    const stepsHtml = '<ol style="margin:0;padding-left:20px;">'
+      + purposeGuide.map(function(s, i) {
+          return '<li style="margin-bottom:10px;padding-left:4px;">'
+            + '<span style="color:' + COL.guide.c + ';font-weight:700;">' + (i+1) + '.</span> ' + s + '</li>';
+        }).join('')
+      + '</ol>';
+    html += sec(COL.guide, '🙏 이렇게 기도해보세요', stepsHtml);
   }
 
-  // 기도문
+  // ── 기도문 ──
   const GIDO = {
     '재물운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님, 오늘 저는 ' + nm + '의 금(金) 기운이 가득한 이 도량에서 간절히 발원하오니,\n저의 부족한 재물운이 열려 정직하고 성실한 노력에 합당한 결실을 맺게 하여 주시옵소서.\n헛된 탐욕이 아닌, 가족과 이웃이 함께 나눌 수 있는 올바른 재물이 넘쳐흘러\n삶이 안온하게 하여 주시옵소서.\n제가 얻은 것으로 보시하고 덕을 쌓아 더 큰 복으로 돌아오게 하여 주시옵소서.\n\n나무아미타불 관세음보살.'; },
-    '건강운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 약사여래 부처님, 오늘 저는 ' + nm + '의 토(土) 기운이 깃든 이 청정 도량에서 발원하오니,\n몸과 마음의 모든 병이 사라지고 건강한 기운이 충만하게 하여 주시옵소서.\n바른 음식, 바른 생각, 바른 쉼으로 이 몸을 아끼고 사랑하여\n오래도록 가족 곁에 있게 하여 주시옵소서.\n병마와 고통으로 힘든 모든 이들도 함께 쾌유하게 하여 주시옵소서.\n\n나무약사유리광여래.'; },
-    '학업운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n지혜의 문수보살님, 오늘 저는 ' + nm + '의 수(水) 기운이 흐르는 이 도량에서 간절히 발원하오니,\n배움에 대한 집중력과 기억력이 밝아지고 깊은 지혜가 열리게 하여 주시옵소서.\n공부하는 이 시간 동안 흔들림 없는 마음으로 정진하여\n목표한 결과를 이루게 하여 주시옵소서.\n합격의 기쁨을 가족과 함께 나눌 수 있도록 이끌어 주시옵소서.\n\n나무대지문수사리보살.'; },
-    '인연운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비로우신 관세음보살님, 오늘 저는 ' + nm + '의 화(火) 기운이 충만한 이 도량에서 발원하오니,\n저와 진정으로 인연이 맞는 소중한 사람과의 만남이 이루어지게 하여 주시옵소서.\n서로 존중하고 아끼며, 함께 성장하고 행복할 수 있는 깊은 인연을 맺게 하여 주시옵소서.\n인연을 소중히 여기는 마음을 갖추어 좋은 관계가 오래 이어지게 하여 주시옵소서.\n\n나무대자대비관세음보살.'; },
-    '가정운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님, 오늘 저는 ' + nm + '의 목(木) 기운이 가득한 이 도량에서 온 가족을 위해 발원하오니,\n저희 가정에 화목과 평안이 넘치게 하여 주시옵소서.\n가족 한 사람 한 사람이 각자의 자리에서 건강하고 행복하며,\n서로 배려하고 사랑하는 마음이 깊어지게 하여 주시옵소서.\n어떤 어려움이 닥쳐도 함께 이겨낼 수 있는 끈끈한 가족의 힘을 주시옵소서.\n\n나무아미타불.'; },
-    '수험합격': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n문수보살님, 오늘 저는 ' + nm + '의 화(火) 기운이 빛나는 이 도량에서 간절히 발원하오니,\n다가오는 시험에서 저의 능력을 온전히 발휘하여 합격의 기쁨을 얻게 하여 주시옵소서.\n지금까지 흘린 땀과 노력이 시험장에서 빛을 발하고,\n침착하고 자신 있게 문제를 풀어낼 수 있도록 이끌어 주시옵소서.\n합격 후 세상에 보탬이 되는 사람으로 살겠습니다.\n\n나무석가모니불.'; },
-    '취업운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님, 오늘 저는 ' + nm + '의 금(金) 기운이 빛나는 이 도량에서 발원하오니,\n저의 능력과 열정을 알아봐 주는 좋은 직장과의 인연이 이루어지게 하여 주시옵소서.\n두려움 없이 도전하고 면접에서 저의 진심이 전해지게 하여 주시옵소서.\n취업 후에는 성실하게 일하며 조직에 기여하고 스스로도 성장하는 사람이 되겠습니다.\n\n나무아미타불.'; },
-    '출산기도': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님과 칠성님께, 오늘 저는 ' + nm + '의 목(木) 기운이 가득한 이 도량에서 간절히 발원하오니,\n건강하고 복된 새 생명이 저희 품에 안기게 하여 주시옵소서.\n잉태에서 출산까지 모든 과정이 순조롭고 산모와 아기 모두 건강하게 하여 주시옵소서.\n이 아이가 세상에 태어나 밝은 빛이 되어 살아가게 하여 주시옵소서.\n\n나무관세음보살.'; }
+    '건강운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 약사여래 부처님, 오늘 저는 ' + nm + '의 토(土) 기운이 깃든 이 청정 도량에서 발원하오니,\n몸과 마음의 모든 병이 사라지고 건강한 기운이 충만하게 하여 주시옵소서.\n바른 음식, 바른 생각, 바른 쉼으로 이 몸을 아끼고 사랑하여\n오래도록 가족 곁에 있게 하여 주시옵소서.\n\n나무약사유리광여래.'; },
+    '학업운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n지혜의 문수보살님, 오늘 저는 ' + nm + '의 수(水) 기운이 흐르는 이 도량에서 간절히 발원하오니,\n배움에 대한 집중력과 기억력이 밝아지고 깊은 지혜가 열리게 하여 주시옵소서.\n목표한 결과를 이루게 하여 주시옵소서.\n\n나무대지문수사리보살.'; },
+    '인연운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비로우신 관세음보살님, 오늘 저는 ' + nm + '의 화(火) 기운이 충만한 이 도량에서 발원하오니,\n저와 진정으로 인연이 맞는 소중한 사람과의 만남이 이루어지게 하여 주시옵소서.\n서로 존중하고 아끼며 함께 성장하고 행복할 수 있는 깊은 인연을 맺게 하여 주시옵소서.\n\n나무대자대비관세음보살.'; },
+    '가정운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님, 오늘 저는 ' + nm + '의 목(木) 기운이 가득한 이 도량에서 온 가족을 위해 발원하오니,\n저희 가정에 화목과 평안이 넘치게 하여 주시옵소서.\n서로 배려하고 사랑하는 마음이 깊어지게 하여 주시옵소서.\n\n나무아미타불.'; },
+    '수험합격': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n문수보살님, 오늘 저는 ' + nm + '의 화(火) 기운이 빛나는 이 도량에서 간절히 발원하오니,\n다가오는 시험에서 저의 능력을 온전히 발휘하여 합격의 기쁨을 얻게 하여 주시옵소서.\n침착하고 자신 있게 문제를 풀어낼 수 있도록 이끌어 주시옵소서.\n\n나무석가모니불.'; },
+    '취업운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님, 오늘 저는 ' + nm + '의 금(金) 기운이 빛나는 이 도량에서 발원하오니,\n저의 능력과 열정을 알아봐 주는 좋은 직장과의 인연이 이루어지게 하여 주시옵소서.\n취업 후에는 성실하게 일하며 성장하는 사람이 되겠습니다.\n\n나무아미타불.'; },
+    '출산기도': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님과 칠성님께, 오늘 저는 ' + nm + '의 목(木) 기운이 가득한 이 도량에서 간절히 발원하오니,\n건강하고 복된 새 생명이 저희 품에 안기게 하여 주시옵소서.\n산모와 아기 모두 건강하게 하여 주시옵소서.\n\n나무관세음보살.'; }
   };
   const gidoFn = purposeLabel ? GIDO[purposeLabel] : null;
   if (gidoFn) {
     const gidoText = gidoFn(t.name || '이 사찰');
-    const gidoAllHtml = gidoText.replace(/\n/g, '<br>');
-    const gidoPreviewHtml = gidoText.slice(0, 90).replace(/\n/g, '<br>');
+    const c_g = COL.gido;
     if (memberUnlocked) {
-      html += section('🕯️ 맞춤 기도문',
-        '<div style="white-space:pre-line;letter-spacing:.04em;line-height:2.1;">' + gidoAllHtml + '</div>'
-        + '<button id="gido-copy-btn" style="margin-top:16px;display:inline-flex;align-items:center;gap:7px;background:' + os.mid + ';border:1.5px solid ' + os.bdr + ';color:' + oc + ';border-radius:18px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;">📋 기도문 복사</button>'
-        + '<textarea id="gido-raw" style="position:absolute;left:-9999px;opacity:0;" readonly>' + gidoText + '</textarea>');
+      html += '<div class="ds-card" style="background:rgba(' + c_g.r + ',0.07);border:1px solid rgba(' + c_g.r + ',0.25);border-left:4px solid ' + c_g.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+      html += '<div style="font-size:14px;font-weight:800;color:' + c_g.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_g.r + ',0.2);">🕯️ 맞춤 기도문</div>';
+      html += '<div style="font-size:14px;color:#E2E8F0;line-height:2.1;white-space:pre-line;background:rgba(0,0,0,0.2);border-radius:12px;padding:16px;">' + gidoText + '</div>';
+      html += '<button id="gido-copy-btn" style="margin-top:14px;display:inline-flex;align-items:center;gap:6px;background:rgba(' + c_g.r + ',0.15);border:1px solid rgba(' + c_g.r + ',0.4);color:' + c_g.c + ';border-radius:14px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;">📋 기도문 복사</button>';
+      html += '<textarea id="gido-raw" style="position:absolute;left:-9999px;opacity:0;" readonly>' + gidoText + '</textarea>';
+      html += '</div>';
     } else {
-      html += section('🕯️ 맞춤 기도문',
-        '<div style="letter-spacing:.04em;line-height:2;">' + gidoPreviewHtml + '…</div>'
-        + '<div style="margin-top:12px;padding:14px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.3);border-radius:12px;text-align:center;font-size:13px;color:rgba(255,255,255,0.55);">🔒 전체 기도문 및 복사는 멤버십 전용입니다</div>');
+      html += '<div class="ds-card" style="background:rgba(' + c_g.r + ',0.07);border:1px solid rgba(' + c_g.r + ',0.25);border-left:4px solid ' + c_g.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+      html += '<div style="font-size:14px;font-weight:800;color:' + c_g.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_g.r + ',0.2);">🕯️ 맞춤 기도문</div>';
+      html += '<div style="font-size:14px;color:#94A3B8;line-height:2;background:rgba(0,0,0,0.2);border-radius:12px;padding:16px;filter:blur(2px);pointer-events:none;">' + gidoText.slice(0, 80) + '…</div>';
+      html += '<div style="margin-top:12px;text-align:center;font-size:13px;color:rgba(255,255,255,0.4);">🔒 전체 기도문은 멤버십 전용입니다</div>';
+      html += '</div>';
     }
   }
 
-  // 유래·연혁
+  // ── 유래연혁 ──
   if (historyFull) {
-    html += section('📜 유래 · 연혁', '<p style="margin:0;">' + historyHtml + '</p>');
+    html += sec(COL.history, '📜 유래 · 연혁', '<p style="margin:0;">' + historyHtml + '</p>');
   }
 
-  // 추천 방문 날짜
+  // ── 추천 날짜 ──
   if (recDates.length > 0) {
-    html += '<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.11);border-left:5px solid ' + oc + ';border-radius:16px;padding:18px 18px 18px 20px;margin-bottom:14px;">';
-    html += '<div style="font-family:var(--serif);font-size:15px;font-weight:800;color:' + oc + ';margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1);">📅 추천 방문 날짜'
-      + (!memberUnlocked ? ' <span style="font-size:11px;opacity:.5;">(상위 3일 · 전체는 멤버 전용)</span>' : '') + '</div>';
-    html += '<div>' + datesWrapper + '</div>';
+    const c_d = COL.date;
+    const YOIL = ['일','월','화','수','목','금','토'];
+    const datesHtml = recDates.slice(0, dateCount).map(function(d2) {
+      const parts = d2.date.split('-');
+      const mo = parseInt(parts[1]);
+      const dy = parseInt(parts[2]);
+      const dow = new Date(parseInt(parts[0]), mo - 1, dy).getDay();
+      const yoil = YOIL[dow];
+      const isWkend = dow === 0 || dow === 6;
+      const fe = d2.dayOhaeng ? (OHAENG_EMOJI[d2.dayOhaeng[0]] || '✶') : '✶';
+      const fc = d2.dayOhaeng ? (OHAENG_PAL[d2.dayOhaeng[0]] || OHAENG_PAL['금']) : OHAENG_PAL['금'];
+      return '<div class="detail-date-card" style="display:inline-flex;flex-direction:column;align-items:center;gap:5px;'
+        + 'background:rgba(' + fc.r + ',0.1);border:1px solid rgba(' + fc.r + ',0.35);'
+        + 'border-radius:16px;padding:14px 18px;margin:4px;min-width:74px;">'
+        + '<span style="font-size:20px;">' + fe + '</span>'
+        + '<span style="font-size:17px;font-weight:900;color:' + fc.c + ';">' + mo + '/' + dy + '</span>'
+        + '<span style="font-size:12px;color:' + (isWkend ? '#F87171' : 'rgba(255,255,255,0.6)') + ';font-weight:600;">(' + yoil + ')</span>'
+        + (d2.dayOhaeng ? '<span style="font-size:10px;color:' + fc.c + ';font-weight:700;">' + Array.from(d2.dayOhaeng).join('·') + '일</span>' : '')
+        + '</div>';
+    }).join('');
+    html += '<div class="ds-card" style="background:rgba(' + c_d.r + ',0.06);border:1px solid rgba(' + c_d.r + ',0.22);border-left:4px solid ' + c_d.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+    html += '<div style="font-size:14px;font-weight:800;color:' + c_d.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_d.r + ',0.2);">📅 추천 방문 날짜'
+      + (!memberUnlocked ? '<span style="font-size:11px;font-weight:400;opacity:.45;margin-left:8px;">상위 3일 · 전체는 멤버 전용</span>' : '') + '</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:2px;">' + datesHtml + '</div>';
+    if (!memberUnlocked && recDates.length >= 3) {
+      html += '<div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.35);text-align:center;">🔒 멤버십 회원은 최대 15일 추천 날짜 제공</div>';
+    }
     html += '</div>';
   }
 
-  // 오행 분포
+  // ── 오행분포 ──
   if (Object.keys(dist).length > 0) {
-    html += '<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.11);border-left:5px solid ' + oc + ';border-radius:16px;padding:18px 18px 18px 20px;margin-bottom:14px;">';
-    html += '<div style="font-family:var(--serif);font-size:15px;font-weight:800;color:' + oc + ';margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1);">🔥 나의 사주 오행 분포</div>';
+    const c_dist = COL.dist;
+    const distHtml = Object.entries(dist).map(function([k, v]) {
+      const isT = k === d.templeOhaeng;
+      const kp = OHAENG_PAL[k] || OHAENG_PAL['금'];
+      return '<div style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;margin:4px;font-weight:800;font-size:14px;'
+        + 'background:rgba(' + kp.r + ',' + (isT ? '0.18' : '0.07') + ');'
+        + 'border:1.5px solid rgba(' + kp.r + ',' + (isT ? '0.55' : '0.2') + ');'
+        + 'color:' + (isT ? kp.c : 'rgba(255,255,255,0.55)') + ';'
+        + (isT ? 'box-shadow:0 0 14px rgba(' + kp.r + ',0.25);' : '') + '">'
+        + (OHAENG_EMOJI[k] || '') + ' ' + k + ' ' + v + (isT ? ' ✦' : '')
+        + '</div>';
+    }).join('');
+    html += '<div class="ds-card" style="background:rgba(' + c_dist.r + ',0.06);border:1px solid rgba(' + c_dist.r + ',0.22);border-left:4px solid ' + c_dist.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+    html += '<div style="font-size:14px;font-weight:800;color:' + c_dist.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_dist.r + ',0.2);">🔥 나의 사주 오행 분포</div>';
     html += '<div style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:10px;">' + distHtml + '</div>';
-    html += '<div style="font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6;">✦ 강조된 기운(<strong style="color:' + oc + ';">' + (d.templeOhaeng || '') + '</strong>)이 이 사찰의 오행으로, 나의 부족한 에너지를 보완해 줍니다.</div>';
+    html += '<div style="font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;margin-top:6px;">✦ 강조된 <b style="color:' + oc + ';">' + (d.templeOhaeng || '') + '</b> 기운이 이 사찰의 에너지 — 나의 부족한 기운을 채워줍니다.</div>';
     html += '</div>';
   }
 
-  // 멤버십 잠금 배너
+  // ── 멤버십 배너 ──
   if (!memberUnlocked) {
-    html += '<div style="background:rgba(212,175,55,0.07);border:1.5px solid rgba(212,175,55,0.38);border-left:5px solid #D4AF37;border-radius:16px;padding:28px 18px;margin-bottom:14px;text-align:center;">';
-    html += '<div style="font-size:32px;margin-bottom:10px;">🔒</div>';
-    html += '<div style="font-family:var(--serif);font-size:16px;font-weight:800;color:#D4AF37;margin-bottom:8px;">멤버십 전용 콘텐츠</div>';
-    html += '<div style="font-size:13.5px;color:rgba(255,255,255,0.6);margin-bottom:16px;">유래 전문 · 방문 날짜 전체(최대 15일) · 기도문 전체 보기 및 복사</div>';
+    html += '<div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px 20px;margin-bottom:12px;text-align:center;">';
+    html += '<div style="font-size:30px;margin-bottom:10px;">🔒</div>';
+    html += '<div style="font-size:16px;font-weight:800;color:#D4AF37;margin-bottom:8px;">멤버십 전용 콘텐츠</div>';
+    html += '<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:18px;">유래 전문 · 추천 날짜 전체 · 기도문 전체 &amp; 복사</div>';
     html += '<div class="member-unlock"><input type="text" id="detail-member-code-input" placeholder="멤버십 코드 입력" /><button id="detail-member-code-btn">확인</button></div>';
     html += '</div>';
   }
