@@ -160,7 +160,7 @@ function getRecommendedDates(targetOhaeng, daysAhead = 30, maxResults = 5) {
   return results;
 }
 
-/** 사주 8글자(4주 × 천간/지지) → 오행 분포 카운트 (실제 만세력 기반) */
+/** 사주 8글자(4주 × 천간/지지) → 오행 분포 카운트 + 4지지 추출 */
 function calculateOhaeng(birthDateTime) {
   let bazi;
   try {
@@ -188,20 +188,50 @@ function calculateOhaeng(birthDateTime) {
       });
     });
 
-  return dist;
+  // 4지지(地支) 추출 — findWeakOhaeng 지장간 보정에 사용
+  const branches = [bazi.getYear(), bazi.getMonth(), bazi.getDay(), bazi.getTime()]
+    .map((p) => (p && p.length >= 2 ? p[1] : ""))
+    .filter(Boolean);
+
+  return { distribution: dist, branches };
 }
 
-/** 부족 오행(용신 후보) 도출 */
-function findWeakOhaeng(distribution) {
+/** 부족 오행(용신 후보) 도출 — 지장간 중기 보정 포함 */
+function findWeakOhaeng(distribution, branches) {
+  // 지장간(支藏干): [여기, (중기,) 정기] 순서. 정기는 표면 오행과 일치해 이미 계산됨.
+  const JJG = {
+    '子':['壬','癸'],       '丑':['癸','辛','己'],
+    '寅':['戊','丙','甲'],  '卯':['甲','乙'],
+    '辰':['乙','癸','戊'],  '巳':['戊','庚','丙'],
+    '午':['丙','己','丁'],  '未':['丁','乙','己'],
+    '申':['戊','壬','庚'],  '酉':['庚','辛'],
+    '戌':['辛','丁','戊'],  '亥':['甲','壬'],
+  };
+  const GAN_OH = { '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수' };
+
+  // 중기(中氣)에 0.5점 가중치 추가 — 申의 壬水처럼 겉에 안 보이는 숨은 기운 반영
+  const bonus = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
+  if (Array.isArray(branches)) {
+    for (const ji of branches) {
+      const stems = JJG[ji] || [];
+      if (stems.length === 3) {
+        const midOh = GAN_OH[stems[1]];
+        if (midOh) bonus[midOh] += 0.5;
+      }
+    }
+  }
+
   let weakest = null;
-  let minCount = Infinity;
+  let minScore = Infinity;
   for (const [element, count] of Object.entries(distribution)) {
-    if (count < minCount) {
-      minCount = count;
+    const score = count + (bonus[element] || 0);
+    if (score < minScore) {
+      minScore = score;
       weakest = element;
     }
   }
-  return { 부족오행: weakest, 근거: `사주 8글자 중 ${weakest}(${minCount}개)이 가장 약함` };
+  const bonusNote = bonus[weakest] > 0 ? ` + 지장간 ${bonus[weakest]}` : "";
+  return { 부족오행: weakest, 근거: `지장간 보정 포함 — ${weakest}(표면 ${distribution[weakest]}개${bonusNote})이 가장 약함` };
 }
 
 /** 두 좌표 간 방위각(bearing) 계산 → 8방위 변환 */
@@ -335,8 +365,8 @@ function generateReason(result, targetOhaeng, purpose, personalOhaeng) {
 
 /** 메인 매칭 함수 */
 function matchTemples(request, templeDB) {
-  const distribution = calculateOhaeng(request.birthInput ?? request.birthDateTime);
-  const weak = findWeakOhaeng(distribution);
+  const { distribution, branches } = calculateOhaeng(request.birthInput ?? request.birthDateTime);
+  const weak = findWeakOhaeng(distribution, branches);
   const targetOhaeng = PURPOSE_OHAENG[request.purpose] || weak.부족오행;
 
   const bi = request.birthInput ?? request.birthDateTime ?? {};
@@ -460,15 +490,17 @@ function generateCoupleReason(result, targetA, targetB) {
 /** 궁합사찰 매칭 메인 함수 */
 function matchCoupleTemples(request, templeDB) {
   const { birthInputA, birthInputB, purpose, userLat, userLng, memberUnlocked } = request;
-  const distributionA = calculateOhaeng(birthInputA);
-  const distributionB = calculateOhaeng(birthInputB);
+  const resA = calculateOhaeng(birthInputA);
+  const resB = calculateOhaeng(birthInputB);
+  const distributionA = resA.distribution;
+  const distributionB = resB.distribution;
   const idealOhaeng = PURPOSE_OHAENG[purpose];
-  const targetA = (distributionA[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionA).부족오행;
-  const targetB = (distributionB[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionB).부족오행;
+  const targetA = (distributionA[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionA, resA.branches).부족오행;
+  const targetB = (distributionB[idealOhaeng] ?? 0) <= 2 ? idealOhaeng : findWeakOhaeng(distributionB, resB.branches).부족오행;
   const biA = birthInputA ?? {};
   const biB = birthInputB ?? {};
-  const ctxA = { targetOhaeng: targetA, personalOhaeng: findWeakOhaeng(distributionA).부족오행, distribution: distributionA, purpose, userLat, userLng, birthYear: biA.year||2000, birthMonth: biA.month||1, birthDay: biA.day||1 };
-  const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB).부족오행, distribution: distributionB, purpose, userLat, userLng, birthYear: biB.year||2000, birthMonth: biB.month||1, birthDay: biB.day||1 };
+  const ctxA = { targetOhaeng: targetA, personalOhaeng: findWeakOhaeng(distributionA, resA.branches).부족오행, distribution: distributionA, purpose, userLat, userLng, birthYear: biA.year||2000, birthMonth: biA.month||1, birthDay: biA.day||1 };
+  const ctxB = { targetOhaeng: targetB, personalOhaeng: findWeakOhaeng(distributionB, resB.branches).부족오행, distribution: distributionB, purpose, userLat, userLng, birthYear: biB.year||2000, birthMonth: biB.month||1, birthDay: biB.day||1 };
   let validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
 
   // 기도 여행 지역 필터
@@ -511,20 +543,4 @@ function matchCoupleTemples(request, templeDB) {
   const calendarCount = memberUnlocked ? 15 : 3;
   return {
     distribution: distributionA,
-    targetOhaeng: targetA,
-    distributionA, distributionB, targetA, targetB,
-    results: scored,
-    recommendedDates: getRecommendedDates(targetA, 45, calendarCount),
-    purposeGuide: PURPOSE_GUIDE[purpose],
-  };
-}
-
-module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, scoreTemple, getRecommendedDates, getEightChar };
-
-// test section
-if (require.main === module) {
-  const sampleDB = [
-    { id: 't1', name: 'test', lat: 37.515, lng: 127.057, verified: true, tags: [] },
-  ];
-  console.log('Module loaded OK');
-}
+    targ
