@@ -6,6 +6,24 @@
  * 실제 서비스에서는 정확한 만세력 라이브러리(예: KASI 음양력 API, lunar-javascript 등)로 교체 필요.
  */
 
+// ── 0. 조계종 우선 사찰 목록 ─────────────────────────────────────────
+// 조계종 25개 본사 + 주요 직할 사찰 — 기도 공간이 충분하고 방문 추천에 적합한 사찰
+// 이 목록에 포함된 사찰은 매칭 점수에 +15점 가산 (종단 신뢰도 보너스)
+const JOGYE_TEMPLES = new Set([
+  // 25본사
+  "조계사","용주사","신흥사","월정사","법주사","마곡사","수덕사","직지사",
+  "은해사","불국사","통도사","해인사","쌍계사","범어사","동화사","선운사",
+  "금산사","화엄사","송광사","백양사","대흥사","관음사","봉선사","흥국사","봉암사",
+  // 주요 직할·말사
+  "도선사","화계사","봉은사","진관사","흥천사","청룡사","삼각산","개운사",
+  "백련사","선암사","운주사","내소사","실상사","부석사","관룡사","표충사",
+  "석굴암","감은사지","천은사","연곡사","쌍봉사","태안사","구례화엄사",
+  "용문사","상원사","오대산월정사","정암사","건봉사","신흥사","낙산사",
+  "전등사","마니산","보문사","정수사","미황사","도갑사","천관사","금둔사",
+  "운문사","팔공산동화사","갓바위","파계사","기림사","골굴사","장항사",
+  "다보사","영축산통도사","표충비각","성불사"
+]);
+
 // ── 1. 오행-방위 대응표 ─────────────────────
 const OHAENG_BANGWI = {
   목: "동", 화: "남", 토: "중앙", 금: "서", 수: "북",
@@ -329,8 +347,10 @@ function scoreTemple(temple, matchContext) {
   const distance = calculateDistance(userLat, userLng, temple.lat, temple.lng);
   const distanceScore = Math.max(0, 20 - (distance / 200) * 20);
 
-  // 4) 데이터 신뢰도 (10점)
-  const trustScore = temple.verified ? 10 : 4;
+  // 4) 데이터 신뢰도 + 조계종 보너스 (최대 25점)
+  // 조계종 본사·주요사찰은 기도 시설이 충분하고 대중 방문에 검증됨 → +15점 추가
+  const jogyeBonus = JOGYE_TEMPLES.has(temple.name) ? 15 : 0;
+  const trustScore = (temple.verified ? 10 : 4) + jogyeBonus;
 
   // 5) 인연 시너지항 — 잼공감(CLI)·퍼피시너지(CSI)와 동일한 비가산 시너지 수학 코어
   //    CLI_Final = CLI_linear + β·√(W_A×W_B) 구조를 인연사찰 도메인에 적용.
@@ -397,8 +417,14 @@ function matchTemples(request, templeDB) {
     birthDay: bi.day || 1,
   };
 
-  // 좌표 정보 없는 사찰은 방위/거리 계산이 불가하므로 매칭 대상에서 제외
-  let validTemples = templeDB.filter((t) => t.lat != null && t.lng != null);
+  // 기도 공간이 부족하거나 방문 추천에 적합하지 않은 소규모 도심 사찰 제외 목록
+  // (법당이 하나뿐이거나 단체 기도 방문이 어려운 경우)
+  const EXCLUDE_TEMPLES = new Set([
+    '대각사',  // 서울 종로구 — 법당 1개, 기도 공간 부족
+  ]);
+
+  // 좌표 정보 없는 사찰 + 제외 목록 사찰 모두 매칭 대상에서 제외
+  let validTemples = templeDB.filter((t) => t.lat != null && t.lng != null && !EXCLUDE_TEMPLES.has(t.name));
 
   // 기도 여행 지역 필터 — 특정 시/도를 선택하면 해당 지역 사찰만 대상으로 함
   if (request.region) {
@@ -437,25 +463,44 @@ function matchTemples(request, templeDB) {
     ? [...dirMatched, ...dirOther].slice(0, 20)
     : [...dirOther.slice(0, 3), ...dirMatched, ...dirOther.slice(3)].slice(0, 20);
 
-  // 생년월일 + 기도목적별 오프셋으로 시드 결정 → 목적마다 다른 사찰이 선택됨
-  const PURPOSE_SEED_OFFSETS = { 재물운: 0, 건강운: 5, 학업운: 11, 인연운: 17, 가정운: 23, 수험합격: 29, 취업운: 37, 출산기도: 43 };
-  // 오행 분포를 seed에 반영 — 음력→양력 변환 후 계산된 값이므로 같은 날짜 숫자라도 음/양력에 따라 달라짐
-  const distSeed = (distribution.목||0)*3 + (distribution.화||0)*7 + (distribution.토||0)*11 + (distribution.금||0)*13 + (distribution.수||0)*17;
-  const baseSeed = ((bi.year || 2000) * 367 + (bi.month || 1) * 31 + (bi.day || 1) + distSeed)
-    + (PURPOSE_SEED_OFFSETS[request.purpose] || 0);
-  const seed = baseSeed % Math.max(primaryPool.length, 1);
-  // 중복 제거: 같은 이름의 사찰이 2번 나오지 않도록
+  // ── 시드 기반 셔플로 매번 다른 사찰 추출 ────────────────────────────────
+  // 점수가 높은 특정 사찰(대각사 등)이 독점되지 않도록 Fisher-Yates 셔플 적용
+  const PURPOSE_SEED_OFFSETS = { 재물운: 1031, 건강운: 2053, 학업운: 3079, 인연운: 4099, 가정운: 5147, 수험합격: 6197, 취업운: 7211, 출산기도: 8221 };
+  const distSeed = (distribution.목||0)*97 + (distribution.화||0)*191 + (distribution.토||0)*283 + (distribution.금||0)*379 + (distribution.수||0)*467;
+  // 시, 분까지 반영해 같은 날 다른 시간대 입력도 다른 결과
+  const hourSeed = (bi.hour || 0) * 1009 + (bi.minute || 0) * 13;
+  const baseSeed = Math.abs(
+    (bi.year || 2000) * 40507 + (bi.month || 1) * 3001 + (bi.day || 1) * 997
+    + distSeed + hourSeed + (PURPOSE_SEED_OFFSETS[request.purpose] || 0)
+  );
+
+  // 상위 풀을 점수 기반 가중치로 섞기: 상위권 유지하되 순서를 시드로 다양화
+  function seededShuffle(arr, seed) {
+    const a = arr.map((item, i) => ({ item, order: 0 }));
+    let s = seed;
+    for (let i = 0; i < a.length; i++) {
+      s = (s * 1664525 + 1013904223) >>> 0; // LCG
+      // 점수가 높을수록 앞에 올 확률 높게: 점수 정규화 + 난수 혼합
+      const scoreNorm = (a[i].item.score || 0) / 100;
+      a[i].order = scoreNorm * 0.55 + (s / 0xFFFFFFFF) * 0.45;
+    }
+    return a.sort((x, y) => y.order - x.order).map(o => o.item);
+  }
+
+  const shuffled = seededShuffle(primaryPool, baseSeed);
+
+  // 중복 제거: 같은 이름 사찰 제외하고 3개 선택
   const seenNames = new Set();
   const scored = [];
-  for (let i = 0; scored.length < 3 && i < primaryPool.length; i++) {
-    const t = primaryPool[(seed + i) % primaryPool.length];
+  for (let i = 0; scored.length < 3 && i < shuffled.length; i++) {
+    const t = shuffled[i];
     if (!seenNames.has(t.temple.name)) {
       seenNames.add(t.temple.name);
       scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose, weak.부족오행) });
     }
   }
 
-  // 점수 내림차순 정렬 보장 (seed 오프셋으로 뽑아도 1위가 최고점)
+  // 최종 점수 내림차순 (1위가 가장 인연 강한 사찰)
   scored.sort((a, b) => b.score - a.score);
 
   // 멤버십 회원은 확장된 캘린더(15일), 비회원은 기본(3일) — 클라이언트가 알려주는 소프트 게이팅
@@ -474,7 +519,7 @@ function matchTemples(request, templeDB) {
     };
   } catch(_) {}
 
-  return { distribution, weak, targetOhaeng, results: scored, recommendedDates, purposeGuide: PURPOSE_GUIDE[request.purpose], eightChar };
+  return { distribution, weak, targetOhaeng, purpose: request.purpose, results: scored, recommendedDates, purposeGuide: PURPOSE_GUIDE[request.purpose], eightChar };
 }
 
 /** 궁합사찰 점수 계산 */
@@ -545,14 +590,30 @@ function matchCoupleTemples(request, templeDB) {
     ? [...coupleDirMatched, ...coupleDirOther].slice(0, 20)
     : [...coupleDirOther.slice(0, 3), ...coupleDirMatched, ...coupleDirOther.slice(3)].slice(0, 20);
 
-  const PURPOSE_SEED_OFFSETS_C = { 재물운: 0, 건강운: 5, 학업운: 11, 인연운: 17, 가정운: 23, 수험합격: 29, 취업운: 37, 출산기도: 43 };
-  const coupleBase = (biA.year||2000) * 11 + (biB.year||2000) * 7 + (biA.month||1) * 31 + (biB.day||1) * 13
-    + (PURPOSE_SEED_OFFSETS_C[purpose] || 0);
-  const coupleSeed = coupleBase % Math.max(couplePrimaryPool.length, 1);
+  // 시드 기반 셔플로 매번 다른 사찰 추출 (단일 매칭)
+  const PURPOSE_SEED_OFFSETS_C = { 재물운: 1031, 건강운: 2053, 학업운: 3079, 인연운: 4099, 가정운: 5147, 수험합격: 6197, 취업운: 7211, 출산기도: 8221 };
+  const coupleBase = Math.abs(
+    (biA.year||2000) * 40507 + (biA.month||1) * 3001 + (biA.day||1) * 997
+    + (biB.year||2000) * 20011 + (biB.month||1) * 1511 + (biB.day||1) * 499
+    + (PURPOSE_SEED_OFFSETS_C[purpose] || 0)
+  );
+
+  function seededShuffleC(arr, seed) {
+    const a = arr.map((item) => ({ item, order: 0 }));
+    let s = seed;
+    for (let i = 0; i < a.length; i++) {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      const scoreNorm = (a[i].item.score || 0) / 100;
+      a[i].order = scoreNorm * 0.55 + (s / 0xFFFFFFFF) * 0.45;
+    }
+    return a.sort((x, y) => y.order - x.order).map(o => o.item);
+  }
+
+  const coupleShuffled = seededShuffleC(couplePrimaryPool, coupleBase);
   const coupleSeenNames = new Set();
   const scored = [];
-  for (let i = 0; scored.length < 3 && i < couplePrimaryPool.length; i++) {
-    const t = couplePrimaryPool[(coupleSeed + i) % couplePrimaryPool.length];
+  for (let i = 0; scored.length < 3 && i < coupleShuffled.length; i++) {
+    const t = coupleShuffled[i];
     if (!coupleSeenNames.has(t.temple.name)) {
       coupleSeenNames.add(t.temple.name);
       scored.push({ ...t, reason: generateCoupleReason(t, targetA, targetB) });
@@ -560,6 +621,7 @@ function matchCoupleTemples(request, templeDB) {
   }
   scored.sort((a, b) => b.score - a.score);
   const calendarCount = memberUnlocked ? 15 : 3;
+
   return {
     distributionA,
     distributionB,
@@ -571,4 +633,4 @@ function matchCoupleTemples(request, templeDB) {
   };
 }
 
-module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, getEightChar };
+module.exports = { matchTemples, matchCoupleTemples };
