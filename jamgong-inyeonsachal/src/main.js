@@ -1927,16 +1927,16 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       </div>
     </details>` : '';
 
-  // ── 삼재 상세 안내 접힌 블록 ──────────────────────────────────────────
-  const samjaeDetailHtml = data.samjae ? `
-    <details class="samjae-section">
-      <summary style="cursor:pointer;padding:14px 18px;background:rgba(220,50,50,0.08);border:1.5px solid rgba(220,80,80,0.25);border-radius:14px;font-size:14px;font-weight:700;color:rgba(255,200,200,0.8);list-style:none;display:flex;justify-content:space-between;align-items:center;">
-        <span>⚠️ 삼재(三災) — ${data.samjae?.animalsKo || ''}띠 해당</span>
+  // ── 삼재 (접힘 처리) ──
+  const samjaeHtml = data.samjae ? `
+    <details>
+      <summary style="cursor:pointer;padding:14px 18px;background:rgba(13,30,60,0.8);border:1.5px solid rgba(255,255,255,0.07);border-radius:14px;font-size:14px;font-weight:700;color:rgba(255,255,255,0.7);list-style:none;display:flex;justify-content:space-between;align-items:center;">
+        <span>⚡ 삼재(三災) 안내</span>
         <span style="font-size:11px;color:rgba(255,255,255,0.3);">클릭해서 보기 ▼</span>
       </summary>
-      <div class="saju-dist-section" style="margin-top:4px;border-radius:0 0 14px 14px;">
-        <div style="padding:8px 2px;">
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center;">
+      <div class="saju-dist-section" style="margin-top:4px;">
+        <div class="samjae-info">
+          <span class="samjae-birth">${birthInput.gender==='female'?'여':'남'} · 띠: <strong>${data.samjae.birthZhiCn||data.samjae.birthZhi}</strong>(${data.samjae.birthZhiKo})</span>
           <span class="samjae-target">삼재 해: <strong>${data.samjae.samjaeTarget}</strong>년</span>
         </div>
         ${data.samjae.groups.map((grp)=>{
@@ -2140,136 +2140,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
   });
 }
 
-function renderResults(data) {
-  const resultsEl = document.getElementById("results");
-  resultsEl.classList.remove("hidden");
-
-  const top = (data.results || [])[0];
-  const deg = BEARING_DEG[top?.detail?.bearing] ?? 0;
-  const memberUnlocked = isMember();
-
-  resultsEl.innerHTML = `
-    <div class="results-summary">
-      <div class="label">나의 기운은</div>
-      <div class="ohaeng-value">${data.targetOhaeng || ""} 기운</div>
-      <div class="ohaeng-breakdown">
-        ${Object.entries(data.distribution || {}).map(([k,v]) => `${k} ${v}`).join(" · ")}
-      </div>
-    </div>
-
-    ${buildCompassSVG(deg)}
-
-    ${!memberUnlocked ? `
-      <div style="text-align:center;margin:-4px 0 14px;">
-        <button id="demo-detail-btn" style="display:inline-flex;align-items:center;gap:7px;background:rgba(212,175,55,0.08);border:1.5px solid rgba(212,175,55,0.35);border-radius:20px;padding:9px 22px;color:rgba(212,175,55,0.9);font-size:13px;font-family:var(--sans);font-weight:600;cursor:pointer;">✨ 멤버십 상세페이지 미리보기</button>
-      </div>
-    ` : ""}
-
-    ${memberUnlocked ? `
-      <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
-    ` : `
-      <div class="member-unlock">
-        <input type="text" id="member-code-input" placeholder="멤버십 코드 입력 (선택)" />
-        <button id="member-code-btn">확인</button>
-      </div>
-    `}
-
-    ${data.purposeGuide ? `
-      <div class="prayer-guide">
-        <div class="prayer-guide-label">🙏 이렇게 기도해보세요</div>
-        <div class="prayer-guide-text">
-          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
-        </div>
-      </div>
-    ` : ""}
-
-    ${(data.results || []).map((r, i) => `
-      <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail?.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
-        <div class="temple-rank">${i + 1}</div>
-        <div class="temple-body">
-          <h3>
-            <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
-              ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
-            </a>
-          </h3>
-          <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
-          <div class="reason">${r.reason}</div>
-          ${r.temple.history ? `
-            <div class="temple-detail">
-              <div class="temple-detail-label">유래·연혁</div>
-              <div class="temple-detail-text">
-                ${memberUnlocked ? r.temple.history : (r.temple.history.length > 35 ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>` : r.temple.history)}
-              </div>
-              ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
-            </div>
-          ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
-          <button type="button" class="detail-view-btn" data-temple-index="${i}">상세페이지 보기 →</button>
-        </div>
-      </div>
-    `).join("")}
-
-    ${data.recommendedDates && data.recommendedDates.length ? `
-      <div class="calendar-card">
-        <div class="calendar-title">📅 좋은 방문 날짜 추천</div>
-        <div class="calendar-items">
-          ${data.recommendedDates.map(d => `<div class="calendar-item"><span class="cal-date">${d.date}</span>${d.reason ? `<span class="cal-reason">${d.reason}</span>` : ''}</div>`).join('')}
-        </div>
-      </div>
-    ` : ''}
-
-    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
-
-    <div class="notice-box">
-      <div class="notice-item">
-        <span class="notice-icon">ℹ️</span>
-        <span>${data.disclaimer || "본 결과는 사주 오행 이론을 바탕으로 한 참고 정보입니다."}</span>
-      </div>
-    </div>
-  `;
-
-  const codeInput2 = document.getElementById("member-code-input");
-  const codeBtn2   = document.getElementById("member-code-btn");
-  if (codeBtn2) {
-    codeBtn2.addEventListener("click", () => {
-      if (codeInput2 && codeInput2.value.trim() === MEMBER_CODE) {
-        tryUnlockMembership(codeInput2.value.trim());
-        renderResults(data);
-      } else {
-        alert("코드가 올바르지 않습니다.");
-      }
-    });
-  }
-
-  document.querySelectorAll(".detail-view-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const idx = parseInt(btn.dataset.templeIndex);
-      renderTempleDetailPage(data.results[idx], data, memberUnlocked);
-    });
-  });
-
-  document.getElementById("share-btn")?.addEventListener("click", () => {
-    if (navigator.share) {
-      navigator.share({ title: "잼공인연사찰 매칭 결과", url: window.location.href });
-    } else {
-      navigator.clipboard.writeText(window.location.href).then(() => alert("링크가 복사되었습니다."));
-    }
-  });
-
-  document.getElementById("demo-detail-btn")?.addEventListener("click", () => {
-    const demoResult = {
-      score: 94,
-      reason: "수(水) 기운이 부족한 사주에 이 사찰의 강한 수 기운이 보완해줍니다.",
-      temple: { name: "통도사", address: "경상남도 양산시 하북면 통도사로 108", lat: 35.489166, lng: 129.058611, foundedYear: 646 },
-      detail: { templeOhaeng: "수", bearing: "북", distanceKm: 12.3 },
-      weather: { condition: "맑음", temp: 24 },
-    };
-    const demoMatchData = { purpose: "학업운", distribution: { 목:1, 화:2, 토:2, 금:2, 수:1 }, targetOhaeng: "수", purposeGuide: [] };
-    renderTempleDetailPage(demoResult, demoMatchData, true);
-  });
-
-  resultsEl.scrollIntoView({ behavior: "smooth" });
-}
-
 function renderCoupleResults(data) {
   const resultsEl = document.getElementById("results");
   resultsEl.classList.remove("hidden");
@@ -2336,12 +2206,152 @@ function renderCoupleResults(data) {
 
     ${data.recommendedDates && data.recommendedDates.length ? `
       <div class="calendar-card">
-        <div class="calendar-title">📅 좋은 방문 날짜 추천</div>
-        <div class="calendar-items">
-          ${data.recommendedDates.map(d => `<div class="calendar-item"><span class="cal-date">${d.date}</span>${d.reason ? `<span class="cal-reason">${d.reason}</span>` : ''}</div>`).join('')}
+        <div class="calendar-title">함께 방문하면 좋은 날${memberUnlocked ? " (멤버 확장 · 45일 이내)" : ""}</div>
+        <div class="calendar-dates">
+          ${data.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
+        </div>
+        ${!memberUnlocked ? `<div class="calendar-more-hint">🔒 멤버는 더 많은 추천일을 볼 수 있습니다</div>` : ""}
+      </div>
+    ` : ""}
+
+    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
+
+    <div class="notice-box">
+      <div class="notice-item">
+        <span class="notice-icon">ℹ️</span>
+        <span>${data.disclaimer || "본 결과는 사주 오행 이론을 바탕으로 한 참고 정보입니다."}</span>
+      </div>
+    </div>
+
+    <div class="patent-notice-banner">
+      <div class="patent-notice-icon">⚖️</div>
+      <div class="patent-notice-body">
+        <div class="patent-notice-title">지식재산권 안내</div>
+        <div class="patent-notice-text">본 서비스의 <strong>인연 시너지 산출 로직</strong>은 비가산 시너지 기반 지수 산출 방식을 적용한 독자 기술입니다.</div>
+        <span class="patent-num">특허출원 중</span>
+      </div>
+    </div>
+  `;
+
+  const codeInput = document.getElementById("member-code-input");
+  const codeBtn   = document.getElementById("member-code-btn");
+  if (codeBtn) {
+    codeBtn.addEventListener("click", () => {
+      if (codeInput && codeInput.value.trim() === MEMBER_CODE) {
+        tryUnlockMembership(codeInput.value.trim());
+        renderCoupleResults(data);
+      } else {
+        alert("코드가 올바르지 않습니다.");
+      }
+    });
+  }
+
+  document.querySelectorAll(".couple-detail-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.templeIndex);
+      renderTempleDetailPage(data.results[idx], data, memberUnlocked);
+    });
+  });
+
+  document.getElementById("share-btn")?.addEventListener("click", () => {
+    if (navigator.share) {
+      navigator.share({ title: "잼공인연사찰 커플 매칭 결과", url: window.location.href });
+    } else {
+      navigator.clipboard.writeText(window.location.href).then(() => alert("링크가 복사되었습니다."));
+    }
+  });
+
+  resultsEl.scrollIntoView({ behavior: "smooth" });
+}
+
+// ── 단독 인연사찰 결과 렌더링 ──────────────────────────────────────
+function renderResults(data) {
+  const resultsEl = document.getElementById("results");
+  resultsEl.classList.remove("hidden");
+
+  const top = data.results[0];
+  const deg = BEARING_DEG[top?.detail?.bearing] ?? 0;
+  const memberUnlocked = isMember();
+
+  resultsEl.innerHTML = `
+    <div class="results-summary">
+      <div class="label">나의 기운은</div>
+      <div class="ohaeng-value">${data.targetOhaeng || ""} 기운</div>
+      <div class="ohaeng-breakdown">
+        ${Object.entries(data.distribution || {}).map(([k,v]) => `${k} ${v}`).join(" · ")}
+      </div>
+    </div>
+
+    ${buildCompassSVG(deg)}
+
+    ${!memberUnlocked ? `
+      <div style="text-align:center;margin:-4px 0 14px;">
+        <button id="demo-detail-btn" style="
+          display:inline-flex;align-items:center;gap:7px;
+          background:rgba(212,175,55,0.08);border:1.5px solid rgba(212,175,55,0.35);
+          border-radius:20px;padding:9px 22px;color:rgba(212,175,55,0.9);
+          font-size:13px;font-family:var(--sans);font-weight:600;
+          cursor:pointer;transition:all .18s;
+        ">✨ 멤버십 상세페이지 미리보기</button>
+      </div>
+    ` : ""}
+
+    ${memberUnlocked ? `
+      <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
+    ` : `
+      <div class="member-unlock">
+        <input type="text" id="member-code-input" placeholder="멤버십 코드 입력 (선택)" />
+        <button id="member-code-btn">확인</button>
+      </div>
+    `}
+
+    ${data.purposeGuide ? `
+      <div class="prayer-guide">
+        <div class="prayer-guide-label">🙏 이렇게 기도해보세요</div>
+        <div class="prayer-guide-text">
+          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
         </div>
       </div>
-    ` : ''}
+    ` : ""}
+
+    ${(data.results || []).map((r, i) => `
+      <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail?.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
+        <div class="temple-rank">${i + 1}</div>
+        <div class="temple-body">
+          <h3>
+            <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
+              ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
+            </a>
+          </h3>
+          <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
+          <div class="reason">${r.reason}</div>
+          ${r.temple.history ? `
+            <div class="temple-detail">
+              <div class="temple-detail-label">유래·연혁</div>
+              <div class="temple-detail-text">
+                ${memberUnlocked
+                  ? r.temple.history
+                  : (r.temple.history.length > 35
+                      ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`
+                      : r.temple.history)}
+              </div>
+              ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
+            </div>
+          ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
+          <button type="button" class="detail-view-btn" data-temple-index="${i}">상세페이지 보기 →</button>
+        </div>
+      </div>
+    `).join("")}
+
+    ${data.recommendedDates && data.recommendedDates.length ? `
+      <div class="calendar-card">
+        <div class="calendar-title">방문하면 좋은 날${memberUnlocked ? " (멤버 확장 · 45일 이내)" : ""}</div>
+        <div class="calendar-dates">
+          ${data.recommendedDates.map(d => `<span class="date-chip">${formatDate(d.date)}</span>`).join("")}
+        </div>
+        ${!memberUnlocked ? `<div class="calendar-more-hint">🔒 멤버는 더 많은 추천일을 볼 수 있습니다</div>` : ""}
+      </div>
+    ` : ""}
 
     <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
 
@@ -2398,10 +2408,10 @@ function renderCoupleResults(data) {
       temple: {
         name: "통도사",
         address: "경상남도 양산시 하북면 통도사로 108",
+        history: "646년(신라 선덕여왕 15) 자장율사가 창건한 사찰로 부처님 진신사리와 가사를 봉안하여 불보사찰(佛寶寺刹)로 불린다. 경내에는 대웅전, 관음전, 약사전, 산신각, 나한전, 지장전, 문수전 등 다수의 전각이 있다.",
         lat: 35.489166,
         lng: 129.058611,
         foundedYear: 646,
-        history: "신라 선덕여왕 15년(646) 자장율사가 창건한 한국 3보 사찰",
       },
       detail: { templeOhaeng: "수", bearing: "북", distanceKm: 12.3 },
       weather: { condition: "맑음", temp: 24 },
@@ -2418,4 +2428,3 @@ const HIGHLIGHT_BADGE = (word) =>
   `<span style="color:#FFB347;font-size:11px;font-weight:800;background:rgba(255,179,71,0.12);border-radius:8px;padding:2px 7px;margin:0 2px;">${word}</span>`;
 // ── 앱 진입점 ──
 render();
-
