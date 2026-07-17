@@ -1,20 +1,6 @@
 // api/match.js
-// Vercel Serverless Function — 오행 매칭 API
-// 프론트엔드는 이 엔드포인트만 호출하고, 사찰 DB/오행 로직은 서버에서만 실행 (데이터·로직 노출 방지)
-
-let matchTemples, TEMPLE_DB;
-try {
-  matchTemples = require("../src/matching-engine.js").matchTemples;
-} catch(e) {
-  matchTemples = null;
-  console.error("matching-engine load error:", e.message);
-}
-try {
-  TEMPLE_DB = require("../src/temple-db.full.js");
-} catch(e) {
-  TEMPLE_DB = [];
-  console.error("temple-db load error:", e.message);
-}
+const { matchTemples } = require("../src/matching-engine.js");
+const TEMPLE_DB = require("../src/temple-db.full.js");
 
 const WEATHER_CODE_MAP = {
   0: "맑음", 1: "대체로 맑음", 2: "구름 조금", 3: "흐림",
@@ -26,7 +12,6 @@ const WEATHER_CODE_MAP = {
   95: "뇌우",
 };
 
-/** 1위 사찰의 실시간 날씨 조회 (Open-Meteo — 무료, API 키 불필요) */
 async function fetchTempleWeather(lat, lng) {
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&timezone=Asia%2FSeoul`;
@@ -44,7 +29,7 @@ async function fetchTempleWeather(lat, lng) {
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
-    res.status(405).json({ error: "POST 요청만 허용됩니다." });
+    res.status(405).json({ error: "POST only" });
     return;
   }
 
@@ -56,21 +41,14 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    // 위치 정보 없으면 서울시청 기본값으로 폴백
     const safeUserLat = userLat ?? 37.5665;
     const safeUserLng = userLng ?? 126.9780;
-
-    if (!matchTemples) {
-      res.status(500).json({ error: "matching-engine load failed" });
-      return;
-    }
 
     const result = matchTemples(
       { birthDateTime, birthInput, purpose, userLat: safeUserLat, userLng: safeUserLng, memberUnlocked: !!memberUnlocked, region: region || "", maxDistanceKm: maxDistanceKm || null },
       TEMPLE_DB
     );
 
-    // 1위 사찰의 실시간 날씨 조회 (실패해도 전체 응답은 정상 반환)
     if (result.results && result.results[0]) {
       const top = result.results[0].temple;
       const weather = await fetchTempleWeather(top.lat, top.lng);
