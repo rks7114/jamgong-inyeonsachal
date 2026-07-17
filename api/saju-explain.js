@@ -140,7 +140,7 @@ function generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInp
   return text;
 }
 
-module.exports = { handler: async function(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
   try {
     const body = req.body || {};
@@ -150,11 +150,10 @@ module.exports = { handler: async function(req, res) {
       try {
         const Anthropic = require("@anthropic-ai/sdk");
         const client = new Anthropic.default ? new Anthropic.default() : new Anthropic();
-        const prompt = buildPrompt(body);
         const message = await client.messages.create({
           model: "claude-haiku-4-5-20251001",
           max_tokens: 2000,
-          messages: [{ role: "user", content: prompt }]
+          messages: [{ role: "user", content: JSON.stringify(body) }]
         });
         explanation = message.content?.[0]?.text || "";
         if (explanation) return res.status(200).json({ success: true, explanation, source: "ai" });
@@ -168,4 +167,4 @@ module.exports = { handler: async function(req, res) {
     console.error("saju-explain 오류:", err);
     return res.status(500).json({ error: "사주 풀이 생성 중 오류가 발생했습니다." });
   }
-}, generateTemplateExplanation };
+};
