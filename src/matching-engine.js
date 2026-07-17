@@ -356,8 +356,9 @@ function generateReason(result, targetOhaeng, purpose, personalOhaeng) {
       // 사주 부족 오행 = 목적 오행이 일치할 때만 "사주에서 부족하여" 표현 사용
       return `사주에서 ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운이 부족하여, ${detail.bearing}쪽에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.`;
     } else {
-      // 목적 기반 오행으로 선택: 사주 부족 오행과 무관하게 기도 목적 방위가 맞는 사찰
-      return `${purpose} 기도에 적합한 방위(${detail.bearing}쪽, ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운)에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.`;
+      // 목적 기반 오행으로 선택: 사주 부족 오행과 기도 목적 방위 둘 다 표시
+      const personalNote = personalOhaeng ? ` 사주의 ${personalOhaeng}(${OHAENG_BANGWI[personalOhaeng]}) 기운 보완도 함께 고려됩니다.` : "";
+      return `${purpose} 기도에 적합한 방위(${detail.bearing}쪽, ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운)에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.${personalNote}`;
     }
   }
   return `${templeEunNeun} ${purpose} 목적과 관련된 특징을 지닌 사찰로 확인됩니다.`;
