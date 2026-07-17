@@ -889,7 +889,7 @@ function render() {
         renderResults(data);
       }
     } catch (err) {
-      alert("디버그: " + (err?.message || String(err)));
+      alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     } finally {
       clearInterval(msgInterval);
       submitBtn.disabled = false;
@@ -2450,5 +2450,51 @@ function renderResults(data) {
 // ── "핵심" 등 중요 키워드 강조 헬퍼 ──────────────────────────────
 const HIGHLIGHT_BADGE = (word) =>
   `<span style="color:#FFB347;font-size:11px;font-weight:800;background:rgba(255,179,71,0.12);border-radius:8px;padding:2px 7px;margin:0 2px;">${word}</span>`;
+// ── 날짜 포맷 헬퍼 ──
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  try {
+    const d = new Date(dateStr);
+    const days = ["일","월","화","수","목","금","토"];
+    return `${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+  } catch(e) { return dateStr; }
+}
+
+// ── 사찰 상세 페이지 ──
+function renderTempleDetailPage(result, matchData, memberUnlocked) {
+  const resultsEl = document.getElementById("results");
+  if (!resultsEl) return;
+  const t = result.temple;
+  const mapUrl = (t.lat && t.lng)
+    ? `https://map.naver.com/v5/entry/coordinates/${t.lng},${t.lat}?placeName=${encodeURIComponent(t.name)}&entry=plt`
+    : `https://map.naver.com/v5/search/${encodeURIComponent((t.name||"")+" "+(t.address||""))}`;
+  resultsEl.innerHTML = `
+    <div class="temple-detail-page" style="padding:16px 0;">
+      <button id="back-btn" style="background:none;border:1.5px solid rgba(0,210,255,0.4);color:rgba(0,210,255,0.9);
+        border-radius:20px;padding:7px 18px;cursor:pointer;margin-bottom:20px;font-size:13px;">← 목록으로</button>
+      <h2 style="font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;">${t.name||""}</h2>
+      <div style="color:rgba(255,255,255,0.55);font-size:13px;margin-bottom:14px;">매칭점수 ${result.score||""}점 · ${result.detail?.templeOhaeng||""}(${result.detail?.bearing||""}) 기운</div>
+      ${t.address ? `<div style="color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:10px;">📍 ${t.address}</div>` : ""}
+      ${t.foundedYear ? `<div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:10px;">🏛️ 창건 ${t.foundedYear}년</div>` : ""}
+      ${result.reason ? `<div style="background:rgba(0,210,255,0.07);border:1px solid rgba(0,210,255,0.18);border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:14px;line-height:1.7;color:rgba(255,255,255,0.85);">${result.reason}</div>` : ""}
+      ${t.history ? `<div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:12px;color:rgba(0,210,255,0.7);margin-bottom:6px;">유래·연혁</div>
+        <div style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.75);">${memberUnlocked ? t.history : (t.history.length > 80 ? t.history.slice(0,80)+"… 🔒 멤버 전용" : t.history)}</div>
+      </div>` : ""}
+      <a href="${mapUrl}" target="_blank" rel="noopener" style="display:block;text-align:center;background:rgba(0,210,255,0.12);
+        border:1.5px solid rgba(0,210,255,0.35);border-radius:14px;padding:13px;color:rgba(0,210,255,0.9);
+        text-decoration:none;font-size:14px;font-weight:600;margin-bottom:16px;">🗺️ 네이버 지도로 길찾기</a>
+    </div>
+  `;
+  document.getElementById("back-btn")?.addEventListener("click", () => {
+    if (matchData) {
+      renderResults(matchData);
+    } else {
+      resultsEl.classList.add("hidden");
+    }
+  });
+  resultsEl.scrollIntoView({ behavior: "smooth" });
+}
+
 // ── 앱 진입점 ──
 render();
