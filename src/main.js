@@ -929,16 +929,21 @@ function render() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember(), region: document.getElementById("region-select")?.value || "", maxDistanceKm: parseInt(document.getElementById("distance-select")?.value) || null }),
         });
-        const data = await res.json();
+        const rawText = await res.text();
+        let data;
+        try { data = JSON.parse(rawText); } catch(e) {
+          alert("HTTP " + res.status + " / " + rawText.substring(0, 300));
+          return;
+        }
         if (data.error) {
-          alert(`오류가 발생했습니다: ${data.error}\n생년월일을 다시 확인해주세요.`);
+          alert(`오류: ${data.error}`);
           return;
         }
         data.purpose = selectedPurpose;
         renderResults(data);
       }
     } catch (err) {
-      alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      alert("catch: " + err.constructor.name + " / " + err.message);
     } finally {
       clearInterval(msgInterval);
       submitBtn.disabled = false;
@@ -1417,6 +1422,36 @@ function buildSajuDetailCards(data, birthInput) {
   </div>`;
 
   return sipsinHtml + sinsalHtml + sesunHtml + jijangganHtml + gongmangHtml + hamChungHtml + salDeepHtml;
+}
+
+/* ══════════════════════════════════════════════
+   잼공 오라클 서비스 배너
+══════════════════════════════════════════════ */
+function buildOracleServiceBanner() {
+  const BASE = "https://jamgong-oracle.vercel.app";
+  const services = [
+    { icon: "✏️", name: "작명",     desc: "사주 오행 기반\n이름 후보" },
+    { icon: "🔄", name: "개명",     desc: "불용 한자 피한\n새 이름" },
+    { icon: "🏢", name: "기업 상호", desc: "오행·수리 분석\n상호 후보" },
+    { icon: "📅", name: "택일",     desc: "사주 기반\n좋은 날짜" },
+    { icon: "🔮", name: "사주",     desc: "만세력 명식\n오행·십성" },
+    { icon: "💑", name: "궁합",     desc: "두 사람 사주\n관계 분석" },
+    { icon: "🌙", name: "꿈해몽",   desc: "꿈 속 상징\n의미 해석" },
+  ];
+  return `
+  <div style="margin:32px 0 8px;padding:20px 16px 16px;background:rgba(13,30,60,0.7);border:1.5px solid rgba(255,255,255,0.07);border-radius:16px;">
+    <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:0.08em;margin-bottom:14px;text-align:center;">✨ 잼공 오라클 — 다른 서비스 바로가기</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+      ${services.map(s => `
+        <a href="${BASE}" target="_blank" rel="noopener"
+           style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;text-decoration:none;transition:background 0.2s;"
+           onmouseover="this.style.background='rgba(255,255,255,0.09)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'">
+          <span style="font-size:20px">${s.icon}</span>
+          <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.85);">${s.name}</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.4);text-align:center;white-space:pre-line;line-height:1.4;">${s.desc}</span>
+        </a>`).join('')}
+    </div>
+  </div>`;
 }
 
 /* ══════════════════════════════════════════════
@@ -2181,6 +2216,7 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       ${samjaeHtml}
       ${buildLifeGuideCards(data, birthInput)}
       <div id="saju-noprint-bottom">${templeHtml}${sajuSummaryHtml}</div>
+      ${buildOracleServiceBanner()}
     </div>`;
 
   resultsEl.scrollIntoView({ behavior: "smooth", block: "start" });
