@@ -53,8 +53,10 @@ function generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInp
 
   const isSamjae = samjae?.groups?.some(g => g.some(y => Math.abs(y.year - currentYear) <= 1));
   const nowGrp   = isSamjae ? (samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear) <= 1)) || []) : [];
-  const nowY     = nowGrp.find(y => y.year === currentYear || y.year === currentYear - 1 || y.year === currentYear + 1);
-  const samjaeStep = nowY ? (nowY.year < currentYear ? "날삼재(마무리)" : nowY.year === currentYear ? "눌삼재(중반)" : "들삼재(시작)") : "";
+  // 삼재 단계: 그룹을 연도 오름차순 정렬 후 currentYear 인덱스로 판정 (배열 순서 의존 버그 제거)
+  const sortedGrp = [...nowGrp].sort((a, b) => a.year - b.year);
+  const samjaeIdx = sortedGrp.findIndex(y => y.year === currentYear);
+  const samjaeStep = samjaeIdx === 0 ? "들삼재(시작)" : samjaeIdx === 1 ? "눌삼재(중반)" : samjaeIdx === 2 ? "날삼재(마무리)" : "";
 
   const pastDayuns = (daYun?.list || []).filter(dy => !dy.isCurrent && dy.startYear < currentYear && dy.startAge >= 20);
 
