@@ -750,7 +750,7 @@ function render() {
         var nameOk = !query || (t.name && t.name.includes(query));
         var regionOk = !region || (t.address && t.address.includes(region));
         return nameOk && regionOk;
-      }).slice(0, 15);
+      }).slice(0, query ? 15 : 100);
       if (!matches.length) {
         resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:14px;color:rgba(255,255,255,0.4);">검색 결과가 없습니다</div>';
         resultsBox.style.display = 'block';
