@@ -757,11 +757,18 @@ function render() {
         resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:13px;color:rgba(255,255,255,0.5);">⏳ 사찰 목록 로딩 중...</div>';
         resultsBox.style.display = 'block'; return;
       }
-      var matches = allTemples.filter(function(t) {
-        var nameOk = !query || (t.name && t.name.includes(query)) || (t.address && t.address.includes(query));
+      var seen = {};
+      var nameMatches = [], addrMatches = [];
+      allTemples.forEach(function(t) {
+        if (seen[t.id]) return;
         var regionOk = !region || (t.address && t.address.includes(region));
-        return nameOk && regionOk;
-      }).sort(function(a, b) {
+        if (!regionOk) return;
+        var nameHit = !query || (t.name && t.name.includes(query));
+        var addrHit = query && (t.address && t.address.includes(query));
+        if (nameHit) { seen[t.id] = true; nameMatches.push(t); }
+        else if (addrHit) { seen[t.id] = true; addrMatches.push(t); }
+      });
+      var matches = nameMatches.concat(addrMatches).sort(function(a, b) {
         return (a.name||'').localeCompare(b.name||'', 'ko');
       });
       if (!matches.length) {
@@ -790,7 +797,7 @@ function render() {
       if (!item) return;
       const name = item.dataset.name;
       const id = item.dataset.id;
-      const temple = allTemples.find(function(t) { return t.id === id || t.name === name; });
+      const temple = allTemples.find(function(t) { return t.id === id; }) || allTemples.find(function(t) { return t.name === name && (!selectedRegion || (t.address && t.address.includes(selectedRegion))); });
       if (!temple) return;
       input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
       const fakeResult = {
