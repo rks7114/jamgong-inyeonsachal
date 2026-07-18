@@ -714,14 +714,16 @@ function render() {
     if (!input || !resultsBox) return;
 
     let allTemples = [];
+    let templeMap = {};
     let selectedRegion = '';
     let dataReady = false;
     // API에서 사찰 목록 로드
     fetch('/api/temple-list').then(function(r){ return r.ok ? r.json() : []; })
       .then(function(data){
         allTemples = data;
+        templeMap = {};
+        data.forEach(function(t){ if (t.id) templeMap[t.id] = t; });
         dataReady = true;
-        // 로딩 전에 선택된 지역/검색어가 있으면 자동 재검색
         if (selectedRegion || input.value.trim()) showResults(input.value);
       })
       .catch(function(){ allTemples = []; dataReady = true; });
@@ -797,8 +799,16 @@ function render() {
       if (!item) return;
       const name = item.dataset.name;
       const id = item.dataset.id;
-      const temple = allTemples.find(function(t) { return t.id === id; }) || allTemples.find(function(t) { return t.name === name && (!selectedRegion || (t.address && t.address.includes(selectedRegion))); });
-      if (!temple) return;
+      // id로 정확히 조회
+      var temple = id ? templeMap[id] : null;
+      // fallback: 지역 필터 적용한 이름 매칭
+      if (!temple) {
+        var region = selectedRegion;
+        temple = allTemples.find(function(t) {
+          return t.name === name && (!region || (t.address && t.address.includes(region)));
+        });
+      }
+      if (!temple) { alert('사찰 정보를 찾을 수 없습니다. 잠시 후 다시 시도해주세요.'); return; }
       input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
       const fakeResult = {
         temple: temple,
