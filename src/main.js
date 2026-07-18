@@ -424,7 +424,7 @@ function render() {
               style="flex:1;background:none;border:none;outline:none;color:#fff;font-size:14px;font-family:inherit;" />
             <button id="temple-search-clear" type="button" style="display:none;background:none;border:none;color:rgba(255,255,255,0.4);font-size:16px;cursor:pointer;padding:0;">✕</button>
           </div>
-          <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0F172A;border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;overflow:hidden;z-index:100;max-height:280px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);"></div>
+          <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0F172A;border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;overflow:hidden;z-index:100;max-height:360px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);"></div>
         </div>
       </div>
     </div>
@@ -750,7 +750,9 @@ function render() {
         var nameOk = !query || (t.name && t.name.includes(query));
         var regionOk = !region || (t.address && t.address.includes(region));
         return nameOk && regionOk;
-      }).slice(0, query ? 15 : 100);
+      }).sort(function(a, b) {
+        return (a.name||'').localeCompare(b.name||'', 'ko');
+      });
       if (!matches.length) {
         resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:14px;color:rgba(255,255,255,0.4);">검색 결과가 없습니다</div>';
         resultsBox.style.display = 'block';
