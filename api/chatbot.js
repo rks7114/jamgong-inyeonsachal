@@ -1,7 +1,10 @@
 // api/chatbot.js — 인연 길잡이 가이드 API (Vercel Serverless)
-const Anthropic = require("@anthropic-ai/sdk");
+const AnthropicSDK = require("@anthropic-ai/sdk");
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+function getClient() {
+  const A = AnthropicSDK.default || AnthropicSDK;
+  return new A({ apiKey: process.env.ANTHROPIC_API_KEY });
+}
 
 const BASE_SYSTEM = `당신은 '인연 길잡이'입니다. 잼공인연사찰 앱의 따뜻한 안내 도우미예요.
 
@@ -70,6 +73,7 @@ module.exports = async (req, res) => {
   }
 
   try {
+    const client = getClient();
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 600,
