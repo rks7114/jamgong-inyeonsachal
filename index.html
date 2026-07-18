@@ -93,8 +93,9 @@
   <!-- 인연 길잡이 챗봇 -->
   <style>
     #cw{position:fixed;bottom:24px;right:20px;z-index:9000;font-family:sans-serif}
-    #cb{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#005fa3,#00b4d8);border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,180,255,0.45);font-size:24px;transition:transform .2s}
-    #cb:hover{transform:scale(1.1)}
+    #cb{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#005fa3,#00b4d8);border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,180,255,0.45);font-size:13px;font-weight:800;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .2s;font-family:sans-serif;line-height:1.2}
+    #cb:hover{transform:scale(1.06)}
+    #cb .cb-icon{font-size:22px;line-height:1}
     #cp{display:none;position:absolute;bottom:64px;right:0;width:320px;max-height:480px;background:#0d1b2e;border:1.5px solid rgba(0,180,255,0.3);border-radius:18px;box-shadow:0 8px 40px rgba(0,120,255,0.3);overflow:hidden;flex-direction:column}
     #cp.open{display:flex}
     #ch{background:linear-gradient(135deg,#003d66,#005fa3);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
@@ -112,10 +113,13 @@
   <div id="cw">
     <div id="cp">
       <div id="ch"><span>&#127807; 인연 길잡이</span><button id="cc">&#10005;</button></div>
-      <div id="cm"><div class="cmsg bot">안녕하세요! 인연 길잡이예요 &#128522;<br>사찰이나 사주팔자에 대해 무엇이든 물어보세요.</div></div>
-      <div id="cr"><input id="ci" type="text" placeholder="메시지를 입력하세요..." /><button id="cs">전송</button></div>
+      <div id="cm">
+        <div class="cmsg bot">안녕하세요! 인연 길잡이예요 &#128522;<br>사찰이나 사주팔자에 대해 무엇이든 물어보세요.</div>
+        <div class="cmsg bot" style="background:rgba(255,180,0,0.12);color:#ffe082;border:1px solid rgba(255,180,0,0.25);font-size:12px;">&#128294; <strong>점검 안내</strong><br>현재 챗봇 서비스가 점검 중입니다.<br>빠른 시일 내 정상 운영 예정이에요.</div>
+      </div>
+      <div id="cr"><input id="ci" type="text" placeholder="점검 중 — 잠시만 기다려주세요" style="opacity:0.45" disabled /><button id="cs" style="opacity:0.45" disabled>전송</button></div>
     </div>
-    <button id="cb" title="인연 길잡이">&#127807;</button>
+    <button id="cb" title="인연 길잡이 상담"><span class="cb-icon">&#128172;</span>AI상담</button>
   </div>
   <script>
     (function(){
