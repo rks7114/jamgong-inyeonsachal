@@ -1,4 +1,5 @@
 // src/main.js — 잼공인연사찰 MVP 프론트엔드 (vanilla JS)
+import TEMPLE_DB from './temple-db.full.js';
 
 // 챗봇에 전달할 사주 컨텍스트 (renderSajuPage 호출 시 저장)
 let _sajuContext = null;
@@ -33,7 +34,7 @@ const PURPOSE_ICONS = {
   출산기도: `<path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4z"/><path d="M6 20v-1a6 6 0 0112 0v1"/><path d="M12 14v6"/>`,
 };
 
-const OHAENG_COLOR = { 목: "#3C6E5E", 화: "#A23B2E", 토: "#B8892B", 금: "#8A8F98", 수: "#2E4A6B" };
+const OHAENG_COLOR = { 목: "#4ADE80", 화: "#F97316", 토: "#FACC15", 금: "#D4AF37", 수: "#38BDF8" };
 
 // 오행별 부족 기운 분석 — 방문자가 이 사이트에서만 얻을 수 있는 정보
 const OHAENG_DEFICIENCY_INFO = {
@@ -388,6 +389,17 @@ function render() {
       </div>
     </div>
 
+    <!-- ── 사찰 이름 검색 ── -->
+    <div id="temple-search-wrap" style="margin:0 0 16px 0;position:relative;">
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.15);border-radius:16px;padding:12px 18px;">
+        <span style="font-size:18px;">🔍</span>
+        <input id="temple-search-input" type="text" placeholder="사찰 이름으로 직접 검색 (예: 통도사, 진관사)" autocomplete="off"
+          style="flex:1;background:none;border:none;outline:none;color:#fff;font-size:15px;font-family:inherit;" />
+        <button id="temple-search-clear" type="button" style="display:none;background:none;border:none;color:rgba(255,255,255,0.4);font-size:18px;cursor:pointer;padding:0;">✕</button>
+      </div>
+      <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0F172A;border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;overflow:hidden;z-index:100;max-height:280px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);"></div>
+    </div>
+
     <form class="form-card" id="match-form">
       <svg class="corner-cloud tl" viewBox="0 0 40 40"><path d="M4 20 Q4 12 12 12 Q13 6 20 7 Q25 3 30 8 Q36 8 36 15" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
       <svg class="corner-cloud tr" viewBox="0 0 40 40"><path d="M36 20 Q36 12 28 12 Q27 6 20 7 Q15 3 10 8 Q4 8 4 15" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
@@ -661,6 +673,85 @@ function render() {
     });
   });
 
+  // ── 사찰 이름 검색 초기화 ──
+  (function initTempleSearch() {
+    const input = document.getElementById('temple-search-input');
+    const resultsBox = document.getElementById('temple-search-results');
+    const clearBtn = document.getElementById('temple-search-clear');
+    if (!input || !resultsBox) return;
+
+    // temple-db에서 이름 목록
+    const allTemples = Array.isArray(TEMPLE_DB) ? TEMPLE_DB : [];
+
+    function showResults(query) {
+      query = query.trim();
+      clearBtn.style.display = query ? 'block' : 'none';
+      if (!query) { resultsBox.style.display = 'none'; return; }
+      const matches = allTemples.filter(function(t) {
+        return t.name && t.name.includes(query);
+      }).slice(0, 12);
+      if (!matches.length) {
+        resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:14px;color:rgba(255,255,255,0.4);">검색 결과가 없습니다</div>';
+        resultsBox.style.display = 'block';
+        return;
+      }
+      resultsBox.innerHTML = matches.map(function(t) {
+        return '<div class="tsearch-item" data-name="' + (t.name||'') + '" style="padding:13px 18px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
+          + '<span style="font-size:16px;">🏯</span>'
+          + '<div><div style="font-size:14px;font-weight:700;color:#fff;">' + t.name + '</div>'
+          + '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + (t.address||'').slice(0,28) + '</div></div>'
+          + '</div>';
+      }).join('');
+      resultsBox.style.display = 'block';
+    }
+
+    input.addEventListener('input', function() { showResults(this.value); });
+    clearBtn.addEventListener('click', function() {
+      input.value = ''; clearBtn.style.display = 'none'; resultsBox.style.display = 'none'; input.focus();
+    });
+
+    resultsBox.addEventListener('click', function(e) {
+      const item = e.target.closest('.tsearch-item');
+      if (!item) return;
+      const name = item.dataset.name;
+      const temple = allTemples.find(function(t) { return t.name === name; });
+      if (!temple) return;
+      input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
+      // 검색된 사찰 상세페이지 바로 열기
+      const fakeResult = {
+        temple: temple,
+        detail: { templeOhaeng: '금', bearing: '—', distanceKm: null },
+        score: 0,
+        reason: '직접 검색하신 사찰입니다.',
+        weather: null
+      };
+      const resultsEl = document.getElementById('results');
+      const formEl = document.getElementById('match-form');
+      renderTempleDetailPage(fakeResult, null, false, function() {
+        if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.classList.add('hidden'); }
+        if (formEl) formEl.style.display = '';
+        document.getElementById('temple-search-wrap') && (document.getElementById('temple-search-wrap').style.display = '');
+      });
+    });
+
+    // 바깥 클릭 시 닫기
+    document.addEventListener('click', function(e) {
+      if (!document.getElementById('temple-search-wrap')?.contains(e.target)) {
+        resultsBox.style.display = 'none';
+      }
+    });
+
+    // hover 효과
+    resultsBox.addEventListener('mouseover', function(e) {
+      const item = e.target.closest('.tsearch-item');
+      if (item) item.style.background = 'rgba(255,255,255,0.08)';
+    });
+    resultsBox.addEventListener('mouseout', function(e) {
+      const item = e.target.closest('.tsearch-item');
+      if (item) item.style.background = '';
+    });
+  })();
+
   document.getElementById("match-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -766,7 +857,7 @@ function render() {
           clearInterval(loadingInterval);
           resultsEl.classList.add("hidden");
           if (formEl) formEl.style.display = "";
-          alert(sajuData.error);
+          alert(sajuData.error + (sajuData.detail ? "\n\n[" + sajuData.detail + "]" : ""));
           return;
         }
 
@@ -862,7 +953,8 @@ function render() {
         resultsEl.classList.add("hidden");
         resultsEl.innerHTML = "";
         if (formEl) formEl.style.display = "";
-        alert("사주 계산 중 오류가 발생했습니다.");
+        console.error("사주 오류:", err);
+        alert("사주 계산 중 오류가 발생했습니다.\n\n[" + (err?.message || String(err)) + "]");
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "🔮 사주 팔자 확인";
@@ -2587,218 +2679,357 @@ function renderCoupleResults(data) {
 // ── 사찰 상세페이지 ── (절대 삭제 금지: 여기서 관리)
 // ═══════════════════════════════════════════════════════════════════
 function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
-  const resultsEl = document.getElementById("results");
-  resultsEl.classList.remove("hidden");
-  const formEl = document.getElementById("match-form");
-  if (formEl) formEl.style.display = "none";
+  const resultsEl = document.getElementById('results');
+  resultsEl.classList.remove('hidden');
+  const formEl = document.getElementById('match-form');
+  if (formEl) formEl.style.display = 'none';
 
   const t = result.temple || {};
   const d = result.detail || {};
-  const ohaengColor = OHAENG_COLOR[d.templeOhaeng] || "var(--gold)";
-  const mapUrl = "https://map.naver.com/v5/search/" + encodeURIComponent((t.name || "") + " " + (t.address || ""));
-  const distText = d.distanceKm != null
-    ? (d.distanceKm < 1 ? Math.round(d.distanceKm * 1000) + "m" : d.distanceKm.toFixed(1) + "km")
-    : "";
   const score = result.score || 0;
 
-  // 오행 의미
-  const OHAENG_MEANING = {
-    목: "성장·창의·도전",
-    화: "열정·명예·활력",
-    토: "안정·신뢰·중심",
-    금: "결실·의지·재물",
-    수: "지혜·학업·직관"
+  // 오행 팔레트
+  const OHAENG_PAL = {
+    '목': { c:'#4ADE80', r:'74,222,128'  },
+    '화': { c:'#FB923C', r:'251,146,60'  },
+    '토': { c:'#FACC15', r:'250,204,21'  },
+    '금': { c:'#F0C060', r:'240,192,96'  },
+    '수': { c:'#38BDF8', r:'56,189,248'  }
+  };
+  const op = OHAENG_PAL[d.templeOhaeng] || OHAENG_PAL['금'];
+  const oc = op.c;
+  const or_ = op.r;
+
+  // 섹션별 고정 색상 팔레트
+  const COL = {
+    info:    { c:'#60A5FA', r:'96,165,250'   },  // 기본정보 - 파랑
+    loc:     { c:'#F87171', r:'248,113,113'  },  // 위치 - 빨강
+    ohaeng:  { c:oc,        r:or_            },  // 오행 - 오행색
+    reason:  { c:'#C084FC', r:'192,132,252'  },  // 인연이유 - 보라
+    purpose: { c:oc,        r:or_            },  // 기도목적 - 오행색
+    guide:   { c:'#34D399', r:'52,211,153'   },  // 기도가이드 - 민트
+    gido:    { c:'#FCD34D', r:'252,211,77'   },  // 기도문 - 앰버
+    history: { c:'#D97706', r:'217,119,6'    },  // 유래 - 갈색
+    date:    { c:'#818CF8', r:'129,140,248'  },  // 날짜 - 인디고
+    dist:    { c:oc,        r:or_            }   // 오행분포 - 오행색
   };
 
-  // 오행 설명
+  // 섹션 헬퍼 — 색상 파라미터 받음
+  function sec(col, titleHtml, bodyHtml) {
+    return '<div class="ds-card" style="background:rgba(' + col.r + ',0.06);border:1px solid rgba(' + col.r + ',0.22);border-left:4px solid ' + col.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">'
+      + '<div style="font-size:14px;font-weight:800;color:' + col.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + col.r + ',0.2);letter-spacing:.05em;">' + titleHtml + '</div>'
+      + '<div style="font-size:14px;color:#E2E8F0;line-height:1.9;">' + bodyHtml + '</div>'
+      + '</div>';
+  }
+
+  const OHAENG_EMOJI = { '목':'🌿','화':'🔥','토':'🌍','금':'✨','수':'💧' };
+  const OHAENG_MEANING = { '목':'성장·창의·도전','화':'열정·명예·활력','토':'안정·신뢰·중심','금':'결실·의지·재물','수':'지혜·학업·직관' };
   const OHAENG_DESC = {
-    목: "새로운 일을 시작하거나 창의적인 활동에 힘을 불어넣어 줍니다. 성장과 도전의 기운이 강합니다.",
-    화: "이름을 알리고 사람들 사이에서 빛나게 해주는 기운입니다. 열정과 활력을 불어넣습니다.",
-    토: "흔들리는 마음을 안정시키고 근본을 다지게 해줍니다. 신뢰와 지속성의 기운입니다.",
-    금: "결실을 맺고 재물과 의지력을 강화시켜 줍니다. 결단력과 실행력의 기운입니다.",
-    수: "지혜와 직관을 높여주고 학업·시험에 도움이 됩니다. 깊이 생각하는 힘의 기운입니다."
+    '목':'새로운 일을 시작하거나 창의적인 활동에 힘을 불어넣어 줍니다.',
+    '화':'이름을 알리고 사람들 사이에서 빛나게 해주는 기운입니다.',
+    '토':'흔들리는 마음을 안정시키고 근본을 다지게 해줍니다.',
+    '금':'결실을 맺고 재물과 의지력을 강화시켜 줍니다.',
+    '수':'지혜와 직관을 높여주고 학업·시험에 도움이 됩니다.'
   };
-
-  const dist = parentData?.distribution || {};
-  const distHtml = Object.entries(dist).map(function([k,v]) {
-    const isTarget = k === d.templeOhaeng;
-    return '<span style="display:inline-block;padding:3px 10px;border-radius:12px;margin:2px;font-weight:700;font-size:13px;' +
-      'background:' + (isTarget ? ohaengColor + "22" : "rgba(255,255,255,0.06)") + ';' +
-      'border:1px solid ' + (isTarget ? ohaengColor : "rgba(255,255,255,0.1)") + ';' +
-      'color:' + (isTarget ? ohaengColor : "rgba(255,255,255,0.65)") + ';">' +
-      k + " " + v + (isTarget ? " ✦" : "") + "</span>";
-  }).join(" ");
-
-  const purposeGuide = parentData?.purposeGuide || [];
-  const guideHtml = Array.isArray(purposeGuide) && purposeGuide.length
-    ? "<ol class=\"prayer-steps\">" + purposeGuide.map(function(s){ return "<li>" + s + "</li>"; }).join("") + "</ol>"
-    : "";
-
-  const historyFull = t.history || "";
+  const ohaengEmoji = OHAENG_EMOJI[d.templeOhaeng] || '✦';
+  const dist = parentData ? (parentData.distribution || {}) : {};
+  const purposeLabel = parentData ? (parentData.purpose || '') : '';
+  const purposeGuide = parentData ? (parentData.purposeGuide || []) : [];
+  const recDates = parentData ? (parentData.recommendedDates || []) : [];
+  const dateCount = memberUnlocked ? recDates.length : Math.min(3, recDates.length);
+  const historyFull = t.history || '';
   const historyHtml = memberUnlocked
     ? historyFull
-    : (historyFull.length > 80
-        ? historyFull.slice(0, 80) + '… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>'
-        : historyFull || "정보 없음");
+    : (historyFull.length > 120
+        ? historyFull.slice(0, 120) + '… <span style="color:rgba(255,255,255,0.35);font-size:12px;">🔒 전체보기는 멤버 전용</span>'
+        : historyFull || '정보 없음');
+  const mapUrl = 'https://map.naver.com/v5/search/' + encodeURIComponent((t.name || '') + ' ' + (t.address || ''));
+  const distText = d.distanceKm != null
+    ? (d.distanceKm < 1 ? Math.round(d.distanceKm * 1000) + 'm' : d.distanceKm.toFixed(1) + 'km')
+    : '정보 없음';
 
+  // 날씨
   const weatherHtml = result.weather
-    ? '<div class="temple-detail-weather">🌤️ ' + result.weather.condition + " " + result.weather.temp + "°C</div>"
-    : "";
+    ? '<div style="display:inline-flex;align-items:center;gap:7px;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);border-radius:20px;padding:5px 14px;font-size:13px;color:#7DD3FA;margin-top:10px;">🌤 <b>' + result.weather.condition + '</b>&nbsp;' + result.weather.temp + '°C</div>'
+    : '';
 
-  const purposeLabel = parentData?.purpose || "";
+  let html = '<div class="temple-detail-page">';
+  html += '<style>'
+    + '.ds-card{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;cursor:default;}'
+    + '.ds-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.35);border-color:rgba(255,255,255,0.28) !important;}'
+    + '.ds-card:hover .ds-title{letter-spacing:.07em;}'
+    + '#detail-back-btn:hover{background:rgba(255,255,255,0.16);}'
+    + '.detail-date-card{transition:transform .15s,box-shadow .15s;}'
+    + '.detail-date-card:hover{transform:translateY(-4px) scale(1.06);box-shadow:0 8px 24px rgba(0,0,0,.4);}'
+    + '</style>';
 
-  // 추천 방문 날짜
-  const recDates = parentData?.recommendedDates || [];
-  const dateCount = memberUnlocked ? recDates.length : Math.min(3, recDates.length);
-  const datesHtml = recDates.slice(0, dateCount).map(function(d2) {
-    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">' +
-      '<span style="font-size:13px;font-weight:700;color:' + ohaengColor + ';min-width:90px;">' + d2.date + '</span>' +
-      (d2.reason ? '<span style="font-size:12px;color:rgba(255,255,255,0.55);">' + d2.reason + '</span>' : '') +
-      '</div>';
-  }).join('');
+  // 뒤로가기
+  html += '<button id="detail-back-btn" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:18px;transition:background .15s;">← 목록으로</button>';
 
-  let html = "";
-  html += '<div class="temple-detail-page">';
-  html += '<button class="back-btn" id="detail-back-btn">← 목록으로</button>';
-
-  // ─── Hero ───
-  html += '<div class="temple-detail-hero" style="border-top:4px solid ' + ohaengColor + ';">';
-  html += '<div class="temple-detail-name temple-name-glow">' + (t.name || "사찰") + "</div>";
-  if (t.foundedYear) html += '<div class="temple-detail-addr" style="font-size:12px;opacity:0.6;">창건 ' + t.foundedYear + '년</div>';
-  html += '<div class="temple-detail-addr" style="color:' + ohaengColor + ';font-weight:700;font-size:14px;margin:4px 0;">';
-  html += (d.templeOhaeng || "") + " 기운 · " + (OHAENG_MEANING[d.templeOhaeng] || "");
-  html += "</div>";
+  // ── HERO ──
+  html += '<div id="detail-hero" style="position:relative;overflow:hidden;background:linear-gradient(160deg,rgba(' + or_ + ',0.18) 0%,rgba(0,0,0,0) 70%);border:1px solid rgba(' + or_ + ',0.35);border-top:3px solid ' + oc + ';border-radius:22px;padding:28px 22px 22px;margin-bottom:16px;text-align:center;">';
+  // 이미지 레이어 (JS로 채움)
+  html += '<div id="detail-hero-img" style="position:absolute;inset:0;background-size:cover;background-position:center top;border-radius:22px;opacity:0;transition:opacity .6s ease;"></div>';
+  // 다크 오버레이 (이미지 위에 텍스트 가독성)
+  html += '<div id="detail-hero-overlay" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,10,25,0.55) 0%,rgba(5,10,25,0.82) 100%);border-radius:22px;opacity:0;transition:opacity .6s ease;"></div>';
+  html += '<div style="position:relative;z-index:1;">';
+  html += '<div style="font-size:11px;letter-spacing:.2em;color:' + oc + ';text-transform:uppercase;margin-bottom:8px;font-weight:700;opacity:.9;">' + ohaengEmoji + '  ' + (d.templeOhaeng || '') + '(오행) · ' + (OHAENG_MEANING[d.templeOhaeng] || '') + '</div>';
+  html += '<div style="font-size:clamp(28px,5vw,40px);font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.5px;text-shadow:0 0 30px rgba(' + or_ + ',.4);">' + (t.name || '사찰') + '</div>';
+  if (t.foundedYear) html += '<div style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:4px;">창건 ' + t.foundedYear + '년</div>';
   html += weatherHtml;
-  // 점수 게이지
-  html += '<div style="margin-top:14px;">';
-  html += '<div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:4px;"><span>인연 매칭 점수</span><span style="color:' + ohaengColor + ';font-weight:800;">' + score + '점</span></div>';
-  html += '<div style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">';
-  html += '<div style="height:100%;width:' + Math.min(score, 100) + '%;background:linear-gradient(90deg,' + ohaengColor + ',rgba(255,255,255,0.6));border-radius:4px;transition:width 1s ease;"></div>';
-  html += "</div></div>";
-  html += "</div>";
+  // 점수바
+  html += '<div style="margin-top:18px;">';
+  html += '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:rgba(255,255,255,0.45);">인연 매칭 점수</span><span style="color:' + oc + ';font-weight:800;font-size:15px;">' + score + '점</span></div>';
+  html += '<div style="height:10px;background:rgba(0,0,0,0.4);border-radius:5px;overflow:hidden;">';
+  html += '<div style="height:100%;width:' + Math.min(score, 100) + '%;background:linear-gradient(90deg,' + oc + ' 0%,#fff 120%);border-radius:5px;box-shadow:0 0 12px rgba(' + or_ + ',.7);"></div>';
+  html += '</div></div></div></div>';  // z-index div + score + hero
 
-  // ─── 기본 정보 카드 ───
-  html += '<div class="temple-detail-section">';
-  html += '<div class="temple-detail-section-title">🏯 사찰 기본 정보</div>';
+  // ── 기본정보 ──
+  const c_info = COL.info;
+  html += '<div class="ds-card" style="background:rgba(' + c_info.r + ',0.06);border:1px solid rgba(' + c_info.r + ',0.22);border-left:4px solid ' + c_info.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+  html += '<div style="font-size:14px;font-weight:800;color:' + c_info.c + ';margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_info.r + ',0.2);letter-spacing:.05em;">🏯 사찰 기본 정보</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
-  const infoItems = [
-    { icon: "🧭", label: "방위", val: d.bearing || "정보 없음" },
-    { icon: "📏", label: "거리", val: distText || "정보 없음" },
-    { icon: "🔥", label: "오행 기운", val: (d.templeOhaeng || "") + " (" + (OHAENG_MEANING[d.templeOhaeng] || "") + ")" },
-    { icon: "⭐", label: "매칭 점수", val: score + "점" },
-  ];
-  infoItems.forEach(function(item) {
-    html += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;">';
-    html += '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px;">' + item.icon + " " + item.label + '</div>';
-    html += '<div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85);">' + item.val + '</div>';
-    html += '</div>';
-  });
+  // 카드 - 방위
+  html += '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;">';
+  html += '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;letter-spacing:.1em;">🧭 방위</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:#E2E8F0;">' + (d.bearing || '—') + '</div></div>';
+  // 카드 - 거리
+  html += '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;">';
+  html += '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;letter-spacing:.1em;">📏 거리</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:#E2E8F0;">' + distText + '</div></div>';
+  // 카드 - 오행 (highlight)
+  html += '<div style="background:rgba(' + or_ + ',0.1);border:1px solid rgba(' + or_ + ',0.35);border-radius:12px;padding:14px;">';
+  html += '<div style="font-size:11px;color:rgba(' + or_ + ',.6);margin-bottom:6px;letter-spacing:.1em;">' + ohaengEmoji + ' 오행 기운</div>';
+  html += '<div style="font-size:15px;font-weight:800;color:' + oc + ';">' + (d.templeOhaeng || '—') + ' · ' + (OHAENG_MEANING[d.templeOhaeng] || '—') + '</div></div>';
+  // 카드 - 점수 (highlight)
+  html += '<div style="background:rgba(' + or_ + ',0.1);border:1px solid rgba(' + or_ + ',0.35);border-radius:12px;padding:14px;">';
+  html += '<div style="font-size:11px;color:rgba(' + or_ + ',.6);margin-bottom:6px;letter-spacing:.1em;">⭐ 매칭 점수</div>';
+  html += '<div style="font-size:16px;font-weight:800;color:' + oc + ';">' + score + '점</div></div>';
   html += '</div></div>';
 
-  // ─── 위치 ───
-  html += '<div class="temple-detail-section">';
-  html += '<div class="temple-detail-section-title">📍 위치 &amp; 방문 안내</div>';
-  if (t.address) html += '<div class="temple-detail-section-body temple-detail-addr" style="margin-bottom:10px;">' + t.address + "</div>";
-  html += '<a class="map-link-btn" href="' + mapUrl + '" target="_blank" rel="noopener">🗺️ 네이버 지도에서 길찾기</a>';
-  html += "</div>";
+  // ── 위치 ──
+  const c_loc = COL.loc;
+  html += '<div class="ds-card" style="background:rgba(' + c_loc.r + ',0.06);border:1px solid rgba(' + c_loc.r + ',0.22);border-left:4px solid ' + c_loc.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+  html += '<div style="font-size:14px;font-weight:800;color:' + c_loc.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_loc.r + ',0.2);">📍 위치 &amp; 방문 안내</div>';
+  if (t.address) html += '<div style="font-size:14px;color:#CBD5E1;margin-bottom:14px;line-height:1.7;">' + t.address + '</div>';
+  html += '<a href="' + mapUrl + '" target="_blank" rel="noopener" style="display:block;text-align:center;background:rgba(' + c_loc.r + ',0.12);border:1px solid rgba(' + c_loc.r + ',0.35);color:' + c_loc.c + ';border-radius:12px;padding:12px;font-weight:700;font-size:14px;text-decoration:none;">🗺️ 네이버 지도에서 길찾기</a>';
+  html += '</div>';
 
-  // ─── 오행 의미 ───
+  // ── 오행기운 ──
   if (d.templeOhaeng && OHAENG_DESC[d.templeOhaeng]) {
-    html += '<div class="temple-detail-section" style="border-left:3px solid ' + ohaengColor + ';">';
-    html += '<div class="temple-detail-section-title" style="color:' + ohaengColor + ';">✦ ' + d.templeOhaeng + '(오행) 기운이란?</div>';
-    html += '<div class="temple-detail-section-body">' + OHAENG_DESC[d.templeOhaeng] + '</div>';
+    html += sec(COL.ohaeng, ohaengEmoji + ' ' + d.templeOhaeng + '(오행) 기운이란?',
+      '<p style="margin:0;">' + OHAENG_DESC[d.templeOhaeng] + '</p>');
+  }
+
+  // ── 인연이유 ──
+  if (result.reason) {
+    html += sec(COL.reason, '✨ 나와의 인연 이유',
+      '<p style="margin:0;">' + result.reason + '</p>');
+  }
+
+  // ── 기도목적 ──
+  if (purposeLabel) {
+    const c_p = COL.purpose;
+    html += '<div class="ds-card" style="background:rgba(' + c_p.r + ',0.06);border:1px solid rgba(' + c_p.r + ',0.22);border-left:4px solid ' + c_p.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+    html += '<div style="font-size:14px;font-weight:800;color:' + c_p.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_p.r + ',0.2);">🎯 기도 목적</div>';
+    html += '<span style="display:inline-block;background:rgba(' + c_p.r + ',0.18);border:1.5px solid rgba(' + c_p.r + ',0.5);color:' + c_p.c + ';border-radius:24px;padding:9px 26px;font-weight:800;font-size:16px;">' + purposeLabel + '</span>';
     html += '</div>';
   }
 
-  // ─── 인연 이유 ───
-  html += '<div class="temple-detail-section">';
-  html += '<div class="temple-detail-section-title">✨ 나와의 인연 이유</div>';
-  html += '<div class="temple-detail-section-body" style="line-height:1.8;">' + (result.reason || "") + "</div>";
-  html += "</div>";
-
-  // ─── 기도 목적 ───
-  if (purposeLabel) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">🎯 기도 목적</div>';
-    html += '<div class="temple-detail-section-body"><span style="background:' + ohaengColor + '22;border:1px solid ' + ohaengColor + '55;color:' + ohaengColor + ';border-radius:20px;padding:5px 16px;font-weight:700;font-size:14px;">' + purposeLabel + "</span></div>";
-    html += "</div>";
+  // ── 기도가이드 ──
+  if (Array.isArray(purposeGuide) && purposeGuide.length) {
+    const stepsHtml = '<ol style="margin:0;padding-left:20px;">'
+      + purposeGuide.map(function(s, i) {
+          return '<li style="margin-bottom:10px;padding-left:4px;">'
+            + '<span style="color:' + COL.guide.c + ';font-weight:700;">' + (i+1) + '.</span> ' + s + '</li>';
+        }).join('')
+      + '</ol>';
+    html += sec(COL.guide, '🙏 이렇게 기도해보세요', stepsHtml);
   }
 
-  // ─── 기도 가이드 ───
-  if (guideHtml) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">🙏 이렇게 기도해보세요</div>';
-    html += '<div class="temple-detail-section-body">' + guideHtml + "</div>";
-    html += "</div>";
+  // ── 기도문 ──
+  const GIDO = {
+    '재물운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님, 오늘 저는 ' + nm + '의 금(金) 기운이 가득한 이 도량에서 간절히 발원하오니,\n저의 부족한 재물운이 열려 정직하고 성실한 노력에 합당한 결실을 맺게 하여 주시옵소서.\n헛된 탐욕이 아닌, 가족과 이웃이 함께 나눌 수 있는 올바른 재물이 넘쳐흘러\n삶이 안온하게 하여 주시옵소서.\n제가 얻은 것으로 보시하고 덕을 쌓아 더 큰 복으로 돌아오게 하여 주시옵소서.\n\n나무아미타불 관세음보살.'; },
+    '건강운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 약사여래 부처님, 오늘 저는 ' + nm + '의 토(土) 기운이 깃든 이 청정 도량에서 발원하오니,\n몸과 마음의 모든 병이 사라지고 건강한 기운이 충만하게 하여 주시옵소서.\n바른 음식, 바른 생각, 바른 쉼으로 이 몸을 아끼고 사랑하여\n오래도록 가족 곁에 있게 하여 주시옵소서.\n\n나무약사유리광여래.'; },
+    '학업운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n지혜의 문수보살님, 오늘 저는 ' + nm + '의 수(水) 기운이 흐르는 이 도량에서 간절히 발원하오니,\n배움에 대한 집중력과 기억력이 밝아지고 깊은 지혜가 열리게 하여 주시옵소서.\n목표한 결과를 이루게 하여 주시옵소서.\n\n나무대지문수사리보살.'; },
+    '인연운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비로우신 관세음보살님, 오늘 저는 ' + nm + '의 화(火) 기운이 충만한 이 도량에서 발원하오니,\n저와 진정으로 인연이 맞는 소중한 사람과의 만남이 이루어지게 하여 주시옵소서.\n서로 존중하고 아끼며 함께 성장하고 행복할 수 있는 깊은 인연을 맺게 하여 주시옵소서.\n\n나무대자대비관세음보살.'; },
+    '가정운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님, 오늘 저는 ' + nm + '의 목(木) 기운이 가득한 이 도량에서 온 가족을 위해 발원하오니,\n저희 가정에 화목과 평안이 넘치게 하여 주시옵소서.\n서로 배려하고 사랑하는 마음이 깊어지게 하여 주시옵소서.\n\n나무아미타불.'; },
+    '수험합격': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n문수보살님, 오늘 저는 ' + nm + '의 화(火) 기운이 빛나는 이 도량에서 간절히 발원하오니,\n다가오는 시험에서 저의 능력을 온전히 발휘하여 합격의 기쁨을 얻게 하여 주시옵소서.\n침착하고 자신 있게 문제를 풀어낼 수 있도록 이끌어 주시옵소서.\n\n나무석가모니불.'; },
+    '취업운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님, 오늘 저는 ' + nm + '의 금(金) 기운이 빛나는 이 도량에서 발원하오니,\n저의 능력과 열정을 알아봐 주는 좋은 직장과의 인연이 이루어지게 하여 주시옵소서.\n취업 후에는 성실하게 일하며 성장하는 사람이 되겠습니다.\n\n나무아미타불.'; },
+    '출산기도': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님과 칠성님께, 오늘 저는 ' + nm + '의 목(木) 기운이 가득한 이 도량에서 간절히 발원하오니,\n건강하고 복된 새 생명이 저희 품에 안기게 하여 주시옵소서.\n산모와 아기 모두 건강하게 하여 주시옵소서.\n\n나무관세음보살.'; }
+  };
+  const gidoFn = purposeLabel ? GIDO[purposeLabel] : null;
+  if (gidoFn) {
+    const gidoText = gidoFn(t.name || '이 사찰');
+    const c_g = COL.gido;
+    if (memberUnlocked) {
+      html += '<div class="ds-card" style="background:rgba(' + c_g.r + ',0.07);border:1px solid rgba(' + c_g.r + ',0.25);border-left:4px solid ' + c_g.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+      html += '<div style="font-size:14px;font-weight:800;color:' + c_g.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_g.r + ',0.2);">🕯️ 맞춤 기도문</div>';
+      html += '<div style="font-size:14px;color:#E2E8F0;line-height:2.1;white-space:pre-line;background:rgba(0,0,0,0.2);border-radius:12px;padding:16px;">' + gidoText + '</div>';
+      html += '<button id="gido-copy-btn" style="margin-top:14px;display:inline-flex;align-items:center;gap:6px;background:rgba(' + c_g.r + ',0.15);border:1px solid rgba(' + c_g.r + ',0.4);color:' + c_g.c + ';border-radius:14px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;">📋 기도문 복사</button>';
+      html += '<textarea id="gido-raw" style="position:absolute;left:-9999px;opacity:0;" readonly>' + gidoText + '</textarea>';
+      html += '</div>';
+    } else {
+      html += '<div class="ds-card" style="background:rgba(' + c_g.r + ',0.07);border:1px solid rgba(' + c_g.r + ',0.25);border-left:4px solid ' + c_g.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+      html += '<div style="font-size:14px;font-weight:800;color:' + c_g.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_g.r + ',0.2);">🕯️ 맞춤 기도문</div>';
+      html += '<div style="font-size:14px;color:#94A3B8;line-height:2;background:rgba(0,0,0,0.2);border-radius:12px;padding:16px;filter:blur(2px);pointer-events:none;">' + gidoText.slice(0, 80) + '…</div>';
+      html += '<div style="margin-top:14px;text-align:center;font-size:15px;font-weight:800;color:#1A1200;background:#FCD34D;border-radius:10px;padding:12px 16px;letter-spacing:.03em;">🔒 전체 기도문은 멤버십 전용입니다</div>';
+      html += '</div>';
+    }
   }
 
-  // ─── 유래·연혁 ───
+  // ── 유래연혁 ──
   if (historyFull) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">📜 유래 · 연혁</div>';
-    html += '<div class="temple-detail-section-body" style="line-height:1.8;">' + historyHtml + "</div>";
-    html += "</div>";
+    html += sec(COL.history, '📜 유래 · 연혁', '<p style="margin:0;">' + historyHtml + '</p>');
   }
 
-  // ─── 방문 추천 날짜 ───
+  // ── 추천 날짜 ──
   if (recDates.length > 0) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">📅 추천 방문 날짜' + (!memberUnlocked ? ' <span style="font-size:11px;opacity:0.5;">(상위 3일 · 전체는 멤버 전용)</span>' : '') + '</div>';
-    html += '<div class="temple-detail-section-body">' + datesHtml + "</div>";
-    html += "</div>";
+    const c_d = COL.date;
+    const YOIL = ['일','월','화','수','목','금','토'];
+    const datesHtml = recDates.slice(0, dateCount).map(function(d2) {
+      const parts = d2.date.split('-');
+      const mo = parseInt(parts[1]);
+      const dy = parseInt(parts[2]);
+      const dow = new Date(parseInt(parts[0]), mo - 1, dy).getDay();
+      const yoil = YOIL[dow];
+      const isWkend = dow === 0 || dow === 6;
+      const fe = d2.dayOhaeng ? (OHAENG_EMOJI[d2.dayOhaeng[0]] || '✶') : '✶';
+      const fc = d2.dayOhaeng ? (OHAENG_PAL[d2.dayOhaeng[0]] || OHAENG_PAL['금']) : OHAENG_PAL['금'];
+      return '<div class="detail-date-card" style="display:inline-flex;flex-direction:column;align-items:center;gap:5px;'
+        + 'background:rgba(' + fc.r + ',0.1);border:1px solid rgba(' + fc.r + ',0.35);'
+        + 'border-radius:16px;padding:14px 18px;margin:4px;min-width:74px;">'
+        + '<span style="font-size:20px;">' + fe + '</span>'
+        + '<span style="font-size:17px;font-weight:900;color:' + fc.c + ';">' + mo + '/' + dy + '</span>'
+        + '<span style="font-size:12px;color:' + (isWkend ? '#F87171' : 'rgba(255,255,255,0.6)') + ';font-weight:600;">(' + yoil + ')</span>'
+        + (d2.dayOhaeng ? '<span style="font-size:10px;color:' + fc.c + ';font-weight:700;">' + Array.from(d2.dayOhaeng).join('·') + '일</span>' : '')
+        + '</div>';
+    }).join('');
+    html += '<div class="ds-card" style="background:rgba(' + c_d.r + ',0.06);border:1px solid rgba(' + c_d.r + ',0.22);border-left:4px solid ' + c_d.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+    html += '<div style="font-size:14px;font-weight:800;color:' + c_d.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_d.r + ',0.2);">📅 추천 방문 날짜'
+      + (!memberUnlocked ? '<span style="font-size:11px;font-weight:400;opacity:.45;margin-left:8px;">상위 3일 · 전체는 멤버 전용</span>' : '') + '</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:2px;">' + datesHtml + '</div>';
+    if (!memberUnlocked && recDates.length >= 3) {
+      html += '<div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.35);text-align:center;">🔒 멤버십 회원은 최대 15일 추천 날짜 제공</div>';
+    }
+    html += '</div>';
   }
 
-  // ─── 오행 분포 ───
-  if (Object.keys(dist).length) {
-    html += '<div class="temple-detail-section">';
-    html += '<div class="temple-detail-section-title">🔥 나의 사주 오행 분포</div>';
-    html += '<div class="temple-detail-section-body" style="margin-bottom:8px;">' + distHtml + "</div>";
-    html += '<div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:6px;">✦ 표시된 기운이 이 사찰의 오행으로, 나의 부족한 <strong style="color:' + ohaengColor + ';">' + (d.templeOhaeng || "") + '</strong> 기운을 보완해 줍니다.</div>';
-    html += "</div>";
+  // ── 오행분포 ──
+  if (Object.keys(dist).length > 0) {
+    const c_dist = COL.dist;
+    const distHtml = Object.entries(dist).map(function([k, v]) {
+      const isT = k === d.templeOhaeng;
+      const kp = OHAENG_PAL[k] || OHAENG_PAL['금'];
+      return '<div style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:24px;margin:4px;font-weight:800;font-size:14px;'
+        + 'background:rgba(' + kp.r + ',' + (isT ? '0.18' : '0.07') + ');'
+        + 'border:1.5px solid rgba(' + kp.r + ',' + (isT ? '0.55' : '0.2') + ');'
+        + 'color:' + (isT ? kp.c : 'rgba(255,255,255,0.55)') + ';'
+        + (isT ? 'box-shadow:0 0 14px rgba(' + kp.r + ',0.25);' : '') + '">'
+        + (OHAENG_EMOJI[k] || '') + ' ' + k + ' ' + v + (isT ? ' ✦' : '')
+        + '</div>';
+    }).join('');
+    html += '<div class="ds-card" style="background:rgba(' + c_dist.r + ',0.06);border:1px solid rgba(' + c_dist.r + ',0.22);border-left:4px solid ' + c_dist.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
+    html += '<div style="font-size:14px;font-weight:800;color:' + c_dist.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_dist.r + ',0.2);">🔥 나의 사주 오행 분포</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:10px;">' + distHtml + '</div>';
+    html += '<div style="font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;margin-top:6px;">✦ 강조된 <b style="color:' + oc + ';">' + (d.templeOhaeng || '') + '</b> 기운이 이 사찰의 에너지 — 나의 부족한 기운을 채워줍니다.</div>';
+    html += '</div>';
   }
 
-  // ─── 멤버십 잠금 배너 ───
+  // ── 멤버십 배너 ──
   if (!memberUnlocked) {
-    html += '<div class="temple-detail-section" style="border-color:rgba(212,175,55,0.3);background:rgba(212,175,55,0.04);text-align:center;padding:24px 18px;">';
-    html += '<div style="font-size:28px;margin-bottom:8px;">🔒</div>';
-    html += '<div class="temple-detail-section-title" style="color:#D4AF37;border:none;padding:0;margin-bottom:6px;">멤버십 전용 콘텐츠</div>';
-    html += '<div class="temple-detail-section-body" style="margin-bottom:14px;">유래 전문 · 방문 날짜 전체 · 맞춤 기도문을 볼 수 있습니다.</div>';
-    html += '<div class="member-unlock">';
-    html += '<input type="text" id="detail-member-code-input" placeholder="멤버십 코드 입력" />';
-    html += '<button id="detail-member-code-btn">확인</button>';
-    html += "</div></div>";
+    html += '<div style="background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:28px 20px;margin-bottom:12px;text-align:center;">';
+    html += '<div style="font-size:30px;margin-bottom:10px;">🔒</div>';
+    html += '<div style="font-size:16px;font-weight:800;color:#D4AF37;margin-bottom:8px;">멤버십 전용 콘텐츠</div>';
+    html += '<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:18px;">유래 전문 · 추천 날짜 전체 · 기도문 전체 &amp; 복사</div>';
+    html += '<div class="member-unlock"><input type="text" id="detail-member-code-input" placeholder="멤버십 코드 입력" /><button id="detail-member-code-btn">확인</button></div>';
+    html += '</div>';
   }
 
-  html += "</div>"; // temple-detail-page 닫기
-
+  html += '<div class="patent-notice-banner" style="margin-bottom:12px;">'
+    + '<div class="patent-notice-icon">⚖️</div>'
+    + '<div class="patent-notice-body">'
+    + '<div class="patent-notice-title">지식재산권 안내</div>'
+    + '<div class="patent-notice-text">본 서비스의 <strong>인연 시너지 산출 로직</strong>은 비가산 시너지 기반 지수 산출 방식을 적용한 독자 기술입니다.</div>'
+    + '<span class="patent-num">특허출원 중</span>'
+    + '</div></div>';
+  html += '</div>';
   resultsEl.innerHTML = html;
 
-  document.getElementById("detail-back-btn")?.addEventListener("click", () => {
-    if (typeof onBack === "function") {
+  // ── Wikipedia 사찰 이미지 비동기 로드 ──
+  (function loadTempleImage() {
+    const templeName = t.name;
+    if (!templeName) return;
+    const heroImg = document.getElementById('detail-hero-img');
+    const heroOverlay = document.getElementById('detail-hero-overlay');
+    const heroBg = document.getElementById('detail-hero');
+    if (!heroImg || !heroOverlay) return;
+
+    // Wikipedia REST API — CORS 지원
+    const wikiUrl = 'https://ko.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(templeName);
+    fetch(wikiUrl, { headers: { 'Accept': 'application/json' } })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) {
+        const src = data && (data.thumbnail ? data.thumbnail.source : null);
+        if (src) {
+          // 고화질로 교체 (썸네일 너비 800px)
+          const hqSrc = src.replace(/\/\d+px-/, '/800px-');
+          const img = new Image();
+          img.onload = function() {
+            heroImg.style.backgroundImage = 'url(' + hqSrc + ')';
+            heroImg.style.opacity = '1';
+            heroOverlay.style.opacity = '1';
+            // 배경 그라데이션 제거
+            if (heroBg) heroBg.style.background = 'none';
+          };
+          img.onerror = function() {
+            // 원본 썸네일로 폴백
+            heroImg.style.backgroundImage = 'url(' + src + ')';
+            heroImg.style.opacity = '1';
+            heroOverlay.style.opacity = '1';
+            if (heroBg) heroBg.style.background = 'none';
+          };
+          img.src = hqSrc;
+        }
+      })
+      .catch(function() { /* 이미지 없으면 그라데이션 유지 */ });
+  })();
+
+  // 기도문 복사
+  const gidoCopyBtn = document.getElementById('gido-copy-btn');
+  const gidoRaw = document.getElementById('gido-raw');
+  if (gidoCopyBtn && gidoRaw) {
+    gidoCopyBtn.addEventListener('click', function() {
+      navigator.clipboard.writeText(gidoRaw.value).then(function() {
+        gidoCopyBtn.textContent = '✓ 복사됨!';
+        setTimeout(function() { gidoCopyBtn.innerHTML = '📋 기도문 복사'; }, 2000);
+      }).catch(function() { gidoRaw.select(); document.execCommand('copy'); });
+    });
+  }
+
+  document.getElementById('detail-back-btn')?.addEventListener('click', () => {
+    if (typeof onBack === 'function') {
       onBack();
     } else {
-      resultsEl.innerHTML = "";
-      resultsEl.classList.add("hidden");
-      if (formEl) formEl.style.display = "";
-      document.getElementById("app")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      resultsEl.innerHTML = '';
+      resultsEl.classList.add('hidden');
+      if (formEl) formEl.style.display = '';
+      document.getElementById('app')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
 
-  const detailCodeBtn = document.getElementById("detail-member-code-btn");
-  const detailCodeInput = document.getElementById("detail-member-code-input");
+  const detailCodeBtn = document.getElementById('detail-member-code-btn');
+  const detailCodeInput = document.getElementById('detail-member-code-input');
   if (detailCodeBtn) {
-    detailCodeBtn.addEventListener("click", () => {
+    detailCodeBtn.addEventListener('click', () => {
       if (detailCodeInput && detailCodeInput.value.trim() === MEMBER_CODE) {
         tryUnlockMembership(detailCodeInput.value.trim());
         renderTempleDetailPage(result, parentData, true, onBack);
       } else {
-        alert("코드가 올바르지 않습니다.");
+        alert('코드가 올바르지 않습니다.');
       }
     });
   }
-
-}
-resultsEl.scrollIntoView({ behavior: "smooth" });
 }
 
 // ── "핵심" 등 중요 키워드 강조 헬퍼 ──────────────────────────────
