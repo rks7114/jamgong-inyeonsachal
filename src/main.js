@@ -389,42 +389,43 @@ function render() {
     </div>
 
     <!-- ── 사찰 이름 검색 ── -->
-    <div id="temple-search-wrap" style="margin:0 0 16px 0;">
-      <div style="display:flex;gap:8px;margin-bottom:8px;">
+    <div id="temple-search-wrap" style="margin:0 0 18px 0;background:linear-gradient(135deg,rgba(0,95,163,0.18),rgba(0,180,216,0.10));border:1.5px solid rgba(0,180,216,0.35);border-radius:18px;padding:14px 16px;box-shadow:0 0 24px rgba(0,180,216,0.12);">
+      <div style="font-size:11px;font-weight:700;color:rgba(0,210,255,0.7);letter-spacing:.1em;margin-bottom:10px;">🏯 사찰 직접 검색</div>
+      <div style="display:flex;gap:8px;">
         <!-- 커스텀 지역 드롭다운 -->
         <div id="region-dropdown" style="position:relative;flex:0 0 auto;">
-          <button id="region-btn" type="button" style="background:#1E293B;border:1.5px solid rgba(255,255,255,0.2);border-radius:12px;color:#fff;font-size:13px;padding:10px 12px;cursor:pointer;outline:none;white-space:nowrap;display:flex;align-items:center;gap:6px;">
-            <span id="region-label">📍 전체 지역</span><span style="font-size:10px;opacity:0.6;">▼</span>
+          <button id="region-btn" type="button" style="background:linear-gradient(135deg,rgba(0,95,163,0.5),rgba(0,60,100,0.6));border:1.5px solid rgba(0,180,216,0.5);border-radius:12px;color:#7DD3FC;font-size:13px;font-weight:700;padding:11px 13px;cursor:pointer;outline:none;white-space:nowrap;display:flex;align-items:center;gap:6px;box-shadow:0 0 10px rgba(0,180,216,0.15);">
+            <span id="region-label">📍 전체 지역</span><span style="font-size:10px;opacity:0.7;">▼</span>
           </button>
-          <div id="region-list" style="display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:120px;background:#1E293B;border:1.5px solid rgba(255,255,255,0.2);border-radius:12px;overflow:hidden;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.6);">
-            <div class="rg-item" data-val="" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">📍 전체 지역</div>
-            <div class="rg-item" data-val="서울" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">서울</div>
-            <div class="rg-item" data-val="경기" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">경기</div>
-            <div class="rg-item" data-val="인천" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">인천</div>
-            <div class="rg-item" data-val="강원" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">강원</div>
-            <div class="rg-item" data-val="충북" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">충북</div>
-            <div class="rg-item" data-val="충남" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">충남</div>
-            <div class="rg-item" data-val="대전" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">대전</div>
-            <div class="rg-item" data-val="세종" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">세종</div>
-            <div class="rg-item" data-val="전북" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">전북</div>
-            <div class="rg-item" data-val="전남" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">전남</div>
-            <div class="rg-item" data-val="광주" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">광주</div>
-            <div class="rg-item" data-val="경북" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">경북</div>
-            <div class="rg-item" data-val="경남" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">경남</div>
-            <div class="rg-item" data-val="대구" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">대구</div>
-            <div class="rg-item" data-val="울산" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">울산</div>
-            <div class="rg-item" data-val="부산" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">부산</div>
-            <div class="rg-item" data-val="제주" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">제주</div>
+          <div id="region-list" style="display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:130px;background:#0d1f35;border:1.5px solid rgba(0,180,216,0.4);border-radius:14px;overflow:hidden;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,0.7);">
+            <div class="rg-item" data-val="" style="padding:10px 16px;font-size:13px;color:#7DD3FC;cursor:pointer;transition:background .12s;border-bottom:1px solid rgba(255,255,255,0.05);">📍 전체 지역</div>
+            <div class="rg-item" data-val="서울" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">서울</div>
+            <div class="rg-item" data-val="경기" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">경기</div>
+            <div class="rg-item" data-val="인천" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">인천</div>
+            <div class="rg-item" data-val="강원" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">강원</div>
+            <div class="rg-item" data-val="충북" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">충북</div>
+            <div class="rg-item" data-val="충남" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">충남</div>
+            <div class="rg-item" data-val="대전" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">대전</div>
+            <div class="rg-item" data-val="세종" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">세종</div>
+            <div class="rg-item" data-val="전북" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">전북</div>
+            <div class="rg-item" data-val="전남" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">전남</div>
+            <div class="rg-item" data-val="광주" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">광주</div>
+            <div class="rg-item" data-val="경북" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">경북</div>
+            <div class="rg-item" data-val="경남" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">경남</div>
+            <div class="rg-item" data-val="대구" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">대구</div>
+            <div class="rg-item" data-val="울산" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">울산</div>
+            <div class="rg-item" data-val="부산" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">부산</div>
+            <div class="rg-item" data-val="제주" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">제주</div>
           </div>
         </div>
         <div style="position:relative;flex:1;">
-          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;">
-            <span style="font-size:16px;">🔍</span>
-            <input id="temple-search-input" type="text" placeholder="사찰 이름 검색 (예: 통도사)" autocomplete="off"
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.3);border:1.5px solid rgba(0,180,216,0.4);border-radius:12px;padding:11px 14px;box-shadow:inset 0 1px 4px rgba(0,0,0,0.3);">
+            <span style="font-size:15px;color:rgba(0,210,255,0.7);">🔍</span>
+            <input id="temple-search-input" type="text" placeholder="사찰 이름 검색 (예: 통도사, 봉은사)" autocomplete="off"
               style="flex:1;background:none;border:none;outline:none;color:#fff;font-size:14px;font-family:inherit;" />
             <button id="temple-search-clear" type="button" style="display:none;background:none;border:none;color:rgba(255,255,255,0.4);font-size:16px;cursor:pointer;padding:0;">✕</button>
           </div>
-          <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0F172A;border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;overflow:hidden;z-index:100;max-height:360px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);"></div>
+          <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0d1f35;border:1.5px solid rgba(0,180,216,0.35);border-radius:14px;overflow:hidden;z-index:100;max-height:360px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.7);"></div>
         </div>
       </div>
     </div>
@@ -714,10 +715,16 @@ function render() {
 
     let allTemples = [];
     let selectedRegion = '';
+    let dataReady = false;
     // API에서 사찰 목록 로드
     fetch('/api/temple-list').then(function(r){ return r.ok ? r.json() : []; })
-      .then(function(data){ allTemples = data; })
-      .catch(function(){ allTemples = []; });
+      .then(function(data){
+        allTemples = data;
+        dataReady = true;
+        // 로딩 전에 선택된 지역/검색어가 있으면 자동 재검색
+        if (selectedRegion || input.value.trim()) showResults(input.value);
+      })
+      .catch(function(){ allTemples = []; dataReady = true; });
 
     // 커스텀 드롭다운 동작
     if (regionBtn && regionList) {
@@ -746,8 +753,12 @@ function render() {
       clearBtn.style.display = query ? 'block' : 'none';
       const region = getRegion();
       if (!query && !region) { resultsBox.style.display = 'none'; return; }
+      if (!dataReady) {
+        resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:13px;color:rgba(255,255,255,0.5);">⏳ 사찰 목록 로딩 중...</div>';
+        resultsBox.style.display = 'block'; return;
+      }
       var matches = allTemples.filter(function(t) {
-        var nameOk = !query || (t.name && t.name.includes(query));
+        var nameOk = !query || (t.name && t.name.includes(query)) || (t.address && t.address.includes(query));
         var regionOk = !region || (t.address && t.address.includes(region));
         return nameOk && regionOk;
       }).sort(function(a, b) {
@@ -758,7 +769,8 @@ function render() {
         resultsBox.style.display = 'block';
         return;
       }
-      resultsBox.innerHTML = matches.map(function(t) {
+      var countHdr = '<div style="padding:8px 16px 6px;font-size:11px;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.06);">총 ' + matches.length + '개 사찰</div>';
+      resultsBox.innerHTML = countHdr + matches.map(function(t) {
         return '<div class="tsearch-item" data-id="' + (t.id||'') + '" data-name="' + (t.name||'') + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
           + '<span style="font-size:16px;">🏯</span>'
           + '<div><div style="font-size:14px;font-weight:700;color:#fff;">' + (t.name||'') + '</div>'
@@ -1098,6 +1110,107 @@ function render() {
       submitBtn.textContent = matchMode === "couple" ? "함께 인연사찰 찾기" : "인연사찰 찾기";
     }
   });
+  // ── 인연 길잡이 챗봇 UI ──
+  (function initChatbot() {
+    // 플로팅 버튼 + 채팅창 생성
+    const wrap = document.createElement('div');
+    wrap.id = 'chatbot-wrap';
+    wrap.innerHTML = `
+      <style>
+        #chatbot-wrap { position:fixed; bottom:24px; right:20px; z-index:9000; font-family:inherit; }
+        #chat-bubble { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#005fa3,#00b4d8); border:none; cursor:pointer; box-shadow:0 4px 20px rgba(0,180,255,0.45); display:flex; align-items:center; justify-content:center; font-size:24px; transition:transform .2s; }
+        #chat-bubble:hover { transform:scale(1.1); }
+        #chat-panel { display:none; position:absolute; bottom:64px; right:0; width:320px; max-height:480px; background:#0d1b2e; border:1.5px solid rgba(0,180,255,0.3); border-radius:18px; box-shadow:0 8px 40px rgba(0,120,255,0.3); overflow:hidden; flex-direction:column; }
+        #chat-panel.open { display:flex; }
+        #chat-header { background:linear-gradient(135deg,#003d66,#005fa3); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; }
+        #chat-header span { color:#fff; font-size:14px; font-weight:700; }
+        #chat-close { background:none; border:none; color:rgba(255,255,255,0.6); font-size:18px; cursor:pointer; padding:0; }
+        #chat-messages { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; max-height:320px; }
+        .chat-msg { max-width:85%; padding:10px 13px; border-radius:14px; font-size:13px; line-height:1.6; }
+        .chat-msg.bot { background:rgba(0,180,255,0.12); color:#cce6ff; border-bottom-left-radius:4px; align-self:flex-start; }
+        .chat-msg.user { background:rgba(0,95,163,0.5); color:#fff; border-bottom-right-radius:4px; align-self:flex-end; }
+        #chat-input-row { display:flex; gap:8px; padding:10px 12px; border-top:1px solid rgba(255,255,255,0.08); }
+        #chat-input { flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; color:#fff; font-size:13px; padding:8px 12px; outline:none; font-family:inherit; }
+        #chat-send { background:linear-gradient(135deg,#005fa3,#00b4d8); border:none; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; cursor:pointer; font-weight:700; }
+        #chat-send:hover { opacity:0.85; }
+      </style>
+      <div id="chat-panel">
+        <div id="chat-header">
+          <span>🪷 인연 길잡이</span>
+          <button id="chat-close">✕</button>
+        </div>
+        <div id="chat-messages">
+          <div class="chat-msg bot">안녕하세요! 인연 길잡이예요 😊<br>사찰이나 사주 오행에 대해 궁금한 점을 물어보세요.</div>
+        </div>
+        <div id="chat-input-row">
+          <input id="chat-input" type="text" placeholder="메시지를 입력하세요..." />
+          <button id="chat-send">전송</button>
+        </div>
+      </div>
+      <button id="chat-bubble" title="인연 길잡이">🪷</button>
+    `;
+    document.body.appendChild(wrap);
+
+    const panel = document.getElementById('chat-panel');
+    const bubble = document.getElementById('chat-bubble');
+    const closeBtn = document.getElementById('chat-close');
+    const messages = document.getElementById('chat-messages');
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send');
+    let history = [];
+
+    bubble.addEventListener('click', function() {
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) input.focus();
+    });
+    closeBtn.addEventListener('click', function() { panel.classList.remove('open'); });
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      // 사용자 메시지 표시
+      const userDiv = document.createElement('div');
+      userDiv.className = 'chat-msg user';
+      userDiv.textContent = text;
+      messages.appendChild(userDiv);
+      messages.scrollTop = messages.scrollHeight;
+
+      history.push({ role: 'user', content: text });
+
+      // 로딩 표시
+      const loadDiv = document.createElement('div');
+      loadDiv.className = 'chat-msg bot';
+      loadDiv.textContent = '...';
+      messages.appendChild(loadDiv);
+      messages.scrollTop = messages.scrollHeight;
+      sendBtn.disabled = true;
+
+      try {
+        // 사주 컨텍스트 주입
+        let msgs = history.slice();
+        if (_sajuContext && msgs.length === 1) {
+          msgs = [{ role:'user', content:'[사주 정보] ' + JSON.stringify(_sajuContext) }, { role:'assistant', content:'사주 정보를 확인했습니다. 무엇이 궁금하신가요?' }].concat(msgs);
+        }
+        const res = await fetch('/api/chatbot', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ messages: msgs })
+        });
+        const data = await res.json();
+        const reply = data.reply || '잠시 연결이 어렵습니다. 다시 시도해주세요.';
+        loadDiv.textContent = reply;
+        history.push({ role:'assistant', content: reply });
+      } catch(e) {
+        loadDiv.textContent = '연결 오류가 발생했습니다.';
+      } finally {
+        sendBtn.disabled = false;
+        messages.scrollTop = messages.scrollHeight;
+      }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
+  })();
 }
 
 function buildSajuDetailCards(data, birthInput) {
