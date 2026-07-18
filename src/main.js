@@ -779,8 +779,10 @@ function render() {
         return;
       }
       var countHdr = '<div style="padding:8px 16px 6px;font-size:11px;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.06);">총 ' + matches.length + '개 사찰</div>';
-      resultsBox.innerHTML = countHdr + matches.map(function(t) {
-        return '<div class="tsearch-item" data-id="' + (t.id||'') + '" data-name="' + (t.name||'') + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
+      // matches를 allMatches에 저장 — 클릭 시 인덱스로 정확히 참조
+      window._lastSearchMatches = matches;
+      resultsBox.innerHTML = countHdr + matches.map(function(t, idx) {
+        return '<div class="tsearch-item" data-idx="' + idx + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
           + '<span style="font-size:16px;">🏯</span>'
           + '<div><div style="font-size:14px;font-weight:700;color:#fff;">' + (t.name||'') + '</div>'
           + '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + (t.address||'').slice(0,30) + '</div></div>'
@@ -797,18 +799,12 @@ function render() {
     resultsBox.addEventListener('click', function(e) {
       const item = e.target.closest('.tsearch-item');
       if (!item) return;
-      const name = item.dataset.name;
-      const id = item.dataset.id;
-      // id로 정확히 조회
-      var temple = id ? templeMap[id] : null;
-      // fallback: 지역 필터 적용한 이름 매칭
-      if (!temple) {
-        var region = selectedRegion;
-        temple = allTemples.find(function(t) {
-          return t.name === name && (!region || (t.address && t.address.includes(region)));
-        });
-      }
-      if (!temple) { alert('사찰 정보를 찾을 수 없습니다. 잠시 후 다시 시도해주세요.'); return; }
+
+      // 인덱스로 직접 참조 (lookup 오류 없음)
+      var idx = parseInt(item.dataset.idx);
+      var matches = window._lastSearchMatches || [];
+      var temple = (idx >= 0 && matches[idx]) ? matches[idx] : null;
+      if (!temple) { alert('사찰 정보를 찾을 수 없습니다. 다시 검색해주세요.'); return; }
       input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
       const fakeResult = {
         temple: temple,
