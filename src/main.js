@@ -1,5 +1,4 @@
 // src/main.js — 잼공인연사찰 MVP 프론트엔드 (vanilla JS)
-import TEMPLE_DB from './temple-db.full.js';
 
 // 챗봇에 전달할 사주 컨텍스트 (renderSajuPage 호출 시 저장)
 let _sajuContext = null;
@@ -390,14 +389,38 @@ function render() {
     </div>
 
     <!-- ── 사찰 이름 검색 ── -->
-    <div id="temple-search-wrap" style="margin:0 0 16px 0;position:relative;">
-      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.15);border-radius:16px;padding:12px 18px;">
-        <span style="font-size:18px;">🔍</span>
-        <input id="temple-search-input" type="text" placeholder="사찰 이름으로 직접 검색 (예: 통도사, 진관사)" autocomplete="off"
-          style="flex:1;background:none;border:none;outline:none;color:#fff;font-size:15px;font-family:inherit;" />
-        <button id="temple-search-clear" type="button" style="display:none;background:none;border:none;color:rgba(255,255,255,0.4);font-size:18px;cursor:pointer;padding:0;">✕</button>
+    <div id="temple-search-wrap" style="margin:0 0 16px 0;">
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <select id="temple-region-select" style="background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:#fff;font-size:13px;padding:10px 12px;cursor:pointer;outline:none;flex:0 0 auto;">
+          <option value="">📍 전체 지역</option>
+          <option value="서울">서울</option>
+          <option value="경기">경기</option>
+          <option value="인천">인천</option>
+          <option value="강원">강원</option>
+          <option value="충북">충북</option>
+          <option value="충남">충남</option>
+          <option value="대전">대전</option>
+          <option value="세종">세종</option>
+          <option value="전북">전북</option>
+          <option value="전남">전남</option>
+          <option value="광주">광주</option>
+          <option value="경북">경북</option>
+          <option value="경남">경남</option>
+          <option value="대구">대구</option>
+          <option value="울산">울산</option>
+          <option value="부산">부산</option>
+          <option value="제주">제주</option>
+        </select>
+        <div style="position:relative;flex:1;">
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;">
+            <span style="font-size:16px;">🔍</span>
+            <input id="temple-search-input" type="text" placeholder="사찰 이름 검색 (예: 통도사)" autocomplete="off"
+              style="flex:1;background:none;border:none;outline:none;color:#fff;font-size:14px;font-family:inherit;" />
+            <button id="temple-search-clear" type="button" style="display:none;background:none;border:none;color:rgba(255,255,255,0.4);font-size:16px;cursor:pointer;padding:0;">✕</button>
+          </div>
+          <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0F172A;border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;overflow:hidden;z-index:100;max-height:280px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);"></div>
+        </div>
       </div>
-      <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0F172A;border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;overflow:hidden;z-index:100;max-height:280px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);"></div>
     </div>
 
     <form class="form-card" id="match-form">
@@ -673,39 +696,50 @@ function render() {
     });
   });
 
-  // ── 사찰 이름 검색 초기화 ──
+  // ── 사찰 이름 검색 초기화 (fetch 방식) ──
   (function initTempleSearch() {
     const input = document.getElementById('temple-search-input');
     const resultsBox = document.getElementById('temple-search-results');
     const clearBtn = document.getElementById('temple-search-clear');
+    const regionSel = document.getElementById('temple-region-select');
     if (!input || !resultsBox) return;
 
-    // temple-db에서 이름 목록
-    const allTemples = Array.isArray(TEMPLE_DB) ? TEMPLE_DB : [];
+    let allTemples = [];
+    // API에서 사찰 목록 로드
+    fetch('/api/temple-list').then(function(r){ return r.ok ? r.json() : []; })
+      .then(function(data){ allTemples = data; })
+      .catch(function(){ allTemples = []; });
+
+    function getRegion() { return regionSel ? regionSel.value : ''; }
 
     function showResults(query) {
-      query = query.trim();
+      query = (query||'').trim();
       clearBtn.style.display = query ? 'block' : 'none';
-      if (!query) { resultsBox.style.display = 'none'; return; }
-      const matches = allTemples.filter(function(t) {
-        return t.name && t.name.includes(query);
-      }).slice(0, 12);
+      const region = getRegion();
+      if (!query && !region) { resultsBox.style.display = 'none'; return; }
+      var matches = allTemples.filter(function(t) {
+        var nameOk = !query || (t.name && t.name.includes(query));
+        var regionOk = !region || (t.address && t.address.includes(region));
+        return nameOk && regionOk;
+      }).slice(0, 15);
       if (!matches.length) {
         resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:14px;color:rgba(255,255,255,0.4);">검색 결과가 없습니다</div>';
         resultsBox.style.display = 'block';
         return;
       }
       resultsBox.innerHTML = matches.map(function(t) {
-        return '<div class="tsearch-item" data-name="' + (t.name||'') + '" style="padding:13px 18px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
+        return '<div class="tsearch-item" data-id="' + (t.id||'') + '" data-name="' + (t.name||'') + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
           + '<span style="font-size:16px;">🏯</span>'
-          + '<div><div style="font-size:14px;font-weight:700;color:#fff;">' + t.name + '</div>'
-          + '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + (t.address||'').slice(0,28) + '</div></div>'
+          + '<div><div style="font-size:14px;font-weight:700;color:#fff;">' + (t.name||'') + '</div>'
+          + '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + (t.address||'').slice(0,30) + '</div></div>'
           + '</div>';
       }).join('');
       resultsBox.style.display = 'block';
     }
 
     input.addEventListener('input', function() { showResults(this.value); });
+    if (regionSel) regionSel.addEventListener('change', function() { showResults(input.value); });
+
     clearBtn.addEventListener('click', function() {
       input.value = ''; clearBtn.style.display = 'none'; resultsBox.style.display = 'none'; input.focus();
     });
@@ -714,10 +748,10 @@ function render() {
       const item = e.target.closest('.tsearch-item');
       if (!item) return;
       const name = item.dataset.name;
-      const temple = allTemples.find(function(t) { return t.name === name; });
+      const id = item.dataset.id;
+      const temple = allTemples.find(function(t) { return t.id === id || t.name === name; });
       if (!temple) return;
       input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
-      // 검색된 사찰 상세페이지 바로 열기
       const fakeResult = {
         temple: temple,
         detail: { templeOhaeng: '금', bearing: '—', distanceKm: null },
@@ -730,18 +764,16 @@ function render() {
       renderTempleDetailPage(fakeResult, null, false, function() {
         if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.classList.add('hidden'); }
         if (formEl) formEl.style.display = '';
-        document.getElementById('temple-search-wrap') && (document.getElementById('temple-search-wrap').style.display = '');
+        const sw = document.getElementById('temple-search-wrap');
+        if (sw) sw.style.display = '';
       });
     });
 
-    // 바깥 클릭 시 닫기
     document.addEventListener('click', function(e) {
-      if (!document.getElementById('temple-search-wrap')?.contains(e.target)) {
-        resultsBox.style.display = 'none';
-      }
+      const sw = document.getElementById('temple-search-wrap');
+      if (sw && !sw.contains(e.target)) resultsBox.style.display = 'none';
     });
 
-    // hover 효과
     resultsBox.addEventListener('mouseover', function(e) {
       const item = e.target.closest('.tsearch-item');
       if (item) item.style.background = 'rgba(255,255,255,0.08)';
