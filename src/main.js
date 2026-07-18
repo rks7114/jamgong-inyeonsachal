@@ -391,7 +391,7 @@ function render() {
     <!-- ── 사찰 이름 검색 ── -->
     <div id="temple-search-wrap" style="margin:0 0 16px 0;">
       <div style="display:flex;gap:8px;margin-bottom:8px;">
-        <select id="temple-region-select" style="background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:#fff;font-size:13px;padding:10px 12px;cursor:pointer;outline:none;flex:0 0 auto;">
+        <select id="temple-region-select" style="background:#1E293B;border:1.5px solid rgba(255,255,255,0.2);border-radius:12px;color:#fff;font-size:13px;padding:10px 12px;cursor:pointer;outline:none;flex:0 0 auto;">
           <option value="">📍 전체 지역</option>
           <option value="서울">서울</option>
           <option value="경기">경기</option>
