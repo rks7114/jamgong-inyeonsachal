@@ -391,26 +391,32 @@ function render() {
     <!-- ── 사찰 이름 검색 ── -->
     <div id="temple-search-wrap" style="margin:0 0 16px 0;">
       <div style="display:flex;gap:8px;margin-bottom:8px;">
-        <select id="temple-region-select" style="background:#1E293B;border:1.5px solid rgba(255,255,255,0.2);border-radius:12px;color:#fff;font-size:13px;padding:10px 12px;cursor:pointer;outline:none;flex:0 0 auto;">
-          <option value="">📍 전체 지역</option>
-          <option value="서울">서울</option>
-          <option value="경기">경기</option>
-          <option value="인천">인천</option>
-          <option value="강원">강원</option>
-          <option value="충북">충북</option>
-          <option value="충남">충남</option>
-          <option value="대전">대전</option>
-          <option value="세종">세종</option>
-          <option value="전북">전북</option>
-          <option value="전남">전남</option>
-          <option value="광주">광주</option>
-          <option value="경북">경북</option>
-          <option value="경남">경남</option>
-          <option value="대구">대구</option>
-          <option value="울산">울산</option>
-          <option value="부산">부산</option>
-          <option value="제주">제주</option>
-        </select>
+        <!-- 커스텀 지역 드롭다운 -->
+        <div id="region-dropdown" style="position:relative;flex:0 0 auto;">
+          <button id="region-btn" type="button" style="background:#1E293B;border:1.5px solid rgba(255,255,255,0.2);border-radius:12px;color:#fff;font-size:13px;padding:10px 12px;cursor:pointer;outline:none;white-space:nowrap;display:flex;align-items:center;gap:6px;">
+            <span id="region-label">📍 전체 지역</span><span style="font-size:10px;opacity:0.6;">▼</span>
+          </button>
+          <div id="region-list" style="display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:120px;background:#1E293B;border:1.5px solid rgba(255,255,255,0.2);border-radius:12px;overflow:hidden;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+            <div class="rg-item" data-val="" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">📍 전체 지역</div>
+            <div class="rg-item" data-val="서울" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">서울</div>
+            <div class="rg-item" data-val="경기" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">경기</div>
+            <div class="rg-item" data-val="인천" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">인천</div>
+            <div class="rg-item" data-val="강원" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">강원</div>
+            <div class="rg-item" data-val="충북" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">충북</div>
+            <div class="rg-item" data-val="충남" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">충남</div>
+            <div class="rg-item" data-val="대전" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">대전</div>
+            <div class="rg-item" data-val="세종" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">세종</div>
+            <div class="rg-item" data-val="전북" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">전북</div>
+            <div class="rg-item" data-val="전남" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">전남</div>
+            <div class="rg-item" data-val="광주" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">광주</div>
+            <div class="rg-item" data-val="경북" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">경북</div>
+            <div class="rg-item" data-val="경남" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">경남</div>
+            <div class="rg-item" data-val="대구" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">대구</div>
+            <div class="rg-item" data-val="울산" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">울산</div>
+            <div class="rg-item" data-val="부산" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">부산</div>
+            <div class="rg-item" data-val="제주" style="padding:10px 14px;font-size:13px;color:#fff;cursor:pointer;transition:background .12s;">제주</div>
+          </div>
+        </div>
         <div style="position:relative;flex:1;">
           <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;">
             <span style="font-size:16px;">🔍</span>
@@ -701,16 +707,39 @@ function render() {
     const input = document.getElementById('temple-search-input');
     const resultsBox = document.getElementById('temple-search-results');
     const clearBtn = document.getElementById('temple-search-clear');
-    const regionSel = document.getElementById('temple-region-select');
+    const regionBtn = document.getElementById('region-btn');
+    const regionLabel = document.getElementById('region-label');
+    const regionList = document.getElementById('region-list');
     if (!input || !resultsBox) return;
 
     let allTemples = [];
+    let selectedRegion = '';
     // API에서 사찰 목록 로드
     fetch('/api/temple-list').then(function(r){ return r.ok ? r.json() : []; })
       .then(function(data){ allTemples = data; })
       .catch(function(){ allTemples = []; });
 
-    function getRegion() { return regionSel ? regionSel.value : ''; }
+    // 커스텀 드롭다운 동작
+    if (regionBtn && regionList) {
+      regionBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        regionList.style.display = regionList.style.display === 'none' ? 'block' : 'none';
+      });
+      regionList.querySelectorAll('.rg-item').forEach(function(item) {
+        item.addEventListener('mouseover', function() { this.style.background = 'rgba(255,255,255,0.1)'; });
+        item.addEventListener('mouseout', function() { this.style.background = ''; });
+        item.addEventListener('click', function(e) {
+          e.stopPropagation();
+          selectedRegion = this.dataset.val || '';
+          if (regionLabel) regionLabel.textContent = selectedRegion ? ('📍 ' + selectedRegion) : '📍 전체 지역';
+          regionList.style.display = 'none';
+          showResults(input.value);
+        });
+      });
+      document.addEventListener('click', function() { regionList.style.display = 'none'; });
+    }
+
+    function getRegion() { return selectedRegion; }
 
     function showResults(query) {
       query = (query||'').trim();
@@ -738,8 +767,6 @@ function render() {
     }
 
     input.addEventListener('input', function() { showResults(this.value); });
-    if (regionSel) regionSel.addEventListener('change', function() { showResults(input.value); });
-
     clearBtn.addEventListener('click', function() {
       input.value = ''; clearBtn.style.display = 'none'; resultsBox.style.display = 'none'; input.focus();
     });
