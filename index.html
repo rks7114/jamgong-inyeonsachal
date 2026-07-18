@@ -114,10 +114,9 @@
     <div id="cp">
       <div id="ch"><span>&#127807; 인연 길잡이</span><button id="cc">&#10005;</button></div>
       <div id="cm">
-        <div class="cmsg bot">안녕하세요! 인연 길잡이예요 &#128522;<br>사찰이나 사주팔자에 대해 무엇이든 물어보세요.</div>
-        <div class="cmsg bot" style="background:rgba(255,180,0,0.12);color:#ffe082;border:1px solid rgba(255,180,0,0.25);font-size:12px;">&#128294; <strong>점검 안내</strong><br>현재 챗봇 서비스가 점검 중입니다.<br>빠른 시일 내 정상 운영 예정이에요.</div>
+        <div class="cmsg bot">안녕하세요! 인연 길잡이예요 &#128522;<br>사찰 방문, 사주팔자, 오행 등 무엇이든 물어보세요.</div>
       </div>
-      <div id="cr"><input id="ci" type="text" placeholder="점검 중 — 잠시만 기다려주세요" style="opacity:0.45" disabled /><button id="cs" style="opacity:0.45" disabled>전송</button></div>
+      <div id="cr"><input id="ci" type="text" placeholder="메시지를 입력하세요..." /><button id="cs">전송</button></div>
     </div>
     <button id="cb" title="인연 길잡이 상담"><span class="cb-icon">&#128172;</span>AI상담</button>
   </div>
@@ -138,9 +137,12 @@
           var body={messages:hist.slice(-12)};
           var sc=window._sajuContext;if(sc)body.sajuContext=sc;
           var r=await fetch('/api/chatbot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-          var d=await r.json();var rep=d.reply||'잠시 연결이 어렵습니다.';
+          var txt=await r.text();
+          var d;try{d=JSON.parse(txt);}catch(_){d={};}
+          if(!r.ok){ld.textContent=d.error||('서버 오류 '+r.status);hist.push({role:'assistant',content:ld.textContent});return;}
+          var rep=d.reply||'잠시 연결이 어렵습니다.';
           ld.textContent=rep;hist.push({role:'assistant',content:rep});
-        }catch(e){ld.textContent='연결 오류가 발생했습니다.';}
+        }catch(e){ld.textContent='오류: '+e.message;}
         finally{snd.disabled=false;msgs.scrollTop=msgs.scrollHeight;}
       }
       snd.onclick=send;
