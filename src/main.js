@@ -389,8 +389,8 @@ function render() {
     </div>
 
     <!-- ── 사찰 이름 검색 (준비 중) ── -->
-    <div id="temple-search-wrap" style="margin:0 0 18px 0;background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.08);border-radius:18px;padding:14px 16px;opacity:0.5;pointer-events:none;">
-      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:.1em;margin-bottom:10px;">🔒 사찰 직접 검색 — 점검 중</div>
+    <div id="temple-search-wrap" style="margin:0 0 18px 0;background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.08);border-radius:18px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:.1em;margin-bottom:10px;">🔍 지역 선택 후 사찰 검색</div>
       <div style="display:flex;gap:8px;">
         <!-- 커스텀 지역 드롭다운 -->
         <div id="region-dropdown" style="position:relative;flex:0 0 auto;">
@@ -418,12 +418,11 @@ function render() {
             <div class="rg-item" data-val="제주" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">제주</div>
           </div>
         </div>
-        <div style="position:relative;flex:1;">
+        <div style="position:relative;flex:1;opacity:0.4;pointer-events:none;">
           <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.3);border:1.5px solid rgba(0,180,216,0.4);border-radius:12px;padding:11px 14px;box-shadow:inset 0 1px 4px rgba(0,0,0,0.3);">
             <span style="font-size:15px;color:rgba(0,210,255,0.7);">🔍</span>
-            <input id="temple-search-input" type="text" placeholder="사찰 이름 검색 (예: 통도사, 봉은사)" autocomplete="off"
+            <input id="temple-search-input" type="text" placeholder="사찰 검색 — 업로드 중" autocomplete="off" disabled
               style="flex:1;background:none;border:none;outline:none;color:#fff;font-size:14px;font-family:inherit;" />
-            <button id="temple-search-clear" type="button" style="display:none;background:none;border:none;color:rgba(255,255,255,0.4);font-size:16px;cursor:pointer;padding:0;">✕</button>
           </div>
           <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0d1f35;border:1.5px solid rgba(0,180,216,0.35);border-radius:14px;overflow:hidden;z-index:100;max-height:360px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.7);"></div>
         </div>
@@ -3310,8 +3309,19 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
           return Object.values(pages)
             .map(function(p) { return p.imageinfo && p.imageinfo[0]; })
             .filter(function(info) {
-              return info && info.thumburl && /\.(jpe?g)/i.test(info.thumburl)
-                && (info.width || 0) >= 400 && (info.height || 0) >= 300;
+              if (!info || !info.thumburl) return false;
+              if (!/\.(jpe?g)/i.test(info.thumburl)) return false;
+              if ((info.width || 0) < 400 || (info.height || 0) < 300) return false;
+              // 관련없는 이미지 URL 키워드 제외 (태극기, 지도, 문서, 초상화 등)
+              var url = info.thumburl.toLowerCase();
+              var badKeywords = ['taegeuk', 'taeguk', 'flag', 'portrait', 'map', 'document',
+                'signature', 'seal', 'coin', 'stamp', 'symbol', 'logo', 'icon',
+                '태극', '지도', '문서', '초상'];
+              if (badKeywords.some(function(kw) { return url.indexOf(kw) !== -1; })) return false;
+              // 극단적 가로형(문서/깃발) 또는 세로형(초상화) 제외: 비율 0.5~3.0 사이만
+              var ratio = (info.width || 1) / (info.height || 1);
+              if (ratio < 0.5 || ratio > 3.5) return false;
+              return true;
             });
         });
     }
