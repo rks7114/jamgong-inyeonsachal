@@ -895,6 +895,28 @@ select:disabled, input:disabled { opacity:0.35; cursor:not-allowed; }
 .gh-advice-item.positive { background:rgba(100,220,160,0.06); border-left:3px solid rgba(100,220,160,0.4); }
 .gh-advice-item.caution  { background:rgba(245,166,35,0.06); border-left:3px solid rgba(245,166,35,0.4); }
 
+/* ── 합충 설명 ── */
+.gh-hap-desc { font-size:12px; line-height:1.6; color:rgba(255,255,255,0.6); margin-top:5px; padding-left:2px; }
+.gh-hap-desc.chung { color:rgba(245,166,35,0.75); }
+
+/* ── 오행 분포 해석 ── */
+.gh-dist-interp {
+  font-size:12.5px; line-height:1.6; color:rgba(255,255,255,0.7);
+  padding:7px 10px; border-radius:8px; background:rgba(255,255,255,0.04);
+  border-left:3px solid rgba(245,166,35,0.4);
+}
+.gh-dist-interp.good { border-left-color:rgba(100,220,160,0.5); }
+.gh-dist-interp.warn { border-left-color:rgba(245,100,100,0.5); }
+
+/* ── 음양 박스 ── */
+.gh-yy-box {
+  padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+}
+.gh-yy-label { font-size:13px; font-weight:700; margin-bottom:6px; }
+.gh-yy-bar { height:6px; background:rgba(255,255,255,0.08); border-radius:3px; margin-bottom:4px; overflow:hidden; }
+.gh-yy-desc { font-size:12px; line-height:1.5; color:rgba(255,255,255,0.6); }
+
 /* ── 일주론 카드 ── */
 .gh-ilju-item {
   padding:10px 14px; border-radius:10px;
