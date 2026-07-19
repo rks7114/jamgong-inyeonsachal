@@ -2954,6 +2954,98 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
     html += sec(COL.guide, '🙏 이렇게 기도해보세요', stepsHtml);
   }
 
+  // ── 전각 안내 ──
+  (function(){
+    var purposeHalls = {
+      '재물운': [
+        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'석가모니 부처님께 정성껏 <strong style="color:#FBBF24;">삼배</strong>를 올리며 풍요와 형통을 발원합니다.' },
+        { hall:'산신각', icon:'🏔️', color:'#34D399', desc:'재물과 땅의 기운을 주관하는 <strong style="color:#34D399;">산신령</strong>께 소원지를 올리기 좋습니다.' },
+        { hall:'칠성각', icon:'⭐', color:'#818CF8', desc:'<strong style="color:#818CF8;">칠성님</strong>께 복과 수명, 재물운 전반을 기도드립니다.' }
+      ],
+      '건강운': [
+        { hall:'약사전', icon:'💊', color:'#34D399', desc:'<strong style="color:#34D399;">약사여래 부처님</strong>은 모든 병을 고쳐주시는 분으로 건강 기도의 핵심 전각입니다.' },
+        { hall:'지장전', icon:'🕯️', color:'#94A3B8', desc:'아픈 가족을 위한 <strong style="color:#94A3B8;">천도 · 치유 기도</strong>는 지장보살님 전각에서 드립니다.' },
+        { hall:'칠성각', icon:'⭐', color:'#818CF8', desc:'장수와 건강을 관장하는 <strong style="color:#818CF8;">칠성님</strong>께 오래도록 건강하기를 발원합니다.' }
+      ],
+      '학업운': [
+        { hall:'문수전', icon:'📖', color:'#38BDF8', desc:'지혜의 보살 <strong style="color:#38BDF8;">문수보살님</strong>께 집중력·기억력·합격을 기도드립니다.' },
+        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'<strong style="color:#FBBF24;">삼배 후 발원문</strong>을 조용히 읽으면 마음이 안정되고 시험 불안이 줄어듭니다.' }
+      ],
+      '인연운': [
+        { hall:'관음전', icon:'🌸', color:'#F472B6', desc:'<strong style="color:#F472B6;">관세음보살님</strong>은 인연과 자비의 보살로, 좋은 만남을 간절히 발원하기 좋습니다.' },
+        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'<strong style="color:#FBBF24;">삼배 후</strong> 인연을 맺어달라는 마음을 진솔하게 올립니다.' }
+      ],
+      '가정운': [
+        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'온 가족의 평안을 위해 <strong style="color:#FBBF24;">가족 이름을 마음속에 품고</strong> 삼배를 올립니다.' },
+        { hall:'산신각', icon:'🏔️', color:'#34D399', desc:'가정의 <strong style="color:#34D399;">터전과 화목</strong>을 지켜달라고 산신령께 기도드립니다.' },
+        { hall:'칠성각', icon:'⭐', color:'#818CF8', desc:'가족 구성원 한 명 한 명의 <strong style="color:#818CF8;">복과 수명</strong>을 빕니다.' }
+      ],
+      '수험합격': [
+        { hall:'문수전', icon:'📖', color:'#38BDF8', desc:'<strong style="color:#38BDF8;">문수보살님</strong>께 시험장에서 침착하게 능력을 발휘하게 해달라고 기도드립니다.' },
+        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'시험 <strong style="color:#FBBF24;">날짜와 이름</strong>을 소원지에 적어 올리면 더 간절하게 기도할 수 있습니다.' }
+      ],
+      '취업운': [
+        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'<strong style="color:#FBBF24;">삼배 후 발원문</strong>을 올리며 바라는 직장과 역할을 구체적으로 기도합니다.' },
+        { hall:'산신각', icon:'🏔️', color:'#34D399', desc:'<strong style="color:#34D399;">재물운·직업운</strong>을 주관하는 산신각에서 취업 성공을 발원하세요.' }
+      ],
+      '출산기도': [
+        { hall:'관음전', icon:'🌸', color:'#F472B6', desc:'<strong style="color:#F472B6;">관세음보살님</strong>은 아기와 산모를 보살펴 주시는 분입니다. 정성껏 발원하세요.' },
+        { hall:'칠성각', icon:'⭐', color:'#818CF8', desc:'새 생명의 <strong style="color:#818CF8;">건강과 복</strong>을 칠성님께 빕니다.' },
+        { hall:'삼신각', icon:'🧸', color:'#FB923C', desc:'<strong style="color:#FB923C;">삼신할머니</strong>께 아이를 점지해 달라고 간절히 기도하는 전각입니다.' }
+      ]
+    };
+    var halls = purposeHalls[purposeLabel];
+    if (!halls) return;
+    var hallsHtml = '<div style="display:flex;flex-direction:column;gap:10px;">'
+      + halls.map(function(h) {
+          return '<div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,0.04);border-radius:12px;padding:12px 14px;border:1px solid rgba(255,255,255,0.08);">'
+            + '<div style="flex:0 0 auto;width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;font-size:20px;">' + h.icon + '</div>'
+            + '<div style="flex:1;">'
+            + '<div style="font-size:14px;font-weight:800;color:' + h.color + ';margin-bottom:4px;">' + h.hall + '</div>'
+            + '<div style="font-size:13px;color:#CBD5E1;line-height:1.6;">' + h.desc + '</div>'
+            + '</div></div>';
+        }).join('')
+      + '</div>';
+    html += sec({r:'251,191,36', c:'#FBBF24'}, '🏯 방문할 전각 안내', hallsHtml);
+  })();
+
+  // ── 기도 예절 & 방문 팁 ──
+  (function(){
+    var etiquette = [
+      { icon:'🙏', label:'삼배 방법', color:'#34D399', desc:'<strong style="color:#34D399;">합장(두 손 모음)</strong> 후 무릎을 꿇고 이마를 바닥에 댑니다. 총 세 번 반복 — 불(佛)·법(法)·승(僧) 삼보에 귀의하는 예입니다.' },
+      { icon:'👘', label:'복장', color:'#818CF8', desc:'<strong style="color:#818CF8;">단정한 복장</strong>을 권장합니다. 민소매·짧은 반바지는 피하고, 실내 전각 입장 시 모자를 벗으세요.' },
+      { icon:'🤫', label:'경내 예절', color:'#38BDF8', desc:'<strong style="color:#38BDF8;">사진 촬영</strong>은 스님이나 안내판을 확인 후 허용된 곳에서만. 목소리를 낮추고 뛰지 않습니다.' },
+      { icon:'🧎', label:'스님 만남', color:'#F472B6', desc:'스님께는 <strong style="color:#F472B6;">합장 반배(고개를 30° 숙임)</strong>로 인사드립니다. 악수보다 합장이 예의입니다.' },
+      { icon:'🕯️', label:'소원지·불전', color:'#FBBF24', desc:'<strong style="color:#FBBF24;">소원지</strong>는 이름·생년월일·소원을 적어 담당 스님 혹은 지정함에 제출합니다. 불전함(헌금)은 자유입니다.' }
+    ];
+    var tips = [
+      { icon:'🌅', label:'새벽 예불', color:'#FB923C', desc:'보통 <strong style="color:#FB923C;">새벽 4~5시</strong>에 진행됩니다. 일반인도 조용히 참관 가능하며, 하루 중 가장 청정한 기운을 받을 수 있습니다.' },
+      { icon:'🍚', label:'사찰 공양', color:'#34D399', desc:'일부 사찰에서 <strong style="color:#34D399;">점심 공양(무료 또는 소액)</strong>을 제공합니다. 방문 전 전화로 확인하고 감사한 마음으로 참여하세요.' },
+      { icon:'📿', label:'108배', color:'#818CF8', desc:'<strong style="color:#818CF8;">108번의 절</strong>은 108가지 번뇌를 끊는 수행입니다. 법당 한편에서 매트를 빌려 할 수 있는 사찰도 있습니다.' },
+      { icon:'🌿', label:'템플스테이', color:'#38BDF8', desc:'1박 이상 머물며 스님과 함께 생활하는 <strong style="color:#38BDF8;">템플스테이</strong>를 운영하는 사찰이 많습니다. 한국불교문화사업단 앱에서 예약 가능합니다.' }
+    ];
+
+    var etiqHtml = '<div style="display:flex;flex-direction:column;gap:10px;">'
+      + etiquette.map(function(e) {
+          return '<div style="display:flex;gap:10px;align-items:flex-start;">'
+            + '<div style="flex:0 0 auto;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:16px;margin-top:1px;">' + e.icon + '</div>'
+            + '<div style="flex:1;"><div style="font-size:13px;font-weight:800;color:' + e.color + ';margin-bottom:3px;">' + e.label + '</div>'
+            + '<div style="font-size:13px;color:#CBD5E1;line-height:1.6;">' + e.desc + '</div></div></div>';
+        }).join('')
+      + '</div>';
+    var tipsHtml = '<div style="display:flex;flex-direction:column;gap:10px;">'
+      + tips.map(function(tp) {
+          return '<div style="display:flex;gap:10px;align-items:flex-start;">'
+            + '<div style="flex:0 0 auto;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:16px;margin-top:1px;">' + tp.icon + '</div>'
+            + '<div style="flex:1;"><div style="font-size:13px;font-weight:800;color:' + tp.color + ';margin-bottom:3px;">' + tp.label + '</div>'
+            + '<div style="font-size:13px;color:#CBD5E1;line-height:1.6;">' + tp.desc + '</div></div></div>';
+        }).join('')
+      + '</div>';
+
+    html += sec({r:'52,211,153', c:'#34D399'}, '🙏 기도 예절', etiqHtml);
+    html += sec({r:'251,191,36', c:'#FBBF24'}, '💡 방문 팁', tipsHtml);
+  })();
+
   // ── 기도문 ──
   const GIDO = {
     '재물운': function(nm) { return nm + ' 삼보님께 귀의합니다.\n\n자비하신 부처님, 오늘 저는 ' + nm + '의 금(金) 기운이 가득한 이 도량에서 간절히 발원하오니,\n저의 부족한 재물운이 열려 정직하고 성실한 노력에 합당한 결실을 맺게 하여 주시옵소서.\n헛된 탐욕이 아닌, 가족과 이웃이 함께 나눌 수 있는 올바른 재물이 넘쳐흘러\n삶이 안온하게 하여 주시옵소서.\n제가 얻은 것으로 보시하고 덕을 쌓아 더 큰 복으로 돌아오게 하여 주시옵소서.\n\n나무아미타불 관세음보살.'; },
