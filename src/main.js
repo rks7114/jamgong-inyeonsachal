@@ -2294,21 +2294,280 @@ function renderResults(data) {
   resultsEl.scrollIntoView({ behavior: "smooth" });
 }
 
+function computeGungham(targetA, targetB) {
+  const SANGSAENG = { 목:'화', 화:'토', 토:'금', 금:'수', 수:'목' };
+  const SANGGEUK  = { 목:'토', 토:'수', 수:'화', 화:'금', 금:'목' };
+  const OHK = { 목:'木', 화:'火', 토:'土', 금:'金', 수:'水' };
+  const OHC = { 목:'#64DCA0', 화:'#FF6B9D', 토:'#FB923C', 금:'#FFB347', 수:'#00D2FF' };
+
+  let score, relation, grade, color, comment;
+  const aGen = SANGSAENG[targetA] === targetB;
+  const bGen = SANGSAENG[targetB] === targetA;
+  const aCtrl = SANGGEUK[targetA] === targetB;
+  const bCtrl = SANGGEUK[targetB] === targetA;
+
+  if (aGen || bGen) {
+    score = 89; relation = '상생(相生)'; grade = '천생연분(天生緣分)';
+    color = '#00D2FF';
+    comment = '서로의 기운이 힘을 북돋우는 최고의 조합입니다. 함께할수록 시너지가 커지는 인연입니다.';
+  } else if (targetA === targetB) {
+    score = 82; relation = '비화(比和)'; grade = '동반자형(同伴者型)';
+    color = '#9FE5C4';
+    comment = '같은 기운을 지닌 동반자 관계입니다. 서로를 깊이 이해하고 공감하는 편안한 사이입니다.';
+  } else if (aCtrl || bCtrl) {
+    score = 67; relation = '상극(相剋)'; grade = '극복형(克服型)';
+    color = '#F5A623';
+    comment = '상극의 기운이지만 부족한 면을 서로 채워주어 성장 가능성이 큰 관계입니다.';
+  } else {
+    score = 76; relation = '중화(中和)'; grade = '균형형(均衡型)';
+    color = '#FF6B9D';
+    comment = '무난하고 균형 잡힌 관계입니다. 서로 다른 색깔이 조화를 이루는 인연입니다.';
+  }
+  return { score, relation, grade, color, comment,
+           symA: OHK[targetA]||targetA, symB: OHK[targetB]||targetB,
+           colA: OHC[targetA]||'#fff', colB: OHC[targetB]||'#fff' };
+}
+
 function renderCoupleResults(data) {
   const resultsEl = document.getElementById("results");
   resultsEl.classList.remove("hidden");
   const memberUnlocked = isMember();
 
-  resultsEl.innerHTML = `
-    <div class="results-summary">
-      <div class="label">두 분의 함께 기운은</div>
-      <div class="ohaeng-value">💑 커플 인연사찰 매칭</div>
-      <div class="ohaeng-breakdown">
-        나: ${Object.entries(data.distributionA || {}).map(([k,v]) => `${k} ${v}`).join(" · ")} (${data.targetA || ""})
-        &nbsp;|&nbsp;
-        상대: ${Object.entries(data.distributionB || {}).map(([k,v]) => `${k} ${v}`).join(" · ")} (${data.targetB || ""})
+  const gh = computeGungham(data.targetA, data.targetB);
+  const scorePercent = Math.min(100, Math.round((gh.score / 100) * 100));
+
+  // ── 오행 색상 매핑
+  const OHC2 = { 목:'#64DCA0', 화:'#FF6B9D', 토:'#FB923C', 금:'#FFB347', 수:'#00D2FF' };
+  const OHK2 = { 목:'木', 화:'火', 토:'土', 금:'金', 수:'水' };
+
+  // ── 팔자 비교표 HTML
+  function buildPillarTable(pillars, label, color) {
+    if (!pillars || pillars.length === 0) return '';
+    const PILLAR_SHORT = ['년','월','일','시'];
+    return `
+    <div class="gh-pillar-col">
+      <div class="gh-pillar-label" style="color:${color}">${label}</div>
+      <table class="gh-saju-table">
+        <thead><tr>${PILLAR_SHORT.map(l=>`<th>${l}</th>`).join('')}</tr></thead>
+        <tbody>
+          <tr class="gh-row-stem">${pillars.map(p=>{
+            const c = OHC2[p.wx?.[0]]||'#fff';
+            return `<td style="color:${c}">${p.stem||''}</td>`;
+          }).join('')}</tr>
+          <tr class="gh-row-branch">${pillars.map(p=>{
+            const c = OHC2[p.wx?.[1]||p.wx?.[0]]||'rgba(255,255,255,0.6)';
+            return `<td style="color:${c}">${p.branch||''}</td>`;
+          }).join('')}</tr>
+          <tr class="gh-row-wx">${pillars.map(p=>{
+            return `<td>${(p.wx||[]).map(o=>`<span style="color:${OHC2[o]||'#fff'}">${OHK2[o]||o}</span>`).join('')}</td>`;
+          }).join('')}</tr>
+        </tbody>
+      </table>
+    </div>`;
+  }
+
+  // ── 합충 분석 배지
+  const hapList = (data.hapChung||[]).filter(h=>h.positive);
+  const chungList = (data.hapChung||[]).filter(h=>!h.positive);
+  const hapChungHtml = (data.hapChung && data.hapChung.length > 0) ? `
+    <div class="gh-section">
+      <div class="gh-section-title">⚡ 합충(合沖) 분석</div>
+      ${hapList.length > 0 ? `
+        <div class="gh-hap-group">
+          <div class="gh-hap-label positive">합(合) — 서로 끌어당기는 인연</div>
+          ${hapList.map(h=>`
+            <div class="gh-hap-item positive">
+              <span class="gh-hap-type">${h.type}</span>
+              <span class="gh-hap-chars">${h.a} ↔ ${h.b}</span>
+              ${h.pillarA ? `<span class="gh-hap-pill">${h.pillarA.slice(0,2)} · ${h.pillarB.slice(0,2)}</span>` : ''}
+            </div>`).join('')}
+        </div>` : ''}
+      ${chungList.length > 0 ? `
+        <div class="gh-hap-group" style="margin-top:10px">
+          <div class="gh-hap-label negative">충(沖) — 긴장감을 주는 관계</div>
+          ${chungList.map(h=>`
+            <div class="gh-hap-item negative">
+              <span class="gh-hap-type">${h.type}</span>
+              <span class="gh-hap-chars">${h.a} ↔ ${h.b}</span>
+              ${h.pillarA ? `<span class="gh-hap-pill">${h.pillarA.slice(0,2)} · ${h.pillarB.slice(0,2)}</span>` : ''}
+            </div>`).join('')}
+        </div>` : ''}
+      ${hapList.length === 0 && chungList.length === 0 ? `<div style="font-size:13px;color:rgba(255,255,255,0.4);text-align:center;padding:10px 0;">특별한 합충 관계 없음</div>` : ''}
+    </div>` : '';
+
+  // ── 오행 분포 비교 바 차트
+  const distCompHtml = `
+    <div class="gh-section">
+      <div class="gh-section-title">🌊 오행 분포 비교</div>
+      <div class="gh-dist-grid">
+        ${Object.entries(data.distributionA||{}).map(([k,vA])=>{
+          const vB = (data.distributionB||{})[k] || 0;
+          const col = OHC2[k]||'#fff';
+          const maxV = Math.max(vA, vB, 1);
+          return `
+          <div class="gh-dist-row">
+            <span class="gh-dist-name" style="color:${col}">${OHK2[k]||k}(${k})</span>
+            <div class="gh-dist-bars">
+              <div class="gh-bar-wrap">
+                <div class="gh-bar gh-bar-a" style="width:${(vA/8)*100}%;background:${col}"></div>
+              </div>
+              <span class="gh-bar-val">${vA}</span>
+              <span class="gh-bar-sep">vs</span>
+              <span class="gh-bar-val">${vB}</span>
+              <div class="gh-bar-wrap">
+                <div class="gh-bar gh-bar-b" style="width:${(vB/8)*100}%;background:${col};opacity:0.5"></div>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+        <div class="gh-dist-legend">
+          <span style="color:rgba(255,255,255,0.7)">나</span>
+          <span style="color:rgba(255,255,255,0.35)">상대방</span>
+        </div>
       </div>
+    </div>`;
+
+  // ── 궁합 조언 카드
+  const adviceMap = {
+    '상생(相生)': {
+      strength: ['서로의 에너지가 자연스럽게 흘러 생활 리듬이 맞습니다.','함께할수록 의욕과 활력이 커집니다.','위기 때 서로 든든한 버팀목이 됩니다.'],
+      caution:  ['너무 편해서 긴장감이 없어질 수 있습니다.','서로에 대한 기대치가 높아질 수 있으니 표현을 꾸준히 해주세요.'],
+    },
+    '비화(比和)': {
+      strength: ['가치관과 취향이 비슷해 다툼이 적습니다.','같은 목표를 향해 함께 달려가기 좋습니다.'],
+      caution:  ['둘 다 같은 약점을 가질 수 있으므로 외부의 조언을 수용하세요.','경쟁심이 생기지 않도록 역할을 나누세요.'],
+    },
+    '상극(相剋)': {
+      strength: ['서로 부족한 부분을 채워주며 성장합니다.','다름에서 오는 자극이 큰 발전 동력이 됩니다.'],
+      caution:  ['처음엔 차이가 크게 느껴질 수 있습니다. 상대의 방식을 존중하는 연습이 필요합니다.','감정이 격해지면 한 발 물러서는 습관을 키우세요.'],
+    },
+    '중화(中和)': {
+      strength: ['안정적이고 무난한 관계로 오래 지속되기 좋습니다.','어느 상황에서도 크게 흔들리지 않습니다.'],
+      caution:  ['특별한 자극이 없어 권태를 느낄 수 있으니 함께하는 새로운 경험을 자주 만드세요.'],
+    },
+  };
+  const advice = adviceMap[gh.relation] || adviceMap['중화(中和)'];
+  const adviceHtml = `
+    <div class="gh-section">
+      <div class="gh-section-title">💡 궁합 조언</div>
+      <div class="gh-advice-group">
+        <div class="gh-advice-label positive">강점</div>
+        ${advice.strength.map(s=>`<div class="gh-advice-item positive">✓ ${s}</div>`).join('')}
+      </div>
+      <div class="gh-advice-group" style="margin-top:10px">
+        <div class="gh-advice-label caution">주의</div>
+        ${advice.caution.map(s=>`<div class="gh-advice-item caution">△ ${s}</div>`).join('')}
+      </div>
+    </div>`;
+
+  resultsEl.innerHTML = `
+    <!-- ① 궁합 점수 카드 -->
+    <div class="gungham-card" style="--gc:${gh.color}">
+      <div class="gungham-top">
+        <div class="gungham-elem" style="color:${gh.colA}">${gh.symA}<span class="gungham-elem-ko">(${data.targetA||''})</span></div>
+        <div class="gungham-score-wrap">
+          <svg class="gungham-ring" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="7"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="${gh.color}" stroke-width="7"
+              stroke-dasharray="${2*Math.PI*34}" stroke-dashoffset="${2*Math.PI*34*(1-scorePercent/100)}"
+              stroke-linecap="round" transform="rotate(-90 40 40)"
+              style="filter:drop-shadow(0 0 6px ${gh.color})"/>
+          </svg>
+          <div class="gungham-score-inner">
+            <span class="gungham-num">${gh.score}</span>
+            <span class="gungham-unit">점</span>
+          </div>
+        </div>
+        <div class="gungham-elem" style="color:${gh.colB}">${gh.symB}<span class="gungham-elem-ko">(${data.targetB||''})</span></div>
+      </div>
+      <div class="gungham-relation" style="color:${gh.color}">${gh.relation}</div>
+      <div class="gungham-grade">${gh.grade}</div>
+      <div class="gungham-comment">${gh.comment}</div>
     </div>
+
+    <!-- ② 사주 팔자 비교표 -->
+    ${(data.pillarsA && data.pillarsA.length > 0) ? `
+    <div class="gh-card">
+      <div class="gh-card-title">📋 사주 팔자 (四柱八字) 비교</div>
+      <div class="gh-pillar-wrap">
+        ${buildPillarTable(data.pillarsA, data.genderA==='female'?'👩 나 (여)':'👨 나 (남)', '#00D2FF')}
+        <div class="gh-pillar-divider"></div>
+        ${buildPillarTable(data.pillarsB, data.genderB==='female'?'👩 상대방 (여)':'👨 상대방 (남)', '#F5A623')}
+      </div>
+    </div>` : ''}
+
+    <!-- ③ 합충 분석 -->
+    ${hapChungHtml ? `<div class="gh-card">${hapChungHtml}</div>` : ''}
+
+    <!-- ④ 오행 분포 비교 -->
+    <div class="gh-card">${distCompHtml}</div>
+
+    <!-- ⑤ 궁합 조언 -->
+    <div class="gh-card">${adviceHtml}</div>
+
+    ${memberUnlocked ? `
+      <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
+    ` : `
+      <div class="member-unlock">
+        <input type="text" id="member-code-input" placeholder="멤버십 코드 입력 (선택)" />
+        <button id="member-code-btn">확인</button>
+      </div>
+    `}
+
+    ${data.purposeGuide ? `
+      <div class="prayer-guide">
+        <div class="prayer-guide-label">🙏 함께 이렇게 기도해보세요</div>
+        <div class="prayer-guide-text">
+          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
+        </div>
+      </div>
+    ` : ""}
+
+    <!-- ⑥ 인연사찰 추천 -->
+    <div class="gh-card" style="padding:0;overflow:hidden;border:none;background:transparent;gap:10px;display:flex;flex-direction:column;">
+      <div class="gh-card-title" style="padding:0 4px;">🏯 두 분의 인연사찰 추천</div>
+      ${(data.results || []).map((r, i) => `
+        <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail?.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
+          <div class="temple-rank">${i + 1}</div>
+          <div class="temple-body">
+            <h3>
+              <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
+                ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
+              </a>
+            </h3>
+            <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
+            ${r.synergyCouple > 0 ? `<div class="synergy-badge">💑 커플 시너지 +${r.synergyCouple}점</div>` : ""}
+            <div class="reason">${r.reason}</div>
+            ${r.temple.history ? `
+              <div class="temple-detail">
+                <div class="temple-detail-label">유래·연혁</div>
+                <div class="temple-detail-text">
+                  ${memberUnlocked ? r.temple.history : (r.temple.history.length > 35 ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>` : r.temple.history)}
+                </div>
+                ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
+              </div>
+            ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
+            <button type="button" class="detail-view-btn couple-detail-btn" data-temple-index="${i}">상세페이지 보기 →</button>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    ${data.recommendedDates && data.recommendedDates.length ? `
+      <div class="calendar-card">
+        <div class="calendar-title">📅 함께 방문하기 좋은 날</div>
+        <div class="calendar-items">
+          ${data.recommendedDates.map(d => `<div class="calendar-item"><span class="cal-date">${d.date}</span>${d.reason ? `<span class="cal-reason">${d.reason}</span>` : ''}</div>`).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
+
+    <div class="notice-box">
+      <div class="notice-item">
+        <span class="notice-icon">ℹ️</span>
+        <span>${data.disclaimer || "본 결과는 사주 오행 이론을 바탕으로 한 참고 정보입니다."}</span>
 
     ${memberUnlocked ? `
       <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
