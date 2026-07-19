@@ -2284,21 +2284,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
   });
 }
 
-function buildCompassSVG(deg) {
-  return `<div style="display:flex;justify-content:center;margin:8px 0 16px;">
-    <svg viewBox="0 0 120 120" width="120" height="120" style="filter:drop-shadow(0 0 10px rgba(0,210,255,0.3))">
-      <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(0,210,255,0.15)" stroke-width="2"/>
-      <circle cx="60" cy="60" r="48" fill="rgba(0,20,40,0.6)" stroke="rgba(0,210,255,0.25)" stroke-width="1"/>
-      ${['N','E','S','W'].map((d,i)=>{const a=i*90;const r=42;const x=60+r*Math.sin(a*Math.PI/180);const y=60-r*Math.cos(a*Math.PI/180);return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" fill="${d==='N'?'#FF6B6B':'rgba(0,210,255,0.7)'}" font-size="${d==='N'?'13':'10'}" font-weight="700">${d}</text>`;}).join('')}
-      <g transform="rotate(${deg} 60 60)">
-        <polygon points="60,18 64,58 60,62 56,58" fill="#FF6B6B"/>
-        <polygon points="60,102 64,62 60,58 56,62" fill="rgba(255,255,255,0.3)"/>
-      </g>
-      <circle cx="60" cy="60" r="5" fill="rgba(0,210,255,0.8)"/>
-    </svg>
-  </div>`;
-}
-
 function renderResults(data) {
   const resultsEl = document.getElementById("results");
   resultsEl.classList.remove("hidden");
@@ -2316,7 +2301,21 @@ function renderResults(data) {
       </div>
     </div>
 
-    ${buildCompassSVG(deg)}
+    <div style="display:flex;justify-content:center;margin:8px 0 16px;">
+      <svg viewBox="0 0 120 120" width="100" height="100">
+        <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(0,210,255,0.2)" stroke-width="2"/>
+        <circle cx="60" cy="60" r="48" fill="rgba(0,20,40,0.6)" stroke="rgba(0,210,255,0.25)" stroke-width="1"/>
+        <text x="60" y="20" text-anchor="middle" fill="#FF6B6B" font-size="13" font-weight="700">N</text>
+        <text x="100" y="64" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10" font-weight="700">E</text>
+        <text x="60" y="108" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10" font-weight="700">S</text>
+        <text x="20" y="64" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10" font-weight="700">W</text>
+        <g transform="rotate(${deg} 60 60)">
+          <polygon points="60,18 64,58 60,62 56,58" fill="#FF6B6B"/>
+          <polygon points="60,102 64,62 60,58 56,62" fill="rgba(255,255,255,0.3)"/>
+        </g>
+        <circle cx="60" cy="60" r="5" fill="rgba(0,210,255,0.8)"/>
+      </svg>
+    </div>
 
     ${!memberUnlocked ? `
       <div style="text-align:center;margin:-4px 0 14px;">
