@@ -437,7 +437,7 @@ function render() {
       <svg class="corner-cloud br" viewBox="0 0 40 40"><path d="M36 20 Q36 28 28 28 Q27 34 20 33 Q15 37 10 32 Q4 32 4 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
 
       <div class="mode-toggle-wrap">
-        <button type="button" class="mode-toggle-btn active" data-mode="solo">🙏 혼자 찾기</button>
+        <button type="button" class="mode-toggle-btn active" data-mode="solo">🙏 인연사찰 찾기</button>
         <button type="button" class="mode-toggle-btn" data-mode="couple">💑 궁합</button>
         <button type="button" class="mode-toggle-btn" data-mode="saju">🔮 사주 보기</button>
       </div>
