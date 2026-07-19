@@ -890,7 +890,7 @@ function render() {
         const userLat2 = detectedLoc2.userLat ?? 37.5665;
         const userLng2 = detectedLoc2.userLng ?? 126.9780;
 
-        const sleep30 = new Promise(r => setTimeout(r, 30000));
+        const sleep30 = new Promise(r => setTimeout(r, 20000));
         const [apiRes] = await Promise.all([
           fetch("/api/match-couple", {
             method: "POST",
@@ -975,7 +975,7 @@ function render() {
       }, 5000);
 
       try {
-        const sleep30 = new Promise(r => setTimeout(r, 30000));
+        const sleep30 = new Promise(r => setTimeout(r, 20000));
         const detectedLoc = await detectUserLocation().catch(() => ({}));
         const userLat3 = detectedLoc.userLat ?? 37.5665;
         const userLng3 = detectedLoc.userLng ?? 126.9780;
@@ -2587,8 +2587,8 @@ function renderCoupleResults(data) {
   };
   const hapListD  = dedup((data.hapChung||[]).filter(h=>h.positive));
   const chungListD= dedup((data.hapChung||[]).filter(h=>!h.positive));
-  const hapCount  = hapListD.length;
-  const chungCount= chungListD.length;
+  const hapCountD  = hapListD.length;
+  const chungCountD= chungListD.length;
 
   const renderHapItem = (h) => {
     const pair = [h.a,h.b].sort().join('');
