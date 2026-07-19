@@ -823,77 +823,189 @@ function render() {
     const submitBtn = document.getElementById("submit-btn");
     submitBtn.disabled = true;
 
-    let userLat, userLng;
+    // ── 궁합 모드: 사주팔자처럼 전체화면 로딩 + 30초 생성 연출
+    if (matchMode === "couple") {
+      const formEl = document.getElementById("match-form");
+      const resultsEl = document.getElementById("results");
+      if (formEl) formEl.style.display = "none";
+      resultsEl.classList.remove("hidden");
 
-    const loadingMessages = [
-      "🔍 위치 확인 중...",
-      "🌀 오행 기운 분석 중...",
-      "🏯 인연사찰 탐색 중...",
-      "✨ 인연을 살피는 중...",
-    ];
-    let msgIdx = 0;
-    submitBtn.textContent = loadingMessages[0];
-    const msgInterval = setInterval(() => {
-      msgIdx = (msgIdx + 1) % loadingMessages.length;
-      submitBtn.textContent = loadingMessages[msgIdx];
-    }, 1200);
+      const coupleLoadingMsgs = [
+        { icon: "💑", text: "두 분의 기운을 살피는 중..." },
+        { icon: "🔮", text: "팔자 여덟 글자 분석 중..." },
+        { icon: "⚡", text: "합충(合沖) 관계 탐색 중..." },
+        { icon: "🌊", text: "오행 시너지 계산 중..." },
+        { icon: "🏯", text: "두 분의 인연 기운 정리 중..." },
+        { icon: "✨", text: "궁합 결과 생성 완료 중..." },
+      ];
+      let loadMsgIdx2 = 0;
+      const showCoupleLoading = () => {
+        const m = coupleLoadingMsgs[loadMsgIdx2 % coupleLoadingMsgs.length];
+        resultsEl.innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:340px;gap:24px;padding:40px 20px;">
+            <div style="position:relative;width:88px;height:88px;">
+              <svg viewBox="0 0 88 88" style="width:88px;height:88px;animation:spin 2s linear infinite;">
+                <circle cx="44" cy="44" r="38" fill="none" stroke="rgba(245,100,200,0.15)" stroke-width="6"/>
+                <circle cx="44" cy="44" r="38" fill="none" stroke="rgba(245,100,200,0.85)" stroke-width="6"
+                  stroke-dasharray="60 180" stroke-linecap="round" transform="rotate(-90 44 44)"
+                  style="filter:drop-shadow(0 0 8px rgba(245,100,200,0.7))"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;">${m.icon}</div>
+            </div>
+            <div style="text-align:center;">
+              <div id="couple-loading-text" style="font-size:16px;font-weight:700;color:rgba(245,100,200,0.95);letter-spacing:.04em;margin-bottom:8px;">${m.text}</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:.06em;">두 분의 사주 · 합충 분석 · 오행 궁합</div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              ${coupleLoadingMsgs.map((_,i)=>`<div class="couple-dot" style="width:7px;height:7px;border-radius:50%;background:${i===0?'rgba(245,100,200,0.9)':'rgba(255,255,255,0.15)'};transition:background .3s;"></div>`).join('')}
+            </div>
+          </div>`;
+      };
+      showCoupleLoading();
+      const loadingInterval2 = setInterval(() => {
+        loadMsgIdx2++;
+        const m = coupleLoadingMsgs[loadMsgIdx2 % coupleLoadingMsgs.length];
+        const textEl = document.getElementById("couple-loading-text");
+        if (textEl) textEl.textContent = m.text;
+        const iconEl = resultsEl.querySelector("[style*='font-size:30px']");
+        if (iconEl) iconEl.textContent = m.icon;
+        resultsEl.querySelectorAll(".couple-dot").forEach((dot, i) => {
+          dot.style.background = i === loadMsgIdx2 % coupleLoadingMsgs.length ? "rgba(245,100,200,0.9)" : "rgba(255,255,255,0.15)";
+        });
+      }, 5000);
 
-    try {
-      const detected = await detectUserLocation();
-      userLat = detected.userLat;
-      userLng = detected.userLng;
-    } catch (e) { /* 위치 없이 진행 */ }
-
-    submitBtn.textContent = "✨ 인연을 살피는 중...";
-
-    try {
-      if (matchMode === "couple") {
+      try {
         const yearB = document.getElementById("birth-year-b").value;
         const monthB = document.getElementById("birth-month-b").value;
         const dayB = document.getElementById("birth-day-b").value;
         const hourB = document.getElementById("birth-hour-b").value;
         const birthInputB = {
           calendarType: selectedCalendarB,
-          year: parseInt(yearB),
-          month: parseInt(monthB),
-          day: parseInt(dayB),
-          hour: hourB !== "" ? parseInt(hourB) : 12,
-          minute: 0,
-          isLeapMonth: false,
+          year: parseInt(yearB), month: parseInt(monthB), day: parseInt(dayB),
+          hour: hourB !== "" ? parseInt(hourB) : 12, minute: 0, isLeapMonth: false,
           gender: selectedGenderB,
         };
+        const sleep30 = new Promise(r => setTimeout(r, 30000));
+        const [locData] = await Promise.all([detectUserLocation().catch(() => ({})), sleep30.then(() => {})]);
+        const detectedLoc = await detectUserLocation().catch(() => ({}));
+        const userLat2 = detectedLoc.userLat ?? 37.5665;
+        const userLng2 = detectedLoc.userLng ?? 126.9780;
+
         const res = await fetch("/api/match-couple", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ birthInputA: birthInput, birthInputB, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember(), region: document.getElementById("region-select")?.value || "", maxDistanceKm: parseInt(document.getElementById("distance-select")?.value) || null }),
+          body: JSON.stringify({ birthInputA: birthInput, birthInputB, purpose: selectedPurpose, userLat: userLat2, userLng: userLng2, memberUnlocked: isMember(), region: document.getElementById("region-select")?.value || "", maxDistanceKm: parseInt(document.getElementById("distance-select")?.value) || null }),
         });
         const data = await res.json();
+        clearInterval(loadingInterval2);
         if (data.error) {
-          alert(`오류가 발생했습니다: ${data.error}\n생년월일을 다시 확인해주세요.`);
+          resultsEl.classList.add("hidden");
+          resultsEl.innerHTML = "";
+          if (formEl) formEl.style.display = "";
+          alert(`오류: ${data.error}\n생년월일을 다시 확인해주세요.`);
           return;
         }
         data.purpose = selectedPurpose;
         renderCoupleResults(data);
-      } else {
-        const res = await fetch("/api/match", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat, userLng, memberUnlocked: isMember(), region: document.getElementById("region-select")?.value || "", maxDistanceKm: parseInt(document.getElementById("distance-select")?.value) || null }),
+      } catch (err) {
+        clearInterval(loadingInterval2);
+        resultsEl.classList.add("hidden");
+        resultsEl.innerHTML = "";
+        if (formEl) formEl.style.display = "";
+        alert("궁합 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "💑 궁합";
+      }
+      return;
+    }
+
+    // ── 인연사찰 찾기 모드 (30초 생성)
+    {
+      const formEl2 = document.getElementById("match-form");
+      const resultsEl2 = document.getElementById("results");
+      if (formEl2) formEl2.style.display = "none";
+      resultsEl2.classList.remove("hidden");
+
+      const soloLoadingMsgs = [
+        { icon: "🔍", text: "위치 감지 중..." },
+        { icon: "🌀", text: "오행 기운 분석 중..." },
+        { icon: "🏯", text: "인연사찰 탐색 중..." },
+        { icon: "✨", text: "나의 인연을 살피는 중..." },
+        { icon: "🔮", text: "사주 기운 정렬 중..." },
+        { icon: "🌸", text: "결과 생성 완료 중..." },
+      ];
+      let soloMsgIdx = 0;
+      const showSoloLoading = () => {
+        const m = soloLoadingMsgs[soloMsgIdx % soloLoadingMsgs.length];
+        resultsEl2.innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:340px;gap:24px;padding:40px 20px;">
+            <div style="position:relative;width:88px;height:88px;">
+              <svg viewBox="0 0 88 88" style="width:88px;height:88px;animation:spin 2s linear infinite;">
+                <circle cx="44" cy="44" r="38" fill="none" stroke="rgba(0,210,255,0.15)" stroke-width="6"/>
+                <circle cx="44" cy="44" r="38" fill="none" stroke="rgba(0,210,255,0.85)" stroke-width="6"
+                  stroke-dasharray="60 180" stroke-linecap="round" transform="rotate(-90 44 44)"
+                  style="filter:drop-shadow(0 0 8px rgba(0,210,255,0.7))"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;">${m.icon}</div>
+            </div>
+            <div style="text-align:center;">
+              <div id="solo-loading-text" style="font-size:16px;font-weight:700;color:rgba(0,210,255,0.95);letter-spacing:.04em;margin-bottom:8px;">${m.text}</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:.06em;">오행 분석 · 인연사찰 매칭</div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              ${soloLoadingMsgs.map((_,i)=>`<div class="solo-dot" style="width:7px;height:7px;border-radius:50%;background:${i===0?'rgba(0,210,255,0.9)':'rgba(255,255,255,0.15)'};transition:background .3s;"></div>`).join('')}
+            </div>
+          </div>`;
+      };
+      showSoloLoading();
+      const soloLoadingInterval = setInterval(() => {
+        soloMsgIdx++;
+        const m = soloLoadingMsgs[soloMsgIdx % soloLoadingMsgs.length];
+        const textEl = document.getElementById("solo-loading-text");
+        if (textEl) textEl.textContent = m.text;
+        const iconEl = resultsEl2.querySelector("[style*='font-size:30px']");
+        if (iconEl) iconEl.textContent = m.icon;
+        resultsEl2.querySelectorAll(".solo-dot").forEach((dot, i) => {
+          dot.style.background = i === soloMsgIdx % soloLoadingMsgs.length ? "rgba(0,210,255,0.9)" : "rgba(255,255,255,0.15)";
         });
-        const data = await res.json();
+      }, 5000);
+
+      try {
+        const sleep30 = new Promise(r => setTimeout(r, 30000));
+        const detectedLoc = await detectUserLocation().catch(() => ({}));
+        const userLat3 = detectedLoc.userLat ?? 37.5665;
+        const userLng3 = detectedLoc.userLng ?? 126.9780;
+
+        const [apiRes] = await Promise.all([
+          fetch("/api/match", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ birthInput, purpose: selectedPurpose, userLat: userLat3, userLng: userLng3, memberUnlocked: isMember(), region: document.getElementById("region-select")?.value || "", maxDistanceKm: parseInt(document.getElementById("distance-select")?.value) || null }),
+          }),
+          sleep30,
+        ]);
+        const data = await apiRes.json();
+        clearInterval(soloLoadingInterval);
         if (data.error) {
-          alert(`오류가 발생했습니다: ${data.error}\n생년월일을 다시 확인해주세요.`);
+          resultsEl2.classList.add("hidden");
+          resultsEl2.innerHTML = "";
+          if (formEl2) formEl2.style.display = "";
+          alert(`오류: ${data.error}\n생년월일을 다시 확인해주세요.`);
           return;
         }
         data.purpose = selectedPurpose;
         renderResults(data);
+      } catch (err) {
+        clearInterval(soloLoadingInterval);
+        resultsEl2.classList.add("hidden");
+        resultsEl2.innerHTML = "";
+        if (formEl2) formEl2.style.display = "";
+        alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "인연사찰 찾기";
       }
-    } catch (err) {
-      alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-    } finally {
-      clearInterval(msgInterval);
-      submitBtn.disabled = false;
-      submitBtn.textContent = matchMode === "couple" ? "함께 인연사찰 찾기" : "인연사찰 찾기";
     }
   });
 }
@@ -2300,30 +2412,30 @@ function computeGungham(targetA, targetB) {
   const OHK = { 목:'木', 화:'火', 토:'土', 금:'金', 수:'水' };
   const OHC = { 목:'#64DCA0', 화:'#FF6B9D', 토:'#FB923C', 금:'#FFB347', 수:'#00D2FF' };
 
-  let score, relation, grade, color, comment;
+  let score, relation, grade, color, rgb, comment;
   const aGen = SANGSAENG[targetA] === targetB;
   const bGen = SANGSAENG[targetB] === targetA;
   const aCtrl = SANGGEUK[targetA] === targetB;
   const bCtrl = SANGGEUK[targetB] === targetA;
 
   if (aGen || bGen) {
-    score = 89; relation = '상생(相生)'; grade = '천생연분(天生緣分)';
-    color = '#00D2FF';
-    comment = '서로의 기운이 힘을 북돋우는 최고의 조합입니다. 함께할수록 시너지가 커지는 인연입니다.';
+    score = 88; relation = '상생(相生)'; grade = '천생연분(天生緣分)';
+    color = '#00D2FF'; rgb = '0,210,255';
+    comment = '오행이 서로를 생(生)해주는 가장 이상적인 조합입니다. 단, 한쪽이 지나치게 의존하면 소진될 수 있습니다.';
   } else if (targetA === targetB) {
-    score = 82; relation = '비화(比和)'; grade = '동반자형(同伴者型)';
-    color = '#9FE5C4';
-    comment = '같은 기운을 지닌 동반자 관계입니다. 서로를 깊이 이해하고 공감하는 편안한 사이입니다.';
+    score = 68; relation = '비화(比和)'; grade = '동질형(同質型)';
+    color = '#9FE5C4'; rgb = '159,229,196';
+    comment = '같은 오행으로 서로를 잘 이해하지만, 동일한 약점을 함께 지닙니다. 외부 자극 없이는 정체될 수 있습니다.';
   } else if (aCtrl || bCtrl) {
-    score = 67; relation = '상극(相剋)'; grade = '극복형(克服型)';
-    color = '#F5A623';
-    comment = '상극의 기운이지만 부족한 면을 서로 채워주어 성장 가능성이 큰 관계입니다.';
+    score = 42; relation = '상극(相剋)'; grade = '갈등형(葛藤型)';
+    color = '#F5A623'; rgb = '245,166,35';
+    comment = '오행이 서로를 극(克)합니다. 긴장과 갈등이 잦을 수 있으며, 의식적인 노력 없이는 관계가 소모적이 될 수 있습니다.';
   } else {
-    score = 76; relation = '중화(中和)'; grade = '균형형(均衡型)';
-    color = '#FF6B9D';
-    comment = '무난하고 균형 잡힌 관계입니다. 서로 다른 색깔이 조화를 이루는 인연입니다.';
+    score = 62; relation = '중화(中和)'; grade = '평범형(平凡型)';
+    color = '#FF6B9D'; rgb = '255,107,157';
+    comment = '특별히 맞거나 부딪히는 기운이 없는 평이한 조합입니다. 큰 시너지보다는 무난한 관계가 됩니다.';
   }
-  return { score, relation, grade, color, comment,
+  return { score, relation, grade, color, rgb, comment,
            symA: OHK[targetA]||targetA, symB: OHK[targetB]||targetB,
            colA: OHC[targetA]||'#fff', colB: OHC[targetB]||'#fff' };
 }
@@ -2334,7 +2446,12 @@ function renderCoupleResults(data) {
   const memberUnlocked = isMember();
 
   const gh = computeGungham(data.targetA, data.targetB);
-  const scorePercent = Math.min(100, Math.round((gh.score / 100) * 100));
+  // 합충 데이터로 점수 보정
+  const hapCount  = (data.hapChung||[]).filter(h=>h.positive).length;
+  const chungCount= (data.hapChung||[]).filter(h=>!h.positive).length;
+  const hapAdj    = hapCount * 4 - chungCount * 7;
+  const finalScore = Math.max(10, Math.min(99, gh.score + hapAdj));
+  const scorePercent = Math.round(finalScore);
 
   // ── 오행 색상 매핑
   const OHC2 = { 목:'#64DCA0', 화:'#FF6B9D', 토:'#FB923C', 금:'#FFB347', 수:'#00D2FF' };
@@ -2430,39 +2547,83 @@ function renderCoupleResults(data) {
   // ── 궁합 조언 카드
   const adviceMap = {
     '상생(相生)': {
-      strength: ['서로의 에너지가 자연스럽게 흘러 생활 리듬이 맞습니다.','함께할수록 의욕과 활력이 커집니다.','위기 때 서로 든든한 버팀목이 됩니다.'],
-      caution:  ['너무 편해서 긴장감이 없어질 수 있습니다.','서로에 대한 기대치가 높아질 수 있으니 표현을 꾸준히 해주세요.'],
+      strength: [
+        '오행이 서로를 살려주는 구조라 에너지 흐름이 자연스럽습니다. 함께 있을수록 활력이 생깁니다.',
+        '위기 상황에서도 한 쪽이 힘이 빠지면 다른 쪽이 자연스럽게 채워주는 패턴이 나옵니다.',
+        '서로 다른 기운이 맞물려 있어 장기적으로 성장하기에 유리한 구조입니다.',
+      ],
+      caution: [
+        '생해주는 쪽이 지속적으로 에너지를 쏟아야 하는 구조라, 한쪽이 일방적으로 소진될 수 있습니다. 의존이 심해지면 균형이 무너집니다.',
+        '좋은 궁합이라 해도 합충 결과에서 충(沖)이 많으면 실제 관계에서 충돌이 잦을 수 있습니다. 합충 결과를 반드시 함께 참고하세요.',
+      ],
     },
-    '비화(比和)': {
-      strength: ['가치관과 취향이 비슷해 다툼이 적습니다.','같은 목표를 향해 함께 달려가기 좋습니다.'],
-      caution:  ['둘 다 같은 약점을 가질 수 있으므로 외부의 조언을 수용하세요.','경쟁심이 생기지 않도록 역할을 나누세요.'],
+    '동질형(同質型)': {
+      strength: [
+        '같은 오행이라 상대방의 감정과 사고방식을 직관적으로 잘 이해합니다.',
+        '취향과 생활패턴이 비슷해 일상에서 충돌이 적은 편입니다.',
+      ],
+      caution: [
+        '같은 오행은 같은 약점도 공유합니다. 두 사람 모두 특정 상황에서 함께 무너질 가능성이 있습니다. 외부 조언자가 반드시 필요합니다.',
+        '자극이 없어 관계가 정체될 수 있습니다. 편안함이 무관심으로 이어지지 않도록 의도적인 노력이 필요합니다.',
+        '경쟁 심리가 생기면 회복이 어렵습니다. 역할을 명확히 구분하는 것이 중요합니다.',
+      ],
     },
-    '상극(相剋)': {
-      strength: ['서로 부족한 부분을 채워주며 성장합니다.','다름에서 오는 자극이 큰 발전 동력이 됩니다.'],
-      caution:  ['처음엔 차이가 크게 느껴질 수 있습니다. 상대의 방식을 존중하는 연습이 필요합니다.','감정이 격해지면 한 발 물러서는 습관을 키우세요.'],
+    '갈등형(葛藤型)': {
+      strength: [
+        '서로 다른 강점을 지니고 있어, 역할을 명확히 나누면 강력한 팀이 될 수 있습니다.',
+        '자극이 강한 만큼 서로에게서 배울 점도 많습니다.',
+      ],
+      caution: [
+        '오행이 서로를 극(克)하는 구조입니다. 기본적으로 기운이 충돌하며 상대방을 억제하거나 억제당하는 패턴이 반복됩니다.',
+        '갈등 상황에서 한쪽이 지속적으로 참거나 양보해야 하는 구조가 만들어질 수 있습니다. 장기적으로 피로도가 높습니다.',
+        '감정적으로 격해지면 회복에 시간이 오래 걸립니다. 싸움의 패턴이 반복되지 않도록 사전에 규칙을 정해두는 것이 현실적입니다.',
+        '이 조합에서 좋은 관계를 유지하려면 일반적인 커플보다 훨씬 더 많은 의식적인 노력이 필요합니다.',
+      ],
     },
-    '중화(中和)': {
-      strength: ['안정적이고 무난한 관계로 오래 지속되기 좋습니다.','어느 상황에서도 크게 흔들리지 않습니다.'],
-      caution:  ['특별한 자극이 없어 권태를 느낄 수 있으니 함께하는 새로운 경험을 자주 만드세요.'],
+    '평범형(平凡型)': {
+      strength: [
+        '특별히 맞부딪히는 기운이 없어 갈등이 극단으로 치닫지는 않습니다.',
+        '안정적이고 예측 가능한 관계가 됩니다.',
+      ],
+      caution: [
+        '큰 시너지가 없어 함께 있어도 에너지가 높아지지 않을 수 있습니다. 관계에서 "설레는 느낌"을 찾기가 어렵습니다.',
+        '권태기가 비교적 일찍 찾아올 수 있습니다. 의도적으로 새로운 경험을 만들어야 관계가 유지됩니다.',
+      ],
     },
   };
-  const advice = adviceMap[gh.relation] || adviceMap['중화(中和)'];
+  // 비화(比和) → 동질형으로 맵핑
+  const adviceKey = gh.relation === '비화(比和)' ? '동질형(同質型)'
+    : gh.relation === '상극(相剋)' ? '갈등형(葛藤型)'
+    : gh.relation === '중화(中和)' ? '평범형(平凡型)'
+    : gh.relation;
+  const advice = adviceMap[adviceKey] || adviceMap['평범형(平凡型)'];
+
+  // 합충 요약 문구 추가
+  const hapSummary = hapCount > 0 || chungCount > 0 ? `
+    <div style="margin-bottom:10px;padding:10px 13px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08);font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.7);">
+      합(合) <strong style="color:#64DCA0">${hapCount}건</strong> · 충(沖) <strong style="color:#F5A623">${chungCount}건</strong> 반영 →
+      최종 점수 <strong style="color:#fff">${finalScore}점</strong>
+      ${chungCount >= 3 ? ' · <span style="color:#F5A623">⚠ 충(沖)이 많아 실제 갈등 가능성이 높습니다</span>' : ''}
+      ${hapCount >= 3 ? ' · <span style="color:#64DCA0">✨ 합(合)이 많아 인연의 끌림이 강합니다</span>' : ''}
+    </div>` : '';
+
   const adviceHtml = `
     <div class="gh-section">
-      <div class="gh-section-title">💡 궁합 조언</div>
+      <div class="gh-section-title">💡 궁합 풀이</div>
+      ${hapSummary}
       <div class="gh-advice-group">
-        <div class="gh-advice-label positive">강점</div>
+        <div class="gh-advice-label positive">긍정 요소</div>
         ${advice.strength.map(s=>`<div class="gh-advice-item positive">✓ ${s}</div>`).join('')}
       </div>
       <div class="gh-advice-group" style="margin-top:10px">
-        <div class="gh-advice-label caution">주의</div>
-        ${advice.caution.map(s=>`<div class="gh-advice-item caution">△ ${s}</div>`).join('')}
+        <div class="gh-advice-label caution">주의 요소</div>
+        ${advice.caution.map(s=>`<div class="gh-advice-item caution">⚠ ${s}</div>`).join('')}
       </div>
     </div>`;
 
   resultsEl.innerHTML = `
     <!-- ① 궁합 점수 카드 -->
-    <div class="gungham-card" style="--gc:${gh.color}">
+    <div class="gungham-card" style="--gc:${gh.rgb||'0,210,255'}">
       <div class="gungham-top">
         <div class="gungham-elem" style="color:${gh.colA}">${gh.symA}<span class="gungham-elem-ko">(${data.targetA||''})</span></div>
         <div class="gungham-score-wrap">
@@ -2474,7 +2635,7 @@ function renderCoupleResults(data) {
               style="filter:drop-shadow(0 0 6px ${gh.color})"/>
           </svg>
           <div class="gungham-score-inner">
-            <span class="gungham-num">${gh.score}</span>
+            <span class="gungham-num">${finalScore}</span>
             <span class="gungham-unit">점</span>
           </div>
         </div>
