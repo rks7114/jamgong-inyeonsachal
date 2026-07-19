@@ -2445,7 +2445,11 @@ function renderCoupleResults(data) {
   resultsEl.classList.remove("hidden");
   const memberUnlocked = isMember();
 
-  const gh = computeGungham(data.targetA, data.targetB);
+  // 일간(日干) 오행 추출 — pillars[2].wx[0] = 일주 천간 오행
+  const dayOhaengA = data.pillarsA?.[2]?.wx?.[0] || data.targetA;
+  const dayOhaengB = data.pillarsB?.[2]?.wx?.[0] || data.targetB;
+
+  const gh = computeGungham(dayOhaengA, dayOhaengB);
   // 합충 데이터로 점수 보정
   const hapCount  = (data.hapChung||[]).filter(h=>h.positive).length;
   const chungCount= (data.hapChung||[]).filter(h=>!h.positive).length;
@@ -2625,7 +2629,7 @@ function renderCoupleResults(data) {
     <!-- ① 궁합 점수 카드 -->
     <div class="gungham-card" style="--gc:${gh.rgb||'0,210,255'}">
       <div class="gungham-top">
-        <div class="gungham-elem" style="color:${gh.colA}">${gh.symA}<span class="gungham-elem-ko">(${data.targetA||''})</span></div>
+        <div class="gungham-elem" style="color:${gh.colA}">${gh.symA}<span class="gungham-elem-ko">(${dayOhaengA||''})</span></div>
         <div class="gungham-score-wrap">
           <svg class="gungham-ring" viewBox="0 0 80 80">
             <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="7"/>
@@ -2639,7 +2643,7 @@ function renderCoupleResults(data) {
             <span class="gungham-unit">점</span>
           </div>
         </div>
-        <div class="gungham-elem" style="color:${gh.colB}">${gh.symB}<span class="gungham-elem-ko">(${data.targetB||''})</span></div>
+        <div class="gungham-elem" style="color:${gh.colB}">${gh.symB}<span class="gungham-elem-ko">(${dayOhaengB||''})</span></div>
       </div>
       <div class="gungham-relation" style="color:${gh.color}">${gh.relation}</div>
       <div class="gungham-grade">${gh.grade}</div>
@@ -2656,6 +2660,94 @@ function renderCoupleResults(data) {
         ${buildPillarTable(data.pillarsB, data.genderB==='female'?'👩 상대방 (여)':'👨 상대방 (남)', '#F5A623')}
       </div>
     </div>` : ''}
+
+    <!-- ③ 일주론 분석 -->
+    ${(data.pillarsA && data.pillarsA.length >= 3 && data.pillarsB && data.pillarsB.length >= 3) ? (() => {
+      const ILJU = {
+        '甲子':{ char:'갑자(甲子)', desc:'이상이 높고 지적이며 리더십이 강합니다. 다소 고집스럽지만 원칙을 중시합니다.' },
+        '甲寅':{ char:'갑인(甲寅)', desc:'추진력과 자신감이 넘칩니다. 도전을 즐기고 열정적입니다.' },
+        '甲辰':{ char:'갑진(甲辰)', desc:'현실적이면서도 창의적입니다. 끈기와 집중력이 뛰어납니다.' },
+        '甲午':{ char:'갑오(甲午)', desc:'열정적이고 직선적입니다. 감수성이 풍부하고 표현력이 강합니다.' },
+        '甲申':{ char:'갑신(甲申)', desc:'지성과 행동력을 겸비했습니다. 결단력이 있고 빠르게 움직입니다.' },
+        '甲戌':{ char:'갑술(甲戌)', desc:'의리 있고 책임감이 강합니다. 진실을 중요하게 여깁니다.' },
+        '乙丑':{ char:'을축(乙丑)', desc:'성실하고 끈기가 있습니다. 현실적이며 신중하게 행동합니다.' },
+        '乙卯':{ char:'을묘(乙卯)', desc:'감수성이 풍부하고 섬세합니다. 예술적 감각이 뛰어납니다.' },
+        '乙巳':{ char:'을사(乙巳)', desc:'지략이 뛰어나고 상황 파악이 빠릅니다. 내면이 강합니다.' },
+        '乙未':{ char:'을미(乙未)', desc:'따뜻하고 배려심이 많습니다. 인간관계에서 신뢰를 쌓습니다.' },
+        '乙酉':{ char:'을유(乙酉)', desc:'완벽주의 성향이 있고 꼼꼼합니다. 심미안이 뛰어납니다.' },
+        '乙亥':{ char:'을해(乙亥)', desc:'직관이 강하고 자유를 사랑합니다. 독립적이고 개성이 뚜렷합니다.' },
+        '丙子':{ char:'병자(丙子)', desc:'지적 호기심이 강하고 논리적입니다. 겉과 속이 다를 수 있습니다.' },
+        '丙寅':{ char:'병인(丙寅)', desc:'카리스마가 넘치고 영향력이 큽니다. 주변을 이끄는 힘이 있습니다.' },
+        '丙辰':{ char:'병진(丙辰)', desc:'자신감 있고 강한 추진력을 가집니다. 큰 그림을 보는 능력이 있습니다.' },
+        '丙午':{ char:'병오(丙午)', desc:'열정적이고 직관적입니다. 에너지가 넘치며 화려한 면이 있습니다.' },
+        '丙申':{ char:'병신(丙申)', desc:'실리적이고 결단력이 있습니다. 이해관계를 빠르게 파악합니다.' },
+        '丙戌':{ char:'병술(丙戌)', desc:'의리와 원칙을 중시합니다. 주변을 따뜻하게 보살핍니다.' },
+        '丁丑':{ char:'정축(丁丑)', desc:'내성적이지만 내면이 강합니다. 신중하고 지속적입니다.' },
+        '丁卯':{ char:'정묘(丁卯)', desc:'감성적이고 예민합니다. 창의적이며 아이디어가 풍부합니다.' },
+        '丁巳':{ char:'정사(丁巳)', desc:'지략이 뛰어나고 분석력이 강합니다. 깊이 있게 생각합니다.' },
+        '丁未':{ char:'정미(丁未)', desc:'온화하고 배려심이 넘칩니다. 타인의 감정을 잘 읽습니다.' },
+        '丁酉':{ char:'정유(丁酉)', desc:'섬세하고 완벽을 추구합니다. 심미적 감각이 높습니다.' },
+        '丁亥':{ char:'정해(丁亥)', desc:'직관적이고 자유로운 영혼입니다. 깊은 내면의 세계를 가집니다.' },
+        '戊子':{ char:'무자(戊子)', desc:'침착하고 지적입니다. 상반된 기운이 내면의 갈등을 만들기도 합니다.' },
+        '戊寅':{ char:'무인(戊寅)', desc:'강하고 진취적입니다. 리더십이 뛰어나고 목표지향적입니다.' },
+        '戊辰':{ char:'무진(戊辰)', desc:'현실적이고 강인합니다. 토의 기운이 두 겹이라 고집이 셀 수 있습니다.' },
+        '戊午':{ char:'무오(戊午)', desc:'열정적이고 당당합니다. 기운이 강해 주변에 강한 인상을 남깁니다.' },
+        '戊申':{ char:'무신(戊申)', desc:'실용적이고 결단력이 있습니다. 상황에 따라 유연하게 대처합니다.' },
+        '戊戌':{ char:'무술(戊戌)', desc:'원칙과 의리를 중시합니다. 토의 기운이 두 겹이라 매우 안정적입니다.' },
+        '己丑':{ char:'기축(己丑)', desc:'성실하고 신중합니다. 토의 기운이 두 겹이라 보수적인 면이 있습니다.' },
+        '己卯':{ char:'기묘(己卯)', desc:'창의적이고 섬세합니다. 현실과 이상 사이에서 조화를 추구합니다.' },
+        '己巳':{ char:'기사(己巳)', desc:'지략이 풍부하고 사려 깊습니다. 외유내강의 성격입니다.' },
+        '己未':{ char:'기미(己未)', desc:'온화하고 인자합니다. 토의 기운이 두 겹이라 배려심이 깊습니다.' },
+        '己酉':{ char:'기유(己酉)', desc:'꼼꼼하고 현실적입니다. 실속을 챙기는 능력이 뛰어납니다.' },
+        '己亥':{ char:'기해(己亥)', desc:'자유롭고 직관적입니다. 겉으론 유연하지만 내면이 단단합니다.' },
+        '庚子':{ char:'경자(庚子)', desc:'명석하고 냉철합니다. 원칙적이며 뛰어난 판단력을 가집니다.' },
+        '庚寅':{ char:'경인(庚寅)', desc:'강하고 활동적입니다. 도전을 두려워하지 않는 개척자입니다.' },
+        '庚辰':{ char:'경진(庚辰)', desc:'강인하고 현실적입니다. 뚝심 있게 목표를 향해 나아갑니다.' },
+        '庚午':{ char:'경오(庚午)', desc:'열정과 결단력을 겸비합니다. 화려하고 강렬한 인상을 줍니다.' },
+        '庚申':{ char:'경신(庚申)', desc:'금의 기운이 두 겹이라 매우 강하고 날카롭습니다. 카리스마가 강합니다.' },
+        '庚戌':{ char:'경술(庚戌)', desc:'의리 있고 강직합니다. 한 번 맺은 인연을 소중히 지킵니다.' },
+        '辛丑':{ char:'신축(辛丑)', desc:'꼼꼼하고 인내심이 강합니다. 완성도를 중시하는 성향입니다.' },
+        '辛卯':{ char:'신묘(辛卯)', desc:'감성과 이성을 함께 갖춥니다. 예술적 감각이 뛰어납니다.' },
+        '辛巳':{ char:'신사(辛巳)', desc:'지략과 날카로운 판단력을 지닙니다. 결정적인 순간에 강합니다.' },
+        '辛未':{ char:'신미(辛未)', desc:'온화하면서도 끈기가 있습니다. 균형감각이 뛰어납니다.' },
+        '辛酉':{ char:'신유(辛酉)', desc:'금의 기운이 두 겹이라 완벽주의 성향이 강합니다. 심미안이 높습니다.' },
+        '辛亥':{ char:'신해(辛亥)', desc:'자유롭고 직관적입니다. 독창적인 발상을 즐깁니다.' },
+        '壬子':{ char:'임자(壬子)', desc:'수의 기운이 두 겹이라 지혜롭고 깊이가 있습니다. 탁월한 직관력을 가집니다.' },
+        '壬寅':{ char:'임인(壬寅)', desc:'넓은 포용력과 추진력을 함께 지닙니다. 대인관계가 좋습니다.' },
+        '壬辰':{ char:'임진(壬辰)', desc:'지략이 깊고 현실적입니다. 큰 파도를 일으키는 잠재력이 있습니다.' },
+        '壬午':{ char:'임오(壬午)', desc:'내면에 상반된 기운이 공존합니다. 강한 매력과 다층적인 성격을 가집니다.' },
+        '壬申':{ char:'임신(壬申)', desc:'지적이고 결단력이 강합니다. 전략적 사고를 잘 합니다.' },
+        '壬戌':{ char:'임술(壬戌)', desc:'포용적이며 원칙을 중시합니다. 깊은 신뢰를 쌓는 사람입니다.' },
+        '癸丑':{ char:'계축(癸丑)', desc:'신중하고 끈기 있습니다. 내면에 강한 의지를 지닙니다.' },
+        '癸卯':{ char:'계묘(癸卯)', desc:'감수성이 풍부하고 섬세합니다. 따뜻한 마음씨로 주변을 감동시킵니다.' },
+        '癸巳':{ char:'계사(癸巳)', desc:'직관적이고 깊은 통찰력을 지닙니다. 신비로운 매력이 있습니다.' },
+        '癸未':{ char:'계미(癸未)', desc:'온화하고 배려심이 깊습니다. 중재 능력이 뛰어납니다.' },
+        '癸酉':{ char:'계유(癸酉)', desc:'섬세하고 완벽주의 성향입니다. 내면의 기준이 높습니다.' },
+        '癸亥':{ char:'계해(癸亥)', desc:'수의 기운이 두 겹이라 직관이 매우 강합니다. 자유롭고 심오한 면이 있습니다.' },
+      };
+      const dayA = (data.pillarsA[2].stem||'')+(data.pillarsA[2].branch||'');
+      const dayB = (data.pillarsB[2].stem||'')+(data.pillarsB[2].branch||'');
+      const infoA = ILJU[dayA];
+      const infoB = ILJU[dayB];
+      if (!infoA && !infoB) return '';
+      return `
+    <div class="gh-card">
+      <div class="gh-section">
+        <div class="gh-section-title">🔑 일주(日柱) 분석 — 두 사람의 성격 기반</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+          ${infoA ? `<div class="gh-ilju-item" style="border-left:3px solid #00D2FF;">
+            <div class="gh-ilju-char" style="color:#00D2FF;">${infoA.char} <span style="font-size:11px;opacity:.6">(나 · 일주)</span></div>
+            <div class="gh-ilju-desc">${infoA.desc}</div>
+          </div>` : ''}
+          ${infoB ? `<div class="gh-ilju-item" style="border-left:3px solid #F5A623;">
+            <div class="gh-ilju-char" style="color:#F5A623;">${infoB.char} <span style="font-size:11px;opacity:.6">(상대방 · 일주)</span></div>
+            <div class="gh-ilju-desc">${infoB.desc}</div>
+          </div>` : ''}
+          ${infoA && infoB && dayA === dayB ? `<div style="margin-top:4px;padding:8px 12px;background:rgba(255,215,0,0.07);border-radius:8px;font-size:12px;color:rgba(255,215,0,0.8);">✨ 두 분이 같은 일주(同日柱)입니다. 매우 드문 인연으로, 서로를 거울처럼 반추하는 관계입니다.</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+    })() : ''}
 
     <!-- ③ 합충 분석 -->
     ${hapChungHtml ? `<div class="gh-card">${hapChungHtml}</div>` : ''}
