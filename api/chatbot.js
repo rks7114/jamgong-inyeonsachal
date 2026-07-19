@@ -1,6 +1,4 @@
 // api/chatbot.js — 인연 길잡이 가이드 API (Vercel Serverless)
-const _Anthropic = require("@anthropic-ai/sdk");
-const AnthropicClass = _Anthropic.default || _Anthropic;
 
 const BASE_SYSTEM = `당신은 '인연 길잡이'입니다. 잼공인연사찰 앱의 따뜻한 안내 도우미예요.
 
@@ -69,17 +67,29 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const client = new AnthropicClass();
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 600,
-      system: buildSystemPrompt(sajuContext),
-      messages: messages.slice(-12),
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: "API 키가 설정되지 않았습니다." });
+
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 600,
+        system: buildSystemPrompt(sajuContext),
+        messages: messages.slice(-12),
+      }),
     });
 
-    res.json({ reply: response.content[0].text });
+    const data = await r.json();
+    if (!r.ok) return res.status(500).json({ error: data.error?.message || "API 오류" });
+    res.json({ reply: data.content[0].text });
   } catch (e) {
-    console.error("인연 길잡이 API 오류:", e.message);
+    console.error("인연 길잡이 오류:", e.message);
     res.status(500).json({ error: e.message || "잠시 후 다시 시도해주세요." });
   }
 };
