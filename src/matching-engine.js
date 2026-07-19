@@ -311,17 +311,21 @@ function bearingToOhaeng(bearing) {
 function scoreTemple(temple, matchContext) {
   const { targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng } = matchContext;
 
-  // 1) 방위 적합도 (최대 38점) — 사주 부족오행 일치 38, 기도목적 오행 일치 28, 불일치 15
-  // purposeOhaeng을 matchContext에서 참조 (없으면 targetOhaeng과 동일)
+  // 1) 방위 적합도 (최대 40점)
+  // 기도목적 오행 방위 일치: 33점 (사용자 의도 반영)
+  // 기도목적 + 사주 부족오행 둘 다 일치: 40점 (완벽 인연)
+  // 사주 부족오행만 일치: 24점 (사주 보완)
+  // 불일치: 13점
   const purposeOh = matchContext.purposeOhaeng || targetOhaeng;
+  const personalOh = matchContext.personalOhaeng;
   const bearing = calculateBearing(userLat, userLng, temple.lat, temple.lng);
   const templeOhaeng = bearingToOhaeng(bearing);
-  // 사주 부족 + 기도목적 둘 다 일치하면 최고점
-  const bothMatch = templeOhaeng === targetOhaeng && templeOhaeng === purposeOh;
-  const bangwiScore = bothMatch ? 38
-    : (templeOhaeng === targetOhaeng ? 32          // 사주 부족오행 방위 일치
-    : (templeOhaeng === purposeOh   ? 26           // 기도목적 오행 방위 일치
-    : 15));                                         // 불일치
+  const matchesPurpose  = templeOhaeng === purposeOh;
+  const matchesPersonal = personalOh && templeOhaeng === personalOh;
+  const bangwiScore = (matchesPurpose && matchesPersonal) ? 40  // 기도목적 + 사주 동시 일치
+    : matchesPurpose  ? 33  // 기도목적만 일치
+    : matchesPersonal ? 24  // 사주 부족오행만 일치
+    : 13;                   // 불일치
 
   // 1-b) 개인 공명 점수 (0~20점) — 사주에서 이 사찰 오행이 부족할수록 강하게 가산
   const personalNeed = distribution ? Math.max(0, 4 - (distribution[templeOhaeng] || 0)) : 2;
@@ -412,14 +416,13 @@ function matchTemples(request, templeDB) {
   const { distribution, branches } = calculateOhaeng(request.birthInput ?? request.birthDateTime);
   const weak = findWeakOhaeng(distribution, branches);
 
-  // ── 핵심 개선: 사주 부족오행(70%) + 기도목적 오행(30%) 복합 결정 ──
-  // 기존: targetOhaeng = PURPOSE_OHAENG[purpose] → 생년월일 무관, 항상 같은 방위
-  // 개선: 부족오행이 기본 방위 기준, 기도목적은 보조 점수로 반영
-  //       → 생년월일이 달라지면 부족오행이 달라지고, 방위/사찰도 달라짐
+  // ── 매칭 기준: 기도목적 오행 우선 + 사주 부족오행 가산점 ──
+  // 기도목적 방위가 primary (사용자가 명확히 선택한 의도)
+  // 사주 부족오행이 기도목적과 같으면 시너지 보너스 → 개인화된 점수 차이 발생
+  // 생년월일 다양화는 birthAffinity ±18점으로 같은 목적 내에서도 다른 사찰이 나오게 함
   const weakOhaeng = weak.부족오행;
   const purposeOhaeng = PURPOSE_OHAENG[request.purpose] || weakOhaeng;
-  // 두 오행이 같으면 강화, 다르면 사주 기반으로 추천 (70:30 가중치 역할)
-  const targetOhaeng = weakOhaeng;
+  const targetOhaeng = purposeOhaeng; // 기도목적이 주 방위 기준
 
   const bi = request.birthInput ?? request.birthDateTime ?? {};
   const matchContext = {
