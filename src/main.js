@@ -2534,13 +2534,51 @@ function renderCoupleResults(data) {
     '巳亥': '사해충(巳亥沖)입니다. 금(金)과 수(水) 사이의 충돌입니다. 방향과 가치관이 달라 이견이 자주 나타납니다.',
   };
 
+  // ── 일간(日干) 십신(十神) 분석
+  const STEM_OH_M = { 甲:'목',乙:'목',丙:'화',丁:'화',戊:'토',己:'토',庚:'금',辛:'금',壬:'수',癸:'수' };
+  const STEM_YY_M = { 甲:'양',丙:'양',戊:'양',庚:'양',壬:'양',乙:'음',丁:'음',己:'음',辛:'음',癸:'음' };
+  const OH_GEN_M  = { 목:'화',화:'토',토:'금',금:'수',수:'목' };
+  const OH_CTL_M  = { 목:'토',화:'금',토:'수',금:'목',수:'화' };
+  const SIJIN_INFO = {
+    비견: { name:'비견(比肩)', desc:'같은 오행·같은 음양의 동지입니다. 서로를 너무 잘 알아 숨길 수 없지만, 경쟁심 없이 함께 걸어갈 수 있습니다.' },
+    겁재: { name:'겁재(劫財)', desc:'같은 오행이지만 음양이 달라 미묘하게 다릅니다. 서로 자극을 주고 경쟁심도 있지만, 그만큼 활기차고 역동적인 관계입니다.' },
+    식신: { name:'식신(食神)', desc:'나의 에너지가 자연스럽게 상대방으로 흘러갑니다. 내가 더 주는 역할을 맡는 편이지만, 편안하고 풍요로운 관계입니다.' },
+    상관: { name:'상관(傷官)', desc:'창의적이고 자유로운 에너지의 교류입니다. 틀에 얽매이지 않고 서로를 변화시키는 자극적인 관계입니다.' },
+    편인: { name:'편인(偏印)', desc:'상대방의 에너지가 일방적으로 나에게 흘러옵니다. 상대방이 더 지원해주지만, 의존이 깊어지면 주도성을 잃을 수 있습니다.' },
+    정인: { name:'정인(正印)', desc:'상대방이 안정적으로 나를 성장시켜줍니다. 스승과 같은 든든하고 신뢰감 있는 관계입니다.' },
+    편재: { name:'편재(偏財)', desc:'내가 상대방을 이끌고 활용하는 관계입니다. 능동적이고 주도적으로 관계를 이끌어갑니다.' },
+    정재: { name:'정재(正財)', desc:'안정적이고 현실적인 관계입니다. 서로에게 실질적으로 이로운 신뢰의 인연입니다.' },
+    편관: { name:'편관(偏官)', desc:'상대방이 나를 압박하는 구조입니다. 긴장감이 있지만 그것이 성장의 동력이 되기도 합니다.' },
+    정관: { name:'정관(正官)', desc:'상대방이 나를 올바르게 이끌어줍니다. 격식 있고 안정적인, 사회적으로도 인정받는 관계입니다.' },
+  };
+  const dayA_stem = data.pillarsA?.[2]?.stem;
+  const dayB_stem = data.pillarsB?.[2]?.stem;
+  const calcSijin = (stemSelf, stemTarget) => {
+    const ohSelf = STEM_OH_M[stemSelf], ohTarget = STEM_OH_M[stemTarget];
+    if (!ohSelf || !ohTarget) return null;
+    const sameYY = STEM_YY_M[stemSelf] === STEM_YY_M[stemTarget];
+    if (ohSelf === ohTarget)          return SIJIN_INFO[sameYY ? '비견' : '겁재'];
+    if (OH_GEN_M[ohSelf] === ohTarget) return SIJIN_INFO[sameYY ? '식신' : '상관'];
+    if (OH_GEN_M[ohTarget] === ohSelf) return SIJIN_INFO[sameYY ? '편인' : '정인'];
+    if (OH_CTL_M[ohSelf] === ohTarget) return SIJIN_INFO[sameYY ? '편재' : '정재'];
+    if (OH_CTL_M[ohTarget] === ohSelf) return SIJIN_INFO[sameYY ? '편관' : '정관'];
+    return null;
+  };
+  const sijinAB = calcSijin(dayA_stem, dayB_stem);
+  const sijinBA = calcSijin(dayB_stem, dayA_stem);
+
   // 합충 중복 제거 (같은 type+pair는 한 번만 표시, pillar는 합산)
   const dedup = (list) => {
     const seen = {};
     list.forEach(h => {
-      const key = `${h.type}|${[h.a,h.b].sort().join('')}`;
+      // 괄호 안 한자 제거 후 기본 타입만 사용 ('천간합(天干合)' → '천간합')
+      const baseType = (h.type||'').split('(')[0].split('（')[0].trim();
+      const pairKey  = [String(h.a||''), String(h.b||'')].sort().join('');
+      const key = `${baseType}|${pairKey}`;
       if (!seen[key]) seen[key] = { ...h, pillars: [] };
-      if (h.pillarA) seen[key].pillars.push(`${h.pillarA.slice(0,2)}·${h.pillarB.slice(0,2)}`);
+      const pA = (h.pillarA||'').slice(0,2);
+      const pB = (h.pillarB||'').slice(0,2);
+      if (pA || pB) seen[key].pillars.push(`${pA}·${pB}`);
     });
     return Object.values(seen);
   };
@@ -2608,6 +2646,43 @@ function renderCoupleResults(data) {
   const OHAENG_ORDER = ['목','화','토','금','수'];
   const OHK_NAME = { 목:'木(목)',화:'火(화)',토:'土(토)',금:'金(금)',수:'水(수)' };
   const OHAENG_MEANING = { 목:'창의·성장·인자함', 화:'열정·표현·감수성', 토:'안정·신뢰·중재력', 금:'결단·원칙·날카로움', 수:'지혜·직관·유연성' };
+
+  // ── 합화오행(合化五行) 집계 — 합이 만들어내는 새 오행
+  const hapHwaMap = {};
+  hapListD.forEach(h => {
+    const pair = [h.a,h.b].sort().join('');
+    if ((h.type||'').includes('천간합')) {
+      const info = HAP_DESC[pair] || HAP_DESC[[h.b,h.a].join('')];
+      if (info?.wx) hapHwaMap[info.wx] = (hapHwaMap[info.wx]||0) + 1;
+    }
+  });
+  const OHK_MEAN = { 목:'창의·성장', 화:'정(情)·열정·인연', 토:'안정·신뢰', 금:'의리·결속', 수:'지혜·유연성' };
+  const hapHwaEntries = Object.entries(hapHwaMap).sort((a,b)=>b[1]-a[1]);
+  const hapHwaLine = hapHwaEntries.length > 0
+    ? '✨ 합화오행: ' + hapHwaEntries.map(([wx,cnt])=>`<strong style="color:${OHC2[wx]||'#fff'}">${OHK_NAME[wx]||wx}(${OHK_MEAN[wx]})</strong>${cnt>1?` ×${cnt}`:''}`)
+        .join(' · ') + ' 기운이 두 분 사이에서 생성됩니다.'
+    : '';
+
+  // ── 일간 십신 관계 HTML
+  const sijinHtml = sijinAB ? `
+    <div class="gh-card">
+      <div class="gh-section">
+        <div class="gh-section-title">🔗 일간(日干) 십신(十神) 관계</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+          <div style="flex:1;min-width:130px;padding:12px 14px;border-radius:10px;background:rgba(0,210,255,0.06);border:1px solid rgba(0,210,255,0.14);">
+            <div style="font-size:11px;color:#00D2FF;font-weight:700;margin-bottom:5px;">나(${dayA_stem||''}·${dayOhaengA})가 본 상대방</div>
+            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:5px;">${sijinAB.name}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.6;">${sijinAB.desc}</div>
+          </div>
+          <div style="flex:1;min-width:130px;padding:12px 14px;border-radius:10px;background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.14);">
+            <div style="font-size:11px;color:#F5A623;font-weight:700;margin-bottom:5px;">상대방(${dayB_stem||''}·${dayOhaengB})이 본 나</div>
+            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:5px;">${sijinBA.name}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.6;">${sijinBA.desc}</div>
+          </div>
+        </div>
+        ${hapHwaLine ? `<div class="gh-dist-interp good" style="margin-top:10px;">${hapHwaLine}</div>` : ''}
+      </div>
+    </div>` : '';
 
   // 두 사람의 합산 부족 오행 파악
   const combined = {};
@@ -2803,6 +2878,11 @@ function renderCoupleResults(data) {
     </div>`;
 
   resultsEl.innerHTML = `
+    <!-- 홈 버튼 -->
+    <div class="detail-nav-row" style="margin-bottom:16px;">
+      <button class="home-btn" id="couple-go-home">🏠 처음으로</button>
+    </div>
+
     <!-- ① 궁합 점수 카드 -->
     <div class="gungham-card" style="--gc:${gh.rgb||'0,210,255'}">
       <div class="gungham-top">
@@ -2926,6 +3006,9 @@ function renderCoupleResults(data) {
     </div>`;
     })() : ''}
 
+    <!-- ③-a 일간 십신 관계 -->
+    ${sijinHtml}
+
     <!-- ③ 합충 분석 -->
     ${hapChungHtml ? `<div class="gh-card">${hapChungHtml}</div>` : ''}
 
@@ -2981,6 +3064,16 @@ function renderCoupleResults(data) {
       const idx = parseInt(btn.dataset.templeIndex);
       renderTempleDetailPage(data.results[idx], data, memberUnlocked);
     });
+  });
+
+  // 홈 버튼 (궁합 결과 → 처음으로)
+  document.getElementById("couple-go-home")?.addEventListener("click", () => {
+    resultsEl.classList.add("hidden");
+    resultsEl.innerHTML = "";
+    window._gunghamContext = null;
+    const formEl = document.getElementById("match-form");
+    if (formEl) formEl.style.display = "";
+    document.getElementById("app")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   document.getElementById("share-btn")?.addEventListener("click", () => {
