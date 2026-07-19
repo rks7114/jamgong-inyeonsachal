@@ -438,7 +438,7 @@ function render() {
 
       <div class="mode-toggle-wrap">
         <button type="button" class="mode-toggle-btn active" data-mode="solo">🙏 혼자 찾기</button>
-        <button type="button" class="mode-toggle-btn" data-mode="couple">💑 둘이 찾기</button>
+        <button type="button" class="mode-toggle-btn" data-mode="couple">💑 궁합</button>
         <button type="button" class="mode-toggle-btn" data-mode="saju">🔮 사주 보기</button>
       </div>
 
