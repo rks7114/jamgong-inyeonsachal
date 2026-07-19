@@ -18,6 +18,39 @@ const BASE_SYSTEM = `당신은 '인연 길잡이'입니다. 잼공인연사찰 �
 답변은 3~5문장으로, 사용자의 사주 정보가 있을 때는 반드시 그 정보를 활용해서 개인화된 답변을 주세요.
 인사할 때는 "안녕하세요! 인연 길잡이예요 😊" 처럼 친근하게 해주세요.`;
 
+function buildGunghamSystemPrompt(gunghamContext) {
+  const { pillarsA, pillarsB, hapChung, distributionA, distributionB,
+          genderA, genderB, targetA, targetB, finalScore, relation, grade } = gunghamContext;
+
+  const ohKor = { 목:"木(목)", 화:"火(화)", 토:"土(토)", 금:"金(금)", 수:"水(수)" };
+  const gA = genderA === 'female' ? '여성(나)' : '남성(나)';
+  const gB = genderB === 'female' ? '여성(상대방)' : '남성(상대방)';
+
+  const formatPillars = (ps) => ps?.map(p => `${p.label}: ${p.stem||''}${p.branch||''}`).join(' / ') || '';
+  const formatDist = (d) => Object.entries(d||{}).map(([k,v])=>`${ohKor[k]||k}${v}개`).join(' ');
+  const hapStr = (hapChung||[]).filter(h=>h.positive).map(h=>`${h.type} ${h.a}↔${h.b}`).join(', ')||'없음';
+  const chungStr = (hapChung||[]).filter(h=>!h.positive).map(h=>`${h.type} ${h.a}↔${h.b}`).join(', ')||'없음';
+
+  return BASE_SYSTEM + `
+
+═══════════════════════════════
+【 궁합 상담 모드 — 두 사람의 사주 궁합 정보 】
+
+${gA} 사주: ${formatPillars(pillarsA)}
+${gA} 오행분포: ${formatDist(distributionA)} · 일간오행: ${ohKor[targetA]||targetA||'미상'}
+
+${gB} 사주: ${formatPillars(pillarsB)}
+${gB} 오행분포: ${formatDist(distributionB)} · 일간오행: ${ohKor[targetB]||targetB||'미상'}
+
+궁합 점수: ${finalScore||'?'}점 · ${relation||''} · ${grade||''}
+합(合): ${hapStr}
+충(沖): ${chungStr}
+═══════════════════════════════
+
+이 두 사람의 궁합에 대한 질문이 오면 위 데이터를 기반으로 구체적으로 답해주세요.
+합충 항목, 오행 관계, 일간 간 십신 관계, 궁합의 강점·약점을 풍부하고 따뜻하게 설명해주세요.`;
+}
+
 function buildSystemPrompt(sajuContext) {
   if (!sajuContext) return BASE_SYSTEM;
 
@@ -61,7 +94,7 @@ module.exports = async (req, res) => {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
 
-  const { messages, sajuContext } = req.body || {};
+  const { messages, sajuContext, gunghamContext } = req.body || {};
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: "messages 필드가 필요합니다." });
   }
@@ -69,6 +102,10 @@ module.exports = async (req, res) => {
   try {
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) return res.status(500).json({ error: "API 키가 설정되지 않았습니다." });
+
+    const systemPrompt = gunghamContext
+      ? buildGunghamSystemPrompt(gunghamContext)
+      : buildSystemPrompt(sajuContext);
 
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -79,8 +116,8 @@ module.exports = async (req, res) => {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 600,
-        system: buildSystemPrompt(sajuContext),
+        max_tokens: 700,
+        system: systemPrompt,
         messages: messages.slice(-12),
       }),
     });
