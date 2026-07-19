@@ -2870,6 +2870,12 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   html += '<div style="height:100%;width:' + Math.min(score, 100) + '%;background:linear-gradient(90deg,' + oc + ' 0%,#fff 120%);border-radius:5px;box-shadow:0 0 12px rgba(' + or_ + ',.7);"></div>';
   html += '</div></div></div></div>';  // z-index div + score + hero
 
+  // ── 사진 갤러리 (placeholder) ──
+  html += '<div id="temple-gallery" style="display:none;margin-bottom:14px;">'
+    + '<div style="font-size:13px;font-weight:800;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:.08em;">📷 사찰 사진</div>'
+    + '<div id="gallery-scroll" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.15) transparent;">'
+    + '</div></div>';
+
   // ── 기본정보 ──
   const c_info = COL.info;
   html += '<div class="ds-card" style="background:rgba(' + c_info.r + ',0.06);border:1px solid rgba(' + c_info.r + ',0.22);border-left:4px solid ' + c_info.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
@@ -3079,6 +3085,54 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
         }
       })
       .catch(function() { /* 이미지 없으면 그라데이션 유지 */ });
+  })();
+
+  // ── Wikipedia 갤러리 이미지 로드 ──
+  (function loadGallery() {
+    const galleryEl = document.getElementById('temple-gallery');
+    const scrollEl = document.getElementById('gallery-scroll');
+    if (!galleryEl || !scrollEl || !t.name) return;
+
+    // Step 1: 한국어 위키 이미지 목록 가져오기
+    fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=images&titles='
+      + encodeURIComponent(t.name) + '&imlimit=20&format=json&origin=*')
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) {
+        if (!data) return null;
+        var pages = data.query && data.query.pages ? data.query.pages : {};
+        var page = Object.values(pages)[0];
+        if (!page) return null;
+        var imgs = (page.images || [])
+          .map(function(i) { return i.title; })
+          .filter(function(t) { return /\.(jpe?g|png|webp)$/i.test(t); });
+        if (imgs.length === 0) return null;
+
+        // Step 2: 이미지 URL 가져오기 (최대 8장)
+        var titles = imgs.slice(0, 8).join('|');
+        return fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=500&titles='
+          + encodeURIComponent(titles) + '&format=json&origin=*')
+          .then(function(r) { return r.ok ? r.json() : null; });
+      })
+      .then(function(data) {
+        if (!data) return;
+        var pages = data.query && data.query.pages ? data.query.pages : {};
+        var urls = Object.values(pages)
+          .map(function(p) { return p.imageinfo && p.imageinfo[0] && p.imageinfo[0].thumburl; })
+          .filter(Boolean);
+        if (urls.length < 2) return; // 1장이면 히어로로 충분
+
+        // 갤러리 렌더
+        scrollEl.innerHTML = urls.map(function(url) {
+          return '<div style="flex:0 0 auto;width:160px;height:110px;border-radius:12px;overflow:hidden;'
+            + 'border:1px solid rgba(255,255,255,0.12);cursor:pointer;transition:transform .2s;"'
+            + ' onclick="(function(u){var ov=document.createElement(\'div\');ov.style.cssText=\'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;\';var im=new Image();im.src=u;im.style.cssText=\'max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 8px 40px #000;\';ov.appendChild(im);ov.onclick=function(){document.body.removeChild(ov);};document.body.appendChild(ov);})(this.dataset.src)"'
+            + ' data-src="' + url.replace(/\/\d+px-/, '/1200px-') + '">'
+            + '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">'
+            + '</div>';
+        }).join('');
+        galleryEl.style.display = 'block';
+      })
+      .catch(function() { /* 갤러리 없으면 숨김 유지 */ });
   })();
 
   // 기도문 복사
