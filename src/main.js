@@ -423,6 +423,7 @@ function render() {
             <span style="font-size:15px;color:rgba(0,210,255,0.7);">🔍</span>
             <input id="temple-search-input" type="text" placeholder="사찰 검색 — 업로드 중" autocomplete="off" disabled
               style="flex:1;background:none;border:none;outline:none;color:#fff;font-size:14px;font-family:inherit;" />
+            <button id="temple-search-clear" type="button" style="display:none;background:none;border:none;color:rgba(255,255,255,0.4);font-size:16px;cursor:pointer;padding:0;">✕</button>
           </div>
           <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0d1f35;border:1.5px solid rgba(0,180,216,0.35);border-radius:14px;overflow:hidden;z-index:100;max-height:360px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.7);"></div>
         </div>
