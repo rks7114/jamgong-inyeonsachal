@@ -2487,44 +2487,179 @@ function renderCoupleResults(data) {
     </div>`;
   }
 
-  // ── 합충 분석 배지
-  const hapList = (data.hapChung||[]).filter(h=>h.positive);
-  const chungList = (data.hapChung||[]).filter(h=>!h.positive);
+  // ── 합충 설명 사전
+  const HAP_DESC = {
+    '甲己': { name:'중정합(中正合)', wx:'土', desc:'안정적이고 현실적인 결합입니다. 서로를 믿고 의지하는 관계로 장기적인 신뢰가 형성됩니다.' },
+    '乙庚': { name:'인의합(仁義合)', wx:'金', desc:'원칙과 의리로 맺어진 관계입니다. 한 번 인연이 맺어지면 쉽게 끊어지지 않습니다.' },
+    '丙辛': { name:'위제합(威制合)', wx:'水', desc:'강렬한 끌림의 결합입니다. 서로에게 매력을 느끼고 지략과 감각이 맞닿는 관계입니다.' },
+    '丁壬': { name:'인수합(仁壽合)', wx:'木', desc:'인정 넘치고 창의적인 결합입니다. 감성이 잘 맞아 함께 성장하는 인연입니다.' },
+    '戊癸': { name:'무정합(無情合)', wx:'火', desc:'열정적이고 활기찬 결합입니다. 역동적인 에너지를 서로에게서 끌어냅니다.' },
+  };
+  const JIJI_HAP_DESC = {
+    '子丑': { desc:'자축합(子丑合)으로 土의 기운이 생깁니다. 안정적이고 묵묵하게 함께하는 관계입니다.' },
+    '寅亥': { desc:'인해합(寅亥合)으로 木의 기운이 생깁니다. 서로 성장을 돕는 따뜻한 인연입니다.' },
+    '卯戌': { desc:'묘술합(卯戌合)으로 火의 기운이 생깁니다. 열정적인 감정의 교류가 있는 관계입니다.' },
+    '辰酉': { desc:'진유합(辰酉合)으로 金의 기운이 생깁니다. 단단하고 현실적인 결합입니다.' },
+    '巳申': { desc:'사신합(巳申合)으로 水의 기운이 생깁니다. 지략과 변화 속에서 교류하는 인연입니다.' },
+    '午未': { desc:'오미합(午未合)으로 태양의 조화입니다. 가장 자연스럽고 따뜻한 결합 중 하나입니다.' },
+  };
+  const CHUNG_DESC = {
+    '甲庚': '갑경충(甲庚沖)입니다. 추진 방향이 정반대여서 충돌이 발생합니다. 한쪽이 밀면 다른 쪽이 버티는 구조입니다.',
+    '乙辛': '을신충(乙辛沖)입니다. 섬세한 감성과 날카로운 이성이 부딪힙니다. 표현 방식의 차이에서 갈등이 생깁니다.',
+    '丙壬': '병임충(丙壬沖)입니다. 화(火)와 수(水)의 충돌로 열정과 냉정이 부딪힙니다. 감정 기복이 심해질 수 있습니다.',
+    '丁癸': '정계충(丁癸沖)입니다. 감성과 직관이 서로를 견제합니다. 마음 속을 잘 드러내지 않아 오해가 생길 수 있습니다.',
+    '子午': '자오충(子午沖)입니다. 수(水)와 화(火)의 강렬한 충돌입니다. 감정적으로 과격해지기 쉽고 회복이 오래 걸립니다.',
+    '丑未': '축미충(丑未沖)입니다. 두 토(土)의 충돌로 고집이 부딪히는 구조입니다. 서로 자기 방식을 고수하려 합니다.',
+    '寅申': '인신충(寅申沖)입니다. 목(木)과 금(金)의 충돌입니다. 자유와 통제 사이에서 갈등이 자주 발생합니다.',
+    '卯酉': '묘유충(卯酉沖)입니다. 감성과 이성의 충돌입니다. 서로의 접근 방식이 달라 이해하는 데 시간이 필요합니다.',
+    '辰戌': '진술충(辰戌沖)입니다. 토(土) 간의 강한 충돌입니다. 양쪽 모두 쉽게 물러서지 않아 합의가 어렵습니다.',
+    '巳亥': '사해충(巳亥沖)입니다. 금(金)과 수(水) 사이의 충돌입니다. 방향과 가치관이 달라 이견이 자주 나타납니다.',
+  };
+
+  // 합충 중복 제거 (같은 type+pair는 한 번만 표시, pillar는 합산)
+  const dedup = (list) => {
+    const seen = {};
+    list.forEach(h => {
+      const key = `${h.type}|${[h.a,h.b].sort().join('')}`;
+      if (!seen[key]) seen[key] = { ...h, pillars: [] };
+      if (h.pillarA) seen[key].pillars.push(`${h.pillarA.slice(0,2)}·${h.pillarB.slice(0,2)}`);
+    });
+    return Object.values(seen);
+  };
+  const hapListD  = dedup((data.hapChung||[]).filter(h=>h.positive));
+  const chungListD= dedup((data.hapChung||[]).filter(h=>!h.positive));
+  const hapCount  = hapListD.length;
+  const chungCount= chungListD.length;
+
+  const renderHapItem = (h) => {
+    const pair = [h.a,h.b].sort().join('');
+    let extraDesc = '';
+    if (h.type.includes('천간합')) {
+      const info = HAP_DESC[pair] || HAP_DESC[[h.b,h.a].join('')];
+      if (info) extraDesc = `<div class="gh-hap-desc">${info.name} · ${info.wx}의 기운 — ${info.desc}</div>`;
+    } else if (h.type.includes('지지육합')) {
+      const pairBranch = [h.a,h.b].sort().join('');
+      const info = Object.values(JIJI_HAP_DESC).find((_v,_k,obj)=>Object.keys(obj).find(k=>k.split('').sort().join('')===pairBranch.split('').sort().join('')));
+      const infoByKey = Object.entries(JIJI_HAP_DESC).find(([k])=>k.split('').sort().join('')===pairBranch.split('').sort().join(''));
+      if (infoByKey) extraDesc = `<div class="gh-hap-desc">${infoByKey[1].desc}</div>`;
+    } else if (h.type.includes('삼합')) {
+      extraDesc = `<div class="gh-hap-desc">삼합(三合)은 세 지지가 모여 강한 오행의 국(局)을 이루는 특수한 인연입니다. 두 분 사이에 운명적 연결고리가 있습니다.</div>`;
+    }
+    return `<div class="gh-hap-item positive">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span class="gh-hap-type">${h.type}</span>
+        <span class="gh-hap-chars">${h.a} ↔ ${h.b}</span>
+        ${h.pillars?.length ? `<span class="gh-hap-pill">${h.pillars.join(' / ')}</span>` : ''}
+      </div>
+      ${extraDesc}
+    </div>`;
+  };
+
+  const renderChungItem = (h) => {
+    const pair = [h.a,h.b].sort().join('');
+    const desc = CHUNG_DESC[pair] || CHUNG_DESC[[h.b,h.a].join('')] || '';
+    return `<div class="gh-hap-item negative">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span class="gh-hap-type">${h.type}</span>
+        <span class="gh-hap-chars">${h.a} ↔ ${h.b}</span>
+        ${h.pillars?.length ? `<span class="gh-hap-pill">${h.pillars.join(' / ')}</span>` : ''}
+      </div>
+      ${desc ? `<div class="gh-hap-desc chung">${desc}</div>` : ''}
+    </div>`;
+  };
+
   const hapChungHtml = (data.hapChung && data.hapChung.length > 0) ? `
     <div class="gh-section">
       <div class="gh-section-title">⚡ 합충(合沖) 분석</div>
-      ${hapList.length > 0 ? `
+      ${hapListD.length > 0 ? `
         <div class="gh-hap-group">
-          <div class="gh-hap-label positive">합(合) — 서로 끌어당기는 인연</div>
-          ${hapList.map(h=>`
-            <div class="gh-hap-item positive">
-              <span class="gh-hap-type">${h.type}</span>
-              <span class="gh-hap-chars">${h.a} ↔ ${h.b}</span>
-              ${h.pillarA ? `<span class="gh-hap-pill">${h.pillarA.slice(0,2)} · ${h.pillarB.slice(0,2)}</span>` : ''}
-            </div>`).join('')}
+          <div class="gh-hap-label positive">합(合) — 서로 끌어당기는 인연 · ${hapListD.length}건</div>
+          ${hapListD.map(renderHapItem).join('')}
         </div>` : ''}
-      ${chungList.length > 0 ? `
-        <div class="gh-hap-group" style="margin-top:10px">
-          <div class="gh-hap-label negative">충(沖) — 긴장감을 주는 관계</div>
-          ${chungList.map(h=>`
-            <div class="gh-hap-item negative">
-              <span class="gh-hap-type">${h.type}</span>
-              <span class="gh-hap-chars">${h.a} ↔ ${h.b}</span>
-              ${h.pillarA ? `<span class="gh-hap-pill">${h.pillarA.slice(0,2)} · ${h.pillarB.slice(0,2)}</span>` : ''}
-            </div>`).join('')}
+      ${chungListD.length > 0 ? `
+        <div class="gh-hap-group" style="margin-top:12px">
+          <div class="gh-hap-label negative">충(沖) — 긴장감을 주는 관계 · ${chungListD.length}건</div>
+          ${chungListD.map(renderChungItem).join('')}
         </div>` : ''}
-      ${hapList.length === 0 && chungList.length === 0 ? `<div style="font-size:13px;color:rgba(255,255,255,0.4);text-align:center;padding:10px 0;">특별한 합충 관계 없음</div>` : ''}
+      ${hapListD.length === 0 && chungListD.length === 0 ? `<div style="font-size:13px;color:rgba(255,255,255,0.4);text-align:center;padding:10px 0;">특별한 합충 관계 없음</div>` : ''}
     </div>` : '';
 
-  // ── 오행 분포 비교 바 차트
+  // ── 오행 분포 해석
+  const distA = data.distributionA || {};
+  const distB = data.distributionB || {};
+  const OHAENG_ORDER = ['목','화','토','금','수'];
+  const OHK_NAME = { 목:'木(목)',화:'火(화)',토:'土(토)',금:'金(금)',수:'水(수)' };
+  const OHAENG_MEANING = { 목:'창의·성장·인자함', 화:'열정·표현·감수성', 토:'안정·신뢰·중재력', 금:'결단·원칙·날카로움', 수:'지혜·직관·유연성' };
+
+  // 두 사람의 합산 부족 오행 파악
+  const combined = {};
+  OHAENG_ORDER.forEach(o => { combined[o] = (distA[o]||0) + (distB[o]||0); });
+  const sortedByLack = [...OHAENG_ORDER].sort((a,b)=>(combined[a]||0)-(combined[b]||0));
+  const mostLacking = sortedByLack[0];
+  const mostStrong  = sortedByLack[sortedByLack.length-1];
+
+  // 보완 여부: 한 사람이 많고 상대가 적으면 보완
+  const complementPairs = OHAENG_ORDER.filter(o => {
+    const diff = Math.abs((distA[o]||0) - (distB[o]||0));
+    return diff >= 2;
+  });
+
+  let distInterpret = '';
+  if (mostLacking && combined[mostLacking] <= 1) {
+    distInterpret += `<div class="gh-dist-interp">⚠ 두 분 모두 <strong style="color:${OHC2[mostLacking]}">${OHK_NAME[mostLacking]}</strong>(${OHAENG_MEANING[mostLacking]})이 부족합니다. 이 기운이 약한 영역에서 함께 어려움을 겪을 수 있습니다.</div>`;
+  }
+  if (complementPairs.length > 0) {
+    const cp = complementPairs[0];
+    const aMore = (distA[cp]||0) > (distB[cp]||0);
+    distInterpret += `<div class="gh-dist-interp good">✓ <strong style="color:${OHC2[cp]}">${OHK_NAME[cp]}</strong>에서 한 분이 강하고 다른 분이 약합니다. ${aMore?'나':'상대방'}의 ${OHK_NAME[cp]} 기운이 ${aMore?'상대방':'나'}를 채워주는 긍정적인 보완 관계입니다.</div>`;
+  }
+  if (combined[mostStrong] >= 6) {
+    distInterpret += `<div class="gh-dist-interp warn">△ 두 분 합산 <strong style="color:${OHC2[mostStrong]}">${OHK_NAME[mostStrong]}</strong>이 과도합니다. 이 오행의 특성(${OHAENG_MEANING[mostStrong]})이 지나치게 강해 균형을 잃을 수 있습니다.</div>`;
+  }
+
+  // 음양 분석
+  const YANG_STEM = new Set(['甲','丙','戊','庚','壬']);
+  const YIN_STEM  = new Set(['乙','丁','己','辛','癸']);
+  const YANG_BRANCH = new Set(['子','寅','辰','午','申','戌']);
+  const YIN_BRANCH  = new Set(['丑','卯','巳','未','酉','亥']);
+  const countYinYang = (pillars) => {
+    let yS=0,nS=0,yB=0,nB=0;
+    pillars.forEach(p => {
+      if(YANG_STEM.has(p.stem)) yS++; else if(YIN_STEM.has(p.stem)) nS++;
+      if(YANG_BRANCH.has(p.branch)) yB++; else if(YIN_BRANCH.has(p.branch)) nB++;
+    });
+    return { yangStem:yS, yinStem:nS, yangBranch:yB, yinBranch:nB };
+  };
+  const yyA = countYinYang(data.pillarsA||[]);
+  const yyB = countYinYang(data.pillarsB||[]);
+  const yangA = yyA.yangStem + yyA.yangBranch;
+  const yinA  = yyA.yinStem  + yyA.yinBranch;
+  const yangB = yyB.yangStem + yyB.yangBranch;
+  const yinB  = yyB.yinStem  + yyB.yinBranch;
+  const yyInterp = (() => {
+    const typeA = yangA > yinA ? '양(陽)형' : yangA < yinA ? '음(陰)형' : '균형형';
+    const typeB = yangB > yinB ? '양(陽)형' : yangB < yinB ? '음(陰)형' : '균형형';
+    const desc = {
+      '양(陽)형': '활동적이고 외향적입니다. 먼저 나서고 에너지를 발산하는 편입니다.',
+      '음(陰)형': '내성적이고 수용적입니다. 관찰하고 흡수하며 내면이 깊습니다.',
+      '균형형': '음양이 고르게 분포되어 상황에 따라 유연하게 대처합니다.',
+    };
+    let chem = '';
+    if (typeA !== typeB) chem = '서로 다른 음양 기질이 만나 자연스러운 끌림이 생깁니다. 보완 관계가 형성됩니다.';
+    else if (typeA === '양(陽)형') chem = '두 분 모두 적극적이라 활기차지만 주도권 갈등이 생길 수 있습니다.';
+    else if (typeA === '음(陰)형') chem = '두 분 모두 내성적이라 서로를 깊이 이해하지만 먼저 나서는 것을 꺼릴 수 있습니다.';
+    else chem = '두 분 모두 균형 잡힌 기질로 상황 적응력이 좋습니다.';
+    return { typeA, typeB, descA: desc[typeA], descB: desc[typeB], chem };
+  })();
+
   const distCompHtml = `
     <div class="gh-section">
       <div class="gh-section-title">🌊 오행 분포 비교</div>
       <div class="gh-dist-grid">
-        ${Object.entries(data.distributionA||{}).map(([k,vA])=>{
-          const vB = (data.distributionB||{})[k] || 0;
+        ${OHAENG_ORDER.map(k=>{
+          const vA = distA[k]||0;
+          const vB = distB[k]||0;
           const col = OHC2[k]||'#fff';
-          const maxV = Math.max(vA, vB, 1);
           return `
           <div class="gh-dist-row">
             <span class="gh-dist-name" style="color:${col}">${OHK2[k]||k}(${k})</span>
@@ -2546,6 +2681,30 @@ function renderCoupleResults(data) {
           <span style="color:rgba(255,255,255,0.35)">상대방</span>
         </div>
       </div>
+      ${distInterpret ? `<div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;">${distInterpret}</div>` : ''}
+    </div>
+
+    <div class="gh-section" style="margin-top:14px">
+      <div class="gh-section-title">☯ 음양(陰陽) 분석</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+        <div class="gh-yy-box" style="border-color:#00D2FF22;flex:1;min-width:130px;">
+          <div class="gh-yy-label" style="color:#00D2FF;">나 — ${yyInterp.typeA}</div>
+          <div class="gh-yy-bar">
+            <div style="width:${(yangA/8)*100}%;background:#f0a030;height:6px;border-radius:3px;"></div>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px;">양 ${yangA} · 음 ${yinA}</div>
+          <div class="gh-yy-desc">${yyInterp.descA}</div>
+        </div>
+        <div class="gh-yy-box" style="border-color:#F5A62322;flex:1;min-width:130px;">
+          <div class="gh-yy-label" style="color:#F5A623;">상대방 — ${yyInterp.typeB}</div>
+          <div class="gh-yy-bar">
+            <div style="width:${(yangB/8)*100}%;background:#f0a030;height:6px;border-radius:3px;"></div>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px;">양 ${yangB} · 음 ${yinB}</div>
+          <div class="gh-yy-desc">${yyInterp.descB}</div>
+        </div>
+      </div>
+      <div class="gh-dist-interp good" style="margin-top:10px;">💬 ${yyInterp.chem}</div>
     </div>`;
 
   // ── 궁합 조언 카드
