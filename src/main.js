@@ -885,18 +885,21 @@ function render() {
           hour: hourB !== "" ? parseInt(hourB) : 12, minute: 0, isLeapMonth: false,
           gender: selectedGenderB,
         };
-        const sleep30 = new Promise(r => setTimeout(r, 30000));
-        const [locData] = await Promise.all([detectUserLocation().catch(() => ({})), sleep30.then(() => {})]);
-        const detectedLoc = await detectUserLocation().catch(() => ({}));
-        const userLat2 = detectedLoc.userLat ?? 37.5665;
-        const userLng2 = detectedLoc.userLng ?? 126.9780;
+        // 위치 먼저 (빠름), 그 후 fetch + 30초 타이머 병렬 실행
+        const detectedLoc2 = await detectUserLocation().catch(() => ({}));
+        const userLat2 = detectedLoc2.userLat ?? 37.5665;
+        const userLng2 = detectedLoc2.userLng ?? 126.9780;
 
-        const res = await fetch("/api/match-couple", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ birthInputA: birthInput, birthInputB, purpose: selectedPurpose, userLat: userLat2, userLng: userLng2, memberUnlocked: isMember(), region: document.getElementById("region-select")?.value || "", maxDistanceKm: parseInt(document.getElementById("distance-select")?.value) || null }),
-        });
-        const data = await res.json();
+        const sleep30 = new Promise(r => setTimeout(r, 30000));
+        const [apiRes] = await Promise.all([
+          fetch("/api/match-couple", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ birthInputA: birthInput, birthInputB, purpose: selectedPurpose, userLat: userLat2, userLng: userLng2, memberUnlocked: isMember(), region: document.getElementById("region-select")?.value || "", maxDistanceKm: parseInt(document.getElementById("distance-select")?.value) || null }),
+          }),
+          sleep30,
+        ]);
+        const data = await apiRes.json();
         clearInterval(loadingInterval2);
         if (data.error) {
           resultsEl.classList.add("hidden");
