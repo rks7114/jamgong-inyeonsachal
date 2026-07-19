@@ -3096,50 +3096,68 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
 
   // ── Wikipedia 갤러리 이미지 로드 ──
   (function loadGallery() {
-    const galleryEl = document.getElementById('temple-gallery');
-    const scrollEl = document.getElementById('gallery-scroll');
+    var galleryEl = document.getElementById('temple-gallery');
+    var scrollEl  = document.getElementById('gallery-scroll');
     if (!galleryEl || !scrollEl || !t.name) return;
 
-    // Step 1: 한국어 위키 이미지 목록 가져오기
+    // 아이콘·로고·지도·깃발 등 비사진 제외 키워드
+    var SKIP = /icon|logo|map|flag|위치|location|symbol|seal|coat|emblem|blank|commons|stub|question/i;
+
+    // Step 1: 위키 이미지 목록 (jpg/jpeg만 — png는 아이콘 많음)
     fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=images&titles='
-      + encodeURIComponent(t.name) + '&imlimit=20&format=json&origin=*')
+      + encodeURIComponent(t.name) + '&imlimit=30&format=json&origin=*')
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
         if (!data) return null;
         var pages = data.query && data.query.pages ? data.query.pages : {};
-        var page = Object.values(pages)[0];
-        if (!page) return null;
-        var imgs = (page.images || [])
+        var page  = Object.values(pages)[0];
+        if (!page || !page.images) return null;
+        var imgs = page.images
           .map(function(i) { return i.title; })
-          .filter(function(ti) { return /\.(jpe?g|png|webp)$/i.test(ti); });
+          .filter(function(ti) {
+            return /\.jpe?g$/i.test(ti) && !SKIP.test(ti);
+          });
         if (imgs.length === 0) return null;
 
-        // Step 2: 이미지 URL 가져오기 (최대 8장) — | 인코딩 주의
-        var titleParam = imgs.slice(0, 8).map(function(ti) { return encodeURIComponent(ti); }).join('%7C');
-        return fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=500&titles='
-          + titleParam + '&format=json&origin=*')
+        // Step 2: URL + 크기 정보 함께 요청 (최대 12개)
+        var titleParam = imgs.slice(0, 12)
+          .map(function(ti) { return encodeURIComponent(ti); }).join('%7C');
+        return fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=imageinfo'
+          + '&iiprop=url%7Cdimensions&iiurlwidth=500&titles=' + titleParam
+          + '&format=json&origin=*')
           .then(function(r) { return r.ok ? r.json() : null; });
       })
       .then(function(data) {
         if (!data) return;
         var pages = data.query && data.query.pages ? data.query.pages : {};
-        var urls = Object.values(pages)
-          .map(function(p) { return p.imageinfo && p.imageinfo[0] && p.imageinfo[0].thumburl; })
-          .filter(Boolean);
-        if (urls.length < 2) return; // 1장이면 히어로로 충분
+        var items = Object.values(pages)
+          .map(function(p) { return p.imageinfo && p.imageinfo[0]; })
+          .filter(function(info) {
+            // 실제 사진만: 가로 300px 이상 & 세로 200px 이상
+            return info && info.thumburl && (info.thumbwidth || 0) >= 300 && (info.thumbheight || 0) >= 200;
+          });
 
-        // 갤러리 렌더
-        scrollEl.innerHTML = urls.map(function(url) {
+        if (items.length === 0) return;
+
+        scrollEl.innerHTML = items.map(function(info) {
+          var thumb  = info.thumburl;
+          var full   = thumb.replace(/\/\d+px-/, '/1200px-');
           return '<div style="flex:0 0 auto;width:160px;height:110px;border-radius:12px;overflow:hidden;'
-            + 'border:1px solid rgba(255,255,255,0.12);cursor:pointer;transition:transform .2s;"'
-            + ' onclick="(function(u){var ov=document.createElement(\'div\');ov.style.cssText=\'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;\';var im=new Image();im.src=u;im.style.cssText=\'max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 8px 40px #000;\';ov.appendChild(im);ov.onclick=function(){document.body.removeChild(ov);};document.body.appendChild(ov);})(this.dataset.src)"'
-            + ' data-src="' + url.replace(/\/\d+px-/, '/1200px-') + '">'
-            + '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">'
+            + 'border:1px solid rgba(255,255,255,0.12);cursor:pointer;transition:transform .2s,box-shadow .2s;"'
+            + ' onmouseover="this.style.transform=\'scale(1.04)\';this.style.boxShadow=\'0 6px 20px rgba(0,0,0,.5)\'"'
+            + ' onmouseout="this.style.transform=\'\';this.style.boxShadow=\'\'"'
+            + ' data-src="' + full + '"'
+            + ' onclick="(function(u){var ov=document.createElement(\'div\');ov.style.cssText=\'position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;\';'
+            + 'var im=new Image();im.src=u;im.style.cssText=\'max-width:92vw;max-height:88vh;border-radius:10px;box-shadow:0 8px 40px #000;\';'
+            + 'ov.appendChild(im);ov.onclick=function(){document.body.removeChild(ov);};document.body.appendChild(ov);})(this.dataset.src)">'
+            + '<img src="' + thumb + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy"'
+            + ' onerror="this.parentElement.style.display=\'none\'">'
             + '</div>';
         }).join('');
+
         galleryEl.style.display = 'block';
       })
-      .catch(function() { /* 갤러리 없으면 숨김 유지 */ });
+      .catch(function() {});
   })();
 
   // ── Wikipedia 유래 보완 (DB 데이터 짧을 때) ──
