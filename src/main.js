@@ -2849,6 +2849,12 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
     + '.detail-date-card:hover{transform:translateY(-4px) scale(1.06);box-shadow:0 8px 24px rgba(0,0,0,.4);}'
     + '</style>';
 
+  // 업그레이드 공지
+  html += '<div style="background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.28);border-radius:12px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:12px;color:#ffe082;">'
+    + '<span style="font-size:16px;">🔧</span>'
+    + '<span>상세페이지 및 사찰 이미지 <strong>업그레이드 진행 중</strong>입니다. 일부 사진이 표시되지 않을 수 있습니다.</span>'
+    + '</div>';
+
   // 뒤로가기
   html += '<button id="detail-back-btn" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:18px;transition:background .15s;">← 목록으로</button>';
 
