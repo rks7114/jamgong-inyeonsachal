@@ -321,15 +321,15 @@ function scoreTemple(temple, matchContext) {
   const personalNeed = distribution ? Math.max(0, 4 - (distribution[templeOhaeng] || 0)) : 2;
   const personalResonance = personalNeed * 5; // 0~20점
 
-  // 1-c) 생년월일 친연도 (±5점) — 같은 점수대에서 생년월일마다 다른 사찰이 나오도록
+  // 1-c) 생년월일 친연도 (±18점) — 생년월일 변화마다 다른 사찰이 나오도록 폭 확대
   const birthYear = matchContext.birthYear || 2000;
   const birthMonth = matchContext.birthMonth || 1;
   const birthDay = matchContext.birthDay || 1;
   const templeKey = temple.id
     ? (parseInt(String(temple.id).replace(/\D/g, "").slice(-3)) || temple.name.length)
     : temple.name.charCodeAt(0);
-  const affinityRaw = (birthYear * 7 + birthMonth * 13 + birthDay * 3 + templeKey * 11) % 11;
-  const birthAffinity = affinityRaw - 5; // -5 ~ +5점
+  const affinityRaw = (birthYear * 7 + birthMonth * 31 + birthDay * 17 + templeKey * 11) % 37;
+  const birthAffinity = affinityRaw - 18; // -18 ~ +18점
 
   // 2) 목적 태그 일치도 (30점)
   const purposeTagMap = {
@@ -347,9 +347,9 @@ function scoreTemple(temple, matchContext) {
   const distance = calculateDistance(userLat, userLng, temple.lat, temple.lng);
   const distanceScore = Math.max(0, 20 - (distance / 200) * 20);
 
-  // 4) 데이터 신뢰도 + 조계종 보너스 (최대 25점)
-  // 조계종 본사·주요사찰은 기도 시설이 충분하고 대중 방문에 검증됨 → +15점 추가
-  const jogyeBonus = JOGYE_TEMPLES.has(temple.name) ? 15 : 0;
+  // 4) 데이터 신뢰도 + 조계종 보너스 (최대 17점)
+  // 조계종 보너스를 7점으로 낮춰 생년월일 다양성(±18점)이 결과에 충분히 반영되도록 조정
+  const jogyeBonus = JOGYE_TEMPLES.has(temple.name) ? 7 : 0;
   const trustScore = (temple.verified ? 10 : 4) + jogyeBonus;
 
   // 5) 인연 시너지항 — 잼공감(CLI)·퍼피시너지(CSI)와 동일한 비가산 시너지 수학 코어
