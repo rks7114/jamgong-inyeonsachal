@@ -1,0 +1,10 @@
+{
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "functions": {
+    "api/saju-explain.js": { "maxDuration": 60 },
+    "api/saju.js": { "maxDuration": 30 },
+    "api/match.js": { "maxDuration": 30 },
+    "api/match-couple.js": { "maxDuration": 30 }
+  }
+}
