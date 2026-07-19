@@ -910,7 +910,7 @@ function render() {
         const userLat2 = detectedLoc2.userLat ?? 37.5665;
         const userLng2 = detectedLoc2.userLng ?? 126.9780;
 
-        const sleep30 = new Promise(r => setTimeout(r, 10000));
+        const sleep30 = new Promise(r => setTimeout(r, 5000));
         const [apiRes] = await Promise.all([
           fetch("/api/match-couple", {
             method: "POST",
@@ -995,7 +995,7 @@ function render() {
       }, 5000);
 
       try {
-        const sleep30 = new Promise(r => setTimeout(r, 10000));
+        const sleep30 = new Promise(r => setTimeout(r, 5000));
         const detectedLoc = await detectUserLocation().catch(() => ({}));
         const userLat3 = detectedLoc.userLat ?? 37.5665;
         const userLng3 = detectedLoc.userLng ?? 126.9780;
@@ -2304,121 +2304,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
   });
 }
 
-function renderResults(data) {
-  const resultsEl = document.getElementById("results");
-  resultsEl.classList.remove("hidden");
-
-  const top = (data.results || [])[0];
-  const deg = BEARING_DEG[top?.detail?.bearing] ?? 0;
-  const memberUnlocked = isMember();
-
-  resultsEl.innerHTML = `
-    <div class="results-summary">
-      <div class="label">나의 기운은</div>
-      <div class="ohaeng-value">${data.targetOhaeng || ""} 기운</div>
-      <div class="ohaeng-breakdown">
-        ${Object.entries(data.distribution || {}).map(([k,v]) => `${k} ${v}`).join(" · ")}
-      </div>
-    </div>
-
-    <div style="display:flex;justify-content:center;margin:8px 0 16px;">
-      <svg viewBox="0 0 120 120" width="100" height="100">
-        <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(0,210,255,0.2)" stroke-width="2"/>
-        <circle cx="60" cy="60" r="48" fill="rgba(0,20,40,0.6)" stroke="rgba(0,210,255,0.25)" stroke-width="1"/>
-        <text x="60" y="20" text-anchor="middle" fill="#FF6B6B" font-size="13" font-weight="700">N</text>
-        <text x="100" y="64" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10" font-weight="700">E</text>
-        <text x="60" y="108" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10" font-weight="700">S</text>
-        <text x="20" y="64" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10" font-weight="700">W</text>
-        <g transform="rotate(${deg} 60 60)">
-          <polygon points="60,18 64,58 60,62 56,58" fill="#FF6B6B"/>
-          <polygon points="60,102 64,62 60,58 56,62" fill="rgba(255,255,255,0.3)"/>
-        </g>
-        <circle cx="60" cy="60" r="5" fill="rgba(0,210,255,0.8)"/>
-      </svg>
-    </div>
-
-    ${!memberUnlocked ? `
-      <div style="text-align:center;margin:-4px 0 14px;">
-        <button id="demo-detail-btn" style="display:inline-flex;align-items:center;gap:7px;background:rgba(212,175,55,0.08);border:1.5px solid rgba(212,175,55,0.35);border-radius:20px;padding:9px 22px;color:rgba(212,175,55,0.9);font-size:13px;font-family:var(--sans);font-weight:600;cursor:pointer;">✨ 멤버십 상세페이지 미리보기</button>
-      </div>
-    ` : ""}
-
-    ${memberUnlocked ? `
-      <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
-    ` : `
-      <div class="member-unlock">
-        <input type="text" id="member-code-input" placeholder="멤버십 코드 입력 (선택)" />
-        <button id="member-code-btn">확인</button>
-      </div>
-    `}
-
-    ${data.purposeGuide ? `
-      <div class="prayer-guide">
-        <div class="prayer-guide-label">🙏 이렇게 기도해보세요</div>
-        <div class="prayer-guide-text">
-          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
-        </div>
-      </div>
-    ` : ""}
-
-    ${(data.results || []).map((r, i) => `
-      <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail?.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
-        <div class="temple-rank">${i + 1}</div>
-        <div class="temple-body">
-          <h3>
-            <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
-              ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
-            </a>
-          </h3>
-          <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
-          <div class="reason">${r.reason}</div>
-          ${r.temple.history ? `
-            <div class="temple-detail">
-              <div class="temple-detail-label">유래·연혁</div>
-              <div class="temple-detail-text">
-                ${memberUnlocked ? r.temple.history : (r.temple.history.length > 35 ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>` : r.temple.history)}
-              </div>
-              ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
-            </div>
-          ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
-          <button type="button" class="detail-view-btn" data-temple-index="${i}">상세페이지 보기 →</button>
-        </div>
-      </div>
-    `).join("")}
-
-    ${data.recommendedDates && data.recommendedDates.length ? `
-      <div class="calendar-card">
-        <div class="calendar-title">📅 좋은 방문 날짜 추천</div>
-        <div class="calendar-items">
-          ${data.recommendedDates.map(d => `<div class="calendar-item"><span class="cal-date">${d.date}</span>${d.reason ? `<span class="cal-reason">${d.reason}</span>` : ''}</div>`).join('')}
-        </div>
-      </div>
-    ` : ''}
-
-    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
-
-    <div class="notice-box">
-      <div class="notice-item">
-        <span class="notice-icon">ℹ️</span>
-        <span>${data.disclaimer || "본 결과는 사주 오행 이론을 바탕으로 한 참고 정보입니다."}</span>
-      </div>
-    </div>
-  `;
-
-  const codeInput2 = document.getElementById("member-code-input");
-  const codeBtn2   = document.getElementById("member-code-btn");
-  if (codeBtn2) {
-    codeBtn2.addEventListener("click", () => {
-      if (codeInput2 && codeInput2.value.trim() === MEMBER_CODE) {
-        tryUnlockMembership(codeInput2.value.trim());
-        renderResults(data);
-      } else {
-        alert("코드가 올바르지 않습니다.");
-      }
-    });
-  }
-
-
 // ═══════════════════════════════════════════════════════════════════
 function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   const resultsEl = document.getElementById('results');
@@ -3116,6 +3001,119 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   }
 }
 
+function renderResults(data) {
+  const resultsEl = document.getElementById("results");
+  resultsEl.classList.remove("hidden");
+
+  const top = (data.results || [])[0];
+  const deg = BEARING_DEG[top?.detail?.bearing] ?? 0;
+  const memberUnlocked = isMember();
+
+  resultsEl.innerHTML = `
+    <div class="results-summary">
+      <div class="label">나의 기운은</div>
+      <div class="ohaeng-value">${data.targetOhaeng || ""} 기운</div>
+      <div class="ohaeng-breakdown">
+        ${Object.entries(data.distribution || {}).map(([k,v]) => `${k} ${v}`).join(" · ")}
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:center;margin:8px 0 16px;">
+      <svg viewBox="0 0 120 120" width="100" height="100">
+        <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(0,210,255,0.2)" stroke-width="2"/>
+        <circle cx="60" cy="60" r="48" fill="rgba(0,20,40,0.6)" stroke="rgba(0,210,255,0.25)" stroke-width="1"/>
+        <text x="60" y="20" text-anchor="middle" fill="#FF6B6B" font-size="13" font-weight="700">N</text>
+        <text x="100" y="64" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10" font-weight="700">E</text>
+        <text x="60" y="108" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10" font-weight="700">S</text>
+        <text x="20" y="64" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10" font-weight="700">W</text>
+        <g transform="rotate(${deg} 60 60)">
+          <polygon points="60,18 64,58 60,62 56,58" fill="#FF6B6B"/>
+          <polygon points="60,102 64,62 60,58 56,62" fill="rgba(255,255,255,0.3)"/>
+        </g>
+        <circle cx="60" cy="60" r="5" fill="rgba(0,210,255,0.8)"/>
+      </svg>
+    </div>
+
+    ${!memberUnlocked ? `
+      <div style="text-align:center;margin:-4px 0 14px;">
+        <button id="demo-detail-btn" style="display:inline-flex;align-items:center;gap:7px;background:rgba(212,175,55,0.08);border:1.5px solid rgba(212,175,55,0.35);border-radius:20px;padding:9px 22px;color:rgba(212,175,55,0.9);font-size:13px;font-family:var(--sans);font-weight:600;cursor:pointer;">✨ 멤버십 상세페이지 미리보기</button>
+      </div>
+    ` : ""}
+
+    ${memberUnlocked ? `
+      <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
+    ` : `
+      <div class="member-unlock">
+        <input type="text" id="member-code-input" placeholder="멤버십 코드 입력 (선택)" />
+        <button id="member-code-btn">확인</button>
+      </div>
+    `}
+
+    ${data.purposeGuide ? `
+      <div class="prayer-guide">
+        <div class="prayer-guide-label">🙏 이렇게 기도해보세요</div>
+        <div class="prayer-guide-text">
+          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
+        </div>
+      </div>
+    ` : ""}
+
+    ${(data.results || []).map((r, i) => `
+      <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail?.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
+        <div class="temple-rank">${i + 1}</div>
+        <div class="temple-body">
+          <h3>
+            <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
+              ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
+            </a>
+          </h3>
+          <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
+          <div class="reason">${r.reason}</div>
+          ${r.temple.history ? `
+            <div class="temple-detail">
+              <div class="temple-detail-label">유래·연혁</div>
+              <div class="temple-detail-text">
+                ${memberUnlocked ? r.temple.history : (r.temple.history.length > 35 ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>` : r.temple.history)}
+              </div>
+              ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
+            </div>
+          ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
+          <button type="button" class="detail-view-btn" data-temple-index="${i}">상세페이지 보기 →</button>
+        </div>
+      </div>
+    `).join("")}
+
+    ${data.recommendedDates && data.recommendedDates.length ? `
+      <div class="calendar-card">
+        <div class="calendar-title">📅 좋은 방문 날짜 추천</div>
+        <div class="calendar-items">
+          ${data.recommendedDates.map(d => `<div class="calendar-item"><span class="cal-date">${d.date}</span>${d.reason ? `<span class="cal-reason">${d.reason}</span>` : ''}</div>`).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
+
+    <div class="notice-box">
+      <div class="notice-item">
+        <span class="notice-icon">ℹ️</span>
+        <span>${data.disclaimer || "본 결과는 사주 오행 이론을 바탕으로 한 참고 정보입니다."}</span>
+      </div>
+    </div>
+  `;
+
+  const codeInput2 = document.getElementById("member-code-input");
+  const codeBtn2   = document.getElementById("member-code-btn");
+  if (codeBtn2) {
+    codeBtn2.addEventListener("click", () => {
+      if (codeInput2 && codeInput2.value.trim() === MEMBER_CODE) {
+        tryUnlockMembership(codeInput2.value.trim());
+        renderResults(data);
+      } else {
+        alert("코드가 올바르지 않습니다.");
+      }
+    });
+  }
 
   document.querySelectorAll(".detail-view-btn").forEach(btn => {
     btn.addEventListener("click", () => {
