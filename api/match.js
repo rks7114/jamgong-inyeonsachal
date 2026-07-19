@@ -1,6 +1,10 @@
 // api/match.js
-const { matchTemples } = require("../src/matching-engine.js");
-const TEMPLE_DB = require("../src/temple-db.full.js");
+let _matchTemples = null;
+let _TEMPLE_DB = null;
+function loadDeps() {
+  if (!_matchTemples) _matchTemples = require("../src/matching-engine.js").matchTemples;
+  if (!_TEMPLE_DB) _TEMPLE_DB = require("../src/temple-db.full.js");
+}
 
 const WEATHER_CODE_MAP = {
   0: "맑음", 1: "대체로 맑음", 2: "구름 조금", 3: "흐림",
@@ -37,6 +41,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    loadDeps();
     const { birthDateTime, birthInput, purpose, userLat, userLng, memberUnlocked, region, maxDistanceKm } = req.body;
 
     if ((!birthDateTime && !birthInput) || !purpose) {
@@ -47,9 +52,9 @@ module.exports = async function handler(req, res) {
     const safeUserLat = userLat ?? 37.5665;
     const safeUserLng = userLng ?? 126.9780;
 
-    const result = matchTemples(
+    const result = _matchTemples(
       { birthDateTime, birthInput, purpose, userLat: safeUserLat, userLng: safeUserLng, memberUnlocked: !!memberUnlocked, region: region || "", maxDistanceKm: maxDistanceKm || null },
-      TEMPLE_DB
+      _TEMPLE_DB
     );
 
     if (result.results && result.results[0]) {
@@ -58,6 +63,7 @@ module.exports = async function handler(req, res) {
       if (weather) result.results[0].weather = weather;
     }
 
+    res.setHeader('Content-Type', 'application/json');
     res.status(200).json({
       success: true,
       disclaimer: "본 결과는 참고용 추정치이며, 정밀 사주 감정은 잼공 오라클 정식 서비스를 이용해 주세요.",
