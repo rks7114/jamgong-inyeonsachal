@@ -1918,7 +1918,8 @@ function buildLifeGuideCards(data, birthInput) {
 
 function renderSajuPage(data, birthInput, matchData, explanation) {
   // 챗봇에 사주 컨텍스트 저장
-  _sajuContext = {
+  window._gunghamContext = null;  // 사주 모드 전환 시 궁합 컨텍스트 초기화
+  _sajuContext = window._sajuContext = {
     eightChar: data.eightChar,
     distribution: data.distribution,
     weak: data.weak,
@@ -2456,6 +2457,23 @@ function renderCoupleResults(data) {
   const hapAdj    = hapCount * 4 - chungCount * 7;
   const finalScore = Math.max(10, Math.min(99, gh.score + hapAdj));
   const scorePercent = Math.round(finalScore);
+
+  // ── 챗봇 궁합 컨텍스트 저장
+  window._sajuContext = null;
+  window._gunghamContext = {
+    pillarsA: data.pillarsA,
+    pillarsB: data.pillarsB,
+    hapChung: data.hapChung,
+    distributionA: data.distributionA,
+    distributionB: data.distributionB,
+    genderA: data.genderA,
+    genderB: data.genderB,
+    targetA: dayOhaengA,
+    targetB: dayOhaengB,
+    finalScore,
+    relation: gh.relation,
+    grade: gh.grade,
+  };
 
   // ── 오행 색상 매핑
   const OHC2 = { 목:'#64DCA0', 화:'#FF6B9D', 토:'#FB923C', 금:'#FFB347', 수:'#00D2FF' };
