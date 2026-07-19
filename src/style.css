@@ -895,6 +895,14 @@ select:disabled, input:disabled { opacity:0.35; cursor:not-allowed; }
 .gh-advice-item.positive { background:rgba(100,220,160,0.06); border-left:3px solid rgba(100,220,160,0.4); }
 .gh-advice-item.caution  { background:rgba(245,166,35,0.06); border-left:3px solid rgba(245,166,35,0.4); }
 
+/* ── 일주론 카드 ── */
+.gh-ilju-item {
+  padding:10px 14px; border-radius:10px;
+  background:rgba(255,255,255,0.04);
+}
+.gh-ilju-char { font-size:14px; font-weight:800; margin-bottom:4px; font-family:var(--serif); }
+.gh-ilju-desc { font-size:12.5px; line-height:1.65; color:rgba(255,255,255,0.72); }
+
 /* Member */
 .member-unlock {
   display:flex; gap:8px; margin-bottom:14px;
