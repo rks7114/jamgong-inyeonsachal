@@ -149,6 +149,7 @@
         try{
           var body={messages:hist.slice(-12)};
           var sc=window._sajuContext;if(sc)body.sajuContext=sc;
+          var gc=window._gunghamContext;if(gc)body.gunghamContext=gc;
           var r=await fetch('/api/chatbot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
           var txt=await r.text();
           var d;try{d=JSON.parse(txt);}catch(_){d={};}
