@@ -459,14 +459,16 @@ function render() {
       </div>
 
       <div class="field hidden" id="birth-b-field" style="display:none">
-        <label>상대방 생년월일시</label>
-        <div class="calendar-toggle">
-          <button type="button" class="calendar-toggle-btn active" data-calendar-b="solar">양력</button>
-          <button type="button" class="calendar-toggle-btn" data-calendar-b="lunar">음력</button>
-        </div>
-        <div class="gender-toggle">
-          <button type="button" class="gender-btn-b active" data-gender-b="male">👨 남(男)</button>
-          <button type="button" class="gender-btn-b" data-gender-b="female">👩 여(女)</button>
+        <label class="label-partner"><span class="label-badge-b">상대방</span> 생년월일시</label>
+        <div class="birth-top-row">
+          <div class="calendar-toggle calendar-toggle-b">
+            <button type="button" class="calendar-toggle-btn active" data-calendar-b="solar">양력</button>
+            <button type="button" class="calendar-toggle-btn" data-calendar-b="lunar">음력</button>
+          </div>
+          <div class="gender-toggle gender-toggle-b">
+            <button type="button" class="gender-btn-b" data-gender-b="male">👨 남(男)</button>
+            <button type="button" class="gender-btn-b active" data-gender-b="female">👩 여(女)</button>
+          </div>
         </div>
         <div class="birth-fields-row">
           <div class="birth-field">
@@ -627,7 +629,7 @@ function render() {
       if (matchMode === "couple") {
         birthBField.classList.remove("hidden");
         birthBField.style.display = "flex";
-        labelA.textContent = "내 생년월일시";
+        labelA.innerHTML = `<span class="label-badge-a">나</span> 생년월일시`;
         submitBtn.textContent = "함께 인연사찰 찾기";
         if (purposeField) purposeField.style.display = "";
         if (locationField) locationField.style.display = "";
