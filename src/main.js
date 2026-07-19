@@ -2930,12 +2930,21 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
 
   // ── 기도가이드 ──
   if (Array.isArray(purposeGuide) && purposeGuide.length) {
-    const stepsHtml = '<ol style="margin:0;padding-left:20px;">'
+    var stepEmoji = ['①','②','③','④','⑤'];
+    var stepsHtml = '<div style="display:flex;flex-direction:column;gap:12px;">'
       + purposeGuide.map(function(s, i) {
-          return '<li style="margin-bottom:10px;padding-left:4px;">'
-            + '<span style="color:' + COL.guide.c + ';font-weight:700;">' + (i+1) + '.</span> ' + s + '</li>';
+          // "도착하면:", "기도할 때:" 등 레이블 강조
+          var parts = s.split(':');
+          var label = parts.length > 1 ? parts[0] + ':' : '';
+          var body  = parts.length > 1 ? parts.slice(1).join(':').trim() : s;
+          return '<div style="display:flex;gap:10px;align-items:flex-start;">'
+            + '<span style="flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:rgba(52,211,153,0.18);border:1.5px solid rgba(52,211,153,0.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#34D399;margin-top:1px;">' + (i+1) + '</span>'
+            + '<div style="flex:1;">'
+            + (label ? '<span style="color:#34D399;font-weight:800;">' + label + '</span> ' : '')
+            + '<span style="color:#E2E8F0;">' + body + '</span>'
+            + '</div></div>';
         }).join('')
-      + '</ol>';
+      + '</div>';
     html += sec(COL.guide, '🙏 이렇게 기도해보세요', stepsHtml);
   }
 
@@ -2971,9 +2980,14 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   }
 
   // ── 유래연혁 ──
-  if (historyFull) {
-    html += sec(COL.history, '📜 유래 · 연혁', '<p style="margin:0;">' + historyHtml + '</p>');
-  }
+  html += '<div id="history-section">'
+    + (historyFull
+        ? '<div class="ds-card" style="background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.22);border-left:4px solid #D97706;border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">'
+          + '<div style="font-size:14px;font-weight:800;color:#D97706;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(217,119,6,0.2);">📜 유래 · 연혁</div>'
+          + '<div id="history-body" style="font-size:14px;color:#E2E8F0;line-height:1.9;"><p style="margin:0;">' + historyHtml + '</p></div>'
+          + '</div>'
+        : '')
+    + '</div>';
 
   // ── 추천 날짜 ──
   if (recDates.length > 0) {
@@ -3126,6 +3140,35 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
         galleryEl.style.display = 'block';
       })
       .catch(function() { /* 갤러리 없으면 숨김 유지 */ });
+  })();
+
+  // ── Wikipedia 유래 보완 (DB 데이터 짧을 때) ──
+  (function loadWikiHistory() {
+    if (!t.name) return;
+    var historySection = document.getElementById('history-section');
+    var historyBody = document.getElementById('history-body');
+    // 이미 충분한 내용(150자 이상)이면 스킵
+    if (historyFull.length >= 150) return;
+    fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&exsentences=6&titles='
+      + encodeURIComponent(t.name) + '&format=json&origin=*')
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) {
+        if (!data) return;
+        var pages = data.query && data.query.pages ? data.query.pages : {};
+        var page = Object.values(pages)[0];
+        var extract = page && page.extract ? page.extract.trim() : '';
+        if (!extract || extract.length < 30) return;
+        // 위키 내용으로 유래 섹션 구성
+        var c = COL.history;
+        if (!historySection) return;
+        var combined = (historyFull ? historyFull + '\n\n' : '') + extract;
+        var displayText = memberUnlocked ? combined : (combined.slice(0, 200) + (combined.length > 200 ? '… <span style="color:rgba(255,255,255,0.35);font-size:12px;">🔒 전체보기는 멤버 전용</span>' : ''));
+        historySection.innerHTML = '<div class="ds-card" style="background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.22);border-left:4px solid #D97706;border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">'
+          + '<div style="font-size:14px;font-weight:800;color:#D97706;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(217,119,6,0.2);">📜 유래 · 연혁 <span style="font-size:11px;font-weight:400;opacity:.45;margin-left:6px;">위키백과 참조</span></div>'
+          + '<div style="font-size:14px;color:#E2E8F0;line-height:1.9;white-space:pre-line;">' + displayText + '</div>'
+          + '</div>';
+      })
+      .catch(function() {});
   })();
 
   // 기도문 복사
