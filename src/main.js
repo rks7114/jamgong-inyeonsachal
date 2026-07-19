@@ -7,6 +7,9 @@ const PURPOSES = ["재물운", "건강운", "학업운", "인연운", "가정운
 
 const PURPOSE_EN = { 재물운: "wealth", 건강운: "health", 학업운: "academic", 인연운: "love", 가정운: "family", 수험합격: "exam", 취업운: "career", 출산기도: "birth" };
 
+const PURPOSE_OHAENG = { 재물운:"geum", 건강운:"mok", 학업운:"su", 인연운:"hwa", 가정운:"to", 수험합격:"su", 취업운:"geum", 출산기도:"mok" };
+const PURPOSE_OHAENG_KO = { geum:"金", mok:"木", su:"水", hwa:"火", to:"土" };
+
 // 기도목적별 안내 — 실제 불교 전통 방식(소원지, 108배, 발원문 등) 기반. 신비주의적 과장 없이 사실적으로 서술.
 const PURPOSE_PRAYER_GUIDE = {
   재물운: "대웅전에서 삼배(三拜)를 올린 뒤, 소원지에 구체적인 목표를 적어 불전함 앞에 놓아보세요. 산신각이 있다면 함께 들러보시는 것도 좋습니다.",
@@ -505,13 +508,17 @@ function render() {
       <div class="field" id="purpose-field">
         <label>기도 목적 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">지금 가장 채우고 싶은 기운을 골라주세요. 사주상 부족한 오행과 함께 계산에 반영됩니다.</span></span></label>
         <div class="purpose-grid" id="purpose-grid">
-          ${PURPOSES.map((p, i) => `
-            <div class="purpose-chip${i === 0 ? " active" : ""}" data-purpose="${p}">
+          ${PURPOSES.map((p, i) => {
+            const oh = PURPOSE_OHAENG[p] || "";
+            const ohKo = PURPOSE_OHAENG_KO[oh] || "";
+            return `
+            <div class="purpose-chip${i === 0 ? " active" : ""}" data-purpose="${p}" data-ohaeng="${oh}">
+              <span class="purpose-ohaeng-mark">${ohKo}</span>
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${PURPOSE_ICONS[p]}</svg>
-              <span>${p}</span>
+              <span class="purpose-name">${p}</span>
               <span class="purpose-en">${PURPOSE_EN[p]}</span>
-            </div>
-          `).join("")}
+            </div>`;
+          }).join("")}
         </div>
       </div>
 
