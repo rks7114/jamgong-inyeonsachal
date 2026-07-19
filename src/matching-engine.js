@@ -311,11 +311,17 @@ function bearingToOhaeng(bearing) {
 function scoreTemple(temple, matchContext) {
   const { targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng } = matchContext;
 
-  // 1) 방위 적합도 (40점) — 목적 오행 완전일치 40, 개인 부족오행 일치 28, 불일치 15
+  // 1) 방위 적합도 (최대 38점) — 사주 부족오행 일치 38, 기도목적 오행 일치 28, 불일치 15
+  // purposeOhaeng을 matchContext에서 참조 (없으면 targetOhaeng과 동일)
+  const purposeOh = matchContext.purposeOhaeng || targetOhaeng;
   const bearing = calculateBearing(userLat, userLng, temple.lat, temple.lng);
   const templeOhaeng = bearingToOhaeng(bearing);
-  const bangwiScore = templeOhaeng === targetOhaeng ? 40
-    : (personalOhaeng && templeOhaeng === personalOhaeng ? 28 : 15);
+  // 사주 부족 + 기도목적 둘 다 일치하면 최고점
+  const bothMatch = templeOhaeng === targetOhaeng && templeOhaeng === purposeOh;
+  const bangwiScore = bothMatch ? 38
+    : (templeOhaeng === targetOhaeng ? 32          // 사주 부족오행 방위 일치
+    : (templeOhaeng === purposeOh   ? 26           // 기도목적 오행 방위 일치
+    : 15));                                         // 불일치
 
   // 1-b) 개인 공명 점수 (0~20점) — 사주에서 이 사찰 오행이 부족할수록 강하게 가산
   const personalNeed = distribution ? Math.max(0, 4 - (distribution[templeOhaeng] || 0)) : 2;
@@ -380,33 +386,45 @@ function attachJosa(word, [withBatchim, withoutBatchim]) {
 }
 
 /** 결과 설명 자동 생성 (템플릿 조합 - AI 생성 아님, 정직성 원칙) */
-function generateReason(result, targetOhaeng, purpose, personalOhaeng) {
+function generateReason(result, targetOhaeng, purpose, personalOhaeng, purposeOhaeng) {
   const { temple, detail } = result;
-  const matched = detail.templeOhaeng === targetOhaeng;
   const templeWaGwa = attachJosa(temple.name, ["과", "와"]);
   const templeEunNeun = attachJosa(temple.name, ["은", "는"]);
-  if (matched) {
-    if (personalOhaeng && personalOhaeng === targetOhaeng) {
-      // 사주 부족 오행 = 목적 오행이 일치할 때만 "사주에서 부족하여" 표현 사용
-      return `사주에서 ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운이 부족하여, ${detail.bearing}쪽에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.`;
-    } else {
-      // 목적 기반 오행으로 선택: 사주 부족 오행과 기도 목적 방위 둘 다 표시
-      const personalNote = personalOhaeng ? ` 사주의 ${personalOhaeng}(${OHAENG_BANGWI[personalOhaeng]}) 기운 보완도 함께 고려됩니다.` : "";
-      return `${purpose} 기도에 적합한 방위(${detail.bearing}쪽, ${targetOhaeng}(${OHAENG_BANGWI[targetOhaeng]}) 기운)에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.${personalNote}`;
-    }
+  const oh = targetOhaeng; // 사주 부족오행 (주 기준)
+  const poh = purposeOhaeng || oh;
+
+  if (detail.templeOhaeng === oh && oh === poh) {
+    // 사주 부족오행 = 기도목적 오행 완전 일치
+    return `사주에서 ${oh}(${OHAENG_BANGWI[oh]}) 기운이 가장 부족하며 ${purpose}에도 최적인 방위(${detail.bearing}쪽)에 위치한 ${templeWaGwa} 인연이 매우 깊은 것으로 나옵니다.`;
+  } else if (detail.templeOhaeng === oh) {
+    // 사주 부족오행 방위 일치 (기도목적은 다름)
+    const purposeNote = poh !== oh ? ` ${purpose}을(를) 위한 ${poh}(${OHAENG_BANGWI[poh]}) 기운도 함께 보완됩니다.` : "";
+    return `사주에서 부족한 ${oh}(${OHAENG_BANGWI[oh]}) 기운을 채워주는 ${detail.bearing}쪽에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.${purposeNote}`;
+  } else if (detail.templeOhaeng === poh) {
+    // 기도목적 오행 방위 일치
+    return `${purpose} 기도에 적합한 ${poh}(${OHAENG_BANGWI[poh]}) 기운의 방위(${detail.bearing}쪽)에 위치한 ${templeWaGwa} 인연이 닿아 있습니다. 사주의 ${oh}(${OHAENG_BANGWI[oh]}) 기운 보완도 함께 고려됩니다.`;
   }
-  return `${templeEunNeun} ${purpose} 목적과 관련된 특징을 지닌 사찰로 확인됩니다.`;
+  return `${templeEunNeun} ${purpose} 목적과 연관된 기운을 지닌 사찰로, 사주 오행 분포와 인연이 있는 것으로 나옵니다.`;
 }
 
 /** 메인 매칭 함수 */
 function matchTemples(request, templeDB) {
   const { distribution, branches } = calculateOhaeng(request.birthInput ?? request.birthDateTime);
   const weak = findWeakOhaeng(distribution, branches);
-  const targetOhaeng = PURPOSE_OHAENG[request.purpose] || weak.부족오행;
+
+  // ── 핵심 개선: 사주 부족오행(70%) + 기도목적 오행(30%) 복합 결정 ──
+  // 기존: targetOhaeng = PURPOSE_OHAENG[purpose] → 생년월일 무관, 항상 같은 방위
+  // 개선: 부족오행이 기본 방위 기준, 기도목적은 보조 점수로 반영
+  //       → 생년월일이 달라지면 부족오행이 달라지고, 방위/사찰도 달라짐
+  const weakOhaeng = weak.부족오행;
+  const purposeOhaeng = PURPOSE_OHAENG[request.purpose] || weakOhaeng;
+  // 두 오행이 같으면 강화, 다르면 사주 기반으로 추천 (70:30 가중치 역할)
+  const targetOhaeng = weakOhaeng;
 
   const bi = request.birthInput ?? request.birthDateTime ?? {};
   const matchContext = {
-    targetOhaeng,
+    targetOhaeng,                         // 사주 부족오행 (주 기준)
+    purposeOhaeng,                        // 기도목적 오행 (보조)
     personalOhaeng: weak.부족오행,
     distribution,
     purpose: request.purpose,
@@ -447,21 +465,22 @@ function matchTemples(request, templeDB) {
   // 각 목적의 방위(재물운=서/북서, 가정운=동/동북, 인연운=남/동남, 학업운=북, 건강운=남서)로
   // 먼저 필터링 → 방위가 다르면 사찰 풀 자체가 달라지므로 목적마다 반드시 다른 사찰이 나옴
   const DIR_OHAENG = { 동:"목", 동북:"목", 북:"수", 남서:"토", 남:"화", 동남:"화", 서:"금", 북서:"금" };
-  const purposeBearings = Object.keys(DIR_OHAENG).filter(k => DIR_OHAENG[k] === targetOhaeng);
+  // 사주 부족오행 방위 + 기도목적 오행 방위 둘 다 포함 (합집합)
+  const weakBearings    = Object.keys(DIR_OHAENG).filter(k => DIR_OHAENG[k] === targetOhaeng);
+  const purposeBearings = Object.keys(DIR_OHAENG).filter(k => DIR_OHAENG[k] === purposeOhaeng);
+  const targetBearings  = [...new Set([...weakBearings, ...purposeBearings])];
 
   const allScored = validTemples
     .map((t) => scoreTemple(t, matchContext))
     .sort((a, b) => b.score - a.score);
 
-  // 방위 일치 사찰만 추출 (점수 순)
-  const dirMatched = allScored.filter(t => purposeBearings.includes(t.detail.bearing));
-  // 방위 불일치 사찰 (보충용)
-  const dirOther = allScored.filter(t => !purposeBearings.includes(t.detail.bearing));
+  // 사주/목적 방위 일치 사찰 우선, 나머지 보충
+  const dirMatched = allScored.filter(t => targetBearings.includes(t.detail.bearing));
+  const dirOther   = allScored.filter(t => !targetBearings.includes(t.detail.bearing));
 
-  // 방위 일치 사찰이 2개 이상이면 앞에 배치, 나머지는 일반 풀로 보충 (단일 방위 목적도 포함)
   const primaryPool = dirMatched.length >= 2
-    ? [...dirMatched, ...dirOther].slice(0, 20)
-    : [...dirOther.slice(0, 3), ...dirMatched, ...dirOther.slice(3)].slice(0, 20);
+    ? [...dirMatched, ...dirOther].slice(0, 25)
+    : [...dirOther.slice(0, 5), ...dirMatched, ...dirOther.slice(5)].slice(0, 25);
 
   // ── 시드 기반 셔플로 매번 다른 사찰 추출 ────────────────────────────────
   // 점수가 높은 특정 사찰(대각사 등)이 독점되지 않도록 Fisher-Yates 셔플 적용
@@ -496,7 +515,7 @@ function matchTemples(request, templeDB) {
     const t = shuffled[i];
     if (!seenNames.has(t.temple.name)) {
       seenNames.add(t.temple.name);
-      scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose, weak.부족오행) });
+      scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose, weak.부족오행, purposeOhaeng) });
     }
   }
 
