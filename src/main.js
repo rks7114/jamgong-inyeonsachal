@@ -372,7 +372,7 @@ function render() {
       <svg class="corner-cloud br" viewBox="0 0 40 40"><path d="M36 20 Q36 28 28 28 Q27 34 20 33 Q15 37 10 32 Q4 32 4 25" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
 
       <div class="mode-toggle-wrap">
-        <button type="button" class="mode-toggle-btn active" data-mode="solo">🙏 혼자 찾기</button>
+        <button type="button" class="mode-toggle-btn active" data-mode="solo">🙏 인연사찰 찾기</button>
         <button type="button" class="mode-toggle-btn" data-mode="couple">💑 궁합</button>
         <button type="button" class="mode-toggle-btn" data-mode="saju">🔮 사주 보기</button>
       </div>
@@ -2513,118 +2513,6 @@ function renderCoupleResults(data) {
         <button id="member-code-btn">확인</button>
       </div>
     `}
-
-    ${data.purposeGuide ? `
-      <div class="prayer-guide">
-        <div class="prayer-guide-label">🙏 함께 이렇게 기도해보세요</div>
-        <div class="prayer-guide-text">
-          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
-        </div>
-      </div>
-    ` : ""}
-
-    <!-- ⑥ 인연사찰 추천 -->
-    <div class="gh-card" style="padding:0;overflow:hidden;border:none;background:transparent;gap:10px;display:flex;flex-direction:column;">
-      <div class="gh-card-title" style="padding:0 4px;">🏯 두 분의 인연사찰 추천</div>
-      ${(data.results || []).map((r, i) => `
-        <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail?.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
-          <div class="temple-rank">${i + 1}</div>
-          <div class="temple-body">
-            <h3>
-              <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
-                ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
-              </a>
-            </h3>
-            <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
-            ${r.synergyCouple > 0 ? `<div class="synergy-badge">💑 커플 시너지 +${r.synergyCouple}점</div>` : ""}
-            <div class="reason">${r.reason}</div>
-            ${r.temple.history ? `
-              <div class="temple-detail">
-                <div class="temple-detail-label">유래·연혁</div>
-                <div class="temple-detail-text">
-                  ${memberUnlocked ? r.temple.history : (r.temple.history.length > 35 ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>` : r.temple.history)}
-                </div>
-                ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
-              </div>
-            ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
-            <button type="button" class="detail-view-btn couple-detail-btn" data-temple-index="${i}">상세페이지 보기 →</button>
-          </div>
-        </div>
-      `).join("")}
-    </div>
-
-    ${data.recommendedDates && data.recommendedDates.length ? `
-      <div class="calendar-card">
-        <div class="calendar-title">📅 함께 방문하기 좋은 날</div>
-        <div class="calendar-items">
-          ${data.recommendedDates.map(d => `<div class="calendar-item"><span class="cal-date">${d.date}</span>${d.reason ? `<span class="cal-reason">${d.reason}</span>` : ''}</div>`).join('')}
-        </div>
-      </div>
-    ` : ''}
-
-    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
-
-    <div class="notice-box">
-      <div class="notice-item">
-        <span class="notice-icon">ℹ️</span>
-        <span>${data.disclaimer || "본 결과는 사주 오행 이론을 바탕으로 한 참고 정보입니다."}</span>
-
-    ${memberUnlocked ? `
-      <div class="member-banner unlocked">✓ 잼공스토리 멤버십 — 전체 기능이 열려있습니다</div>
-    ` : `
-      <div class="member-unlock">
-        <input type="text" id="member-code-input" placeholder="멤버십 코드 입력 (선택)" />
-        <button id="member-code-btn">확인</button>
-      </div>
-    `}
-
-    ${data.purposeGuide ? `
-      <div class="prayer-guide">
-        <div class="prayer-guide-label">🙏 함께 이렇게 기도해보세요</div>
-        <div class="prayer-guide-text">
-          ${Array.isArray(data.purposeGuide) ? `<ol class="prayer-steps">${data.purposeGuide.map(step => `<li>${step}</li>`).join("")}</ol>` : data.purposeGuide}
-        </div>
-      </div>
-    ` : ""}
-
-    ${(data.results || []).map((r, i) => `
-      <div class="temple-card" style="--accent: ${OHAENG_COLOR[r.detail?.templeOhaeng] || 'var(--gold)'}; animation-delay: ${0.15 + i * 0.08}s;">
-        <div class="temple-rank">${i + 1}</div>
-        <div class="temple-body">
-          <h3>
-            <a class="temple-name-link" href="${r.temple.lat && r.temple.lng ? `https://map.naver.com/v5/entry/coordinates/${r.temple.lng},${r.temple.lat}?placeName=${encodeURIComponent(r.temple.name)}&entry=plt` : `https://map.naver.com/v5/search/${encodeURIComponent(r.temple.name + ' ' + r.temple.address)}`}" target="_blank" rel="noopener">
-              ${r.temple.name} <span class="map-icon">🗺️ 길찾기</span>
-            </a>
-          </h3>
-          <div class="meta">매칭점수 ${r.score}점${r.temple.foundedYear ? ` · 창건 ${r.temple.foundedYear}` : ""}${r.weather ? ` · 🌤️ ${r.weather.condition} ${r.weather.temp}°C` : ""}</div>
-          ${r.synergyCouple > 0 ? `<div class="synergy-badge">💑 커플 시너지 +${r.synergyCouple}점</div>` : ""}
-          <div class="reason">${r.reason}</div>
-          ${r.temple.history ? `
-            <div class="temple-detail">
-              <div class="temple-detail-label">유래·연혁</div>
-              <div class="temple-detail-text">
-                ${memberUnlocked
-                  ? r.temple.history
-                  : (r.temple.history.length > 35
-                      ? `${r.temple.history.slice(0, 35)}… <span class="member-lock-tag">🔒 전체보기는 멤버 전용</span>`
-                      : r.temple.history)}
-              </div>
-              ${r.temple.address ? `<div class="temple-detail-address">📍 ${r.temple.address}</div>` : ""}
-            </div>
-          ` : (r.temple.address ? `<div class="temple-detail-address" style="margin-top:8px;">📍 ${r.temple.address}</div>` : "")}
-          <button type="button" class="detail-view-btn couple-detail-btn" data-temple-index="${i}">상세페이지 보기 →</button>
-        </div>
-      </div>
-    `).join("")}
-
-    ${data.recommendedDates && data.recommendedDates.length ? `
-      <div class="calendar-card">
-        <div class="calendar-title">📅 좋은 방문 날짜 추천</div>
-        <div class="calendar-items">
-          ${data.recommendedDates.map(d => `<div class="calendar-item"><span class="cal-date">${d.date}</span>${d.reason ? `<span class="cal-reason">${d.reason}</span>` : ''}</div>`).join('')}
-        </div>
-      </div>
-    ` : ''}
 
     <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
 
