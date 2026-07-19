@@ -3057,34 +3057,27 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
     const heroBg = document.getElementById('detail-hero');
     if (!heroImg || !heroOverlay) return;
 
-    // Wikipedia REST API — CORS 지원
-    const wikiUrl = 'https://ko.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(templeName);
-    fetch(wikiUrl, { headers: { 'Accept': 'application/json' } })
+    // Wikipedia action API (CORS 완전 지원)
+    const wikiUrl = 'https://ko.wikipedia.org/w/api.php?action=query&prop=pageimages&pithumbsize=800&titles='
+      + encodeURIComponent(templeName) + '&format=json&origin=*';
+    fetch(wikiUrl)
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
-        const src = data && (data.thumbnail ? data.thumbnail.source : null);
-        if (src) {
-          // 고화질로 교체 (썸네일 너비 800px)
-          const hqSrc = src.replace(/\/\d+px-/, '/800px-');
-          const img = new Image();
-          img.onload = function() {
-            heroImg.style.backgroundImage = 'url(' + hqSrc + ')';
-            heroImg.style.opacity = '1';
-            heroOverlay.style.opacity = '1';
-            // 배경 그라데이션 제거
-            if (heroBg) heroBg.style.background = 'none';
-          };
-          img.onerror = function() {
-            // 원본 썸네일로 폴백
-            heroImg.style.backgroundImage = 'url(' + src + ')';
-            heroImg.style.opacity = '1';
-            heroOverlay.style.opacity = '1';
-            if (heroBg) heroBg.style.background = 'none';
-          };
-          img.src = hqSrc;
-        }
+        if (!data) return;
+        var pages = data.query && data.query.pages ? data.query.pages : {};
+        var page = Object.values(pages)[0];
+        var src = page && page.thumbnail ? page.thumbnail.source : null;
+        if (!src) return;
+        var img = new Image();
+        img.onload = function() {
+          heroImg.style.backgroundImage = 'url(' + src + ')';
+          heroImg.style.opacity = '1';
+          heroOverlay.style.opacity = '1';
+          if (heroBg) heroBg.style.background = 'none';
+        };
+        img.src = src;
       })
-      .catch(function() { /* 이미지 없으면 그라데이션 유지 */ });
+      .catch(function() {});
   })();
 
   // ── Wikipedia 갤러리 이미지 로드 ──
@@ -3104,13 +3097,13 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
         if (!page) return null;
         var imgs = (page.images || [])
           .map(function(i) { return i.title; })
-          .filter(function(t) { return /\.(jpe?g|png|webp)$/i.test(t); });
+          .filter(function(ti) { return /\.(jpe?g|png|webp)$/i.test(ti); });
         if (imgs.length === 0) return null;
 
-        // Step 2: 이미지 URL 가져오기 (최대 8장)
-        var titles = imgs.slice(0, 8).join('|');
+        // Step 2: 이미지 URL 가져오기 (최대 8장) — | 인코딩 주의
+        var titleParam = imgs.slice(0, 8).map(function(ti) { return encodeURIComponent(ti); }).join('%7C');
         return fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=500&titles='
-          + encodeURIComponent(titles) + '&format=json&origin=*')
+          + titleParam + '&format=json&origin=*')
           .then(function(r) { return r.ok ? r.json() : null; });
       })
       .then(function(data) {
