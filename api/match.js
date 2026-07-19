@@ -14,8 +14,11 @@ const WEATHER_CODE_MAP = {
 
 async function fetchTempleWeather(lat, lng) {
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3000);
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&timezone=Asia%2FSeoul`;
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
     if (!res.ok) return null;
     const data = await res.json();
     const temp = data.current?.temperature_2m;
