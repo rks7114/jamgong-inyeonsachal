@@ -855,7 +855,7 @@ select:disabled, input:disabled { opacity:0.35; cursor:not-allowed; }
 .gh-pillar-divider { width:1px; background:rgba(255,255,255,0.08); align-self:stretch; }
 .gh-pillar-label { font-size:12px; font-weight:700; margin-bottom:8px; text-align:center; }
 .gh-saju-table { width:100%; border-collapse:collapse; text-align:center; }
-.gh-saju-table th { font-size:10px; color:rgba(255,255,255,0.35); padding:4px 2px; font-weight:600; border-bottom:1px solid rgba(255,255,255,0.07); }
+.gh-saju-table th { font-size:12px; color:rgba(255,255,255,0.65); padding:4px 2px; font-weight:700; border-bottom:1px solid rgba(255,255,255,0.12); letter-spacing:.04em; }
 .gh-row-stem td   { font-size:24px; font-weight:900; font-family:var(--serif); padding:6px 2px; }
 .gh-row-branch td { font-size:24px; font-weight:900; font-family:var(--serif); padding:2px; border-bottom:1px solid rgba(255,255,255,0.06); }
 .gh-row-wx td     { font-size:10px; padding:4px 2px; color:rgba(255,255,255,0.45); }
@@ -872,7 +872,7 @@ select:disabled, input:disabled { opacity:0.35; cursor:not-allowed; }
 .gh-hap-chars { font-size:16px; font-weight:900; font-family:var(--serif); }
 .gh-hap-item.positive .gh-hap-chars { color:#64DCA0; }
 .gh-hap-item.negative .gh-hap-chars { color:#FB923C; }
-.gh-hap-pill  { margin-left:auto; font-size:10px; color:rgba(255,255,255,0.35); background:rgba(255,255,255,0.05); border-radius:6px; padding:2px 6px; }
+.gh-hap-pill  { margin-left:auto; font-size:11px; color:rgba(255,255,255,0.65); background:rgba(255,255,255,0.09); border-radius:6px; padding:3px 8px; white-space:nowrap; }
 
 /* ── 오행 분포 비교 바 ── */
 .gh-dist-grid { display:flex; flex-direction:column; gap:10px; }
