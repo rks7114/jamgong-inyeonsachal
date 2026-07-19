@@ -1,5 +1,25 @@
 // src/main.js — 잼공인연사찰 MVP 프론트엔드 (vanilla JS)
 
+// ── 나침반 SVG 헬퍼 (구버전 호환 안전망) ──────────────────────────────
+function buildCompassSVG(deg) {
+  return `<div style="display:flex;justify-content:center;margin:8px 0 16px;">
+    <svg viewBox="0 0 120 120" width="100" height="100">
+      <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(0,210,255,0.2)" stroke-width="2"/>
+      <circle cx="60" cy="60" r="48" fill="rgba(0,20,40,0.6)" stroke="rgba(0,210,255,0.25)" stroke-width="1"/>
+      <text x="60" y="20" text-anchor="middle" fill="#FF6B6B" font-size="13" font-weight="700">N</text>
+      <text x="100" y="64" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10">E</text>
+      <text x="60" y="108" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10">S</text>
+      <text x="20" y="64" text-anchor="middle" fill="rgba(0,210,255,0.7)" font-size="10">W</text>
+      <g transform="rotate(${deg} 60 60)">
+        <polygon points="60,18 64,58 60,62 56,58" fill="#FF6B6B"/>
+        <polygon points="60,102 64,62 60,58 56,62" fill="rgba(255,255,255,0.3)"/>
+      </g>
+      <circle cx="60" cy="60" r="5" fill="rgba(0,210,255,0.8)"/>
+    </svg>
+  </div>`;
+}
+// ──────────────────────────────────────────────────────────────────────
+
 // 챗봇에 전달할 사주 컨텍스트 (renderSajuPage 호출 시 저장)
 let _sajuContext = null;
 
