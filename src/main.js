@@ -2905,6 +2905,60 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
   html += '<div style="font-size:16px;font-weight:800;color:' + oc + ';">' + score + '점</div></div>';
   html += '</div></div>';
 
+  // ── 사찰 특징 배지 ──
+  (function(){
+    var hist = (t.history || '') + ' ' + (t.name || '');
+    var badges = [];
+
+    // 종파
+    if (/조계종/.test(hist)) badges.push({icon:'⛩️', label:'대한불교 조계종', color:'#34D399', r:'52,211,153'});
+    else if (/태고종/.test(hist)) badges.push({icon:'⛩️', label:'한국불교 태고종', color:'#818CF8', r:'129,140,248'});
+    else if (/천태종/.test(hist)) badges.push({icon:'⛩️', label:'천태종', color:'#38BDF8', r:'56,189,248'});
+    else if (/진각종/.test(hist)) badges.push({icon:'⛩️', label:'진각종', color:'#FB923C', r:'251,146,60'});
+
+    // 창건 시대
+    var era = null;
+    if (t.foundedYear) {
+      var yr = parseInt(t.foundedYear);
+      if (yr < 668)   era = {icon:'🏺', label:'삼국시대 고찰', color:'#F472B6', r:'244,114,182'};
+      else if (yr < 935)  era = {icon:'🏛️', label:'통일신라 고찰', color:'#FBBF24', r:'251,191,36'};
+      else if (yr < 1392) era = {icon:'🏯', label:'고려시대 고찰', color:'#FBBF24', r:'251,191,36'};
+      else if (yr < 1897) era = {icon:'🏯', label:'조선시대 사찰', color:'#94A3B8', r:'148,163,184'};
+      else                era = {icon:'🕌', label:'근현대 사찰',   color:'#94A3B8', r:'148,163,184'};
+    } else if (/신라 (문무왕|진흥왕|경덕왕|흥덕왕|선덕왕|태종무열)/.test(hist)) {
+      era = {icon:'🏛️', label:'통일신라 고찰', color:'#FBBF24', r:'251,191,36'};
+    } else if (/고려/.test(hist) && !/조선/.test(hist)) {
+      era = {icon:'🏯', label:'고려시대 고찰', color:'#FBBF24', r:'251,191,36'};
+    } else if (/신라/.test(hist) && !/고려|조선/.test(hist)) {
+      era = {icon:'🏛️', label:'신라 고찰', color:'#FBBF24', r:'251,191,36'};
+    } else if (/조선/.test(hist)) {
+      era = {icon:'🏯', label:'조선시대 사찰', color:'#94A3B8', r:'148,163,184'};
+    }
+    if (era) badges.push(era);
+
+    // 문화재
+    if (/국보 제?\d+호|국보[가-힣 ]*제?\d+/.test(hist)) badges.push({icon:'🏆', label:'국보 보유', color:'#FBBF24', r:'251,191,36'});
+    else if (/보물 제?\d+호|보물[가-힣 ]*제?\d+/.test(hist)) badges.push({icon:'💎', label:'보물 보유', color:'#D4AF37', r:'212,175,55'});
+    if (/사적 제?\d+호|사적지/.test(hist)) badges.push({icon:'📜', label:'사적지', color:'#94A3B8', r:'148,163,184'});
+
+    // 특별 키워드
+    if (/원효대사|원효/.test(hist)) badges.push({icon:'🧘', label:'원효대사 창건', color:'#818CF8', r:'129,140,248'});
+    else if (/의상대사|의상/.test(hist)) badges.push({icon:'🧘', label:'의상대사 창건', color:'#818CF8', r:'129,140,248'});
+    if (/임진왜란|병자호란|의병/.test(hist)) badges.push({icon:'🛡️', label:'호국불교', color:'#FB923C', r:'251,146,60'});
+    if (/본사/.test(hist)) badges.push({icon:'🏯', label:'교구 본사', color:'#F472B6', r:'244,114,182'});
+    if (/템플스테이/.test(hist)) badges.push({icon:'🌙', label:'템플스테이', color:'#38BDF8', r:'56,189,248'});
+
+    if (!badges.length) return;
+
+    var badgesHtml = '<div style="display:flex;flex-wrap:wrap;gap:8px;">'
+      + badges.map(function(b) {
+          return '<span style="display:inline-flex;align-items:center;gap:5px;background:rgba(' + b.r + ',0.12);border:1px solid rgba(' + b.r + ',0.35);color:' + b.color + ';border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;">'
+            + b.icon + ' ' + b.label + '</span>';
+        }).join('')
+      + '</div>';
+    html += sec({r:'148,163,184', c:'#94A3B8'}, '🏷️ 사찰 특징', badgesHtml);
+  })();
+
   // ── 위치 ──
   const c_loc = COL.loc;
   html += '<div class="ds-card" style="background:rgba(' + c_loc.r + ',0.06);border:1px solid rgba(' + c_loc.r + ',0.22);border-left:4px solid ' + c_loc.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
@@ -2915,8 +2969,30 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
 
   // ── 오행기운 ──
   if (d.templeOhaeng && OHAENG_DESC[d.templeOhaeng]) {
-    html += sec(COL.ohaeng, ohaengEmoji + ' ' + d.templeOhaeng + '(오행) 기운이란?',
-      '<p style="margin:0;">' + OHAENG_DESC[d.templeOhaeng] + '</p>');
+    var OHAENG_ENV = {
+      '목': { env:'🌿 동쪽 · 숲·계곡', season:'봄(3~5월) 방문 최적', color:'#4ADE80', r:'74,222,128',
+              detail:'생명력과 성장의 기운이 충만한 도량입니다. 울창한 수목과 맑은 물소리가 어우러져 마음을 새롭게 열어주며, 새로운 시작·가정화목·창의적 도전에 특히 좋습니다.' },
+      '화': { env:'☀️ 남쪽 · 양지·온기', season:'여름(6~8월) 방문 최적', color:'#F97316', r:'249,115,22',
+              detail:'밝고 따뜻한 불꽃 기운이 살아 숨쉬는 도량입니다. 햇살이 가득한 남향 터에 자리잡아 좋은 인연·명예·활력을 끌어당기는 강한 화(火) 에너지가 흐릅니다.' },
+      '토': { env:'🏔️ 중앙 · 산중·평지', season:'환절기(3·9월) 방문 최적', color:'#FACC15', r:'250,204,21',
+              detail:'대지의 안정된 기운이 깊게 뿌리내린 도량입니다. 든든하고 포근한 토(土) 에너지가 흔들리는 심신을 안정시키고, 건강·치유·신뢰 회복에 알맞습니다.' },
+      '금': { env:'🍂 서쪽 · 산자락·바위', season:'가을(9~11월) 방문 최적', color:'#D4AF37', r:'212,175,55',
+              detail:'결실과 의지의 금(金) 기운이 가득한 도량입니다. 가을 수확처럼 노력에 합당한 결실을 맺게 해주며, 재물운·결단력·성취를 기원하기에 최적의 터입니다.' },
+      '수': { env:'💧 북쪽 · 계곡·고지', season:'겨울(12~2월) 방문 최적', color:'#38BDF8', r:'56,189,248',
+              detail:'깊고 고요한 수(水) 기운이 흐르는 도량입니다. 북쪽 음기 속에서 집중력과 통찰력이 한층 깊어지며, 학업·시험·지혜·직관을 기원하는 기도에 가장 강한 터입니다.' }
+    };
+    var envInfo = OHAENG_ENV[d.templeOhaeng];
+    var ohaengBodyHtml = envInfo
+      ? '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">'
+        + '<div style="background:rgba(' + envInfo.r + ',0.10);border:1px solid rgba(' + envInfo.r + ',0.3);border-radius:10px;padding:10px 12px;">'
+        + '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px;">자연 환경</div>'
+        + '<div style="font-size:13px;font-weight:800;color:' + envInfo.color + ';">' + envInfo.env + '</div></div>'
+        + '<div style="background:rgba(' + envInfo.r + ',0.10);border:1px solid rgba(' + envInfo.r + ',0.3);border-radius:10px;padding:10px 12px;">'
+        + '<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px;">최적 방문 시기</div>'
+        + '<div style="font-size:13px;font-weight:800;color:' + envInfo.color + ';">' + envInfo.season + '</div></div></div>'
+        + '<div style="font-size:13px;color:#CBD5E1;line-height:1.8;">' + envInfo.detail + '</div>'
+      : '<p style="margin:0;">' + OHAENG_DESC[d.templeOhaeng] + '</p>';
+    html += sec(COL.ohaeng, ohaengEmoji + ' ' + d.templeOhaeng + '(오행) 기운 · 환경', ohaengBodyHtml);
   }
 
   // ── 인연이유 ──
@@ -3136,7 +3212,11 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
     html += '<div class="ds-card" style="background:rgba(' + c_dist.r + ',0.06);border:1px solid rgba(' + c_dist.r + ',0.22);border-left:4px solid ' + c_dist.c + ';border-radius:16px;padding:20px 20px 20px 22px;margin-bottom:12px;">';
     html += '<div style="font-size:14px;font-weight:800;color:' + c_dist.c + ';margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(' + c_dist.r + ',0.2);">🔥 나의 사주 오행 분포</div>';
     html += '<div style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:10px;">' + distHtml + '</div>';
-    html += '<div style="font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;margin-top:6px;">✦ 강조된 <b style="color:' + oc + ';">' + (d.templeOhaeng || '') + '</b> 기운이 이 사찰의 에너지 — 나의 부족한 기운을 채워줍니다.</div>';
+    var weakOh = parentData ? (parentData.weak && parentData.weak['부족오행']) : null;
+    var distNote = weakOh && weakOh === d.templeOhaeng
+      ? '✦ 내 사주에서 가장 부족한 <b style="color:' + oc + ';">' + d.templeOhaeng + '</b> 기운을 이 사찰이 채워줍니다.'
+      : '✦ 이 사찰의 기운은 <b style="color:' + oc + ';">' + (d.templeOhaeng || '') + '</b>으로, 선택하신 기도목적(' + (purposeLabel || '—') + ')에 최적화된 도량입니다.';
+    html += '<div style="font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;margin-top:6px;">' + distNote + '</div>';
     html += '</div>';
   }
 
