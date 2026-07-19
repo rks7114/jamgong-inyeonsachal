@@ -890,7 +890,7 @@ function render() {
         const userLat2 = detectedLoc2.userLat ?? 37.5665;
         const userLng2 = detectedLoc2.userLng ?? 126.9780;
 
-        const sleep30 = new Promise(r => setTimeout(r, 15000));
+        const sleep30 = new Promise(r => setTimeout(r, 10000));
         const [apiRes] = await Promise.all([
           fetch("/api/match-couple", {
             method: "POST",
@@ -975,7 +975,7 @@ function render() {
       }, 5000);
 
       try {
-        const sleep30 = new Promise(r => setTimeout(r, 15000));
+        const sleep30 = new Promise(r => setTimeout(r, 10000));
         const detectedLoc = await detectUserLocation().catch(() => ({}));
         const userLat3 = detectedLoc.userLat ?? 37.5665;
         const userLng3 = detectedLoc.userLng ?? 126.9780;
@@ -988,6 +988,10 @@ function render() {
           }),
           sleep30,
         ]);
+        if (!apiRes.ok) {
+          const errText = await apiRes.text().catch(()=>'');
+          throw new Error(`HTTP ${apiRes.status}: ${errText.slice(0,300)}`);
+        }
         const data = await apiRes.json();
         clearInterval(soloLoadingInterval);
         if (data.error) {
@@ -1004,7 +1008,7 @@ function render() {
         resultsEl2.classList.add("hidden");
         resultsEl2.innerHTML = "";
         if (formEl2) formEl2.style.display = "";
-        alert("매칭 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+        alert(`매칭 오류: ${err.message}`);
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "인연사찰 찾기";
