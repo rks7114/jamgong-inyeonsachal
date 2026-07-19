@@ -3144,38 +3144,69 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
         });
     }
 
-    // Wikimedia Commons 검색 (사찰 실제 사진이 가장 많음)
-    fetch('https://commons.wikimedia.org/w/api.php?action=query&list=search'
-      + '&srsearch=' + encodeURIComponent(t.name)
-      + '&srnamespace=6&srlimit=16&srprop=&format=json&origin=*')
+    // Step 1: 위키백과 → Commons 카테고리 링크 확인 (가장 정확한 사진 소스)
+    fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=pageprops&titles='
+      + encodeURIComponent(t.name) + '&format=json&origin=*')
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
-        if (!data || !data.query || !data.query.search || data.query.search.length === 0) return [];
-        var titles = data.query.search.map(function(s) { return s.title; })
-          .filter(function(ti) { return /\.jpe?g$/i.test(ti); })
-          .slice(0, 10);
-        if (titles.length === 0) return [];
-        return getImageInfo('https://commons.wikimedia.org/w/api.php', titles);
+        var pages = data && data.query && data.query.pages ? data.query.pages : {};
+        var page  = Object.values(pages)[0];
+        var cat   = page && page.pageprops && page.pageprops.commonsCategory;
+        if (cat) {
+          // Commons 카테고리 이미지 목록
+          return fetch('https://commons.wikimedia.org/w/api.php?action=query&list=categorymembers'
+            + '&cmtitle=' + encodeURIComponent('Category:' + cat)
+            + '&cmtype=file&cmlimit=20&format=json&origin=*')
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(d) {
+              if (!d || !d.query) return null;
+              var titles = (d.query.categorymembers || [])
+                .map(function(f) { return f.title; })
+                .filter(function(ti) { return /\.jpe?g$/i.test(ti); })
+                .slice(0, 10);
+              return titles.length ? getImageInfo('https://commons.wikimedia.org/w/api.php', titles) : null;
+            });
+        }
+        return null;
       })
       .then(function(items) {
-        if (items && items.length >= 1) { renderItems(items); return; }
-        // Commons 없으면 한국어 위키 fallback
+        if (items && items.length >= 1) { renderItems(items); return Promise.resolve(true); }
+        // Step 2: Commons 검색 (사찰명 + temple)
+        return fetch('https://commons.wikimedia.org/w/api.php?action=query&list=search'
+          + '&srsearch=' + encodeURIComponent(t.name + ' temple')
+          + '&srnamespace=6&srlimit=16&srprop=&format=json&origin=*')
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(data) {
+            if (!data || !data.query || !data.query.search) return null;
+            var titles = data.query.search
+              .map(function(s) { return s.title; })
+              .filter(function(ti) { return /\.jpe?g$/i.test(ti); })
+              .slice(0, 10);
+            return titles.length ? getImageInfo('https://commons.wikimedia.org/w/api.php', titles) : null;
+          });
+      })
+      .then(function(items) {
+        if (items === true || (items && items.length >= 1)) {
+          if (items !== true) renderItems(items);
+          return;
+        }
+        // Step 3: 한국어 위키 images prop fallback
         return fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=images&titles='
           + encodeURIComponent(t.name) + '&imlimit=20&format=json&origin=*')
           .then(function(r) { return r.ok ? r.json() : null; })
           .then(function(data) {
-            if (!data) return [];
+            if (!data) return;
             var pages = data.query && data.query.pages ? data.query.pages : {};
             var page  = Object.values(pages)[0];
-            if (!page || !page.images) return [];
+            if (!page || !page.images) return;
             var titles = page.images
               .map(function(i) { return i.title; })
               .filter(function(ti) { return /\.jpe?g$/i.test(ti); })
               .slice(0, 10);
-            if (titles.length === 0) return [];
-            return getImageInfo('https://ko.wikipedia.org/w/api.php', titles);
-          })
-          .then(function(items2) { if (items2 && items2.length >= 1) renderItems(items2); });
+            if (!titles.length) return;
+            return getImageInfo('https://ko.wikipedia.org/w/api.php', titles)
+              .then(function(items3) { if (items3 && items3.length >= 1) renderItems(items3); });
+          });
       })
       .catch(function() {});
   })();
