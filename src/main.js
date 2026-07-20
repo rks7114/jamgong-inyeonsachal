@@ -4042,52 +4042,60 @@ function renderDreamPage() {
   el.style.cssText = 'width:100%;max-width:640px;margin:0 auto;padding:0 0 40px;';
 
   el.innerHTML = [
-    '<div style="margin-bottom:12px;">',
-    '  <button id="dream-back-btn" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:rgba(255,255,255,0.6);font-size:13px;padding:7px 16px;cursor:pointer;">← 홈으로</button>',
-    '</div>',
-    '<div style="text-align:center;padding:10px 0 10px;">',
-    '  <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:2px;color:#b89dff;background:rgba(130,80,255,0.12);border:1px solid rgba(130,80,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:14px;">✦ TRADITIONAL DREAM INTERPRETER ✦</div>',
-    '  <div style="font-size:20px;font-weight:800;color:#e8d5ff;line-height:1.35;margin-bottom:10px;">무의식의 징검다리<br>전통 꿈해몽 연산실</div>',
-    '  <div style="font-size:13px;color:rgba(255,255,255,0.45);line-height:1.7;max-width:360px;margin:0 auto;">꿈에 나타난 상징을 오행(목·화·토·금·수) 이론과<br>불교·도교 전통 해석으로 풀어드립니다.</div>',
+    // ── 홈 버튼 (사이트 시그니처 시안 조명)
+    '<div style="margin-bottom:14px;">',
+    '  <button id="dream-back-btn" style="background:rgba(0,210,255,0.07);border:1px solid rgba(0,210,255,0.35);border-radius:10px;color:rgba(0,210,255,0.85);font-size:13px;font-weight:700;padding:8px 18px;cursor:pointer;box-shadow:0 0 12px rgba(0,210,255,0.2),inset 0 0 8px rgba(0,210,255,0.05);letter-spacing:0.3px;transition:all .2s;">← 홈으로</button>',
     '</div>',
 
-    '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:20px;margin-top:16px;">',
-    '  <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.45);margin-bottom:8px;letter-spacing:1px;">꿈 이야기</div>',
+    // ── 헤더
+    '<div style="text-align:center;padding:8px 0 14px;">',
+    '  <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:2.5px;color:#c9a8ff;background:rgba(130,80,255,0.15);border:1px solid rgba(150,100,255,0.4);border-radius:20px;padding:5px 16px;margin-bottom:16px;box-shadow:0 0 14px rgba(130,80,255,0.2);">✦ TRADITIONAL DREAM INTERPRETER ✦</div>',
+    '  <div style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#e8d5ff,#c9a8ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.4;margin-bottom:10px;">무의식의 징검다리<br>전통 꿈해몽 연산실</div>',
+    '  <div style="font-size:13px;color:rgba(200,180,255,0.5);line-height:1.8;max-width:340px;margin:0 auto;">꿈 속 상징을 오행(목·화·토·금·수)과<br>불교·도교 전통으로 해석합니다</div>',
+    '</div>',
+
+    // ── 입력 카드
+    '<div style="background:rgba(20,10,40,0.6);border:1px solid rgba(150,100,255,0.2);border-radius:20px;padding:22px;margin-top:4px;box-shadow:0 4px 24px rgba(100,60,200,0.1);">',
+    '  <div style="font-size:11px;font-weight:800;color:rgba(200,170,255,0.6);margin-bottom:10px;letter-spacing:1.5px;">✍️ 꿈 이야기</div>',
     '  <div style="position:relative;">',
-    '    <textarea id="dream-input" rows="5" maxlength="600" placeholder="꿈에서 일어난 일을 자유롭게 적어주세요..." style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:#fff;font-size:14px;line-height:1.7;padding:14px 48px 14px 16px;outline:none;resize:none;font-family:inherit;"></textarea>',
-    '    <button id="dream-voice-btn" title="음성 입력" style="position:absolute;right:10px;top:10px;background:rgba(130,80,255,0.2);border:1px solid rgba(130,80,255,0.4);border-radius:10px;color:#c9a8ff;font-size:18px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;">🎙️</button>',
+    '    <textarea id="dream-input" rows="5" maxlength="600" placeholder="꿈에서 일어난 일을 자유롭게 적어주세요..." style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.3);border:1px solid rgba(130,80,255,0.25);border-radius:14px;color:#e8d5ff;font-size:14px;line-height:1.8;padding:14px 50px 14px 16px;outline:none;resize:none;font-family:inherit;transition:border-color .2s;"></textarea>',
+    '    <button id="dream-voice-btn" title="음성 입력" style="position:absolute;right:10px;top:10px;background:rgba(130,80,255,0.25);border:1px solid rgba(150,100,255,0.5);border-radius:10px;color:#c9a8ff;font-size:18px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(130,80,255,0.2);">🎙️</button>',
     '  </div>',
-    '  <div id="dream-char-count" style="text-align:right;font-size:11px;color:rgba(255,255,255,0.25);margin-top:4px;">0 / 600</div>',
+    '  <div id="dream-char-count" style="text-align:right;font-size:11px;color:rgba(200,170,255,0.3);margin-top:5px;">0 / 600</div>',
 
-    '  <div style="margin-top:14px;">',
-    '    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);margin-bottom:8px;letter-spacing:1px;">꿈 속 상징 선택 (선택 사항)</div>',
-    '    <div id="dream-symbol-chips" style="display:flex;flex-wrap:wrap;gap:7px;">',
+    '  <div style="margin-top:16px;">',
+    '    <div style="font-size:11px;font-weight:800;color:rgba(200,170,255,0.5);margin-bottom:10px;letter-spacing:1.5px;">🔮 꿈 속 상징 선택 <span style="font-weight:400;opacity:.6;">(선택 사항)</span></div>',
+    '    <div id="dream-symbol-chips" style="display:flex;flex-wrap:wrap;gap:8px;">',
     SYMBOLS.map(function(s) {
-      return '<button class="dream-chip" data-label="' + s.label + '" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:20px;color:rgba(255,255,255,0.65);font-size:12px;padding:5px 12px;cursor:pointer;transition:all .15s;">' + s.emoji + ' ' + s.label + '</button>';
+      return '<button class="dream-chip" data-label="' + s.label + '" style="background:rgba(100,60,200,0.1);border:1px solid rgba(150,100,255,0.2);border-radius:20px;color:rgba(210,185,255,0.7);font-size:12px;padding:6px 13px;cursor:pointer;transition:all .15s;">' + s.emoji + ' ' + s.label + '</button>';
     }).join(''),
     '    </div>',
     '  </div>',
 
-    '  <button id="dream-analyze-btn" style="width:100%;margin-top:18px;background:linear-gradient(135deg,#6a3cdb,#9b59b6);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:800;padding:15px;cursor:pointer;letter-spacing:0.5px;transition:opacity .2s;">',
+    '  <button id="dream-analyze-btn" style="width:100%;margin-top:20px;background:linear-gradient(135deg,#5b21b6,#7c3aed,#9333ea);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:800;padding:16px;cursor:pointer;letter-spacing:0.5px;box-shadow:0 4px 20px rgba(124,58,237,0.4);transition:all .2s;">',
     '    🔮 꿈 이야기 분석 &amp; 상징 조합 해설 구동',
     '  </button>',
     '</div>',
 
-    '<div id="dream-result-section" style="display:none;margin-top:18px;background:linear-gradient(145deg,rgba(30,10,60,0.8),rgba(10,20,50,0.8));border:1px solid rgba(130,80,255,0.3);border-radius:18px;padding:22px;"></div>',
+    // ── 결과
+    '<div id="dream-result-section" style="display:none;margin-top:20px;background:linear-gradient(145deg,rgba(30,10,60,0.85),rgba(10,15,50,0.85));border:1px solid rgba(150,100,255,0.35);border-radius:20px;padding:24px;box-shadow:0 4px 30px rgba(100,60,200,0.15);"></div>',
 
-    '<div style="margin-top:22px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px;">',
-    '  <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);margin-bottom:12px;">📖 꿈 일기</div>',
+    // ── 꿈 일기
+    '<div style="margin-top:24px;background:rgba(15,8,35,0.5);border:1px solid rgba(130,80,255,0.15);border-radius:18px;padding:20px;">',
+    '  <div style="font-size:12px;font-weight:800;color:rgba(200,170,255,0.6);margin-bottom:14px;letter-spacing:1px;">📖 꿈 일기</div>',
     '  <div id="dream-diary-list" style="display:flex;flex-direction:column;gap:10px;"></div>',
-    '  <div id="dream-diary-empty" style="font-size:13px;color:rgba(255,255,255,0.25);text-align:center;padding:16px 0;">기록된 꿈이 없습니다</div>',
+    '  <div id="dream-diary-empty" style="font-size:13px;color:rgba(200,170,255,0.25);text-align:center;padding:16px 0;">기록된 꿈이 없습니다</div>',
     '</div>',
 
-    '<div style="margin-top:18px;padding:14px 18px;background:rgba(255,200,0,0.05);border:1px solid rgba(255,200,0,0.15);border-radius:12px;font-size:11px;color:rgba(255,255,255,0.35);line-height:1.7;">',
-    '  ⚠️ 본 서비스는 전통적 상징 해석을 바탕으로 한 문화 콘텐츠입니다. 의학적·법적 조언을 대신하지 않으며, 결과는 참고용으로만 활용하시기 바랍니다.',
+    // ── 법적 고지
+    '<div style="margin-top:18px;padding:14px 18px;background:rgba(255,200,0,0.04);border:1px solid rgba(255,200,0,0.12);border-radius:12px;font-size:11px;color:rgba(255,230,150,0.4);line-height:1.8;">',
+    '  ⚠️ 본 서비스는 전통 상징 해석 기반 문화 콘텐츠입니다. 의학적·법적 조언을 대신하지 않으며 결과는 참고용으로만 활용하시기 바랍니다.',
     '</div>',
 
-    '<div style="text-align:center;margin-top:16px;font-size:11px;color:rgba(255,255,255,0.2);line-height:2;">',
+    // ── 푸터
+    '<div style="text-align:center;margin-top:18px;font-size:11px;color:rgba(200,170,255,0.2);line-height:2.2;">',
     '  상표 출원 중 (출원번호: 40-2026-0096864)<br>',
-    '  Jamgong Metaphysics Core Engine v1.8',
+    '  <span style="letter-spacing:1px;">Jamgong Metaphysics Core Engine v1.8</span>',
     '</div>',
   ].join('');
 
@@ -4238,13 +4246,13 @@ function renderDreamPage() {
       }
       parts[s.key] = raw.slice(contentStart, end).trim();
     });
-    var html = '<div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#b89dff;margin-bottom:16px;text-align:center;">✦ 꿈해몽 결과 ✦</div>';
+    var html = '<div style="font-size:11px;font-weight:800;letter-spacing:2.5px;color:#c9a8ff;margin-bottom:20px;text-align:center;opacity:.9;">✦ 꿈해몽 결과 ✦</div>';
     sections.forEach(function(s) {
       var content = parts[s.key];
       if (!content) return;
-      html += '<div style="margin-bottom:16px;padding:14px 16px;background:rgba(255,255,255,0.04);border-radius:12px;border-left:3px solid rgba(130,80,255,0.5);">';
-      html += '<div style="font-size:12px;font-weight:800;color:#c9a8ff;margin-bottom:8px;">' + s.icon + ' ' + s.title + '</div>';
-      html += '<div style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.8;white-space:pre-wrap;">' + content + '</div>';
+      html += '<div style="margin-bottom:14px;padding:16px 18px;background:rgba(100,60,200,0.08);border-radius:14px;border-left:3px solid rgba(167,139,250,0.6);">';
+      html += '<div style="font-size:12px;font-weight:800;color:#a78bfa;margin-bottom:8px;letter-spacing:0.5px;">' + s.icon + ' ' + s.title + '</div>';
+      html += '<div style="font-size:13px;color:rgba(230,215,255,0.8);line-height:1.9;white-space:pre-wrap;">' + content + '</div>';
       html += '</div>';
     });
     if (!html.includes('background:rgba')) {
