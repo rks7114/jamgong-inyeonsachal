@@ -4042,7 +4042,10 @@ function renderDreamPage() {
   el.style.cssText = 'width:100%;max-width:640px;margin:0 auto;padding:0 0 40px;';
 
   el.innerHTML = [
-    '<div style="text-align:center;padding:24px 0 10px;">',
+    '<div style="margin-bottom:12px;">',
+    '  <button id="dream-back-btn" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:rgba(255,255,255,0.6);font-size:13px;padding:7px 16px;cursor:pointer;">← 홈으로</button>',
+    '</div>',
+    '<div style="text-align:center;padding:10px 0 10px;">',
     '  <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:2px;color:#b89dff;background:rgba(130,80,255,0.12);border:1px solid rgba(130,80,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:14px;">✦ TRADITIONAL DREAM INTERPRETER ✦</div>',
     '  <div style="font-size:20px;font-weight:800;color:#e8d5ff;line-height:1.35;margin-bottom:10px;">무의식의 징검다리<br>전통 꿈해몽 연산실</div>',
     '  <div style="font-size:13px;color:rgba(255,255,255,0.45);line-height:1.7;max-width:360px;margin:0 auto;">꿈에 나타난 상징을 오행(목·화·토·금·수) 이론과<br>불교·도교 전통 해석으로 풀어드립니다.</div>',
@@ -4096,6 +4099,20 @@ function renderDreamPage() {
     app.appendChild(el);
   }
   el.style.display = '';
+
+  // ── 홈으로 버튼
+  var backBtn = document.getElementById('dream-back-btn');
+  if (backBtn) {
+    backBtn.addEventListener('click', function() {
+      el.style.display = 'none';
+      document.getElementById('match-form').style.display = '';
+      document.getElementById('temple-search-wrap').style.display = '';
+      // 첫 번째 탭(solo) 활성화
+      document.querySelectorAll('.mode-toggle-btn').forEach(function(b) { b.classList.remove('active'); });
+      var soloBtn = document.querySelector('.mode-toggle-btn[data-mode="solo"]');
+      if (soloBtn) soloBtn.classList.add('active');
+    });
+  }
 
   // ── 글자 수 카운트
   var textarea = document.getElementById('dream-input');
@@ -4337,24 +4354,56 @@ render();
     var matches = nameMatches.concat(addrMatches).concat(histMatches).sort(function(a, b) {
       return (a.name||'').localeCompare(b.name||'', 'ko');
     });
-    if (!matches.length) {
-      resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:14px;color:rgba(255,255,255,0.4);">검색 결과가 없습니다</div>';
-      resultsBox.style.display = 'block'; return;
-    }
     window._lastSearchMatches = matches;
-    var countHdr = '<div style="padding:8px 16px 6px;font-size:11px;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.06);">총 ' + matches.length + '개 사찰</div>';
-    resultsBox.innerHTML = countHdr + matches.map(function(t, idx) {
-      var sub = (t.address||'').slice(0,28);
-      if (query && t.history && t.history.includes(query) && !(t.name||'').includes(query) && !(t.address||'').includes(query)) {
-        sub = '연혁: ' + t.history.slice(0, 28) + '…';
-      }
-      return '<div class="tsearch-item" data-idx="' + idx + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
-        + '<span style="font-size:16px;">🏯</span>'
-        + '<div><div style="font-size:14px;font-weight:700;color:#fff;">' + (t.name||'') + '</div>'
-        + '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + sub + '</div></div>'
-        + '</div>';
-    }).join('');
+    var localHtml = '';
+    if (matches.length) {
+      var countHdr = '<div style="padding:8px 16px 6px;font-size:11px;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.06);">🏯 데이터베이스 ' + matches.length + '개</div>';
+      localHtml = countHdr + matches.map(function(t, idx) {
+        var sub = (t.address||'').slice(0,28);
+        if (query && t.history && t.history.includes(query) && !(t.name||'').includes(query) && !(t.address||'').includes(query)) {
+          sub = '연혁: ' + t.history.slice(0, 28) + '…';
+        }
+        return '<div class="tsearch-item" data-idx="' + idx + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
+          + '<span style="font-size:16px;">🏯</span>'
+          + '<div><div style="font-size:14px;font-weight:700;color:#fff;">' + (t.name||'') + '</div>'
+          + '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + sub + '</div></div>'
+          + '</div>';
+      }).join('');
+    } else {
+      localHtml = '<div style="padding:10px 18px 4px;font-size:12px;color:rgba(255,255,255,0.3);">데이터베이스 결과 없음</div>';
+    }
+    resultsBox.innerHTML = localHtml + '<div id="kakao-extra-results"><div style="padding:10px 16px;font-size:11px;color:rgba(255,200,0,0.4);">⏳ 카카오 추가 검색 중...</div></div>';
     resultsBox.style.display = 'block';
+
+    // 카카오 외부 검색 비동기
+    if (query) {
+      var kakaoUrl = '/api/temple-search?q=' + encodeURIComponent(query) + (selectedRegion ? '&region=' + encodeURIComponent(selectedRegion) : '');
+      fetch(kakaoUrl).then(function(r){ return r.json(); }).then(function(data) {
+        var kakaoEl = document.getElementById('kakao-extra-results');
+        if (!kakaoEl) return;
+        var places = (data.places || []).filter(function(p) {
+          // 로컬 DB에 이미 있는 이름 중복 제거
+          return !matches.some(function(m) { return m.name === p.name; });
+        });
+        if (!places.length) { kakaoEl.innerHTML = ''; return; }
+        window._kakaoPlaces = places;
+        var hdr = '<div style="padding:8px 16px 6px;font-size:11px;color:rgba(255,200,0,0.5);border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);">🗺️ 카카오 추가 검색 ' + places.length + '개</div>';
+        kakaoEl.innerHTML = hdr + places.map(function(p, i) {
+          var sub = (p.address||'').slice(0,28);
+          return '<div class="kakao-item" data-kidx="' + i + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:10px;transition:background .12s;">'
+            + '<span style="font-size:16px;">🗺️</span>'
+            + '<div><div style="font-size:14px;font-weight:700;color:#ffe89a;">' + (p.name||'') + '</div>'
+            + '<div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:2px;">' + sub + '</div></div>'
+            + '</div>';
+        }).join('');
+      }).catch(function() {
+        var kakaoEl = document.getElementById('kakao-extra-results');
+        if (kakaoEl) kakaoEl.innerHTML = '';
+      });
+    } else {
+      var kakaoEl = document.getElementById('kakao-extra-results');
+      if (kakaoEl) kakaoEl.innerHTML = '';
+    }
   }
 
   input.addEventListener('input', function() { showResults(this.value); });
@@ -4363,26 +4412,61 @@ render();
   });
 
   resultsBox.addEventListener('click', function(e) {
+    // 로컬 DB 결과 클릭
     var item = e.target.closest('.tsearch-item');
-    if (!item) return;
-    var idx = parseInt(item.dataset.idx);
-    var matches = window._lastSearchMatches || [];
-    var temple = (idx >= 0 && matches[idx]) ? matches[idx] : null;
-    if (!temple) { alert('사찰 정보를 찾을 수 없습니다.'); return; }
-    input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
-    var fakeResult = {
-      temple: temple,
-      detail: { templeOhaeng: '금', bearing: '—', distanceKm: null },
-      score: 0, reason: '직접 검색하신 사찰입니다.', weather: null
-    };
-    var resultsEl = document.getElementById('results');
-    var formEl = document.getElementById('match-form');
-    var searchWrap = document.getElementById('temple-search-wrap');
-    renderTempleDetailPage(fakeResult, null, false, function() {
-      if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.classList.add('hidden'); }
-      if (formEl) formEl.style.display = '';
-      if (searchWrap) searchWrap.style.display = '';
-    });
+    if (item) {
+      var idx = parseInt(item.dataset.idx);
+      var matches = window._lastSearchMatches || [];
+      var temple = (idx >= 0 && matches[idx]) ? matches[idx] : null;
+      if (!temple) return;
+      input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
+      var fakeResult = {
+        temple: temple,
+        detail: { templeOhaeng: '금', bearing: '—', distanceKm: null },
+        score: 0, reason: '직접 검색하신 사찰입니다.', weather: null
+      };
+      var resultsEl = document.getElementById('results');
+      var formEl = document.getElementById('match-form');
+      var searchWrap = document.getElementById('temple-search-wrap');
+      renderTempleDetailPage(fakeResult, null, false, function() {
+        if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.classList.add('hidden'); }
+        if (formEl) formEl.style.display = '';
+        if (searchWrap) searchWrap.style.display = '';
+      });
+      return;
+    }
+    // 카카오 결과 클릭 → 카카오 맵 링크 열기
+    var kitem = e.target.closest('.kakao-item');
+    if (kitem) {
+      var kidx = parseInt(kitem.dataset.kidx);
+      var places = window._kakaoPlaces || [];
+      var place = places[kidx];
+      if (!place) return;
+      input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
+      // 카카오 결과를 fakeResult로 변환해서 상세 페이지 열기
+      var fakeTemple = {
+        id: place.id,
+        name: place.name,
+        address: place.address,
+        lat: place.lat,
+        lng: place.lng,
+        history: '',
+        foundedYear: null,
+      };
+      var fakeResult2 = {
+        temple: fakeTemple,
+        detail: { templeOhaeng: '금', bearing: '—', distanceKm: null },
+        score: 0, reason: '카카오 검색 결과입니다.', weather: null
+      };
+      var resultsEl2 = document.getElementById('results');
+      var formEl2 = document.getElementById('match-form');
+      var searchWrap2 = document.getElementById('temple-search-wrap');
+      renderTempleDetailPage(fakeResult2, null, false, function() {
+        if (resultsEl2) { resultsEl2.innerHTML = ''; resultsEl2.classList.add('hidden'); }
+        if (formEl2) formEl2.style.display = '';
+        if (searchWrap2) searchWrap2.style.display = '';
+      });
+    }
   });
 
   document.addEventListener('click', function(e) {
