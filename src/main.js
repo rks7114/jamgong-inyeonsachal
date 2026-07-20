@@ -3177,6 +3177,9 @@ function renderResults(data) {
   const memberUnlocked = isMember();
 
   resultsEl.innerHTML = `
+    <button id="home-btn" onclick="document.getElementById('results').classList.add('hidden');document.getElementById('results').innerHTML='';document.querySelector('.form-card')&&(document.querySelector('.form-card').style.display='');window.scrollTo({top:0,behavior:'smooth'});" style="display:flex;align-items:center;gap:6px;background:rgba(0,210,255,0.08);border:1px solid rgba(0,210,255,0.25);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:13px;color:#00d2ff;margin-bottom:12px;">
+      ← 처음으로
+    </button>
     <div class="results-summary">
       <div class="label">나의 기운은</div>
       <div class="ohaeng-value">${data.targetOhaeng || ""} 기운</div>
