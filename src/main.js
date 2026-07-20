@@ -436,6 +436,7 @@ function render() {
         <button type="button" class="mode-toggle-btn active" data-mode="solo">🙏 인연사찰 찾기</button>
         <button type="button" class="mode-toggle-btn" data-mode="couple">💑 궁합</button>
         <button type="button" class="mode-toggle-btn" data-mode="saju">🔮 사주 보기</button>
+        <button type="button" class="mode-toggle-btn" data-mode="dream">🌙 꿈해몽</button>
       </div>
 
       <div class="field">
@@ -708,6 +709,16 @@ function render() {
         submitBtn.textContent = "🔮 사주 팔자 확인";
         if (purposeField) purposeField.style.display = "none";
         if (locationField) locationField.style.display = "none";
+        document.getElementById("match-form").style.display = "";
+        document.getElementById("temple-search-wrap").style.display = "";
+        const dreamPage = document.getElementById("dream-page");
+        if (dreamPage) dreamPage.style.display = "none";
+      } else if (matchMode === "dream") {
+        document.getElementById("match-form").style.display = "none";
+        document.getElementById("temple-search-wrap").style.display = "none";
+        let dreamPage = document.getElementById("dream-page");
+        if (!dreamPage) { renderDreamPage(); dreamPage = document.getElementById("dream-page"); }
+        if (dreamPage) dreamPage.style.display = "";
       } else {
         birthBField.classList.add("hidden");
         birthBField.style.display = "none";
@@ -715,6 +726,10 @@ function render() {
         submitBtn.textContent = "인연사찰 찾기";
         if (purposeField) purposeField.style.display = "";
         if (locationField) locationField.style.display = "";
+        document.getElementById("match-form").style.display = "";
+        document.getElementById("temple-search-wrap").style.display = "";
+        const dreamPage = document.getElementById("dream-page");
+        if (dreamPage) dreamPage.style.display = "none";
       }
     });
   });
@@ -4001,6 +4016,262 @@ function renderCoupleResults(data) {
 // ── "핵심" 등 중요 키워드 강조 헬퍼 ──────────────────────────────
 const HIGHLIGHT_BADGE = (word) =>
   `<span style="color:#FFB347;font-size:11px;font-weight:800;background:rgba(255,179,71,0.12);border-radius:8px;padding:2px 7px;margin:0 2px;">${word}</span>`;
+
+// ── 꿈해몽 페이지 렌더 ──────────────────────────────────────────
+function renderDreamPage() {
+  var app = document.getElementById('app');
+  if (!app) return;
+  var existing = document.getElementById('dream-page');
+  if (existing) { existing.style.display = ''; return; }
+
+  var SYMBOLS = [
+    { emoji: '🐖', label: '돼지' },
+    { emoji: '💧', label: '물' },
+    { emoji: '🔥', label: '불' },
+    { emoji: '🐍', label: '뱀' },
+    { emoji: '🦷', label: '이빨' },
+    { emoji: '📉', label: '추락' },
+    { emoji: '☁️', label: '하늘' },
+    { emoji: '🐕', label: '개' },
+    { emoji: '☀️', label: '태양' },
+    { emoji: '💵', label: '돈' },
+  ];
+
+  var el = document.createElement('div');
+  el.id = 'dream-page';
+  el.style.cssText = 'width:100%;max-width:640px;margin:0 auto;padding:0 0 40px;';
+
+  el.innerHTML = [
+    '<div style="text-align:center;padding:24px 0 10px;">',
+    '  <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:2px;color:#b89dff;background:rgba(130,80,255,0.12);border:1px solid rgba(130,80,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:14px;">✦ TRADITIONAL DREAM INTERPRETER ✦</div>',
+    '  <div style="font-size:20px;font-weight:800;color:#e8d5ff;line-height:1.35;margin-bottom:10px;">무의식의 징검다리<br>전통 꿈해몽 연산실</div>',
+    '  <div style="font-size:13px;color:rgba(255,255,255,0.45);line-height:1.7;max-width:360px;margin:0 auto;">꿈에 나타난 상징을 오행(목·화·토·금·수) 이론과<br>불교·도교 전통 해석으로 풀어드립니다.</div>',
+    '</div>',
+
+    '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:20px;margin-top:16px;">',
+    '  <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.45);margin-bottom:8px;letter-spacing:1px;">꿈 이야기</div>',
+    '  <div style="position:relative;">',
+    '    <textarea id="dream-input" rows="5" maxlength="600" placeholder="꿈에서 일어난 일을 자유롭게 적어주세요..." style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:#fff;font-size:14px;line-height:1.7;padding:14px 48px 14px 16px;outline:none;resize:none;font-family:inherit;"></textarea>',
+    '    <button id="dream-voice-btn" title="음성 입력" style="position:absolute;right:10px;top:10px;background:rgba(130,80,255,0.2);border:1px solid rgba(130,80,255,0.4);border-radius:10px;color:#c9a8ff;font-size:18px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;">🎙️</button>',
+    '  </div>',
+    '  <div id="dream-char-count" style="text-align:right;font-size:11px;color:rgba(255,255,255,0.25);margin-top:4px;">0 / 600</div>',
+
+    '  <div style="margin-top:14px;">',
+    '    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);margin-bottom:8px;letter-spacing:1px;">꿈 속 상징 선택 (선택 사항)</div>',
+    '    <div id="dream-symbol-chips" style="display:flex;flex-wrap:wrap;gap:7px;">',
+    SYMBOLS.map(function(s) {
+      return '<button class="dream-chip" data-label="' + s.label + '" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:20px;color:rgba(255,255,255,0.65);font-size:12px;padding:5px 12px;cursor:pointer;transition:all .15s;">' + s.emoji + ' ' + s.label + '</button>';
+    }).join(''),
+    '    </div>',
+    '  </div>',
+
+    '  <button id="dream-analyze-btn" style="width:100%;margin-top:18px;background:linear-gradient(135deg,#6a3cdb,#9b59b6);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:800;padding:15px;cursor:pointer;letter-spacing:0.5px;transition:opacity .2s;">',
+    '    🔮 꿈 이야기 분석 &amp; 상징 조합 해설 구동',
+    '  </button>',
+    '</div>',
+
+    '<div id="dream-result-section" style="display:none;margin-top:18px;background:linear-gradient(145deg,rgba(30,10,60,0.8),rgba(10,20,50,0.8));border:1px solid rgba(130,80,255,0.3);border-radius:18px;padding:22px;"></div>',
+
+    '<div style="margin-top:22px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px;">',
+    '  <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);margin-bottom:12px;">📖 꿈 일기</div>',
+    '  <div id="dream-diary-list" style="display:flex;flex-direction:column;gap:10px;"></div>',
+    '  <div id="dream-diary-empty" style="font-size:13px;color:rgba(255,255,255,0.25);text-align:center;padding:16px 0;">기록된 꿈이 없습니다</div>',
+    '</div>',
+
+    '<div style="margin-top:18px;padding:14px 18px;background:rgba(255,200,0,0.05);border:1px solid rgba(255,200,0,0.15);border-radius:12px;font-size:11px;color:rgba(255,255,255,0.35);line-height:1.7;">',
+    '  ⚠️ 본 서비스는 전통적 상징 해석을 바탕으로 한 문화 콘텐츠입니다. 의학적·법적 조언을 대신하지 않으며, 결과는 참고용으로만 활용하시기 바랍니다.',
+    '</div>',
+
+    '<div style="text-align:center;margin-top:16px;font-size:11px;color:rgba(255,255,255,0.2);line-height:2;">',
+    '  상표 출원 중 (출원번호: 40-2026-0096864)<br>',
+    '  Jamgong Metaphysics Core Engine v1.8',
+    '</div>',
+  ].join('');
+
+  // form 바로 다음에 삽입
+  var form = document.getElementById('match-form');
+  if (form && form.parentNode) {
+    form.parentNode.insertBefore(el, form.nextSibling);
+  } else {
+    app.appendChild(el);
+  }
+  el.style.display = '';
+
+  // ── 글자 수 카운트
+  var textarea = document.getElementById('dream-input');
+  var charCount = document.getElementById('dream-char-count');
+  textarea.addEventListener('input', function() {
+    charCount.textContent = textarea.value.length + ' / 600';
+  });
+
+  // ── 상징 칩 선택 토글
+  var selectedSymbols = [];
+  el.querySelectorAll('.dream-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      var label = chip.dataset.label;
+      var idx = selectedSymbols.indexOf(label);
+      if (idx === -1) {
+        selectedSymbols.push(label);
+        chip.style.background = 'rgba(130,80,255,0.3)';
+        chip.style.borderColor = 'rgba(130,80,255,0.7)';
+        chip.style.color = '#d8b4ff';
+        // 텍스트에도 추가
+        if (textarea.value && !textarea.value.endsWith(' ')) textarea.value += ' ';
+        textarea.value += label + ' ';
+        charCount.textContent = textarea.value.length + ' / 600';
+      } else {
+        selectedSymbols.splice(idx, 1);
+        chip.style.background = 'rgba(255,255,255,0.05)';
+        chip.style.borderColor = 'rgba(255,255,255,0.12)';
+        chip.style.color = 'rgba(255,255,255,0.65)';
+      }
+    });
+  });
+
+  // ── 음성 입력
+  var voiceBtn = document.getElementById('dream-voice-btn');
+  var isRecording = false;
+  var recognition = null;
+  voiceBtn.addEventListener('click', function() {
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) { alert('이 브라우저는 음성 입력을 지원하지 않습니다.'); return; }
+    if (isRecording) {
+      if (recognition) recognition.stop();
+      isRecording = false;
+      voiceBtn.style.background = 'rgba(130,80,255,0.2)';
+      voiceBtn.textContent = '🎙️';
+      return;
+    }
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ko-KR';
+    recognition.interimResults = false;
+    recognition.onstart = function() {
+      isRecording = true;
+      voiceBtn.style.background = 'rgba(255,60,60,0.3)';
+      voiceBtn.textContent = '⏹️';
+    };
+    recognition.onresult = function(e) {
+      var transcript = e.results[0][0].transcript;
+      textarea.value += (textarea.value ? ' ' : '') + transcript;
+      charCount.textContent = textarea.value.length + ' / 600';
+    };
+    recognition.onend = function() {
+      isRecording = false;
+      voiceBtn.style.background = 'rgba(130,80,255,0.2)';
+      voiceBtn.textContent = '🎙️';
+    };
+    recognition.start();
+  });
+
+  // ── 분석 버튼
+  var analyzeBtn = document.getElementById('dream-analyze-btn');
+  var resultSection = document.getElementById('dream-result-section');
+  analyzeBtn.addEventListener('click', function() {
+    var text = textarea.value.trim();
+    if (!text && selectedSymbols.length === 0) {
+      alert('꿈 내용을 입력하거나 상징을 선택해주세요.');
+      return;
+    }
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = '⏳ 분석 중...';
+    resultSection.style.display = 'block';
+    resultSection.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.4);font-size:14px;">🔮 꿈을 해석하고 있습니다...<br><span style="font-size:12px;opacity:.6;">잠시만 기다려주세요</span></div>';
+
+    fetch('/api/dream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dreamText: text, symbols: selectedSymbols }),
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      var raw = data.result || '';
+      var html = formatDreamResult(raw);
+      resultSection.innerHTML = html;
+
+      // 일기 저장
+      saveDreamDiary(text, selectedSymbols, raw);
+      renderDreamDiary();
+    }).catch(function(e) {
+      resultSection.innerHTML = '<div style="color:#ff8080;padding:20px;font-size:14px;">오류가 발생했습니다: ' + e.message + '</div>';
+    }).finally(function() {
+      analyzeBtn.disabled = false;
+      analyzeBtn.innerHTML = '🔮 꿈 이야기 분석 &amp; 상징 조합 해설 구동';
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // 초기 일기 렌더
+  renderDreamDiary();
+
+  function formatDreamResult(raw) {
+    var sections = [
+      { key: '##오행분석##', icon: '☯️', title: '오행 분석' },
+      { key: '##핵심상징##', icon: '🔑', title: '핵심 상징' },
+      { key: '##길흉판단##', icon: '⚖️', title: '길흉 판단' },
+      { key: '##조언##',     icon: '💡', title: '조언' },
+      { key: '##오행처방##', icon: '🌿', title: '오행 처방' },
+    ];
+    var parts = {};
+    sections.forEach(function(s, i) {
+      var start = raw.indexOf(s.key);
+      if (start === -1) return;
+      var contentStart = start + s.key.length;
+      var end = raw.length;
+      for (var j = i + 1; j < sections.length; j++) {
+        var nextIdx = raw.indexOf(sections[j].key);
+        if (nextIdx !== -1 && nextIdx < end) end = nextIdx;
+      }
+      parts[s.key] = raw.slice(contentStart, end).trim();
+    });
+    var html = '<div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#b89dff;margin-bottom:16px;text-align:center;">✦ 꿈해몽 결과 ✦</div>';
+    sections.forEach(function(s) {
+      var content = parts[s.key];
+      if (!content) return;
+      html += '<div style="margin-bottom:16px;padding:14px 16px;background:rgba(255,255,255,0.04);border-radius:12px;border-left:3px solid rgba(130,80,255,0.5);">';
+      html += '<div style="font-size:12px;font-weight:800;color:#c9a8ff;margin-bottom:8px;">' + s.icon + ' ' + s.title + '</div>';
+      html += '<div style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.8;white-space:pre-wrap;">' + content + '</div>';
+      html += '</div>';
+    });
+    if (!html.includes('background:rgba')) {
+      html += '<div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.8;white-space:pre-wrap;">' + raw + '</div>';
+    }
+    return html;
+  }
+
+  function saveDreamDiary(text, symbols, result) {
+    try {
+      var diary = JSON.parse(localStorage.getItem('dreamDiary') || '[]');
+      diary.unshift({
+        date: new Date().toLocaleDateString('ko-KR'),
+        time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+        text: text.slice(0, 80),
+        symbols: symbols,
+        result: result.slice(0, 200),
+      });
+      if (diary.length > 20) diary = diary.slice(0, 20);
+      localStorage.setItem('dreamDiary', JSON.stringify(diary));
+    } catch (e) {}
+  }
+
+  function renderDreamDiary() {
+    var list = document.getElementById('dream-diary-list');
+    var empty = document.getElementById('dream-diary-empty');
+    if (!list) return;
+    try {
+      var diary = JSON.parse(localStorage.getItem('dreamDiary') || '[]');
+      if (!diary.length) { empty.style.display = ''; list.innerHTML = ''; return; }
+      empty.style.display = 'none';
+      list.innerHTML = diary.map(function(entry, i) {
+        return '<div style="padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.07);">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">'
+          + '<span style="font-size:11px;color:rgba(255,255,255,0.3);">' + entry.date + ' ' + entry.time + '</span>'
+          + (entry.symbols && entry.symbols.length ? '<span style="font-size:11px;color:rgba(130,80,255,0.7);">' + entry.symbols.join(', ') + '</span>' : '')
+          + '</div>'
+          + '<div style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;">' + (entry.text || '').replace(/</g,'&lt;') + (entry.text && entry.text.length >= 80 ? '…' : '') + '</div>'
+          + '</div>';
+      }).join('');
+    } catch (e) { empty.style.display = ''; }
+  }
+}
+
 // ── 앱 진입점 ──
 render();
 
