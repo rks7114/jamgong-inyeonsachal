@@ -3259,7 +3259,14 @@ function renderResults(data) {
       </div>
     ` : ''}
 
-    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
+    <div style="display:flex;gap:10px;margin:16px 0;">
+      <button id="share-kakao-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#FEE500;border:none;border-radius:14px;padding:14px;cursor:pointer;font-size:14px;font-weight:800;color:#3C1E1E;box-shadow:0 4px 16px rgba(254,229,0,0.35);transition:all .2s;">
+        💬 카카오톡 공유
+      </button>
+      <button id="share-copy-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.3);border-radius:14px;padding:14px;cursor:pointer;font-size:14px;font-weight:700;color:#00d2ff;transition:all .2s;">
+        🔗 링크 복사
+      </button>
+    </div>
 
     <div class="notice-box">
       <div class="notice-item">
@@ -3289,13 +3296,44 @@ function renderResults(data) {
     });
   });
 
-  document.getElementById("share-btn")?.addEventListener("click", () => {
-    if (navigator.share) {
-      navigator.share({ title: "잼공인연사찰 매칭 결과", url: window.location.href });
-    } else {
-      navigator.clipboard.writeText(window.location.href).then(() => alert("링크가 복사되었습니다."));
-    }
-  });
+  // ── 공유 버튼 (솔로/궁합 결과) ──
+  (function setupShare2() {
+    var top1 = data.results?.[0];
+    var templeName = top1?.temple?.name || '인연사찰';
+    var score = top1?.score || '';
+    var purposeLabel = data.purpose || '';
+    var shareUrl = 'https://jamgong-inyeonsachal.vercel.app';
+    var shareText = '🏯 나의 인연사찰은 "' + templeName + '"!\n오행 궁합 ' + score + '점 매칭 (' + purposeLabel + ')\n\n내 사주에 맞는 사찰을 찾아보세요 👇\n' + shareUrl;
+    var shareTitle = '내 인연사찰은 ' + templeName + '! — 잼공인연사찰';
+
+    document.getElementById('share-kakao-btn')?.addEventListener('click', function() {
+      if (window.Kakao && window.Kakao.isInitialized()) {
+        window.Kakao.Share.sendDefault({
+          objectType: 'feed',
+          content: {
+            title: shareTitle,
+            description: '오행 궁합 ' + score + '점 매칭 (' + purposeLabel + ')\n내 사주에 맞는 사찰을 찾아보세요!',
+            imageUrl: 'https://jamgong-inyeonsachal.vercel.app/og-image.png',
+            link: { mobileWebUrl: shareUrl, webUrl: shareUrl }
+          },
+          buttons: [{ title: '내 인연사찰 찾기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }]
+        });
+      } else if (navigator.share) {
+        navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).catch(function(){});
+      } else {
+        navigator.clipboard?.writeText(shareText).then(function(){
+          alert('카카오톡에 붙여넣기 하세요!\n\n' + shareText);
+        });
+      }
+    });
+
+    document.getElementById('share-copy-btn')?.addEventListener('click', function() {
+      var btn = document.getElementById('share-copy-btn');
+      navigator.clipboard?.writeText(shareUrl).then(function() {
+        if (btn) { btn.textContent = '✅ 복사됨!'; setTimeout(function(){ btn.innerHTML = '🔗 링크 복사'; }, 2000); }
+      }).catch(function() { alert('주소: ' + shareUrl); });
+    });
+  })();
 
   document.getElementById("demo-detail-btn")?.addEventListener("click", () => {
     const demoResult = {
@@ -3932,7 +3970,14 @@ function renderCoupleResults(data) {
       </div>
     `}
 
-    <button class="share-btn" id="share-btn">📤 결과 공유하기</button>
+    <div style="display:flex;gap:10px;margin:16px 0;">
+      <button id="share-kakao-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#FEE500;border:none;border-radius:14px;padding:14px;cursor:pointer;font-size:14px;font-weight:800;color:#3C1E1E;box-shadow:0 4px 16px rgba(254,229,0,0.35);transition:all .2s;">
+        💬 카카오톡 공유
+      </button>
+      <button id="share-copy-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.3);border-radius:14px;padding:14px;cursor:pointer;font-size:14px;font-weight:700;color:#00d2ff;transition:all .2s;">
+        🔗 링크 복사
+      </button>
+    </div>
 
     <div class="notice-box">
       <div class="notice-item">
@@ -3982,13 +4027,44 @@ function renderCoupleResults(data) {
     document.getElementById("app")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  document.getElementById("share-btn")?.addEventListener("click", () => {
-    if (navigator.share) {
-      navigator.share({ title: "잼공인연사찰 매칭 결과", url: window.location.href });
-    } else {
-      navigator.clipboard.writeText(window.location.href).then(() => alert("링크가 복사되었습니다."));
-    }
-  });
+  // ── 공유 버튼 ──
+  (function setupShare() {
+    var top1 = matchData?.results?.[0];
+    var templeName = top1?.temple?.name || '인연사찰';
+    var score = top1?.score || '';
+    var purposeLabel = matchData?.purpose || '';
+    var shareUrl = 'https://jamgong-inyeonsachal.vercel.app';
+    var shareText = '🏯 나의 인연사찰은 "' + templeName + '"!\n오행 궁합 ' + score + '점 매칭 (' + purposeLabel + ')\n\n내 사주에 맞는 사찰을 찾아보세요 👇\n' + shareUrl;
+    var shareTitle = '내 인연사찰은 ' + templeName + '! — 잼공인연사찰';
+
+    document.getElementById('share-kakao-btn')?.addEventListener('click', function() {
+      if (window.Kakao && window.Kakao.isInitialized()) {
+        window.Kakao.Share.sendDefault({
+          objectType: 'feed',
+          content: {
+            title: shareTitle,
+            description: '오행 궁합 ' + score + '점 매칭 (' + purposeLabel + ')\n내 사주에 맞는 사찰을 찾아보세요!',
+            imageUrl: 'https://jamgong-inyeonsachal.vercel.app/og-image.png',
+            link: { mobileWebUrl: shareUrl, webUrl: shareUrl }
+          },
+          buttons: [{ title: '내 인연사찰 찾기', link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }]
+        });
+      } else if (navigator.share) {
+        navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).catch(function(){});
+      } else {
+        navigator.clipboard?.writeText(shareText).then(function(){
+          alert('카카오톡에 붙여넣기 하세요!\n\n' + shareText);
+        });
+      }
+    });
+
+    document.getElementById('share-copy-btn')?.addEventListener('click', function() {
+      var btn = document.getElementById('share-copy-btn');
+      navigator.clipboard?.writeText(shareUrl).then(function() {
+        if (btn) { btn.textContent = '✅ 복사됨!'; setTimeout(function(){ btn.innerHTML = '🔗 링크 복사'; }, 2000); }
+      }).catch(function() { alert('주소: ' + shareUrl); });
+    });
+  })();
 
   // 데모 상세페이지 버튼 (비멤버에게만 표시됨)
   document.getElementById("demo-detail-btn")?.addEventListener("click", () => {
