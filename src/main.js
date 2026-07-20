@@ -385,6 +385,47 @@ function render() {
       </div>
     </div>
 
+    <!-- ── 사찰 이름 검색 ── -->
+    <div id="temple-search-wrap" style="margin:0 0 18px 0;background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.08);border-radius:18px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:.1em;margin-bottom:10px;">🔍 지역 선택 후 사찰 검색</div>
+      <div style="display:flex;gap:8px;">
+        <div id="region-dropdown" style="position:relative;flex:0 0 auto;">
+          <button id="region-btn" type="button" style="background:linear-gradient(135deg,rgba(0,95,163,0.5),rgba(0,60,100,0.6));border:1.5px solid rgba(0,180,216,0.5);border-radius:12px;color:#7DD3FC;font-size:13px;font-weight:700;padding:11px 13px;cursor:pointer;outline:none;white-space:nowrap;display:flex;align-items:center;gap:6px;box-shadow:0 0 10px rgba(0,180,216,0.15);">
+            <span id="region-label">📍 전체 지역</span><span style="font-size:10px;opacity:0.7;">▼</span>
+          </button>
+          <div id="region-list" style="display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:130px;background:#0d1f35;border:1.5px solid rgba(0,180,216,0.4);border-radius:14px;overflow:hidden;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,0.7);">
+            <div class="rg-item" data-val="" style="padding:10px 16px;font-size:13px;color:#7DD3FC;cursor:pointer;transition:background .12s;border-bottom:1px solid rgba(255,255,255,0.05);">📍 전체 지역</div>
+            <div class="rg-item" data-val="서울" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">서울</div>
+            <div class="rg-item" data-val="경기" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">경기</div>
+            <div class="rg-item" data-val="인천" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">인천</div>
+            <div class="rg-item" data-val="강원" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">강원</div>
+            <div class="rg-item" data-val="충북" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">충북</div>
+            <div class="rg-item" data-val="충남" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">충남</div>
+            <div class="rg-item" data-val="대전" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">대전</div>
+            <div class="rg-item" data-val="세종" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">세종</div>
+            <div class="rg-item" data-val="전북" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">전북</div>
+            <div class="rg-item" data-val="전남" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">전남</div>
+            <div class="rg-item" data-val="광주" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">광주</div>
+            <div class="rg-item" data-val="경북" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">경북</div>
+            <div class="rg-item" data-val="경남" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">경남</div>
+            <div class="rg-item" data-val="대구" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">대구</div>
+            <div class="rg-item" data-val="울산" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">울산</div>
+            <div class="rg-item" data-val="부산" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">부산</div>
+            <div class="rg-item" data-val="제주" style="padding:10px 16px;font-size:13px;color:#e2e8f0;cursor:pointer;transition:background .12s;">제주</div>
+          </div>
+        </div>
+        <div style="position:relative;flex:1;">
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.3);border:1.5px solid rgba(0,180,216,0.4);border-radius:12px;padding:11px 14px;box-shadow:inset 0 1px 4px rgba(0,0,0,0.3);">
+            <span style="font-size:15px;color:rgba(0,210,255,0.7);">🔍</span>
+            <input id="temple-search-input" type="text" placeholder="사찰 이름 검색..." autocomplete="off"
+              style="flex:1;background:none;border:none;outline:none;color:#fff;font-size:14px;font-family:inherit;" />
+            <button id="temple-search-clear" type="button" style="display:none;background:none;border:none;color:rgba(255,255,255,0.4);font-size:16px;cursor:pointer;padding:0;">✕</button>
+          </div>
+          <div id="temple-search-results" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0d1f35;border:1.5px solid rgba(0,180,216,0.35);border-radius:14px;overflow:hidden;z-index:100;max-height:360px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.7);"></div>
+        </div>
+      </div>
+    </div>
+
     <form class="form-card" id="match-form">
       <svg class="corner-cloud tl" viewBox="0 0 40 40"><path d="M4 20 Q4 12 12 12 Q13 6 20 7 Q25 3 30 8 Q36 8 36 15" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
       <svg class="corner-cloud tr" viewBox="0 0 40 40"><path d="M36 20 Q36 12 28 12 Q27 6 20 7 Q15 3 10 8 Q4 8 4 15" fill="none" stroke="#B8892B" stroke-width="1.3" stroke-linecap="round"/></svg>
@@ -3962,4 +4003,114 @@ const HIGHLIGHT_BADGE = (word) =>
   `<span style="color:#FFB347;font-size:11px;font-weight:800;background:rgba(255,179,71,0.12);border-radius:8px;padding:2px 7px;margin:0 2px;">${word}</span>`;
 // ── 앱 진입점 ──
 render();
+
+// ── 사찰 이름 검색 초기화 ──
+(function initTempleSearch() {
+  const input = document.getElementById('temple-search-input');
+  const resultsBox = document.getElementById('temple-search-results');
+  const clearBtn = document.getElementById('temple-search-clear');
+  const regionBtn = document.getElementById('region-btn');
+  const regionLabel = document.getElementById('region-label');
+  const regionList = document.getElementById('region-list');
+  if (!input || !resultsBox) return;
+
+  let allTemples = [], templeMap = {}, selectedRegion = '', dataReady = false;
+
+  fetch('/api/temple-list').then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(data){
+      allTemples = data; templeMap = {};
+      data.forEach(function(t){ if (t.id) templeMap[t.id] = t; });
+      dataReady = true;
+      if (selectedRegion || input.value.trim()) showResults(input.value);
+    }).catch(function(){ allTemples = []; dataReady = true; });
+
+  if (regionBtn && regionList) {
+    regionBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      regionList.style.display = regionList.style.display === 'none' ? 'block' : 'none';
+    });
+    regionList.querySelectorAll('.rg-item').forEach(function(item) {
+      item.addEventListener('mouseover', function() { this.style.background = 'rgba(255,255,255,0.1)'; });
+      item.addEventListener('mouseout', function() { this.style.background = ''; });
+      item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        selectedRegion = this.dataset.val || '';
+        if (regionLabel) regionLabel.textContent = selectedRegion ? ('📍 ' + selectedRegion) : '📍 전체 지역';
+        regionList.style.display = 'none';
+        showResults(input.value);
+      });
+    });
+    document.addEventListener('click', function() { regionList.style.display = 'none'; });
+  }
+
+  function showResults(query) {
+    query = (query||'').trim();
+    clearBtn.style.display = query ? 'block' : 'none';
+    if (!query && !selectedRegion) { resultsBox.style.display = 'none'; return; }
+    if (!dataReady) {
+      resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:13px;color:rgba(255,255,255,0.5);">⏳ 사찰 목록 로딩 중...</div>';
+      resultsBox.style.display = 'block'; return;
+    }
+    var seen = {}, nameMatches = [], addrMatches = [];
+    allTemples.forEach(function(t) {
+      if (seen[t.id]) return;
+      var regionOk = !selectedRegion || (t.address && t.address.includes(selectedRegion));
+      if (!regionOk) return;
+      var nameHit = !query || (t.name && t.name.includes(query));
+      var addrHit = query && (t.address && t.address.includes(query));
+      if (nameHit) { seen[t.id] = true; nameMatches.push(t); }
+      else if (addrHit) { seen[t.id] = true; addrMatches.push(t); }
+    });
+    var matches = nameMatches.concat(addrMatches).sort(function(a, b) {
+      return (a.name||'').localeCompare(b.name||'', 'ko');
+    });
+    if (!matches.length) {
+      resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:14px;color:rgba(255,255,255,0.4);">검색 결과가 없습니다</div>';
+      resultsBox.style.display = 'block'; return;
+    }
+    window._lastSearchMatches = matches;
+    var countHdr = '<div style="padding:8px 16px 6px;font-size:11px;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.06);">총 ' + matches.length + '개 사찰</div>';
+    resultsBox.innerHTML = countHdr + matches.map(function(t, idx) {
+      return '<div class="tsearch-item" data-idx="' + idx + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
+        + '<span style="font-size:16px;">🏯</span>'
+        + '<div><div style="font-size:14px;font-weight:700;color:#fff;">' + (t.name||'') + '</div>'
+        + '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + (t.address||'').slice(0,30) + '</div></div>'
+        + '</div>';
+    }).join('');
+    resultsBox.style.display = 'block';
+  }
+
+  input.addEventListener('input', function() { showResults(this.value); });
+  clearBtn.addEventListener('click', function() {
+    input.value = ''; clearBtn.style.display = 'none'; resultsBox.style.display = 'none'; input.focus();
+  });
+
+  resultsBox.addEventListener('click', function(e) {
+    var item = e.target.closest('.tsearch-item');
+    if (!item) return;
+    var idx = parseInt(item.dataset.idx);
+    var matches = window._lastSearchMatches || [];
+    var temple = (idx >= 0 && matches[idx]) ? matches[idx] : null;
+    if (!temple) { alert('사찰 정보를 찾을 수 없습니다.'); return; }
+    input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
+    var fakeResult = {
+      temple: temple,
+      detail: { templeOhaeng: '금', bearing: '—', distanceKm: null },
+      score: 0, reason: '직접 검색하신 사찰입니다.', weather: null
+    };
+    var resultsEl = document.getElementById('results');
+    var formEl = document.getElementById('match-form');
+    var searchWrap = document.getElementById('temple-search-wrap');
+    renderTempleDetailPage(fakeResult, null, false, function() {
+      if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.classList.add('hidden'); }
+      if (formEl) formEl.style.display = '';
+      if (searchWrap) searchWrap.style.display = '';
+    });
+  });
+
+  document.addEventListener('click', function(e) {
+    var sw = document.getElementById('temple-search-wrap');
+    if (sw && !sw.contains(e.target)) resultsBox.style.display = 'none';
+  });
+})();
 
