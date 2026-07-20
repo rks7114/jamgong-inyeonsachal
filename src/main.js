@@ -4035,6 +4035,12 @@ function renderDreamPage() {
     { emoji: '🐕', label: '개' },
     { emoji: '☀️', label: '태양' },
     { emoji: '💵', label: '돈' },
+    { emoji: '🐉', label: '용' },
+    { emoji: '🐯', label: '호랑이' },
+    { emoji: '🌙', label: '달' },
+    { emoji: '🏠', label: '집' },
+    { emoji: '🐟', label: '물고기' },
+    { emoji: '🌸', label: '꽃' },
   ];
 
   var el = document.createElement('div');
