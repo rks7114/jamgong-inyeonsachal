@@ -4051,17 +4051,19 @@ render();
       resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:13px;color:rgba(255,255,255,0.5);">⏳ 사찰 목록 로딩 중...</div>';
       resultsBox.style.display = 'block'; return;
     }
-    var seen = {}, nameMatches = [], addrMatches = [];
+    var seen = {}, nameMatches = [], addrMatches = [], histMatches = [];
     allTemples.forEach(function(t) {
       if (seen[t.id]) return;
       var regionOk = !selectedRegion || (t.address && t.address.includes(selectedRegion));
       if (!regionOk) return;
-      var nameHit = !query || (t.name && t.name.includes(query));
-      var addrHit = query && (t.address && t.address.includes(query));
-      if (nameHit) { seen[t.id] = true; nameMatches.push(t); }
+      var nameHit  = !query || (t.name && t.name.includes(query));
+      var addrHit  = query && (t.address && t.address.includes(query));
+      var histHit  = query && (t.history && t.history.includes(query));
+      if (nameHit)      { seen[t.id] = true; nameMatches.push(t); }
       else if (addrHit) { seen[t.id] = true; addrMatches.push(t); }
+      else if (histHit) { seen[t.id] = true; histMatches.push(t); }
     });
-    var matches = nameMatches.concat(addrMatches).sort(function(a, b) {
+    var matches = nameMatches.concat(addrMatches).concat(histMatches).sort(function(a, b) {
       return (a.name||'').localeCompare(b.name||'', 'ko');
     });
     if (!matches.length) {
@@ -4071,10 +4073,14 @@ render();
     window._lastSearchMatches = matches;
     var countHdr = '<div style="padding:8px 16px 6px;font-size:11px;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.06);">총 ' + matches.length + '개 사찰</div>';
     resultsBox.innerHTML = countHdr + matches.map(function(t, idx) {
+      var sub = (t.address||'').slice(0,28);
+      if (query && t.history && t.history.includes(query) && !(t.name||'').includes(query) && !(t.address||'').includes(query)) {
+        sub = '연혁: ' + t.history.slice(0, 28) + '…';
+      }
       return '<div class="tsearch-item" data-idx="' + idx + '" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px;transition:background .12s;">'
         + '<span style="font-size:16px;">🏯</span>'
         + '<div><div style="font-size:14px;font-weight:700;color:#fff;">' + (t.name||'') + '</div>'
-        + '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + (t.address||'').slice(0,30) + '</div></div>'
+        + '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + sub + '</div></div>'
         + '</div>';
     }).join('');
     resultsBox.style.display = 'block';
