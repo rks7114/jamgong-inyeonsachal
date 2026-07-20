@@ -4100,7 +4100,7 @@ function renderDreamPage() {
 
     // ── 푸터
     '<div style="text-align:center;margin-top:18px;font-size:11px;color:rgba(200,170,255,0.2);line-height:2.2;">',
-    '  상표 출원 중 (출원번호: 40-2026-0096864)<br>',
+    '  특허 출원 중 (출원번호: 40-2026-00*****)<br>',
     '  <span style="letter-spacing:1px;">Jamgong Metaphysics Core Engine v1.8</span>',
     '</div>',
   ].join('');
@@ -4216,6 +4216,11 @@ function renderDreamPage() {
       var raw = data.result || '';
       var html = formatDreamResult(raw);
       resultSection.innerHTML = html;
+
+      // 챗봇에 꿈 컨텍스트 전달
+      window._dreamContext = { dreamText: text, symbols: selectedSymbols, result: raw };
+      window._sajuContext = null;
+      window._gunghamContext = null;
 
       // 일기 저장
       saveDreamDiary(text, selectedSymbols, raw);
