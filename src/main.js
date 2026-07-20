@@ -32,14 +32,14 @@ const PURPOSE_OHAENG_KO = { geum:"金", mok:"木", su:"水", hwa:"火", to:"土"
 
 // 기도목적별 안내 — 실제 불교 전통 방식(소원지, 108배, 발원문 등) 기반. 신비주의적 과장 없이 사실적으로 서술.
 const PURPOSE_PRAYER_GUIDE = {
-  재물운: "대웅전에서 삼배(三拜)를 올린 뒤, 소원지에 구체적인 목표를 적어 불전함 앞에 놓아보세요. 산신각이 있다면 함께 들러보시는 것도 좋습니다.",
-  건강운: "약사전이나 약사여래불이 모셔진 전각이 있다면 그곳에서, 없다면 대웅전에서 108배를 올리며 건강을 발원해보세요.",
-  학업운: "문수보살을 모신 전각이 있다면 지혜를 구하는 기도를, 없다면 조용한 곳에 앉아 잠시 마음을 가다듬는 시간을 가져보세요.",
-  인연운: "관음전이 있다면 그곳에서, 없다면 대웅전에서 지금까지의 인연에 감사하는 마음으로 절을 올려보세요.",
-  가정운: "가족 한 사람 한 사람의 이름을 마음에 새기며 소원지를 적고, 대웅전 앞에서 가족의 평안을 발원해보세요.",
-  수험합격: "문수전에서 시험 날짜와 이름을 마음속으로 밝히며 삼배하세요. 소원지에 합격 소원을 적어 걸어두는 것도 좋습니다.",
-  취업운: "칠성각에서 원하는 직장을 구체적으로 떠올리며 기도하세요. 대웅전에서 취업이 이뤄졌을 때 다시 방문하겠다는 발원도 올려보세요.",
-  출산기도: "삼신각을 먼저 찾아 임신·출산을 기원하세요. 관음전에서 건강한 아기를 발원하는 기도를 함께 올리면 더욱 좋습니다.",
+  재물운: "대웅전에서 삼배(三拜)를 올린 뒤, 소원지에 구체적인 목표를 적어 불전함 앞에 놓아보세요. 나한전이 있다면 오백 나한님 중 내 소원을 들어줄 나한을 찾아보세요.",
+  건강운: "약사전이 있다면 약사여래 부처님께, 없다면 대웅전에서 108배를 올리며 건강을 발원해보세요. 관음전에서 치유의 자비를 구하는 것도 좋습니다.",
+  학업운: "문수전이 있다면 지혜를 구하는 기도를, 없다면 대웅전에서 집중력과 기억력이 높아지기를 발원하세요. 나한전에서 학업을 도운 나한을 찾아보세요.",
+  인연운: "관음전이 있다면 그곳에서, 없다면 대웅전에서 좋은 인연이 이루어지기를 진솔하게 발원하세요.",
+  가정운: "가족 한 사람 한 사람의 이름을 마음에 새기며 소원지를 적고, 대웅전 앞에서 가족의 평안을 발원해보세요. 지장전이 있다면 조상님의 가호도 함께 빌어보세요.",
+  수험합격: "문수전이 있다면 시험 날짜와 이름을 마음속으로 밝히며 삼배하세요. 없다면 대웅전에서 소원지에 합격 소원을 적어 발원하세요. 나한전에서 합격을 이룬 나한을 찾아보세요.",
+  취업운: "대웅전에서 원하는 직장과 역할을 구체적으로 떠올리며 삼배를 올리세요. 관음전이 있다면 새 인연과 기회가 열리도록 발원하세요.",
+  출산기도: "관음전을 먼저 찾아 임신·출산을 기원하세요. 대웅전에서 건강한 아기가 태어나기를 간절히 발원하는 기도를 함께 올리세요.",
 };
 
 // 목적별 아이콘 (선 스타일, 획 일관성 유지) — 재물(동전꾸러미)·건강(약초잎)·학업(붓)·인연(매듭)·가정(집)
@@ -119,11 +119,11 @@ const OHAENG_DEFICIENCY_INFO = {
 const OHAENG_HALL_GUIDE = {
   목: {
     icon: '🌿',
-    desc: '목(木) 기운은 생명·성장·치유를 상징합니다. 이 사찰에서는 약사전(藥師殿)과 산신각(山神閣)에 특히 인연이 닿아 있습니다.',
+    desc: '목(木) 기운은 생명·성장·치유를 상징합니다. 이 사찰에서는 약사전(藥師殿)과 관음전(觀音殿)에 특히 인연이 닿아 있습니다.',
     halls: [
       { name: '대웅전(大雄殿)', role: '석가모니불을 모신 본전. 합장 삼배로 시작하세요.' },
       { name: '약사전(藥師殿)', role: '약사여래불 — 치유와 건강의 기운. 있다면 꼭 들르세요.' },
-      { name: '산신각(山神閣)', role: '자연의 정기를 받는 곳. 동쪽을 향해 기도하면 좋습니다.' },
+      { name: '관음전(觀音殿)', role: '관세음보살 — 자비의 기운으로 성장과 회복을 빕니다.' },
     ]
   },
   화: {
@@ -146,11 +146,11 @@ const OHAENG_HALL_GUIDE = {
   },
   금: {
     icon: '✨',
-    desc: '금(金) 기운은 재물·결단·정화를 상징합니다. 대웅전과 산신각에서 서쪽을 향해 기도하면 금 기운이 보강됩니다.',
+    desc: '금(金) 기운은 재물·결단·정화를 상징합니다. 대웅전에서 서쪽을 향해 삼배를 올리고, 나한전에서 소원 성취를 발원하세요.',
     halls: [
       { name: '대웅전(大雄殿)', role: '석가모니불 본전. 서쪽을 향해 기도하면 금 기운이 더해집니다.' },
-      { name: '산신각(山神閣)', role: '재물운과 산신의 가호를 함께 기원할 수 있는 곳.' },
-      { name: '범종각(梵鐘閣)', role: '범종 소리로 탐욕을 내려놓고 맑은 마음을 회복하세요.' },
+      { name: '나한전(羅漢殿)', role: '오백 나한님 — 소원 성취와 재물운을 발원하기 좋은 곳.' },
+      { name: '관음전(觀音殿)', role: '관세음보살 — 자비로운 풍요와 기회를 열어달라고 발원하세요.' },
     ]
   },
   수: {
@@ -166,14 +166,14 @@ const OHAENG_HALL_GUIDE = {
 
 // 기도목적별 추가 안내 전각
 const PURPOSE_HALL_EXTRA = {
-  재물운: { name: '칠성각(七星閣)', tip: '칠성신에게 재물과 복록을 기원하는 전각. 있으면 꼭 들르세요.' },
+  재물운: { name: '나한전(羅漢殿)', tip: '오백 나한님 중 내 소원을 들어줄 나한을 찾아 재물운을 발원하세요.' },
   건강운: { name: '약사전(藥師殿)', tip: '약사여래불을 모신 곳. 108배를 올리며 건강을 발원하세요.' },
   학업운: { name: '문수전(文殊殿)', tip: '지혜의 보살 문수보살을 모신 전각. 학업 기도의 핵심입니다.' },
   인연운: { name: '관음전(觀音殿)', tip: '관세음보살 — 인연과 자비의 기운이 가장 강한 전각.' },
   가정운: { name: '지장전(地藏殿)', tip: '지장보살 — 가족의 안녕과 조상님 천도를 기원하는 곳.' },
-  수험합격: { name: '문수전(文殊殿)', tip: '지혜의 보살 문수보살 — 시험 합격과 지혜를 기원하는 핵심 전각.' },
-  취업운: { name: '칠성각(七星閣)', tip: '칠성신 — 복록과 직업 운세를 관장하는 전각. 꼭 들르세요.' },
-  출산기도: { name: '삼신각(三神閣)', tip: '삼신할머니 — 임신·출산·육아를 관장하는 전각. 가장 먼저 참배하세요.' },
+  수험합격: { name: '나한전(羅漢殿)', tip: '오백 나한님 중 합격을 이룬 나한을 찾아 소원을 올리세요.' },
+  취업운: { name: '관음전(觀音殿)', tip: '관세음보살 — 새 인연과 취업 기회가 열리도록 발원하세요.' },
+  출산기도: { name: '관음전(觀音殿)', tip: '관세음보살님은 산모와 아기를 보살펴 주시는 분. 가장 먼저 참배하세요.' },
 };
 
 const BEARING_DEG = {
@@ -2625,56 +2625,173 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
 
   // ── 전각 안내 ──
   (function(){
-    var purposeHalls = {
-      '재물운': [
-        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'석가모니 부처님께 정성껏 <strong style="color:#FBBF24;">삼배</strong>를 올리며 풍요와 형통을 발원합니다.' },
-        { hall:'산신각', icon:'🏔️', color:'#34D399', desc:'재물과 땅의 기운을 주관하는 <strong style="color:#34D399;">산신령</strong>께 소원지를 올리기 좋습니다.' },
-        { hall:'칠성각', icon:'⭐', color:'#818CF8', desc:'<strong style="color:#818CF8;">칠성님</strong>께 복과 수명, 재물운 전반을 기도드립니다.' }
-      ],
-      '건강운': [
-        { hall:'약사전', icon:'💊', color:'#34D399', desc:'<strong style="color:#34D399;">약사여래 부처님</strong>은 모든 병을 고쳐주시는 분으로 건강 기도의 핵심 전각입니다.' },
-        { hall:'지장전', icon:'🕯️', color:'#94A3B8', desc:'아픈 가족을 위한 <strong style="color:#94A3B8;">천도 · 치유 기도</strong>는 지장보살님 전각에서 드립니다.' },
-        { hall:'칠성각', icon:'⭐', color:'#818CF8', desc:'장수와 건강을 관장하는 <strong style="color:#818CF8;">칠성님</strong>께 오래도록 건강하기를 발원합니다.' }
-      ],
-      '학업운': [
-        { hall:'문수전', icon:'📖', color:'#38BDF8', desc:'지혜의 보살 <strong style="color:#38BDF8;">문수보살님</strong>께 집중력·기억력·합격을 기도드립니다.' },
-        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'<strong style="color:#FBBF24;">삼배 후 발원문</strong>을 조용히 읽으면 마음이 안정되고 시험 불안이 줄어듭니다.' }
-      ],
-      '인연운': [
-        { hall:'관음전', icon:'🌸', color:'#F472B6', desc:'<strong style="color:#F472B6;">관세음보살님</strong>은 인연과 자비의 보살로, 좋은 만남을 간절히 발원하기 좋습니다.' },
-        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'<strong style="color:#FBBF24;">삼배 후</strong> 인연을 맺어달라는 마음을 진솔하게 올립니다.' }
-      ],
-      '가정운': [
-        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'온 가족의 평안을 위해 <strong style="color:#FBBF24;">가족 이름을 마음속에 품고</strong> 삼배를 올립니다.' },
-        { hall:'산신각', icon:'🏔️', color:'#34D399', desc:'가정의 <strong style="color:#34D399;">터전과 화목</strong>을 지켜달라고 산신령께 기도드립니다.' },
-        { hall:'칠성각', icon:'⭐', color:'#818CF8', desc:'가족 구성원 한 명 한 명의 <strong style="color:#818CF8;">복과 수명</strong>을 빕니다.' }
-      ],
-      '수험합격': [
-        { hall:'문수전', icon:'📖', color:'#38BDF8', desc:'<strong style="color:#38BDF8;">문수보살님</strong>께 시험장에서 침착하게 능력을 발휘하게 해달라고 기도드립니다.' },
-        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'시험 <strong style="color:#FBBF24;">날짜와 이름</strong>을 소원지에 적어 올리면 더 간절하게 기도할 수 있습니다.' }
-      ],
-      '취업운': [
-        { hall:'대웅전', icon:'🏛️', color:'#FBBF24', desc:'<strong style="color:#FBBF24;">삼배 후 발원문</strong>을 올리며 바라는 직장과 역할을 구체적으로 기도합니다.' },
-        { hall:'산신각', icon:'🏔️', color:'#34D399', desc:'<strong style="color:#34D399;">재물운·직업운</strong>을 주관하는 산신각에서 취업 성공을 발원하세요.' }
-      ],
-      '출산기도': [
-        { hall:'관음전', icon:'🌸', color:'#F472B6', desc:'<strong style="color:#F472B6;">관세음보살님</strong>은 아기와 산모를 보살펴 주시는 분입니다. 정성껏 발원하세요.' },
-        { hall:'칠성각', icon:'⭐', color:'#818CF8', desc:'새 생명의 <strong style="color:#818CF8;">건강과 복</strong>을 칠성님께 빕니다.' },
-        { hall:'삼신각', icon:'🧸', color:'#FB923C', desc:'<strong style="color:#FB923C;">삼신할머니</strong>께 아이를 점지해 달라고 간절히 기도하는 전각입니다.' }
-      ]
+    var templeOh = d.templeOhaeng || '금';
+    // 사용자 사주 결핍 오행 (사주와 가장 맞는 전각 결정에 사용)
+    var sajuWeak = (parentData && parentData.targetOhaeng) || (parentData && parentData.weak && parentData.weak['부족오행']) || templeOh;
+    var tName = d.name || '';
+    var tHist = d.history || '';
+    var tText = tName + ' ' + tHist;
+
+    // ① 이 사찰에 실제로 있을 전각 추론 (이름·역사 기반)
+    var present = { '대웅전': true }; // 모든 사찰 필수 보유
+    // 이름으로 확실히 추론
+    if (/관음/.test(tName))          present['관음전'] = true;
+    if (/약사/.test(tName))          present['약사전'] = true;
+    if (/지장/.test(tName))          present['지장전'] = true;
+    if (/나한/.test(tName))          present['나한전'] = true;
+    if (/미타|극락/.test(tName))     present['극락전'] = true;
+    if (/문수/.test(tName))          present['문수전'] = true;
+    if (/비로|화엄/.test(tName))     present['비로전'] = true;
+    // 역사 텍스트에서 추론
+    if (/관음도량|관음전/.test(tText))       present['관음전'] = true;
+    if (/약사전|약사여래/.test(tText))       present['약사전'] = true;
+    if (/지장전|지장보살/.test(tText))       present['지장전'] = true;
+    if (/나한전|오백나한/.test(tText))       present['나한전'] = true;
+    if (/극락전|미타전|아미타/.test(tText))  present['극락전'] = true;
+    if (/문수전|문수보살/.test(tText))       present['문수전'] = true;
+    // 규모 있는 사찰 (총림·본사·대사찰)은 주요 전각 모두 보유로 간주
+    if (/총림|본사|대가람|대사찰|대본사/.test(tText)) {
+      present['관음전'] = true; present['약사전'] = true;
+      present['나한전'] = true; present['지장전'] = true;
+    }
+
+    // ② 전각 정보 사전 (hall → 설명)
+    var HALL_INFO = {
+      '대웅전': { icon:'🏛️', color:'#FBBF24' },
+      '관음전': { icon:'🌸', color:'#F472B6' },
+      '약사전': { icon:'💊', color:'#34D399' },
+      '나한전': { icon:'🙏', color:'#FB923C' },
+      '지장전': { icon:'🕯️', color:'#94A3B8' },
+      '극락전': { icon:'🌅', color:'#818CF8' },
+      '문수전': { icon:'📚', color:'#38BDF8' },
+      '비로전': { icon:'☀️', color:'#FCD34D' }
     };
-    var halls = purposeHalls[purposeLabel];
-    if (!halls) return;
-    var hallsHtml = '<div style="display:flex;flex-direction:column;gap:10px;">'
-      + halls.map(function(h) {
-          return '<div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,0.04);border-radius:12px;padding:12px 14px;border:1px solid rgba(255,255,255,0.08);">'
-            + '<div style="flex:0 0 auto;width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;font-size:20px;">' + h.icon + '</div>'
-            + '<div style="flex:1;">'
-            + '<div style="font-size:14px;font-weight:800;color:' + h.color + ';margin-bottom:4px;">' + h.hall + '</div>'
-            + '<div style="font-size:13px;color:#CBD5E1;line-height:1.6;">' + h.desc + '</div>'
-            + '</div></div>';
-        }).join('')
-      + '</div>';
+
+    // ③ 목적 + 오행별 우선순위 전각 목록 (최대 4개, 있는 것 우선)
+    var PRIORITY = {
+      '재물운': { must:['대웅전'], want:['나한전','관음전','지장전'] },
+      '건강운': { must:['대웅전'], want:['약사전','관음전','나한전'] },
+      '학업운': { must:['대웅전'], want:['문수전','나한전','관음전'] },
+      '인연운': { must:['대웅전'], want:['관음전','나한전','지장전'] },
+      '가정운': { must:['대웅전'], want:['관음전','지장전','나한전'] },
+      '수험합격':{ must:['대웅전'], want:['나한전','문수전','관음전'] },
+      '취업운': { must:['대웅전'], want:['나한전','관음전','지장전'] },
+      '출산기도':{ must:['대웅전'], want:['관음전','약사전','지장전'] }
+    };
+    // 사주 결핍 오행 → 해당 전각 (최우선)
+    var SAJU_HALL = { '수':'관음전', '목':'약사전', '화':'대웅전', '토':'지장전', '금':'나한전' };
+    var prio = PRIORITY[purposeLabel];
+    if (!prio) return;
+    // 우선순위: 사주결핍전각 → 사찰오행전각 → 목적전각
+    var wantList = [SAJU_HALL[sajuWeak], SAJU_HALL[templeOh]]
+      .concat(prio.want)
+      .filter(function(v,i,a){ return v && a.indexOf(v)===i; });
+
+    // ④ 확정 전각(present에 있는 것) + 권장 전각(없는 것은 "있는 경우" 표시)
+    var confirmed = [], optional = [];
+    wantList.forEach(function(hall) {
+      if (present[hall]) confirmed.push(hall);
+      else optional.push(hall);
+    });
+    // must는 항상 맨 앞
+    var finalList = prio.must.concat(confirmed.filter(function(h){ return prio.must.indexOf(h)<0; }));
+    // optional은 최대 2개까지만 "있는 경우"로 추가
+    var optShown = optional.slice(0,2);
+
+    // ⑤ 전각별 기도 안내 문구 (목적 + 전각 조합)
+    var DESC = {
+      '대웅전': {
+        '재물운': '석가모니 부처님께 <strong style="color:#FBBF24;">삼배</strong>를 올리며 사업·재물의 번창을 발원합니다.',
+        '건강운': '나와 가족의 건강을 위해 <strong style="color:#FBBF24;">삼배</strong>와 함께 간절히 발원합니다.',
+        '학업운': '집중력·기억력이 높아지기를 <strong style="color:#FBBF24;">삼배</strong>로 발원합니다.',
+        '인연운': '좋은 인연이 이루어지도록 <strong style="color:#FBBF24;">삼배</strong>와 함께 진솔하게 발원합니다.',
+        '가정운': '가족 이름을 마음에 품고 <strong style="color:#FBBF24;">삼배</strong>로 가정의 평안을 발원합니다.',
+        '수험합격': '시험 날짜와 이름을 소원지에 적어 <strong style="color:#FBBF24;">삼배</strong>와 함께 올립니다.',
+        '취업운': '원하는 직장을 구체적으로 떠올리며 <strong style="color:#FBBF24;">삼배</strong>를 올립니다.',
+        '출산기도': '새 생명의 건강한 탄생을 위해 <strong style="color:#FBBF24;">삼배</strong>와 함께 발원합니다.'
+      },
+      '관음전': {
+        '재물운': '관세음보살님께 자비로운 풍요와 기회를 열어달라고 발원합니다.',
+        '건강운': '관세음보살님의 치유 자비력으로 몸과 마음의 회복을 빕니다.',
+        '학업운': '관세음보살님께 지혜의 문이 열리기를 간청합니다.',
+        '인연운': '관음보살님은 인연의 보살. 좋은 만남이 이루어지도록 발원하세요.',
+        '가정운': '가족 모두의 건강과 화목을 관세음보살님께 빕니다.',
+        '수험합격': '시험장에서 침착하고 자신 있게 실력을 발휘할 수 있도록 빕니다.',
+        '취업운': '좋은 직장과의 인연이 열리도록 관세음보살님께 발원합니다.',
+        '출산기도': '관음보살님은 산모와 아기를 보살펴 주시는 분. 정성껏 발원하세요.'
+      },
+      '약사전': {
+        '재물운': '약사여래님의 지혜 기운으로 재물이 바르게 쌓이기를 발원합니다.',
+        '건강운': '약사여래 부처님께 <strong style="color:#34D399;">질병 치유와 건강 회복</strong>을 간절히 발원합니다.',
+        '학업운': '약사여래님의 맑은 기운으로 머리가 밝아지기를 빕니다.',
+        '인연운': '몸과 마음이 건강해야 좋은 인연도 옵니다. 건강 발원 후 인연을 비세요.',
+        '가정운': '가족 모두의 건강을 약사여래 부처님께 발원합니다.',
+        '수험합격': '시험 당일 컨디션이 최상이 되기를 약사여래님께 빕니다.',
+        '취업운': '건강한 몸과 마음으로 취업 준비에 임할 수 있도록 발원합니다.',
+        '출산기도': '산모와 아기의 건강을 약사여래 부처님께 특별히 발원하세요.'
+      },
+      '나한전': {
+        '재물운': '오백 나한님 중 내 소원을 들어줄 나한을 찾아 재물운을 빕니다.',
+        '건강운': '나한님께 나와 가족의 회복을 소원합니다. 내 이름을 불러주세요.',
+        '학업운': '오백 나한님 중 학업을 이뤄준 나한을 찾아 합격을 발원합니다.',
+        '인연운': '나한님께 좋은 인연을 맺어달라는 소원을 올립니다.',
+        '가정운': '가정의 평화를 이루어줄 나한님께 소원을 올립니다.',
+        '수험합격': '오백 나한님 중 합격을 도운 나한을 찾아 간절히 소원을 올립니다.',
+        '취업운': '취업의 기회를 열어줄 나한님께 소원을 올립니다.',
+        '출산기도': '새 생명을 맞이할 수 있도록 나한님께 소원을 올립니다.'
+      },
+      '지장전': {
+        '재물운': '지장보살님께 사업의 기반을 튼튼히 해달라고 발원합니다.',
+        '건강운': '조상과 가족의 업장을 소멸하여 건강이 회복되기를 빕니다.',
+        '학업운': '조상님의 가호로 학업이 이루어지기를 지장보살님께 발원합니다.',
+        '인연운': '인연의 장애를 풀어달라고 지장보살님께 발원합니다.',
+        '가정운': '조상과 가족 모두가 평안하도록 지장보살님께 발원합니다.',
+        '수험합격': '합격을 가로막는 업장이 소멸되기를 지장보살님께 빕니다.',
+        '취업운': '취업을 막는 장애가 사라지도록 지장보살님께 발원합니다.',
+        '출산기도': '순산과 아이의 안녕을 지장보살님께 발원합니다.'
+      },
+      '극락전': {
+        '재물운': '아미타 부처님의 자비 원력으로 풍요로운 삶을 발원합니다.',
+        '건강운': '아미타 부처님께 건강과 장수를 발원합니다.',
+        '학업운': '아미타 부처님의 지혜 광명이 학업에 비추기를 발원합니다.',
+        '인연운': '아미타 부처님의 원력으로 좋은 인연이 이루어지기를 빕니다.',
+        '가정운': '아미타 부처님께 가정의 평화와 행복을 발원합니다.',
+        '수험합격': '아미타 부처님의 원력으로 시험에서 실력 발휘를 발원합니다.',
+        '취업운': '아미타 부처님의 자비 원력으로 취업의 기회가 열리기를 빕니다.',
+        '출산기도': '아미타 부처님께 새 생명의 탄생을 발원합니다.'
+      },
+      '문수전': {
+        '학업운': '지혜의 문수보살님께 학업 성취와 총명함을 간절히 발원합니다.',
+        '수험합격': '문수보살님은 지혜의 상징. 시험 합격을 간절히 발원하세요.',
+        '취업운': '문수보살님의 지혜로 취업의 방향이 열리기를 발원합니다.',
+        '재물운': '문수보살님의 지혜로 바른 재물운이 열리기를 발원합니다.',
+        '건강운': '문수보살님의 지혜 기운으로 건강이 회복되기를 빕니다.',
+        '인연운': '지혜로운 문수보살님께 좋은 인연이 이루어지기를 발원합니다.',
+        '가정운': '문수보살님의 지혜로 가정이 화목해지기를 발원합니다.',
+        '출산기도': '문수보살님의 지혜 기운으로 건강한 아이가 태어나기를 빕니다.'
+      }
+    };
+
+    function makeHallCard(hall, isOptional) {
+      var info = HALL_INFO[hall] || { icon:'🏯', color:'#94A3B8' };
+      var descMap = DESC[hall] || {};
+      var desc = descMap[purposeLabel] || hall + '에서 정성껏 기도를 올립니다.';
+      var badge = isOptional
+        ? '<span style="font-size:10px;background:rgba(148,163,184,0.2);color:#94A3B8;border-radius:4px;padding:2px 6px;margin-left:6px;vertical-align:middle;">있는 경우</span>'
+        : '';
+      return '<div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,0.04);border-radius:12px;padding:12px 14px;border:1px solid ' + (isOptional ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)') + ';opacity:' + (isOptional ? '0.7' : '1') + ';">'
+        + '<div style="flex:0 0 auto;width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;font-size:20px;">' + info.icon + '</div>'
+        + '<div style="flex:1;">'
+        + '<div style="font-size:14px;font-weight:800;color:' + info.color + ';margin-bottom:4px;">' + hall + badge + '</div>'
+        + '<div style="font-size:13px;color:#CBD5E1;line-height:1.6;">' + desc + '</div>'
+        + '</div></div>';
+    }
+
+    var hallsHtml = '<div style="display:flex;flex-direction:column;gap:10px;">';
+    finalList.forEach(function(h) { hallsHtml += makeHallCard(h, false); });
+    optShown.forEach(function(h)  { hallsHtml += makeHallCard(h, true);  });
+    hallsHtml += '</div>';
+
     html += sec({r:'251,191,36', c:'#FBBF24'}, '🏯 방문할 전각 안내', hallsHtml);
   })();
 
@@ -3177,9 +3294,6 @@ function renderResults(data) {
   const memberUnlocked = isMember();
 
   resultsEl.innerHTML = `
-    <button id="home-btn" onclick="location.reload();" style="display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(0,100,200,0.3),rgba(0,60,120,0.4));border:1.5px solid rgba(0,210,255,0.5);border-radius:12px;padding:10px 18px;cursor:pointer;font-size:14px;font-weight:700;color:#00d2ff;margin-bottom:16px;box-shadow:0 0 16px rgba(0,180,255,0.2);">
-      🏠 처음으로
-    </button>
     <div class="results-summary">
       <div class="label">나의 기운은</div>
       <div class="ohaeng-value">${data.targetOhaeng || ""} 기운</div>
@@ -3203,6 +3317,10 @@ function renderResults(data) {
         <circle cx="60" cy="60" r="5" fill="rgba(0,210,255,0.8)"/>
       </svg>
     </div>
+
+    <button id="home-btn" onclick="location.reload();" style="display:flex;align-items:center;gap:6px;background:rgba(0,210,255,0.07);border:1px solid rgba(0,210,255,0.3);border-radius:10px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:700;color:#00d2ff;margin:0 0 14px;">
+      🏠 처음으로
+    </button>
 
     ${!memberUnlocked ? `
       <div style="text-align:center;margin:-4px 0 14px;">
