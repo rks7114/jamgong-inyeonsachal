@@ -1055,8 +1055,25 @@ select:disabled, input:disabled { opacity:0.35; cursor:not-allowed; }
 .detail-view-btn:hover::after, .couple-detail-btn:hover::after { opacity: 1; }
 
 /* Calendar */
-.calendar-card { background:rgba(7,14,28,0.6); border:1px solid rgba(0,210,255,0.12); border-radius:16px; padding:18px 20px; margin:16px 0; backdrop-filter:blur(10px); box-shadow:var(--sh-sm); }
-.calendar-title { font-family:var(--sans); font-size:14px; font-weight:700; color:#E2E8F0; margin-bottom:12px; }
+.calendar-card {
+  background: linear-gradient(135deg, rgba(0,40,80,0.7), rgba(0,20,50,0.8));
+  border: 1px solid rgba(0,210,255,0.35);
+  border-radius: 18px; padding: 20px; margin: 16px 0;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 24px rgba(0,180,255,0.15), 0 4px 20px rgba(0,0,0,0.4);
+  position: relative; overflow: hidden;
+}
+.calendar-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0,210,255,0.8), transparent);
+}
+.calendar-title {
+  font-family: var(--sans); font-size: 15px; font-weight: 800;
+  color: #00d2ff; margin-bottom: 14px;
+  text-shadow: 0 0 12px rgba(0,210,255,0.5);
+  letter-spacing: 0.3px;
+}
 .calendar-dates { display:flex; flex-wrap:wrap; gap:8px; }
 .date-chip {
   background: linear-gradient(135deg, rgba(0,210,255,0.08), rgba(107,130,249,0.06));
