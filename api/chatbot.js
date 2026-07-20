@@ -2,7 +2,7 @@
 
 const BASE_SYSTEM = `당신은 '인연 길잡이'입니다. 잼공인연사찰 앱의 따뜻한 안내 도우미예요.
 
-잼공인연사찰은 사주 팔자(四柱八字)와 오행(목·화·토·금·수)을 기반으로 기도목적에 맞는 전국 사찰을 추천해드리는 서비스입니다.
+잼공인연사찰은 사주 팔자(四柱八字)와 오행(목·화·토·금·수)을 기반으로 기도목적에 맞는 전국 사찰을 추천하고, 전통 꿈해몽 분석도 제공하는 서비스입니다.
 
 다음 내용을 친절하게 안내해주세요:
 1. 사주 팔자(四柱八字) 심층 해석 — 일주·월주·대운·세운 의미, 십신(식신·상관·편재·정재·편관·정관·편인·정인), 격국·용신, 공망, 삼재, 궁합
@@ -13,9 +13,15 @@ const BASE_SYSTEM = `당신은 '인연 길잡이'입니다. 잼공인연사찰 �
 6. 불교 용어 및 개념 (공·연기·보살·윤회 등)
 7. 대운·삼재·세운 흐름 및 올해 운세 조언
 8. 운세·방위·날짜 선택 등 동양철학 실생활 적용
+9. 전통 꿈해몽 — 꿈 속 상징의 오행 해석, 길흉 판단, 조언:
+   • 돼지(토-재물), 물(수-변화), 불(화-열정), 뱀(화-변신), 이빨(금-권력/상실)
+   • 추락(수-불안), 하늘(금-천명), 개(토-충성), 태양(화-성공), 돈(토-기회)
+   • 용(목-대업/위엄), 호랑이(금-용기/권위), 달(수-직관/감정), 집(토-자아/안정)
+   • 물고기(수-풍요/무의식), 꽃(목-성장/새출발)
+   꿈 관련 질문에는 오행 기운과 길흉, 사찰 기도 연결 조언까지 함께 제시하세요.
 
 항상 따뜻하고 다정하게, 쉬운 한국어로 답하세요.
-답변은 3~5문장으로, 사용자의 사주 정보가 있을 때는 반드시 그 정보를 활용해서 개인화된 답변을 주세요.
+답변은 3~5문장으로, 사용자의 사주/꿈 정보가 있을 때는 반드시 그 정보를 활용해서 개인화된 답변을 주세요.
 인사할 때는 "안녕하세요! 인연 길잡이예요 😊" 처럼 친근하게 해주세요.`;
 
 function buildGunghamSystemPrompt(gunghamContext) {
@@ -87,6 +93,24 @@ ${temples?.length ? `\n추천 인연사찰 Top3: ${temples.slice(0,3).map((t,i) 
   return BASE_SYSTEM + sajuSection;
 }
 
+function buildDreamSystemPrompt(dreamContext) {
+  const { dreamText, symbols, result } = dreamContext;
+  return BASE_SYSTEM + `
+
+═══════════════════════════════
+【 꿈해몽 상담 모드 — 방금 분석한 꿈 정보 】
+
+꿈 내용: ${dreamText || '(직접 입력 없음)'}
+선택된 상징: ${symbols && symbols.length ? symbols.join(', ') : '없음'}
+
+분석 결과 요약:
+${result ? result.slice(0, 600) : '(분석 결과 없음)'}
+═══════════════════════════════
+
+사용자가 이 꿈에 대해 추가 질문하면 위 분석 결과를 바탕으로 더 깊이 있는 해석을 제공하세요.
+관련 사찰 기도 방향이나 오행 보강 방법도 자연스럽게 연결해 안내해주세요.`;
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -94,7 +118,7 @@ module.exports = async (req, res) => {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
 
-  const { messages, sajuContext, gunghamContext } = req.body || {};
+  const { messages, sajuContext, gunghamContext, dreamContext } = req.body || {};
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: "messages 필드가 필요합니다." });
   }
@@ -105,6 +129,8 @@ module.exports = async (req, res) => {
 
     const systemPrompt = gunghamContext
       ? buildGunghamSystemPrompt(gunghamContext)
+      : dreamContext
+      ? buildDreamSystemPrompt(dreamContext)
       : buildSystemPrompt(sajuContext);
 
     const r = await fetch("https://api.anthropic.com/v1/messages", {
