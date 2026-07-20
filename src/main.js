@@ -2790,25 +2790,87 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
     const heroBg = document.getElementById('detail-hero');
     if (!heroImg || !heroOverlay) return;
 
-    // Wikipedia action API (CORS 완전 지원)
-    const wikiUrl = 'https://ko.wikipedia.org/w/api.php?action=query&prop=pageimages&pithumbsize=800&titles='
-      + encodeURIComponent(templeName) + '&format=json&origin=*';
-    fetch(wikiUrl)
+    // 이미지 URL 유효성 검사 (사찰과 무관한 이미지 제거)
+    function isValidTempleImg(src) {
+      if (!src) return false;
+      var url = src.toLowerCase();
+      // 확장자 체크 (jpg/jpeg만)
+      if (!/\.(jpe?g)/i.test(url)) return false;
+      // 잘못된 키워드 제외
+      var bad = ['flag','taegeuk','taeguk','portrait','map','document','signature',
+        'seal','coin','stamp','symbol','logo','icon','graph','chart','diagram',
+        'hangeul','hangul','korean_language','korea_map','location','emblem',
+        'crest','arms','건물','도로','지도','교통','버스','지하철','아파트'];
+      if (bad.some(function(k){ return url.indexOf(k) !== -1; })) return false;
+      return true;
+    }
+
+    function applyHeroImg(src) {
+      var img = new Image();
+      img.onload = function() {
+        // 너무 좁은 이미지(아이콘류) 제외
+        if (img.naturalWidth < 300 || img.naturalHeight < 200) return;
+        heroImg.style.backgroundImage = 'url(' + src + ')';
+        heroImg.style.opacity = '1';
+        heroOverlay.style.opacity = '1';
+        if (heroBg) heroBg.style.background = 'none';
+      };
+      img.src = src;
+    }
+
+    // Step 1: Wikipedia pageimages (존재하는 페이지만)
+    fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=pageimages|info&pithumbsize=900&titles='
+      + encodeURIComponent(templeName) + '&format=json&origin=*')
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
-        if (!data) return;
+        if (!data) return null;
         var pages = data.query && data.query.pages ? data.query.pages : {};
         var page = Object.values(pages)[0];
-        var src = page && page.thumbnail ? page.thumbnail.source : null;
-        if (!src) return;
-        var img = new Image();
-        img.onload = function() {
-          heroImg.style.backgroundImage = 'url(' + src + ')';
-          heroImg.style.opacity = '1';
-          heroOverlay.style.opacity = '1';
-          if (heroBg) heroBg.style.background = 'none';
-        };
-        img.src = src;
+        // 페이지가 실제로 존재해야 함 (pageId -1 = missing)
+        if (!page || page.missing !== undefined) return null;
+        var src = page.thumbnail ? page.thumbnail.source : null;
+        if (src && isValidTempleImg(src)) { applyHeroImg(src); return 'done'; }
+        return null;
+      })
+      .then(function(done) {
+        if (done) return;
+        // Step 2: Commons 카테고리에서 첫 번째 유효 이미지
+        fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=pageprops&titles='
+          + encodeURIComponent(templeName) + '&format=json&origin=*')
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(data) {
+            var pages = data && data.query && data.query.pages ? data.query.pages : {};
+            var page = Object.values(pages)[0];
+            var cat = page && page.pageprops && page.pageprops.commonsCategory;
+            if (!cat) return;
+            fetch('https://commons.wikimedia.org/w/api.php?action=query&list=categorymembers'
+              + '&cmtitle=' + encodeURIComponent('Category:' + cat)
+              + '&cmtype=file&cmlimit=10&format=json&origin=*')
+              .then(function(r) { return r.ok ? r.json() : null; })
+              .then(function(d) {
+                if (!d || !d.query) return;
+                var titles = (d.query.categorymembers || [])
+                  .map(function(f){ return f.title; })
+                  .filter(function(ti){ return /\.jpe?g$/i.test(ti); })
+                  .slice(0, 5);
+                if (!titles.length) return;
+                var param = titles.map(encodeURIComponent).join('%7C');
+                fetch('https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url%7Csize&iiurlwidth=800&titles='
+                  + param + '&format=json&origin=*')
+                  .then(function(r){ return r.ok ? r.json() : null; })
+                  .then(function(data2){
+                    if (!data2) return;
+                    var ps = data2.query && data2.query.pages ? data2.query.pages : {};
+                    var valid = Object.values(ps)
+                      .map(function(p){ return p.imageinfo && p.imageinfo[0]; })
+                      .filter(function(info){
+                        return info && info.thumburl && isValidTempleImg(info.thumburl)
+                          && (info.width||0) >= 400 && (info.height||0) >= 300;
+                      });
+                    if (valid.length) applyHeroImg(valid[0].thumburl);
+                  });
+              });
+          });
       })
       .catch(function() {});
   })();
@@ -2858,7 +2920,9 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
               var url = info.thumburl.toLowerCase();
               var badKeywords = ['taegeuk', 'taeguk', 'flag', 'portrait', 'map', 'document',
                 'signature', 'seal', 'coin', 'stamp', 'symbol', 'logo', 'icon',
-                '태극', '지도', '문서', '초상'];
+                'graph', 'chart', 'diagram', 'hangeul', 'hangul', 'emblem', 'crest',
+                'location', 'korea_map', 'korean_language',
+                '태극', '지도', '문서', '초상', '건물', '도로', '교통'];
               if (badKeywords.some(function(kw) { return url.indexOf(kw) !== -1; })) return false;
               // 극단적 가로형(문서/깃발) 또는 세로형(초상화) 제외: 비율 0.5~3.0 사이만
               var ratio = (info.width || 1) / (info.height || 1);
