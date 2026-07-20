@@ -4215,7 +4215,53 @@ function renderDreamPage() {
     }).then(function(r) { return r.json(); }).then(function(data) {
       var raw = data.result || '';
       var html = formatDreamResult(raw);
+      // 🔊 읽어주기 버튼 추가
+      html += '<div style="text-align:center;margin-top:18px;">'
+        + '<button id="dream-tts-btn" style="background:rgba(0,210,255,0.08);border:1px solid rgba(0,210,255,0.3);border-radius:12px;color:rgba(0,210,255,0.85);font-size:13px;font-weight:700;padding:10px 22px;cursor:pointer;box-shadow:0 0 12px rgba(0,210,255,0.15);transition:all .2s;">🔊 결과 읽어주기</button>'
+        + '</div>';
       resultSection.innerHTML = html;
+
+      // TTS 버튼 이벤트
+      var ttsBtn = document.getElementById('dream-tts-btn');
+      var ttsSpeaking = false;
+      if (ttsBtn && window.speechSynthesis) {
+        ttsBtn.addEventListener('click', function() {
+          if (ttsSpeaking) {
+            window.speechSynthesis.cancel();
+            ttsSpeaking = false;
+            ttsBtn.textContent = '🔊 결과 읽어주기';
+            return;
+          }
+          // 특수문자 제거 후 읽기
+          var cleanText = raw
+            .replace(/##[^#]*##/g, '') // ##섹션명## 제거
+            .replace(/\*\*/g, '')       // ** 볼드 제거
+            .replace(/\*/g, '')         // * 제거
+            .replace(/#+/g, '')         // # 헤더 제거
+            .replace(/[·•▪▸►◆■□▶]/g, ',') // 특수 불릿 → 쉼표
+            .replace(/[-—–]{2,}/g, '')  // 대시 연속 제거
+            .replace(/[✦✧★☆◇]/g, '') // 장식 문자 제거
+            .replace(/\[([^\]]+)\]/g, '$1') // [텍스트] → 텍스트
+            .replace(/\n{2,}/g, '. ')   // 빈줄 → 마침표+공백
+            .replace(/\n/g, ' ')        // 개행 → 공백
+            .replace(/\s{2,}/g, ' ')    // 연속 공백 제거
+            .trim();
+          var utter = new window.SpeechSynthesisUtterance(cleanText);
+          utter.lang = 'ko-KR';
+          utter.rate = 0.92;
+          utter.pitch = 1.0;
+          // 한국어 음성 선택
+          var voices = window.speechSynthesis.getVoices();
+          var koVoice = voices.find(function(v){ return v.lang.startsWith('ko'); });
+          if (koVoice) utter.voice = koVoice;
+          utter.onstart = function() { ttsSpeaking = true; ttsBtn.textContent = '⏹ 중지'; };
+          utter.onend = function() { ttsSpeaking = false; ttsBtn.textContent = '🔊 결과 읽어주기'; };
+          utter.onerror = function() { ttsSpeaking = false; ttsBtn.textContent = '🔊 결과 읽어주기'; };
+          window.speechSynthesis.speak(utter);
+        });
+      } else if (ttsBtn) {
+        ttsBtn.style.display = 'none'; // TTS 미지원 브라우저에서는 숨김
+      }
 
       // 챗봇에 꿈 컨텍스트 전달
       window._dreamContext = { dreamText: text, symbols: selectedSymbols, result: raw };
