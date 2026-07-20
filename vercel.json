@@ -1,4 +1,6 @@
 {
+  "buildCommand": "echo skip",
+  "outputDirectory": "dist",
   "functions": {
     "api/saju-explain.js": { "maxDuration": 60 },
     "api/saju.js": { "maxDuration": 30 },
