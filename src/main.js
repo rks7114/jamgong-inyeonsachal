@@ -3177,8 +3177,8 @@ function renderResults(data) {
   const memberUnlocked = isMember();
 
   resultsEl.innerHTML = `
-    <button id="home-btn" onclick="document.getElementById('results').classList.add('hidden');document.getElementById('results').innerHTML='';document.querySelector('.form-card')&&(document.querySelector('.form-card').style.display='');window.scrollTo({top:0,behavior:'smooth'});" style="display:flex;align-items:center;gap:6px;background:rgba(0,210,255,0.08);border:1px solid rgba(0,210,255,0.25);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:13px;color:#00d2ff;margin-bottom:12px;">
-      ← 처음으로
+    <button id="home-btn" onclick="location.reload();" style="display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(0,100,200,0.3),rgba(0,60,120,0.4));border:1.5px solid rgba(0,210,255,0.5);border-radius:12px;padding:10px 18px;cursor:pointer;font-size:14px;font-weight:700;color:#00d2ff;margin-bottom:16px;box-shadow:0 0 16px rgba(0,180,255,0.2);">
+      🏠 처음으로
     </button>
     <div class="results-summary">
       <div class="label">나의 기운은</div>
@@ -3255,9 +3255,17 @@ function renderResults(data) {
 
     ${data.recommendedDates && data.recommendedDates.length ? `
       <div class="calendar-card">
-        <div class="calendar-title">📅 좋은 방문 날짜 추천</div>
-        <div class="calendar-items">
-          ${data.recommendedDates.map(d => `<div class="calendar-item"><span class="cal-date">${d.date}</span>${d.reason ? `<span class="cal-reason">${d.reason}</span>` : ''}</div>`).join('')}
+        <div class="calendar-title">🗓️ 좋은 방문 날짜 추천</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          ${data.recommendedDates.map((d,i) => `
+            <div style="display:flex;align-items:center;gap:12px;background:rgba(0,210,255,0.07);border:1px solid rgba(0,210,255,0.2);border-radius:12px;padding:12px 16px;">
+              <div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#00b4d8,#0077b6);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;">${i+1}</div>
+              <div>
+                <div style="font-size:15px;font-weight:800;color:#00d2ff;letter-spacing:0.5px;">${d.date}</div>
+                ${d.reason ? `<div style="font-size:12px;color:rgba(200,230,255,0.7);margin-top:2px;">${d.reason}</div>` : ''}
+              </div>
+            </div>
+          `).join('')}
         </div>
       </div>
     ` : ''}
