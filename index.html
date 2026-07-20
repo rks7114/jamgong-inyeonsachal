@@ -70,6 +70,8 @@
           close=document.getElementById('cc'),msgs=document.getElementById('cm'),
           inp=document.getElementById('ci'),snd=document.getElementById('cs'),
           hist=[];
+      var firstBot=msgs&&msgs.querySelector('.cmsg.bot');
+      if(firstBot)firstBot.innerHTML='안녕하세요! 인연 길잡이예요 &#128522;<br>사찰 방문, 사주팔자, 오행, 꿈해몽 등 무엇이든 물어보세요.';
       bubble.onclick=function(){panel.classList.toggle('open');if(panel.classList.contains('open'))inp.focus();};
       close.onclick=function(){panel.classList.remove('open');};
       function addMsg(t,r){var d=document.createElement('div');d.className='cmsg '+r;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
