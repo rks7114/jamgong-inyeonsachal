@@ -245,16 +245,16 @@ body {
 
 /* ─── MODE TOGGLE ─── */
 .mode-toggle-wrap {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  display: grid; grid-template-columns: repeat(4, 1fr);
   background: rgba(10,16,32,0.7);
   border: 1px solid rgba(0,210,255,0.18);
   border-radius: 14px; padding: 5px; gap: 0; margin-bottom: 26px;
 }
 .mode-toggle-btn {
-  padding: 11px 4px; border-radius: 10px;
+  padding: 11px 2px; border-radius: 10px;
   border: 1px solid rgba(0,210,255,0.18);
   background: rgba(0,210,255,0.03); font-family: var(--sans);
-  font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.82);
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.82);
   cursor: pointer; transition: all .25s cubic-bezier(.34,1.56,.64,1);
   white-space: nowrap; position: relative;
   box-shadow: 0 0 8px rgba(0,210,255,0.06), inset 0 1px 0 rgba(0,210,255,0.08);
