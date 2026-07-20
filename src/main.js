@@ -2810,6 +2810,18 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
         heroImg.style.opacity = '1';
         heroOverlay.style.opacity = '1';
         if (heroBg) heroBg.style.background = 'none';
+        // 히어로 이미지 클릭 → 라이트박스
+        heroImg.style.cursor = 'zoom-in';
+        heroImg.onclick = function() {
+          var ov = document.createElement('div');
+          ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;';
+          var im = new Image();
+          im.src = src;
+          im.style.cssText = 'max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 8px 48px #000;';
+          ov.appendChild(im);
+          ov.onclick = function() { document.body.removeChild(ov); };
+          document.body.appendChild(ov);
+        };
       };
       img.src = src;
     }
