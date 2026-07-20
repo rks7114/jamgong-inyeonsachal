@@ -2137,7 +2137,7 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
         <div style="display:flex;flex-direction:column;gap:10px;padding:8px 0;">
           <div style="display:flex;align-items:center;gap:10px;color:rgba(0,210,255,0.7);font-size:13px;">
             <span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(0,210,255,0.4);border-top-color:rgba(0,210,255,0.9);border-radius:50%;animation:spin 1s linear infinite;flex-shrink:0;"></span>
-            AI가 사주를 분석하고 있습니다... (30초~1분 소요)
+            AI가 사주를 분석하고 있습니다... (약 5초 소요)
           </div>
           <div style="height:6px;background:rgba(0,210,255,0.08);border-radius:4px;overflow:hidden;">
             <div style="height:100%;width:40%;background:linear-gradient(90deg,transparent,rgba(0,210,255,0.4),transparent);animation:shimmer 1.5s ease-in-out infinite;border-radius:4px;"></div>
@@ -2390,11 +2390,7 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
     + '.detail-date-card:hover{transform:translateY(-4px) scale(1.06);box-shadow:0 8px 24px rgba(0,0,0,.4);}'
     + '</style>';
 
-  // 업그레이드 공지
-  html += '<div style="background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.28);border-radius:12px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:12px;color:#ffe082;">'
-    + '<span style="font-size:16px;">🔧</span>'
-    + '<span>상세페이지 및 사찰 이미지 <strong>업그레이드 진행 중</strong>입니다. 일부 사진이 표시되지 않을 수 있습니다.</span>'
-    + '</div>';
+  // (업그레이드 공지 제거됨 — 정상 운영 중)
 
   // 뒤로가기
   html += '<button id="detail-back-btn" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:18px;transition:background .15s;">← 목록으로</button>';
@@ -2818,61 +2814,100 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
       img.src = src;
     }
 
-    // Step 1: Wikipedia pageimages (존재하는 페이지만)
+    // 오행별 fallback 배경 (이미지 없을 때 아름다운 배경으로 대체)
+    var OHAENG_FALLBACK = {
+      '목': 'linear-gradient(160deg,rgba(34,85,34,0.85) 0%,rgba(20,60,20,0.95) 100%)',
+      '화': 'linear-gradient(160deg,rgba(120,40,10,0.85) 0%,rgba(80,20,5,0.95) 100%)',
+      '토': 'linear-gradient(160deg,rgba(90,70,20,0.85) 0%,rgba(60,45,10,0.95) 100%)',
+      '금': 'linear-gradient(160deg,rgba(90,70,10,0.85) 0%,rgba(60,45,5,0.95) 100%)',
+      '수': 'linear-gradient(160deg,rgba(10,40,80,0.85) 0%,rgba(5,20,60,0.95) 100%)',
+    };
+
+    function applyFallback() {
+      var ohaeng = d.templeOhaeng || '금';
+      var grad = OHAENG_FALLBACK[ohaeng] || OHAENG_FALLBACK['금'];
+      if (heroBg) heroBg.style.background = grad;
+    }
+
+    // Commons에서 이미지 검색하는 공통 함수
+    function searchCommons(query) {
+      return fetch('https://commons.wikimedia.org/w/api.php?action=query&list=search'
+        + '&srsearch=' + encodeURIComponent(query)
+        + '&srnamespace=6&srlimit=10&srprop=&format=json&origin=*')
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+          if (!data || !data.query || !data.query.search) return [];
+          var titles = data.query.search
+            .map(function(s) { return s.title; })
+            .filter(function(ti) { return /\.jpe?g$/i.test(ti); })
+            .slice(0, 8);
+          if (!titles.length) return [];
+          var param = titles.map(encodeURIComponent).join('%7C');
+          return fetch('https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url%7Csize&iiurlwidth=900&titles='
+            + param + '&format=json&origin=*')
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(data2) {
+              if (!data2) return [];
+              var ps = data2.query && data2.query.pages ? data2.query.pages : {};
+              return Object.values(ps)
+                .map(function(p) { return p.imageinfo && p.imageinfo[0]; })
+                .filter(function(info) {
+                  return info && info.thumburl && isValidTempleImg(info.thumburl)
+                    && (info.width || 0) >= 400 && (info.height || 0) >= 300;
+                });
+            });
+        }).catch(function() { return []; });
+    }
+
+    var applied = false;
+    function tryApply(items) {
+      if (applied || !items || !items.length) return false;
+      applied = true;
+      applyHeroImg(items[0].thumburl);
+      return true;
+    }
+
+    // Step 1: 한국어 Wikipedia pageimage (페이지 존재 확인)
     fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=pageimages|info&pithumbsize=900&titles='
       + encodeURIComponent(templeName) + '&format=json&origin=*')
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
-        if (!data) return null;
+        if (applied) return;
+        if (!data) return;
         var pages = data.query && data.query.pages ? data.query.pages : {};
         var page = Object.values(pages)[0];
-        // 페이지가 실제로 존재해야 함 (pageId -1 = missing)
-        if (!page || page.missing !== undefined) return null;
+        if (!page || page.missing !== undefined) return; // 페이지 없음
         var src = page.thumbnail ? page.thumbnail.source : null;
-        if (src && isValidTempleImg(src)) { applyHeroImg(src); return 'done'; }
-        return null;
-      })
-      .then(function(done) {
-        if (done) return;
-        // Step 2: Commons 카테고리에서 첫 번째 유효 이미지
-        fetch('https://ko.wikipedia.org/w/api.php?action=query&prop=pageprops&titles='
-          + encodeURIComponent(templeName) + '&format=json&origin=*')
-          .then(function(r) { return r.ok ? r.json() : null; })
-          .then(function(data) {
-            var pages = data && data.query && data.query.pages ? data.query.pages : {};
-            var page = Object.values(pages)[0];
-            var cat = page && page.pageprops && page.pageprops.commonsCategory;
-            if (!cat) return;
-            fetch('https://commons.wikimedia.org/w/api.php?action=query&list=categorymembers'
-              + '&cmtitle=' + encodeURIComponent('Category:' + cat)
-              + '&cmtype=file&cmlimit=10&format=json&origin=*')
-              .then(function(r) { return r.ok ? r.json() : null; })
-              .then(function(d) {
-                if (!d || !d.query) return;
-                var titles = (d.query.categorymembers || [])
-                  .map(function(f){ return f.title; })
-                  .filter(function(ti){ return /\.jpe?g$/i.test(ti); })
-                  .slice(0, 5);
-                if (!titles.length) return;
-                var param = titles.map(encodeURIComponent).join('%7C');
-                fetch('https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url%7Csize&iiurlwidth=800&titles='
-                  + param + '&format=json&origin=*')
-                  .then(function(r){ return r.ok ? r.json() : null; })
-                  .then(function(data2){
-                    if (!data2) return;
-                    var ps = data2.query && data2.query.pages ? data2.query.pages : {};
-                    var valid = Object.values(ps)
-                      .map(function(p){ return p.imageinfo && p.imageinfo[0]; })
-                      .filter(function(info){
-                        return info && info.thumburl && isValidTempleImg(info.thumburl)
-                          && (info.width||0) >= 400 && (info.height||0) >= 300;
-                      });
-                    if (valid.length) applyHeroImg(valid[0].thumburl);
-                  });
-              });
-          });
+        if (src && isValidTempleImg(src)) {
+          applied = true;
+          applyHeroImg(src);
+        }
       })
       .catch(function() {});
+
+    // Step 2: Commons 직접 검색 (사찰명 단독, 사찰명+temple 병렬)
+    setTimeout(function() {
+      if (applied) return;
+      Promise.all([
+        searchCommons(templeName + ' 사찰'),
+        searchCommons(templeName + ' temple Korea'),
+      ]).then(function(results) {
+        if (applied) return;
+        var all = [].concat(results[0], results[1]);
+        if (tryApply(all)) return;
+
+        // Step 3: 지역명 + "불교 사찰" 검색
+        var region = (t.address || '').split(' ').slice(0, 2).join(' ');
+        return region ? searchCommons(region + ' 불교 사찰') : Promise.resolve([]);
+      }).then(function(items) {
+        if (applied || !items) return;
+        if (tryApply(items)) return;
+        // 끝까지 이미지 없으면 오행 fallback 배경 적용
+        applyFallback();
+      }).catch(function() {
+        if (!applied) applyFallback();
+      });
+    }, 800); // Wikipedia Step 1에 시간 주기
   })();
 
   // ── Wikipedia 갤러리 이미지 로드 ──
