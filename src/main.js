@@ -2828,7 +2828,7 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
     + '<div class="patent-notice-body">'
     + '<div class="patent-notice-title">지식재산권 안내</div>'
     + '<div class="patent-notice-text">본 서비스의 <strong>인연 시너지 산출 로직</strong>은 비가산 시너지 기반 지수 산출 방식을 적용한 독자 기술입니다.</div>'
-    + '<span class="patent-num">특허출원 중</span>'
+    + '<span class="patent-num">특허 출원 중 (출원번호: 40-2026-00*****)</span>'
     + '</div></div>';
   html += '</div>';
   resultsEl.innerHTML = html;
@@ -3946,7 +3946,7 @@ function renderCoupleResults(data) {
       <div class="patent-notice-body">
         <div class="patent-notice-title">지식재산권 안내</div>
         <div class="patent-notice-text">본 서비스의 <strong>인연 시너지 산출 로직</strong>은 비가산 시너지 기반 지수 산출 방식을 적용한 독자 기술입니다.</div>
-        <span class="patent-num">특허출원 중</span>
+        <span class="patent-num">특허 출원 중 (출원번호: 40-2026-00*****)</span>
       </div>
     </div>
   `;
