@@ -4311,6 +4311,12 @@ function renderDreamPage() {
 // ── 앱 진입점 ──
 render();
 
+// ── 챗봇 첫 메시지 업데이트 ──
+(function() {
+  var firstMsg = document.querySelector('#cm .cmsg.bot');
+  if (firstMsg) firstMsg.innerHTML = '안녕하세요! 인연 길잡이예요 😊<br>사찰 방문, 사주팔자, 오행, 꿈해몽 등 무엇이든 물어보세요.';
+})();
+
 // ── 사찰 이름 검색 초기화 ──
 (function initTempleSearch() {
   const input = document.getElementById('temple-search-input');
