@@ -58,14 +58,25 @@ select { font-family: inherit; }
 html { color-scheme: dark; }
 
 body {
-  background: linear-gradient(160deg, #040914 0%, #0B1528 60%, #0D1F3C 100%);
-  background-attachment: fixed;
+  background:
+    linear-gradient(160deg, rgba(4,9,20,0.82) 0%, rgba(11,21,40,0.78) 60%, rgba(13,31,60,0.75) 100%),
+    url('/temple-bg-mobile.jpg') center center / cover no-repeat;
+  background-attachment: scroll; /* iOS Safari 호환 */
   color: var(--text-1);
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+}
+/* 데스크탑: 고해상도 + fixed parallax */
+@media (min-width: 768px) and (hover: hover) {
+  body {
+    background-image:
+      linear-gradient(160deg, rgba(4,9,20,0.82) 0%, rgba(11,21,40,0.78) 60%, rgba(13,31,60,0.75) 100%),
+      url('/temple-bg.jpg');
+    background-attachment: fixed;
+  }
 }
 
 #app { max-width: 740px; margin: 0 auto; }
@@ -74,7 +85,7 @@ body {
 .hero {
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  background: #040914;
+  background: transparent;
   color: #fff;
   padding: 52px 28px 0;
   text-align: center;
