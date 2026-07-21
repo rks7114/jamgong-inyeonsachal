@@ -11,7 +11,7 @@
   <meta property="og:url" content="https://jamgong-inyeonsachal.vercel.app" />
   <meta property="og:title" content="잼공인연사찰 — 나와 인연이 닿는 절을 찾다" />
   <meta property="og:description" content="생년월일시의 오행 기운을 바탕으로, 지금 이 순간 당신에게 필요한 사찰을 안내합니다." />
-  <meta property="og:image" content="/og-image.png" />
+  <meta property="og:image" content="https://jamgong-inyeonsachal.vercel.app/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:locale" content="ko_KR" />
@@ -20,12 +20,265 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="잼공인연사찰 — 나와 인연이 닿는 절을 찾다" />
   <meta name="twitter:description" content="생년월일시의 오행 기운을 바탕으로, 지금 이 순간 당신에게 필요한 사찰을 안내합니다." />
-  <meta name="twitter:image" content="/og-image.png" />
+  <meta name="twitter:image" content="https://jamgong-inyeonsachal.vercel.app/og-image.png" />
 
-  <script type="module" crossorigin src="/assets/index-CCGb1Pqu.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-BjWmmMGC.css">
+  <script type="module" crossorigin src="/assets/index-DC8cKCyI.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DG9mdpnN.css">
 </head>
 <body>
+
+  <!-- ── 배경 조명 움직임 효과 ── -->
+  <style>
+    #bg-lights { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden; }
+    .bg-orb {
+      position:absolute; border-radius:50%;
+      filter:blur(80px); opacity:0;
+      animation: orbFloat linear infinite;
+    }
+    .bg-orb:nth-child(1) { width:420px; height:420px; background:radial-gradient(circle, rgba(180,120,0,0.18) 0%, transparent 70%); top:10%; left:15%; animation-duration:22s; animation-delay:0s; }
+    .bg-orb:nth-child(2) { width:320px; height:320px; background:radial-gradient(circle, rgba(0,150,200,0.12) 0%, transparent 70%); top:55%; left:70%; animation-duration:28s; animation-delay:-8s; }
+    .bg-orb:nth-child(3) { width:500px; height:500px; background:radial-gradient(circle, rgba(100,50,180,0.10) 0%, transparent 70%); top:30%; left:45%; animation-duration:35s; animation-delay:-14s; }
+    .bg-orb:nth-child(4) { width:260px; height:260px; background:radial-gradient(circle, rgba(220,140,0,0.14) 0%, transparent 70%); top:75%; left:20%; animation-duration:20s; animation-delay:-5s; }
+    .bg-orb:nth-child(5) { width:380px; height:380px; background:radial-gradient(circle, rgba(0,180,140,0.09) 0%, transparent 70%); top:5%; left:60%; animation-duration:30s; animation-delay:-18s; }
+    @keyframes orbFloat {
+      0%   { opacity:0; transform:translate(0px,0px) scale(1); }
+      15%  { opacity:1; }
+      50%  { transform:translate(40px,-30px) scale(1.12); }
+      85%  { opacity:1; }
+      100% { opacity:0; transform:translate(-20px,25px) scale(0.95); }
+    }
+    @media(prefers-reduced-motion:reduce) { .bg-orb { animation:none !important; opacity:0 !important; } }
+  </style>
+  <div id="bg-lights" aria-hidden="true">
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+  </div>
+
+  <!-- ── 안개 흘러가는 효과 ── -->
+  <style>
+    #mist-layer {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 1; overflow: hidden;
+    }
+    .mist {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      animation: mistDrift linear infinite;
+      opacity: 0;
+    }
+    .mist:nth-child(1) {
+      width: 900px; height: 220px;
+      background: radial-gradient(ellipse, rgba(220,230,255,0.09) 0%, transparent 70%);
+      top: 30%; left: -30%;
+      animation-duration: 38s; animation-delay: 0s;
+    }
+    .mist:nth-child(2) {
+      width: 700px; height: 160px;
+      background: radial-gradient(ellipse, rgba(200,220,255,0.07) 0%, transparent 70%);
+      top: 55%; left: -20%;
+      animation-duration: 52s; animation-delay: -18s;
+    }
+    .mist:nth-child(3) {
+      width: 1100px; height: 180px;
+      background: radial-gradient(ellipse, rgba(230,235,255,0.06) 0%, transparent 70%);
+      top: 20%; left: -40%;
+      animation-duration: 65s; animation-delay: -30s;
+    }
+    .mist:nth-child(4) {
+      width: 800px; height: 200px;
+      background: radial-gradient(ellipse, rgba(255,220,200,0.05) 0%, transparent 70%);
+      top: 70%; left: -25%;
+      animation-duration: 45s; animation-delay: -8s;
+    }
+    @keyframes mistDrift {
+      0%   { opacity: 0;    transform: translateX(0); }
+      8%   { opacity: 1; }
+      92%  { opacity: 0.8; }
+      100% { opacity: 0;    transform: translateX(140vw); }
+    }
+    @media(prefers-reduced-motion:reduce) { .mist { animation:none !important; opacity:0 !important; } }
+  </style>
+  <div id="mist-layer" aria-hidden="true">
+    <div class="mist"></div>
+    <div class="mist"></div>
+    <div class="mist"></div>
+    <div class="mist"></div>
+  </div>
+
+  <!-- ── 벚꽃 떨어지는 효과 ── -->
+  <style>
+    #sakura-canvas {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 1; overflow: hidden;
+    }
+    .petal {
+      position: absolute;
+      top: -30px;
+      border-radius: 50% 0 50% 0;
+      opacity: 0;
+      animation: petalFall linear infinite;
+    }
+    @keyframes petalFall {
+      0%   { opacity: 0;   transform: translateY(0) translateX(0) rotate(0deg) scale(1); }
+      5%   { opacity: 0.85; }
+      90%  { opacity: 0.7; }
+      100% { opacity: 0;   transform: translateY(110vh) translateX(var(--drift)) rotate(var(--spin)) scale(0.6); }
+    }
+    @media(prefers-reduced-motion:reduce) { .petal { animation:none !important; opacity:0 !important; } }
+  </style>
+  <div id="sakura-canvas" aria-hidden="true"></div>
+  <script>
+  (function() {
+    var colors = ['rgba(255,192,203,0.75)','rgba(255,182,193,0.65)','rgba(255,210,220,0.7)','rgba(255,230,235,0.6)','rgba(255,160,180,0.55)'];
+    var canvas = document.getElementById('sakura-canvas');
+    var count = 28;
+    for (var i = 0; i < count; i++) {
+      (function(i) {
+        var p = document.createElement('div');
+        p.className = 'petal';
+        var size = 6 + Math.random() * 10;
+        var left = Math.random() * 100;
+        var duration = 7 + Math.random() * 10;
+        var delay = Math.random() * 15;
+        var drift = (Math.random() * 120 - 60) + 'px';
+        var spin = (Math.random() * 720 - 360) + 'deg';
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        p.style.cssText = [
+          'width:' + size + 'px',
+          'height:' + (size * 0.7) + 'px',
+          'left:' + left + '%',
+          'background:' + color,
+          'animation-duration:' + duration + 's',
+          'animation-delay:' + delay + 's',
+          '--drift:' + drift,
+          '--spin:' + spin
+        ].join(';');
+        canvas.appendChild(p);
+      })(i);
+    }
+  })();
+  </script>
+
+  <!-- ── PC 헤더 네비게이션 (768px 이상에서만 표시) ── -->
+  <style>
+    #pc-header {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(8, 8, 16, 0.92);
+      border-bottom: 1px solid rgba(255, 180, 0, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 8900;
+      align-items: center;
+      padding: 0 40px;
+      gap: 0;
+    }
+    @media (min-width: 768px) {
+      #pc-header { display: flex; }
+      #app { padding-top: 64px; }
+    }
+    #pc-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #f0d080;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    #pc-logo .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #b8860b, #ffd700);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    #pc-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .pc-nav-link {
+      color: rgba(220, 220, 230, 0.75);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: all 0.18s;
+      cursor: pointer;
+      background: none;
+      border: none;
+      letter-spacing: 0.2px;
+    }
+    .pc-nav-link:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.07);
+    }
+    .pc-nav-link.taegil-link {
+      color: rgba(255, 200, 60, 0.8);
+    }
+    .pc-nav-link.taegil-link:hover {
+      color: #ffd060;
+      background: rgba(255, 180, 0, 0.1);
+    }
+    #pc-cta {
+      background: linear-gradient(135deg, #b8860b, #d4a017);
+      color: #fff;
+      border: none;
+      border-radius: 22px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+      box-shadow: 0 2px 12px rgba(200, 140, 0, 0.4);
+      transition: all 0.18s;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #pc-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(200, 140, 0, 0.5);
+    }
+  </style>
+
+  <div id="pc-header">
+    <a id="pc-logo" href="/">
+      <div class="logo-icon">🏛️</div>
+      잼공인연사찰
+    </a>
+
+    <nav id="pc-nav">
+      <button class="pc-nav-link" onclick="window.scrollTo({top:0,behavior:'smooth'})">홈</button>
+      <button class="pc-nav-link" onclick="document.querySelector('.stats-row, .stat-card, [class*=stat]')?.scrollIntoView({behavior:'smooth'})">서비스</button>
+      <button class="pc-nav-link" onclick="document.querySelector('.stats-row, .svc-card')?.scrollIntoView({behavior:'smooth'})">사찰이야기</button>
+      <button class="pc-nav-link" onclick="(function(){var btn=document.getElementById('pilgrimage-btn');if(btn){var wrap=document.getElementById('pilgrimage-btn-wrap');if(wrap)wrap.scrollIntoView({behavior:'smooth'});setTimeout(function(){var panel=document.getElementById('pilgrimage-panel');if(panel&&panel.style.display==='none')btn.click();},400);}})()">기도성지</button>
+      <button class="pc-nav-link" onclick="(function(){var s=document.getElementById('temple-search-wrap');if(s)s.scrollIntoView({behavior:'smooth'});})()">사찰찾기</button>
+      <button class="pc-nav-link" onclick="(function(){var b=document.querySelector('[data-mode=saju]');if(b){b.click();var f=document.getElementById('match-form');if(f)f.scrollIntoView({behavior:'smooth'});}})()">🔮 사주팔자</button>
+      <button class="pc-nav-link" onclick="(function(){var b=document.querySelector('[data-mode=couple]');if(b){b.click();var f=document.getElementById('match-form');if(f)f.scrollIntoView({behavior:'smooth'});}})()">💑 궁합</button>
+      <button class="pc-nav-link taegil-link" onclick="(function(){var b=document.querySelector('[data-mode=taegil]');if(b){b.click();window.scrollTo({top:0,behavior:'smooth'});}})()">📅 택일</button>
+    </nav>
+
+    <button id="pc-cta" onclick="(function(){var b=document.querySelector('[data-mode=solo]');if(b){b.click();window.scrollTo({top:0,behavior:'smooth'});}})()">
+      🔍 인연사찰찾기
+    </button>
+  </div>
+
   <div id="app"></div>
   <script>
     /* polyfill: buildCompassSVG이 이전 배포에 없을 경우 대비 */
