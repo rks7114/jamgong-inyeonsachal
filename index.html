@@ -168,9 +168,12 @@
     if (btn) {
       btn.click();
       setTimeout(function() {
-        var target = document.querySelector('.mode-toggle-wrap') || document.querySelector('#submit-btn');
+        var target;
+        if (mode === 'dream') target = document.getElementById('dream-page');
+        else if (mode === 'taegil') target = document.getElementById('taegil-page');
+        else target = document.querySelector('.mode-toggle-wrap') || document.querySelector('#submit-btn');
         if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 80);
+      }, 200);
     }
   }
   </script>
