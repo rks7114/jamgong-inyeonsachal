@@ -120,13 +120,8 @@
       top: -30px;
       border-radius: 50% 0 50% 0;
       opacity: 0;
-      animation: petalFall linear infinite;
-    }
-    @keyframes petalFall {
-      0%   { opacity: 0;   transform: translateY(0) translateX(0) rotate(0deg) scale(1); }
-      5%   { opacity: 0.85; }
-      90%  { opacity: 0.7; }
-      100% { opacity: 0;   transform: translateY(110vh) translateX(var(--drift)) rotate(var(--spin)) scale(0.6); }
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
     }
     @media(prefers-reduced-motion:reduce) { .petal { animation:none !important; opacity:0 !important; } }
   </style>
@@ -135,26 +130,37 @@
   (function() {
     var colors = ['rgba(255,192,203,0.75)','rgba(255,182,193,0.65)','rgba(255,210,220,0.7)','rgba(255,230,235,0.6)','rgba(255,160,180,0.55)'];
     var canvas = document.getElementById('sakura-canvas');
+    var styleEl = document.createElement('style');
+    document.head.appendChild(styleEl);
     var count = 28;
     for (var i = 0; i < count; i++) {
       (function(i) {
+        var size     = 6 + Math.random() * 10;
+        var left     = Math.random() * 100;
+        var duration = 7 + Math.random() * 10;
+        var delay    = i < 14 ? -(Math.random() * duration) : Math.random() * 8;
+        var drift    = Math.round(Math.random() * 120 - 60);
+        var spin     = Math.round(Math.random() * 720 - 360);
+        var color    = colors[Math.floor(Math.random() * colors.length)];
+        var name     = 'pf' + i;
+
+        styleEl.textContent +=
+          '@keyframes ' + name + '{' +
+          '0%{opacity:0;transform:translateY(0) translateX(0) rotate(0deg) scale(1);}' +
+          '5%{opacity:0.85;}' +
+          '90%{opacity:0.7;}' +
+          '100%{opacity:0;transform:translateY(110vh) translateX(' + drift + 'px) rotate(' + spin + 'deg) scale(0.6);}' +
+          '}';
+
         var p = document.createElement('div');
         p.className = 'petal';
-        var size = 6 + Math.random() * 10;
-        var left = Math.random() * 100;
-        var duration = 7 + Math.random() * 10;
-        var delay = i < 14 ? -(Math.random() * duration) : Math.random() * 8;
-        var drift = (Math.random() * 120 - 60) + 'px';
-        var spin = (Math.random() * 720 - 360) + 'deg';
-        var color = colors[Math.floor(Math.random() * colors.length)];
-        p.style.width = size + 'px';
-        p.style.height = (size * 0.7) + 'px';
-        p.style.left = left + '%';
-        p.style.background = color;
-        p.style.animationDuration = duration + 's';
-        p.style.animationDelay = delay + 's';
-        p.style.setProperty('--drift', drift);
-        p.style.setProperty('--spin', spin);
+        p.style.width                  = size + 'px';
+        p.style.height                 = Math.round(size * 0.7) + 'px';
+        p.style.left                   = left + '%';
+        p.style.background             = color;
+        p.style.animationName          = name;
+        p.style.animationDuration      = duration + 's';
+        p.style.animationDelay         = delay + 's';
         canvas.appendChild(p);
       })(i);
     }
@@ -312,12 +318,14 @@
       input[type="text"], input[type="number"], select, textarea {
         font-size: 16px !important;
       }
-      #dream-page *, #taegil-page * {
+      #dream-page, #dream-page *,
+      #taegil-page, #taegil-page *,
+      #dream-analyze-btn, .dream-chip,
+      #match-form *, #results *,
+      #pilgrimage-panel * {
         letter-spacing: 0 !important;
-        word-spacing: 0 !important;
+        word-spacing: normal !important;
       }
-      #dream-analyze-btn { letter-spacing: 0 !important; }
-      .dream-chip { letter-spacing: 0 !important; }
     }
     .mh-logo {
       font-size: 13px; font-weight: 900; color: #D4AF37;
