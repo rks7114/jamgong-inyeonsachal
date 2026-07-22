@@ -163,6 +163,19 @@
   })();
   </script>
 
+  <script>
+  function mhGo(mode) {
+    var btn = document.querySelector('.mode-toggle-btn[data-mode="' + mode + '"]');
+    if (btn) {
+      btn.click();
+      setTimeout(function() {
+        var target = document.querySelector('.mode-toggle-wrap') || document.querySelector('#submit-btn');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+  }
+  </script>
+
   <!-- ── PC 헤더 네비게이션 (768px 이상에서만 표시) ── -->
   <style>
     #pc-header {
@@ -299,13 +312,14 @@
     .mh-btn:active { background: rgba(0,180,255,0.25); }
   </style>
   <div id="mobile-header">
-    <span class="mh-logo">🏛️ 잼공</span>
-    <button class="mh-btn" onclick="document.querySelector('.mode-toggle-btn')?.click();document.querySelector('#submit-btn')?.scrollIntoView({behavior:'smooth'})">🙏 인연사찰</button>
-    <button class="mh-btn" onclick="document.querySelector('[data-mode=couple]')?.click();document.querySelector('#submit-btn')?.scrollIntoView({behavior:'smooth'})">💑 궁합</button>
-    <button class="mh-btn" onclick="showSajuPage?.()">🔮 사주</button>
-    <button class="mh-btn" onclick="showDreamPage?.()">🌙 꿈해몽</button>
-    <button class="mh-btn" onclick="showTaegil?.()">📅 택일</button>
-    <button class="mh-btn" onclick="showPilgrimageSpots?.()">🗺️ 사찰찾기</button>
+    <span class="mh-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer">🏛️ 잼공</span>
+    <button class="mh-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">🏠 홈</button>
+    <button class="mh-btn" onclick="mhGo('solo')">🙏 인연사찰</button>
+    <button class="mh-btn" onclick="mhGo('couple')">💑 궁합</button>
+    <button class="mh-btn" onclick="mhGo('saju')">🔮 사주</button>
+    <button class="mh-btn" onclick="mhGo('dream')">🌙 꿈해몽</button>
+    <button class="mh-btn" onclick="mhGo('taegil')">📅 택일</button>
+    <button class="mh-btn" onclick="showPilgrimageSpots?.();document.getElementById('app')?.scrollIntoView({behavior:'smooth'})">🗺️ 사찰찾기</button>
   </div>
 
   <div id="pc-header">
