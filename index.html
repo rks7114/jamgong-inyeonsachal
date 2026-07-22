@@ -315,23 +315,23 @@
     #mobile-header {
       display: none;
       position: fixed; top: 0; left: 0; right: 0;
-      height: 52px;
-      background: rgba(6,10,22,0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(0,180,255,0.18);
+      height: 58px;
+      background: rgba(6,10,22,0.96);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(0,180,255,0.22);
       z-index: 8900;
       align-items: center;
-      padding: 0 12px;
-      gap: 6px;
+      padding: 0 14px;
+      gap: 8px;
       overflow-x: auto;
       overflow-y: hidden;
       scrollbar-width: none;
     }
     #mobile-header::-webkit-scrollbar { display: none; }
-    @media (max-width: 767px) {
+    @media (max-width: 900px) {
       #mobile-header { display: flex; }
-      #app { padding-top: 52px; }
+      #app { padding-top: 58px; }
       /* iOS 자동줌 방지: 인풋 font-size 16px 이상 */
       #temple-search-input,
       input[type="text"], input[type="number"], select, textarea {
@@ -348,22 +348,22 @@
       }
     }
     .mh-logo {
-      font-size: 13px; font-weight: 900; color: #D4AF37;
-      white-space: nowrap; margin-right: 6px; flex-shrink: 0;
+      font-size: 16px; font-weight: 900; color: #D4AF37;
+      white-space: nowrap; margin-right: 8px; flex-shrink: 0;
       letter-spacing: -0.3px;
     }
     .mh-btn {
       flex-shrink: 0;
-      background: rgba(0,180,255,0.10);
-      border: 1px solid rgba(0,180,255,0.3);
-      border-radius: 20px;
+      background: rgba(0,180,255,0.12);
+      border: 1px solid rgba(0,180,255,0.35);
+      border-radius: 22px;
       color: #fff;
-      font-size: 12px; font-weight: 700;
-      padding: 5px 11px;
+      font-size: 14px; font-weight: 700;
+      padding: 7px 14px;
       cursor: pointer;
       white-space: nowrap;
     }
-    .mh-btn:active { background: rgba(0,180,255,0.25); }
+    .mh-btn:active { background: rgba(0,180,255,0.28); }
   </style>
   <div id="mobile-header">
     <span class="mh-logo" onclick="closePilgrimagePanel();window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer">🏛️ 잼공</span>
