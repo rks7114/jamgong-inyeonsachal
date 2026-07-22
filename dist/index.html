@@ -167,6 +167,23 @@
   })();
   </script>
 
+  <!-- 모바일 letter-spacing JS 강제 보정 -->
+  <script>
+  (function() {
+    if (window.innerWidth >= 768) return;
+    function fixLS(root) {
+      (root || document).querySelectorAll('[style]').forEach(function(el) {
+        if (el.style.letterSpacing && el.style.letterSpacing !== '0px') {
+          el.style.letterSpacing = '0px';
+        }
+      });
+    }
+    var obs = new MutationObserver(function() { fixLS(document); });
+    obs.observe(document.documentElement, { childList: true, subtree: true });
+    document.addEventListener('DOMContentLoaded', function() { fixLS(document); });
+  })();
+  </script>
+
   <script>
   function closePilgrimagePanel() {
     var p = document.getElementById('pilgrimage-panel');
