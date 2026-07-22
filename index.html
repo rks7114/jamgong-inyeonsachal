@@ -309,6 +309,11 @@
     @media (max-width: 767px) {
       #mobile-header { display: flex; }
       #app { padding-top: 52px; }
+      /* iOS 자동줌 방지: 인풋 font-size 16px 이상 */
+      #temple-search-input,
+      input[type="text"], input[type="number"], select, textarea {
+        font-size: 16px !important;
+      }
     }
     .mh-logo {
       font-size: 13px; font-weight: 900; color: #D4AF37;
@@ -336,7 +341,21 @@
     <button class="mh-btn" onclick="mhGo('saju')">🔮 사주</button>
     <button class="mh-btn" onclick="mhGo('dream')">🌙 꿈해몽</button>
     <button class="mh-btn" onclick="mhGo('taegil')">📅 택일</button>
-    <button class="mh-btn" onclick="showPilgrimageSpots?.();document.getElementById('app')?.scrollIntoView({behavior:'smooth'})">🗺️ 사찰찾기</button>
+    <button class="mh-btn" onclick="(function(){
+      // dream/taegil 모드면 solo로 전환 후 pilgrimage-btn-wrap 표시
+      var pbw = document.getElementById('pilgrimage-btn-wrap');
+      if (!pbw || pbw.style.display === 'none') {
+        var soloBtn = document.querySelector('.mode-toggle-btn[data-mode=&quot;solo&quot;]');
+        if (soloBtn) soloBtn.click();
+      }
+      setTimeout(function() {
+        if (typeof showPilgrimageSpots === 'function') showPilgrimageSpots();
+        setTimeout(function() {
+          var t = document.getElementById('pilgrimage-btn-wrap') || document.getElementById('pilgrimage-panel');
+          if (t) { var r=t.getBoundingClientRect(); window.scrollTo({top:window.pageYOffset+r.top-60,behavior:'smooth'}); }
+        }, 80);
+      }, 100);
+    })()">🗺️ 사찰찾기</button>
   </div>
 
   <div id="pc-header">
