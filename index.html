@@ -256,6 +256,57 @@
     }
   </style>
 
+  <!-- ── 모바일 고정 상단 바 (767px 이하) ── -->
+  <style>
+    #mobile-header {
+      display: none;
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 52px;
+      background: rgba(6,10,22,0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,180,255,0.18);
+      z-index: 8900;
+      align-items: center;
+      padding: 0 12px;
+      gap: 6px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+    }
+    #mobile-header::-webkit-scrollbar { display: none; }
+    @media (max-width: 767px) {
+      #mobile-header { display: flex; }
+      #app { padding-top: 52px; }
+    }
+    .mh-logo {
+      font-size: 13px; font-weight: 900; color: #D4AF37;
+      white-space: nowrap; margin-right: 6px; flex-shrink: 0;
+      letter-spacing: -0.3px;
+    }
+    .mh-btn {
+      flex-shrink: 0;
+      background: rgba(0,180,255,0.10);
+      border: 1px solid rgba(0,180,255,0.3);
+      border-radius: 20px;
+      color: #fff;
+      font-size: 12px; font-weight: 700;
+      padding: 5px 11px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .mh-btn:active { background: rgba(0,180,255,0.25); }
+  </style>
+  <div id="mobile-header">
+    <span class="mh-logo">🏛️ 잼공</span>
+    <button class="mh-btn" onclick="document.querySelector('.mode-toggle-btn')?.click();document.querySelector('#submit-btn')?.scrollIntoView({behavior:'smooth'})">🙏 인연사찰</button>
+    <button class="mh-btn" onclick="document.querySelector('[data-mode=couple]')?.click();document.querySelector('#submit-btn')?.scrollIntoView({behavior:'smooth'})">💑 궁합</button>
+    <button class="mh-btn" onclick="showSajuPage?.()">🔮 사주</button>
+    <button class="mh-btn" onclick="showDreamPage?.()">🌙 꿈해몽</button>
+    <button class="mh-btn" onclick="showTaegil?.()">📅 택일</button>
+    <button class="mh-btn" onclick="showPilgrimageSpots?.()">🗺️ 사찰찾기</button>
+  </div>
+
   <div id="pc-header">
     <a id="pc-logo" href="/">
       <div class="logo-icon">🏛️</div>
