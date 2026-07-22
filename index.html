@@ -142,20 +142,21 @@
         var size = 6 + Math.random() * 10;
         var left = Math.random() * 100;
         var duration = 7 + Math.random() * 10;
-        var delay = Math.random() * 15;
+        // 절반은 음수 딜레이 → 페이지 로드 즉시 꽃잎 보임
+        var delay = i < 14 ? -(Math.random() * duration) : Math.random() * 8;
         var drift = (Math.random() * 120 - 60) + 'px';
         var spin = (Math.random() * 720 - 360) + 'deg';
         var color = colors[Math.floor(Math.random() * colors.length)];
-        p.style.cssText = [
-          'width:' + size + 'px',
-          'height:' + (size * 0.7) + 'px',
-          'left:' + left + '%',
-          'background:' + color,
-          'animation-duration:' + duration + 's',
-          'animation-delay:' + delay + 's',
-          '--drift:' + drift,
-          '--spin:' + spin
-        ].join(';');
+        // 일반 스타일은 style 직접 설정
+        p.style.width = size + 'px';
+        p.style.height = (size * 0.7) + 'px';
+        p.style.left = left + '%';
+        p.style.background = color;
+        p.style.animationDuration = duration + 's';
+        p.style.animationDelay = delay + 's';
+        // CSS 커스텀 프로퍼티는 setProperty로 설정 (모바일 호환)
+        p.style.setProperty('--drift', drift);
+        p.style.setProperty('--spin', spin);
         canvas.appendChild(p);
       })(i);
     }
