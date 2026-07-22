@@ -171,6 +171,12 @@
       if (b) { var sp = b.querySelector('span:last-child'); if (sp) sp.textContent = '›'; }
     }
   }
+  function mhScrollTo(el) {
+    if (!el) return;
+    var rect = el.getBoundingClientRect();
+    var offset = window.pageYOffset + rect.top - 60; // 52px 헤더 + 8px 여유
+    window.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
+  }
   function mhGo(mode) {
     closePilgrimagePanel();
     var btn = document.querySelector('.mode-toggle-btn[data-mode="' + mode + '"]');
@@ -181,7 +187,7 @@
         if (mode === 'dream') target = document.getElementById('dream-page');
         else if (mode === 'taegil') target = document.getElementById('taegil-page');
         else target = document.querySelector('.mode-toggle-wrap') || document.querySelector('#submit-btn');
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        mhScrollTo(target);
       }, 200);
     }
   }
