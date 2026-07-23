@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="ko">
 <head>
+  <style>
+    #update-notice{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(90deg,#92400e,#b45309);color:#fef3c7;text-align:center;padding:7px 44px 7px 16px;font-size:12.5px;font-weight:700;letter-spacing:.03em;position:relative;}
+    #update-notice button{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(254,243,199,.6);cursor:pointer;font-size:17px;line-height:1;padding:0 4px;}
+  </style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="manifest" href="/manifest.json" />
@@ -32,6 +36,10 @@
   <link rel="stylesheet" crossorigin href="/assets/index-DEitIMPo.css">
 </head>
 <body>
+  <div id="update-notice">
+    🔧 현재 서비스 업데이트 중입니다 — 사찰 매칭 기능이 곧 복구됩니다. 이용에 불편을 드려 죄송합니다.
+    <button onclick="this.parentElement.remove()">✕</button>
+  </div>
 
   <!-- ── 배경 조명 움직임 효과 ── -->
   <style>
