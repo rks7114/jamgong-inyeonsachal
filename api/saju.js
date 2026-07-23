@@ -148,9 +148,25 @@ module.exports = async function handler(req, res) {
           for (let i = 0; i < samjaeYears.length; i += 3) {
             groups.push(samjaeYears.slice(i, i + 3));
           }
+          // 지지 → 띠 이름 매핑
+          const ZHI_ANIMAL = {
+            자:'쥐', 축:'소', 인:'호랑이', 묘:'토끼', 진:'용', 사:'뱀',
+            오:'말', 미:'양', 신:'원숭이', 유:'닭', 술:'개', 해:'돼지'
+          };
+          // 같은 삼재 그룹의 띠 이름 (e.g. 인오술 → 호랑이·말·개)
+          const BIRTH_GROUP = {
+            인:['인','오','술'], 오:['인','오','술'], 술:['인','오','술'],
+            사:['사','유','축'], 유:['사','유','축'], 축:['사','유','축'],
+            신:['신','자','진'], 자:['신','자','진'], 진:['신','자','진'],
+            해:['해','묘','미'], 묘:['해','묘','미'], 미:['해','묘','미'],
+          };
+          const groupMembers = BIRTH_GROUP[yearZhiKo] || [];
+          const animalsKo = groupMembers.map(z => ZHI_ANIMAL[z] || z).join('·');
+
           samjae = {
             birthZhi: yearZhiCn,
             birthZhiKo: yearZhiKo,
+            animalsKo,
             samjaeTarget: samjaeZhiList.map(zhiKoToCn).join("·"),
             groups,
           };
