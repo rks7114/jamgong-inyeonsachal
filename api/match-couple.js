@@ -1,8 +1,18 @@
 // api/match-couple.js
 // Vercel Serverless Function — 궁합 사찰 매칭 API
 
-const { matchCoupleTemples, getEightChar } = require("../src/matching-engine.js");
-const TEMPLE_DB = require("../src/temple-db.full.js");
+// 지연 로딩 (lazy load) — cold start 타임아웃 방지
+let _matchCoupleTemples = null;
+let _getEightChar = null;
+let _TEMPLE_DB = null;
+function loadDeps() {
+  if (!_matchCoupleTemples) {
+    const me = require("../src/matching-engine.js");
+    _matchCoupleTemples = me.matchCoupleTemples;
+    _getEightChar = me.getEightChar;
+  }
+  if (!_TEMPLE_DB) _TEMPLE_DB = require("../src/temple-db.full.js");
+}
 
 /* ── 합충형 사전 ── */
 const CHEONGAN_HAP = [['甲','己'],['乙','庚'],['丙','辛'],['丁','壬'],['戊','癸']];
@@ -93,6 +103,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    loadDeps();
     const { birthInputA, birthInputB, purpose, userLat, userLng, memberUnlocked } = req.body;
 
     if (!birthInputA || !birthInputB || !purpose || userLat == null || userLng == null) {
@@ -101,16 +112,16 @@ module.exports = async function handler(req, res) {
     }
 
     // 사찰 매칭
-    const result = matchCoupleTemples(
+    const result = _matchCoupleTemples(
       { birthInputA, birthInputB, purpose, userLat, userLng, memberUnlocked: !!memberUnlocked },
-      TEMPLE_DB
+      _TEMPLE_DB
     );
 
     // 팔자 데이터 추출
     let pillarsA = [], pillarsB = [], hapChung = [];
     try {
-      const baziA = getEightChar(birthInputA);
-      const baziB = getEightChar(birthInputB);
+      const baziA = _getEightChar(birthInputA);
+      const baziB = _getEightChar(birthInputB);
       pillarsA = extractPillars(baziA);
       pillarsB = extractPillars(baziB);
       hapChung = analyzeHapChung(pillarsA, pillarsA, pillarsB, pillarsB);
