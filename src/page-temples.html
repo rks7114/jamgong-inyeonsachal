@@ -1,0 +1,156 @@
+<style>
+.tf{font-family:'Noto Sans KR',sans-serif;max-width:1000px;margin:0 auto;padding:60px 24px;color:#e2e8f0}
+.tf-badge{display:inline-block;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.35);color:#7dd3fc;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.tf-title{font-size:clamp(24px,3vw,38px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.tf-title em{color:#7dd3fc;font-style:normal}
+.tf-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+.tf-box{background:rgba(255,255,255,0.03);border:1px solid rgba(59,130,246,0.2);border-radius:20px;padding:28px;margin-bottom:24px}
+.tf-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.tf-group{display:flex;flex-direction:column;gap:6px}
+.tf-label{font-size:12px;font-weight:700;color:#94a3b8}
+.tf-select{background:rgba(255,255,255,0.06);border:1.5px solid rgba(59,130,246,0.25);border-radius:12px;padding:11px 14px;color:#f8fafc;font-size:14px;font-family:inherit;width:100%;box-sizing:border-box}
+.tf-btn{width:100%;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;font-size:16px;font-weight:900;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.tf-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(59,130,246,0.35)}
+.tf-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.tf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.tf-card{background:rgba(255,255,255,0.04);border:1px solid rgba(59,130,246,0.2);border-radius:14px;padding:18px;transition:all .2s}
+.tf-card:hover{border-color:rgba(59,130,246,0.45);transform:translateY(-2px)}
+.tf-name{font-size:16px;font-weight:800;color:#7dd3fc;margin-bottom:4px}
+.tf-addr{font-size:12px;color:#64748b;margin-bottom:10px}
+.tf-desc{font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:10px}
+.tf-map{display:inline-block;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;font-size:12px;font-weight:700;padding:6px 14px;border-radius:10px;text-decoration:none}
+.tf-loading{text-align:center;padding:40px;color:#7dd3fc;font-size:14px}
+.tf-err{color:#ef4444;font-size:13px;padding:16px;background:rgba(239,68,68,0.1);border-radius:12px}
+</style>
+<div class="tf">
+  <div class="tf-badge">사찰찾기</div>
+  <div class="tf-title">🏯 전국 <em>사찰 찾기</em></div>
+  <p class="tf-sub">전국 6,000여 사찰 데이터에서 지역별·목적별로 원하는 사찰을 찾아보세요.</p>
+
+  <!-- 신비 메인 배너 -->
+  <div style="background:linear-gradient(135deg,rgba(5,10,30,0.97),rgba(10,20,50,0.92));border:1px solid rgba(59,130,246,0.25);border-radius:24px;padding:40px 32px;margin-bottom:20px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 15% 50%,rgba(59,130,246,0.15) 0%,transparent 55%),radial-gradient(ellipse at 85% 20%,rgba(125,211,252,0.08) 0%,transparent 50%);pointer-events:none"></div>
+    <div style="position:relative;z-index:1">
+      <div style="font-size:11px;font-weight:800;color:rgba(125,211,252,0.7);letter-spacing:.25em;margin-bottom:16px">✦ 인연사찰 (因緣寺刹) ✦</div>
+      <div style="font-size:clamp(18px,2.8vw,28px);font-weight:900;color:#f8fafc;line-height:1.55;margin-bottom:16px">
+        당신의 인연을 품은 사찰이<br>
+        <span style="color:#7dd3fc">지금 기다리고 있습니다</span>
+      </div>
+      <div style="font-size:14px;color:#94a3b8;line-height:2;margin-bottom:28px;max-width:620px">
+        불교에서는 사람마다 <strong style="color:#e2e8f0">전생의 인연(因緣)</strong>으로 맺어진 사찰이 있다고 합니다.<br>
+        전국 <strong style="color:#7dd3fc">6,000여 사찰</strong> 데이터와 <strong style="color:#FBBF24">오행 기반 AI 추천</strong>으로 당신과 가장 깊이 연결된 사찰을 찾아드립니다.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <span style="background:rgba(125,211,252,0.1);border:1px solid rgba(125,211,252,0.4);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#7dd3fc">🏯 전국 6,000여 사찰</span>
+        <span style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.35);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#FBBF24">⚡ 오행 기반 추천</span>
+        <span style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#6ee7b7">📍 지역별 검색</span>
+        <span style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#c4b5fd">🙏 기도 목적 안내</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 인연사찰이란? -->
+  <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:28px;margin-bottom:20px">
+    <div style="font-size:11px;font-weight:800;color:#7dd3fc;letter-spacing:.15em;margin-bottom:14px">📖 인연사찰이란?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🌿 오행과 사찰의 연결</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">사주의 부족한 오행 기운을 채워주는 사찰이 있습니다. 木 기운이 약한 분께는 산사(山寺), 水 기운이 필요한 분께는 계곡 사찰을 추천합니다.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🙏 기도의 종류</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">합격·취업·건강·인연·재물·소원성취 등 목적별로 다른 불보살님께 기도합니다. 관세음보살은 인연과 자비, 지장보살은 망자와 업장에 강합니다.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">☸️ 삼보사찰과 전통 명찰</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">통도사(불보)·해인사(법보)·송광사(승보)는 한국 3대 보물 사찰입니다. 이 외에도 천년 고찰들이 각지에서 당신의 기도를 기다립니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tf-box">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="tf-group"><label class="tf-label">기도 목적</label>
+        <select class="tf-select" id="tf-purpose">
+          <option value="재물운">💰 재물운</option><option value="건강운">💊 건강운</option>
+          <option value="학업운">📚 학업운</option><option value="인연운">💕 인연운</option>
+          <option value="가정운">🏠 가정운</option><option value="수험합격">✏️ 수험합격</option>
+          <option value="취업운">💼 취업운</option><option value="출산기도">👶 출산기도</option>
+          <option value="사업운">🤝 사업운</option>
+        </select>
+      </div>
+      <div class="tf-group"><label class="tf-label">지역</label>
+        <select class="tf-select" id="tf-region">
+          <option value="">전체</option><option value="서울">서울</option><option value="경기">경기·인천</option>
+          <option value="강원">강원</option><option value="충남">충남·대전·세종</option><option value="충북">충북</option>
+          <option value="전남">전남·광주</option><option value="전북">전북</option>
+          <option value="경남">경남·부산·울산</option><option value="경북">경북·대구</option>
+          <option value="제주">제주</option>
+        </select>
+      </div>
+    </div>
+    <!-- 생년월일 (선택) -->
+    <div style="margin-bottom:14px">
+      <label class="tf-label" style="display:block;margin-bottom:6px">생년월일 <span style="color:#475569;font-weight:400">(선택 — 입력하면 사주 기반 맞춤 추천)</span></label>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
+        <select class="tf-select" id="tf-year"><option value="">년 (선택)</option></select>
+        <select class="tf-select" id="tf-month"><option value="">월</option></select>
+        <select class="tf-select" id="tf-day"><option value="">일</option></select>
+      </div>
+    </div>
+    <button class="tf-btn" id="tf-submit" onclick="doTemples()">🏯 사찰 검색</button>
+  </div>
+  <div id="tf-result"></div>
+</div>
+<script>
+(function(){
+  var cy=new Date().getFullYear();
+  var yEl=document.getElementById('tf-year');
+  for(var y=cy-10;y>=1826;y--){var o=document.createElement('option');o.value=y;o.text=y+'년';yEl.appendChild(o);}
+  var mEl=document.getElementById('tf-month');
+  for(var m=1;m<=12;m++){var o=document.createElement('option');o.value=String(m).padStart(2,'0');o.text=m+'월';mEl.appendChild(o);}
+  function fillDays(){
+    var y2=parseInt(yEl.value)||2000;var mo=parseInt(mEl.value)||1;
+    var max=new Date(y2,mo,0).getDate();
+    var dEl=document.getElementById('tf-day');var cur=dEl.value;
+    dEl.innerHTML='<option value="">일</option>';
+    for(var d=1;d<=max;d++){var o=document.createElement('option');o.value=String(d).padStart(2,'0');o.text=d+'일';if(o.value===cur)o.selected=true;dEl.appendChild(o);}
+  }
+  mEl.addEventListener('change',fillDays);yEl.addEventListener('change',fillDays);fillDays();
+})();
+
+async function doTemples(){
+  var btn=document.getElementById('tf-submit');
+  var res=document.getElementById('tf-result');
+  btn.disabled=true;
+  res.innerHTML='<div class="tf-loading">🏯 사찰 검색 중...</div>';
+  var purpose=document.getElementById('tf-purpose').value;
+  var region=document.getElementById('tf-region').value;
+  var y=document.getElementById('tf-year').value;
+  var m=document.getElementById('tf-month').value;
+  var d=document.getElementById('tf-day').value;
+  var birth=(y&&m&&d)?y+'-'+m+'-'+d:'';
+  try{
+    var body={purpose:purpose,userLat:37.5665,userLng:126.9780,region:region};
+    if(birth)body.birthInput={date:birth};
+    var r=await fetch('https://jamgong-inyeonsachal.vercel.app/api/match',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    var d=await r.json();
+    var results=d.results||[];
+    if(!results.length){res.innerHTML='<div class="tf-err">검색 결과가 없습니다.</div>';btn.disabled=false;return;}
+    var html='<div class="tf-grid">';
+    results.slice(0,12).forEach(function(item){
+      var t=item.temple||{};
+      var naverUrl='https://map.naver.com/v5/search/'+encodeURIComponent((t.name||'')+' '+(t.address||''));
+      html+='<div class="tf-card"><div class="tf-name">'+(t.name||'')+'</div><div class="tf-addr">📍 '+(t.address||'')+'</div>';
+      if(item.reason)html+='<div class="tf-desc">'+item.reason+'</div>';
+      html+='<a class="tf-map" href="'+naverUrl+'" target="_blank">🗺️ 네이버 지도</a></div>';
+    });
+    html+='</div>';
+    res.innerHTML=html;
+  }catch(e){res.innerHTML='<div class="tf-err">연결 오류: '+e.message+'</div>';}
+  btn.disabled=false;
+}
+</script>
