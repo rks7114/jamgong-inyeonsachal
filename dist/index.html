@@ -243,6 +243,11 @@
       #pc-header { display: flex; }
       #app { padding-top: 64px; }
     }
+    /* 기도성지 버튼: 모바일에서만 숨김 (PC 768px+에서는 표시) */
+    @media (max-width: 767px) {
+      #pilgrimage-btn-wrap { display: none !important; }
+      #pilgrimage-panel { display: none !important; }
+    }
     #pc-logo {
       display: flex;
       align-items: center;
