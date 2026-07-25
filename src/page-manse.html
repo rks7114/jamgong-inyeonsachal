@@ -1,0 +1,190 @@
+<style>
+.mf{font-family:'Noto Sans KR',sans-serif;max-width:860px;margin:0 auto;padding:60px 24px;color:#e2e8f0}
+.mf-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.mf-title{font-size:clamp(24px,3vw,38px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.mf-title em{color:#FBBF24;font-style:normal}
+.mf-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+.mf-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px}
+.mf-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.mf-label{font-size:12px;font-weight:700;color:#94a3b8}
+.mf-select{background:rgba(20,15,5,0.8);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px 16px;color:#f8fafc;font-size:14px;font-family:inherit;width:100%;box-sizing:border-box}
+.mf-btn{width:100%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:16px;font-weight:900;padding:16px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;margin-top:8px;transition:all .2s}
+.mf-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(251,191,36,0.35)}
+.mf-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.mf-result{margin-top:28px;display:none}
+.mf-card{background:rgba(255,255,255,0.04);border:1px solid rgba(251,191,36,0.25);border-radius:16px;padding:20px;margin-bottom:14px}
+.mf-temple-name{font-size:18px;font-weight:900;color:#FBBF24;margin-bottom:4px}
+.mf-temple-addr{font-size:12px;color:#64748b;margin-bottom:10px}
+.mf-temple-desc{font-size:13px;color:#94a3b8;line-height:1.7;margin-bottom:12px}
+.mf-map-btn{display:inline-block;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;font-size:12px;font-weight:700;padding:7px 16px;border-radius:10px;text-decoration:none;margin-right:8px}
+.mf-loading{text-align:center;padding:30px;color:#FBBF24;font-size:14px}
+.mf-err{color:#ef4444;font-size:13px;padding:16px;background:rgba(239,68,68,0.1);border-radius:12px;margin-top:16px}
+</style>
+<div class="mf">
+  <div class="mf-badge">사주팔자 · 인연사찰</div>
+  <div class="mf-title">🔮 <em>인연사찰</em> 찾기</div>
+  <p class="mf-sub">생년월일시를 입력하면 AI가 사주 오행을 분석해 지금 당신에게 인연이 닿는 사찰을 추천합니다.</p>
+
+  <!-- 신비 메인 배너 -->
+  <div style="background:linear-gradient(135deg,rgba(15,10,5,0.97),rgba(35,20,5,0.92));border:1px solid rgba(251,191,36,0.25);border-radius:24px;padding:40px 32px;margin-bottom:20px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 15% 50%,rgba(251,191,36,0.12) 0%,transparent 55%),radial-gradient(ellipse at 85% 20%,rgba(168,85,247,0.08) 0%,transparent 50%);pointer-events:none"></div>
+    <div style="position:relative;z-index:1">
+      <div style="font-size:11px;font-weight:800;color:rgba(251,191,36,0.7);letter-spacing:.25em;margin-bottom:16px">✦ 인연사찰 (因緣寺刹) ✦</div>
+      <div style="font-size:clamp(18px,2.8vw,28px);font-weight:900;color:#f8fafc;line-height:1.55;margin-bottom:16px">
+        사주 오행이 이끄는<br>
+        <span style="color:#FBBF24">당신만의 인연 사찰</span>
+      </div>
+      <div style="font-size:14px;color:#94a3b8;line-height:2;margin-bottom:28px;max-width:620px">
+        불교에서는 사람마다 <strong style="color:#e2e8f0">전생의 인연(因緣)</strong>으로 맺어진 사찰이 있다고 합니다.<br>
+        생년월일시를 입력하면 <strong style="color:#FBBF24">사주 오행(五行)</strong>을 분석해 부족한 기운을 채워줄 사찰을 찾아드립니다.<br>
+        단순 검색이 아닌 <strong style="color:#c4b5fd">AI가 당신의 팔자를 읽어</strong> 가장 깊이 연결된 사찰을 추천합니다.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <span style="background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.4);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#FBBF24">🔮 사주 오행 분석</span>
+        <span style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.35);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#c4b5fd">🤖 AI 인연 추천</span>
+        <span style="background:rgba(125,211,252,0.08);border:1px solid rgba(125,211,252,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#7dd3fc">🏯 전국 6,000여 사찰</span>
+        <span style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#93c5fd">☯️ 양력·음력 자동변환</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 인연사찰이란? -->
+  <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:28px;margin-bottom:20px">
+    <div style="font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.15em;margin-bottom:14px">📖 인연사찰 추천의 원리</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🌿 오행(五行)과 사찰</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">木·火·土·金·水 중 부족한 기운을 채워주는 사찰이 다릅니다. 木이 약하면 산사(山寺), 水가 필요하면 계곡·해안 사찰이 인연처입니다.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🙏 목적별 기도처</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">합격·취업은 문수보살, 건강·장수는 약사여래, 인연·화합은 관세음보살, 재물은 칠성·용왕 기도가 효험이 있습니다.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">☸️ 삼보사찰의 가피</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">통도사(불보)·해인사(법보)·송광사(승보)는 어떤 소원에도 큰 가피가 있는 한국 최고의 기도처입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mf-box">
+
+    <!-- 양력/음력 -->
+    <div class="mf-group"><label class="mf-label">양력 / 음력</label>
+      <select class="mf-select" id="mf-cal"><option value="solar">양력</option><option value="lunar">음력</option></select>
+    </div>
+
+    <!-- 생년월일 -->
+    <div class="mf-group"><label class="mf-label">생년월일</label>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
+        <select class="mf-select" id="mf-year"><option value="">년</option></select>
+        <select class="mf-select" id="mf-month"><option value="">월</option></select>
+        <select class="mf-select" id="mf-day"><option value="">일</option></select>
+      </div>
+    </div>
+
+    <!-- 태어난 시간 -->
+    <div class="mf-group"><label class="mf-label">태어난 시간</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select class="mf-select" id="mf-hour" onchange="mfSijin()" style="flex:1">
+          <option value="">시간 모름</option>
+          <option value="0">0시 (밤 12시)</option><option value="1">1시</option><option value="2">2시</option>
+          <option value="3">3시</option><option value="4">4시</option><option value="5">5시</option>
+          <option value="6">6시</option><option value="7">7시</option><option value="8">8시</option>
+          <option value="9">9시</option><option value="10">10시</option><option value="11">11시</option>
+          <option value="12">12시 (낮 12시)</option><option value="13">13시</option><option value="14">14시</option>
+          <option value="15">15시</option><option value="16">16시</option><option value="17">17시</option>
+          <option value="18">18시</option><option value="19">19시</option><option value="20">20시</option>
+          <option value="21">21시</option><option value="22">22시</option><option value="23">23시</option>
+        </select>
+        <span id="mf-sijin" style="font-size:11px;color:#FBBF24;white-space:nowrap;min-width:36px"></span>
+      </div>
+    </div>
+
+    <!-- 출생 지역 -->
+    <div class="mf-group"><label class="mf-label">출생 지역</label>
+      <select class="mf-select" id="mf-region">
+        <option value="">선택 안 함</option>
+        <option value="서울">서울</option><option value="경기">경기·인천</option><option value="강원">강원</option>
+        <option value="충북">충북</option><option value="충남">충남·대전·세종</option>
+        <option value="전북">전북</option><option value="전남">전남·광주</option>
+        <option value="경북">경북·대구</option><option value="경남">경남·부산·울산</option>
+        <option value="제주">제주</option><option value="해외">해외</option>
+      </select>
+    </div>
+
+    <!-- 기도 목적 -->
+    <div class="mf-group"><label class="mf-label">기도 목적</label>
+      <select class="mf-select" id="mf-purpose">
+        <option value="재물운">💰 재물운</option><option value="건강운">💊 건강운</option>
+        <option value="학업운">📚 학업운</option><option value="인연운">💕 인연운</option>
+        <option value="가정운">🏠 가정운</option><option value="수험합격">✏️ 수험합격</option>
+        <option value="취업운">💼 취업운</option><option value="출산기도">👶 출산기도</option>
+        <option value="사업운">🤝 사업운</option>
+      </select>
+    </div>
+
+    <button class="mf-btn" id="mf-submit" onclick="doMatch()">🔮 인연사찰 찾기</button>
+    <div class="mf-result" id="mf-result"></div>
+  </div>
+</div>
+<script>
+var SIJIN=['자시','자시','축시','축시','인시','인시','묘시','묘시','진시','진시','사시','사시','오시','오시','미시','미시','신시','신시','유시','유시','술시','술시','해시','해시'];
+function mfSijin(){
+  var h=document.getElementById('mf-hour').value;
+  document.getElementById('mf-sijin').textContent=h!==''?SIJIN[parseInt(h)]:'';
+}
+
+(function(){
+  var cy=new Date().getFullYear();
+  var yEl=document.getElementById('mf-year');
+  for(var y=cy-10;y>=1826;y--){var o=document.createElement('option');o.value=y;o.text=y+'년';yEl.appendChild(o);}
+  var mEl=document.getElementById('mf-month');
+  for(var m=1;m<=12;m++){var o=document.createElement('option');o.value=String(m).padStart(2,'0');o.text=m+'월';mEl.appendChild(o);}
+  function fillDays(){
+    var y2=parseInt(yEl.value)||2000;var mo=parseInt(mEl.value)||1;
+    var max=new Date(y2,mo,0).getDate();
+    var dEl=document.getElementById('mf-day');var cur=dEl.value;
+    dEl.innerHTML='<option value="">일</option>';
+    for(var d=1;d<=max;d++){var o=document.createElement('option');o.value=String(d).padStart(2,'0');o.text=d+'일';if(o.value===cur)o.selected=true;dEl.appendChild(o);}
+  }
+  mEl.addEventListener('change',fillDays);yEl.addEventListener('change',fillDays);fillDays();
+})();
+
+async function doMatch(){
+  var y=document.getElementById('mf-year').value;
+  var m=document.getElementById('mf-month').value;
+  var d=document.getElementById('mf-day').value;
+  if(!y||!m||!d){alert('생년월일을 모두 선택해주세요.');return;}
+  var birth=y+'-'+m+'-'+d;
+  var hour=document.getElementById('mf-hour').value;
+  var purpose=document.getElementById('mf-purpose').value;
+  var btn=document.getElementById('mf-submit');
+  var res=document.getElementById('mf-result');
+  btn.disabled=true;res.style.display='block';
+  res.innerHTML='<div class="mf-loading">🔮 사주 오행 분석 중...</div>';
+  try{
+    var birthInput={date:birth,gender:'unknown',calendar:document.getElementById('mf-cal').value,region:document.getElementById('mf-region').value};
+    if(hour!=='')birthInput.hour=parseInt(hour);
+    var r=await fetch('https://jamgong-inyeonsachal.vercel.app/api/match',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({birthInput:birthInput,purpose:purpose,userLat:37.5665,userLng:126.9780})
+    });
+    var data=await r.json();
+    if(!data.success){res.innerHTML='<div class="mf-err">'+(data.error||'오류가 발생했습니다.')+'</div>';btn.disabled=false;return;}
+    var html='';
+    (data.results||[]).slice(0,5).forEach(function(item,i){
+      var t=item.temple||{};
+      var naverUrl='https://map.naver.com/v5/search/'+encodeURIComponent((t.name||'')+' '+(t.address||''));
+      html+='<div class="mf-card">';
+      html+='<div class="mf-temple-name">'+(i+1)+'. '+(t.name||'')+'</div>';
+      html+='<div class="mf-temple-addr">📍 '+(t.address||'')+'</div>';
+      if(item.reason)html+='<div class="mf-temple-desc">'+item.reason+'</div>';
+      html+='<a class="mf-map-btn" href="'+naverUrl+'" target="_blank">🗺️ 네이버 지도</a>';
+      html+='</div>';
+    });
+    res.innerHTML=html||'<div class="mf-err">결과가 없습니다.</div>';
+  }catch(e){res.innerHTML='<div class="mf-err">연결 오류: '+e.message+'</div>';}
+  btn.disabled=false;
+}
+</script>
