@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="잼공인연사찰" />
+  <link rel="apple-touch-icon" href="/og-image.png" />
+  <meta name="theme-color" content="#060A16" />
   <title>잼공인연사찰 — 나와 인연이 닿는 절을 찾다</title>
   <meta name="description" content="생년월일시의 오행 기운을 바탕으로, 지금 이 순간 당신에게 필요한 사찰을 안내합니다." />
 
@@ -235,6 +241,11 @@
     @media (min-width: 768px) {
       #pc-header { display: flex; }
       #app { padding-top: 64px; }
+    }
+    /* 기도성지 버튼: 모바일에서만 숨김 (PC 768px+에서는 표시) */
+    @media (max-width: 767px) {
+      #pilgrimage-btn-wrap { display: none !important; }
+      #pilgrimage-panel { display: none !important; }
     }
     #pc-logo {
       display: flex;
