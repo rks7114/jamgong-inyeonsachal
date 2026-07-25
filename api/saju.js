@@ -1,4 +1,64 @@
 // api/saju.js — 사주 팔자 + 대운 + 삼재 조회
+// 음양력 변환: 한국천문연구원(KASI) 공식 API 사용
+
+const KASI_KEY = "66bb0a1efed77224a45a1776addae85dc5f2814918052d59e9de44c0fcbb1651";
+const KASI_BASE = "https://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService";
+
+// 음력 → 양력 변환 (KASI 공식 API)
+async function lunarToSolar(year, month, day, isLeap = false) {
+  try {
+    const params = new URLSearchParams({
+      serviceKey: KASI_KEY,
+      lunYear: String(year),
+      lunMonth: String(month).padStart(2, "0"),
+      lunDay: String(day).padStart(2, "0"),
+      lunLeapmonth: isLeap ? "윤" : "",
+      _type: "json"
+    });
+    const url = `${KASI_BASE}/getSolCalInfo?${params}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const item = data?.response?.body?.items?.item;
+    if (!item) throw new Error("KASI 응답 없음");
+    return {
+      year: parseInt(item.solYear),
+      month: parseInt(item.solMonth),
+      day: parseInt(item.solDay),
+    };
+  } catch (e) {
+    console.warn("[KASI] lunarToSolar 실패, lunar-javascript 폴백:", e.message);
+    return null;
+  }
+}
+
+// 양력 → 음력 변환 (KASI 공식 API)
+async function solarToLunar(year, month, day) {
+  try {
+    const params = new URLSearchParams({
+      serviceKey: KASI_KEY,
+      solYear: String(year),
+      solMonth: String(month).padStart(2, "0"),
+      solDay: String(day).padStart(2, "0"),
+      _type: "json"
+    });
+    const url = `${KASI_BASE}/getLunCalInfo?${params}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const item = data?.response?.body?.items?.item;
+    if (!item) throw new Error("KASI 응답 없음");
+    return {
+      year: parseInt(item.lunYear),
+      month: parseInt(item.lunMonth),
+      day: parseInt(item.lunDay),
+      isLeap: item.lunLeapmonth === "윤",
+      ganji: item.lunIljin || "",       // 일진(간지)
+      monthGanzi: item.lunSecha || "",  // 세차
+    };
+  } catch (e) {
+    console.warn("[KASI] solarToLunar 실패, lunar-javascript 폴백:", e.message);
+    return null;
+  }
+}
 
 let calculateOhaeng, findWeakOhaeng, getEightChar;
 try {
@@ -51,11 +111,27 @@ module.exports = async function handler(req, res) {
     const gender = birthInput.gender || "male"; // "male" | "female"
     const genderNum = gender === "male" ? 1 : 0;
 
+    // ── KASI 음양력 변환 ──────────────────────────────────────
+    // 음력 입력인 경우 KASI 공식 API로 양력 변환 후 계산
+    let resolvedInput = { ...birthInput };
+    if (birthInput.calendar === "lunar") {
+      const solar = await lunarToSolar(
+        birthInput.year, birthInput.month, birthInput.day,
+        birthInput.isLeapMonth || false
+      );
+      if (solar) {
+        resolvedInput = { ...birthInput, year: solar.year, month: solar.month, day: solar.day, calendar: "solar" };
+        console.log(`[KASI] 음력 ${birthInput.year}-${birthInput.month}-${birthInput.day} → 양력 ${solar.year}-${solar.month}-${solar.day}`);
+      }
+      // KASI 실패 시 lunar-javascript 폴백 (resolvedInput 그대로 유지)
+    }
+    // ────────────────────────────────────────────────────────
+
     // 오행 분포 (지장간 보정 포함)
     if (typeof calculateOhaeng !== 'function') {
       return res.status(500).json({ error: "사주 계산 중 오류가 발생했습니다.", detail: "matching-engine load failed: calculateOhaeng is " + typeof calculateOhaeng });
     }
-    const { distribution, branches } = calculateOhaeng(birthInput);
+    const { distribution, branches } = calculateOhaeng(resolvedInput);
     const weak = findWeakOhaeng(distribution, branches);
 
     // 사주 팔자 + 대운
@@ -63,7 +139,7 @@ module.exports = async function handler(req, res) {
     let daYun = null;
 
     try {
-      const bazi = getEightChar(birthInput);
+      const bazi = getEightChar(resolvedInput);
 
       eightChar = {
         year:    bazi.getYear(),    month:   bazi.getMonth(),
