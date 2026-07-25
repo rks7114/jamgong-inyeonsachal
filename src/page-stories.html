@@ -1,0 +1,85 @@
+<style>
+.st{font-family:'Noto Sans KR',sans-serif;max-width:1100px;margin:0 auto;padding:60px 24px;color:#e2e8f0}
+.st-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.st-title{font-size:clamp(24px,3vw,40px);font-weight:900;color:#f8fafc;margin:0 0 12px}
+.st-title em{color:#FBBF24;font-style:normal}
+.st-sub{font-size:15px;color:#64748b;line-height:1.8;margin:0 0 32px}
+.st-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
+.st-tab{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:99px;padding:8px 18px;font-size:13px;font-weight:700;color:#94a3b8;cursor:pointer;transition:all .2s;font-family:inherit}
+.st-tab.active,.st-tab:hover{background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.4);color:#FBBF24}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
+.st-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;transition:all .22s;display:flex;flex-direction:column}
+.st-card:hover{border-color:rgba(251,191,36,0.35);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+.st-img{width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-size:64px;background:linear-gradient(135deg,rgba(15,23,41,0.8),rgba(30,41,59,0.6))}
+.st-body{padding:22px;flex:1;display:flex;flex-direction:column}
+.st-cat{font-size:11px;font-weight:700;color:#FBBF24;background:rgba(251,191,36,0.1);border-radius:8px;padding:2px 10px;display:inline-block;margin-bottom:10px}
+.st-name{font-size:17px;font-weight:800;color:#f8fafc;margin-bottom:8px;line-height:1.4}
+.st-text{font-size:13px;color:#64748b;line-height:1.7;margin-bottom:14px;flex:1}
+.st-meta{font-size:11px;color:#475569;display:flex;gap:12px;flex-wrap:wrap}
+.st-tag2{font-size:11px;color:#a78bfa}
+</style>
+
+<div class="st">
+  <div class="st-badge">TEMPLE STORIES</div>
+  <div class="st-title">사찰이야기 — <em>천년의 이야기</em></div>
+  <p class="st-sub">전국 유명 사찰의 창건 설화, 역사, 문화재, 기도 영험담을 소개합니다.</p>
+
+  <div class="st-tabs">
+    <button class="st-tab active" onclick="filterStory('all',this)">전체</button>
+    <button class="st-tab" onclick="filterStory('창건설화',this)">🏛️ 창건 설화</button>
+    <button class="st-tab" onclick="filterStory('세계문화유산',this)">🌍 세계문화유산</button>
+    <button class="st-tab" onclick="filterStory('관음성지',this)">🌊 관음 성지</button>
+    <button class="st-tab" onclick="filterStory('산지가람',this)">⛰️ 산지 가람</button>
+    <button class="st-tab" onclick="filterStory('도심기도',this)">🏙️ 도심 기도</button>
+  </div>
+
+  <div class="st-grid" id="st-grid"></div>
+</div>
+
+<script>
+var STORIES=[
+  {cat:'세계문화유산',icon:'🏛️',name:'해인사 — 팔만대장경이 잠든 가야산의 법보사찰',loc:'경남 합천',text:'신라 애장왕 3년(802) 순응·이정 두 스님이 왕비의 병을 고친 인연으로 창건. 고려 팔만대장경을 800년간 온전히 보존한 유네스코 세계문화유산. 가야산 해발 700m에 자리한 법보사찰.',tags:['법보사찰','팔만대장경']},
+  {cat:'관음성지',icon:'🌊',name:'낙산사 — 의상대사와 동해 관음보살의 인연',loc:'강원 양양',text:'신라 문무왕 11년(671) 의상대사 창건. 동해 바다 굴에 관음보살의 진신이 머문다는 계시를 받고 세운 관음 성지. 홍련암 법당 아래로 파도가 치는 신비로운 성지.',tags:['관음 성지','의상대사']},
+  {cat:'창건설화',icon:'🔥',name:'통도사 — 부처님 진신사리를 모신 불보사찰',loc:'경남 양산',text:'신라 선덕여왕 15년(646) 자장율사 창건. 당나라에서 부처님 사리와 가사를 가져와 금강계단에 봉안. 불상 없이도 예불을 드리는 한국 유일의 불보사찰.',tags:['불보사찰','진신사리']},
+  {cat:'세계문화유산',icon:'🍂',name:'화엄사 — 지리산 품에 안긴 화엄의 세계',loc:'전남 구례',text:'백제 성왕 22년(544) 연기조사 창건. 각황전(국보 67호)과 4사자3층석탑(국보 35호) 등 국보급 문화재를 보유한 지리산 대찰. 화엄 사상의 본산으로 꼽힌다.',tags:['화엄 도량','유네스코']},
+  {cat:'창건설화',icon:'🌿',name:'송광사 — 16국사를 배출한 승보사찰',loc:'전남 순천',text:'고려 보조국사 지눌이 정혜결사를 시작한 선종 도량. 16명의 국사를 배출해 승보사찰로 불린다. 조계산 깊은 골짜기에 자리한 전통 가람 배치의 백미.',tags:['승보사찰','보조국사']},
+  {cat:'도심기도',icon:'🏙️',name:'조계사 — 서울 도심 속 천 년의 기도 소리',loc:'서울 종로',text:'대한불교조계종 총본산. 고려 말 창건 후 여러 차례 중건을 거쳐 현재에 이름. 서울 도심 한가운데서 연중 무휴 법회와 기도가 이어지는 한국 불교의 중심.',tags:['조계종 총본산','도심 기도']},
+  {cat:'세계문화유산',icon:'🌸',name:'불국사 — 신라 불국토를 꿈꾼 천년 사찰',loc:'경북 경주',text:'신라 경덕왕 10년(751) 김대성 창건. 다보탑·석가탑·청운교·백운교 등 신라 석조미술의 정수를 담은 유네스코 세계문화유산. 불국토 이상을 현실에 구현한 신라인의 꿈.',tags:['유네스코','신라']},
+  {cat:'산지가람',icon:'⛩️',name:'석굴암 — 동해를 굽어보는 신라의 불국토',loc:'경북 경주',text:'신라 경덕왕 10년(751) 불국사와 함께 창건. 화강암을 정교하게 쌓아 만든 인공 석굴 법당. 본존불이 동해를 바라보며 나라와 백성을 지킨다는 창건 정신을 담고 있다.',tags:['유네스코','석굴']},
+  {cat:'산지가람',icon:'🍁',name:'법주사 — 속리산 미륵의 땅',loc:'충북 보은',text:'신라 진흥왕 14년(553) 의신조사 창건. 팔상전(국보 55호·유일한 목조 5층탑)과 쌍사자 석등(국보 5호) 등 국보 3점 보유. 미륵 신앙의 성지로 유명한 속리산 대찰.',tags:['미륵 성지','유네스코']},
+  {cat:'세계문화유산',icon:'🌾',name:'마곡사 — 춘마곡 추갑사의 봄꽃 사찰',loc:'충남 공주',text:'신라 자장율사 창건설. 봄 경치가 아름다워 "춘마곡 추갑사"로 불린다. 2018년 유네스코 세계문화유산 등재. 백범 김구 선생이 독립운동 중 피신했던 역사적 사찰.',tags:['유네스코','봄 명소']},
+  {cat:'산지가람',icon:'❄️',name:'월정사 — 오대산 전나무 숲의 적멸보궁',loc:'강원 평창',text:'신라 선덕여왕 12년(643) 자장율사 창건. 오대산 상원사에 부처님 사리를 봉안한 적멸보궁이 있어 예로부터 기도처로 유명. 전나무 숲 1km 길이 특히 장관.',tags:['적멸보궁','오대산']},
+  {cat:'산지가람',icon:'🏔️',name:'신흥사 — 설악산 품에 안긴 천년 고찰',loc:'강원 속초',text:'신라 진덕여왕 6년(652) 자장율사 창건. 설악산 깊은 골짜기 청정 도량. 경내 흔들바위와 울산바위가 유명하며 통일대불이 설악을 수호한다.',tags:['설악산','통일대불']},
+  {cat:'관음성지',icon:'💙',name:'보문사 — 서해 석모도 관음 성지',loc:'인천 강화',text:'신라 선덕여왕 4년(635) 회정대사 창건. 강화 석모도 낙가산 중턱에 위치한 서해의 대표 관음 성지. 마애석불(인천 지방유형문화재)에서 기도하면 소원이 이루어진다.',tags:['관음 성지','서해']},
+  {cat:'창건설화',icon:'🌺',name:'선운사 — 동백꽃 피는 도솔산 기도처',loc:'전북 고창',text:'백제 위덕왕 24년(577) 검단선사 창건. 고창 도솔산 자락에 위치. 봄에 피는 동백꽃으로 유명하며, 도솔암 마애불(보물 1200호)이 기도처로 영험하기로 소문.',tags:['동백꽃','도솔암']},
+  {cat:'산지가람',icon:'🌋',name:'직지사 — 황악산 김천의 도량',loc:'경북 김천',text:'신라 눌지왕 2년(418) 아도화상 창건. "직지인심 견성성불(直指人心 見性成佛)" — 직지사 이름의 유래. 조선 사명대사가 출가한 곳으로 임진왜란 전적지이기도 하다.',tags:['황악산','사명대사']},
+  {cat:'도심기도',icon:'🦁',name:'범어사 — 금정산 부산의 선종 도량',loc:'부산 금정구',text:'신라 문무왕 18년(678) 의상대사 창건. 금정산 깊은 곳에 위치한 부산의 대표 사찰. 1678년 중창 당시 조선 삼대 사찰 중 하나. 동래 지역 호국 기도의 중심.',tags:['금정산','의상대사']},
+  {cat:'관음성지',icon:'🌠',name:'부석사 — 선묘낭자 전설과 무량수전',loc:'경북 영주',text:'신라 문무왕 16년(676) 의상대사 창건. 당나라 유학 시절 의상을 흠모한 선묘낭자가 용이 되어 절을 지켰다는 전설. 무량수전(국보 18호)은 현존 최고 목조건물 중 하나.',tags:['유네스코','선묘낭자']},
+  {cat:'창건설화',icon:'🌊',name:'대흥사 — 두륜산 남도 불교의 중심',loc:'전남 해남',text:'신라 진흥왕 때 창건. 조선 임진왜란 때 서산대사가 호국 의승군을 이끈 유서 깊은 사찰. 두륜산 깊은 골짜기에 13개 암자를 거느린 대가람. 2018년 유네스코 세계문화유산.',tags:['유네스코','서산대사']},
+];
+
+function filterStory(cat,btn){
+  document.querySelectorAll('.st-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  var list=cat==='all'?STORIES:STORIES.filter(function(s){return s.cat===cat;});
+  render(list);
+}
+
+function render(list){
+  var html='';
+  list.forEach(function(s){
+    html+='<div class="st-card">';
+    html+='<div class="st-img">'+s.icon+'</div>';
+    html+='<div class="st-body">';
+    html+='<span class="st-cat">'+s.cat+'</span>';
+    html+='<div class="st-name">'+s.name+'</div>';
+    html+='<div class="st-text">'+s.text+'</div>';
+    html+='<div class="st-meta"><span>📍 '+s.loc+'</span>';
+    s.tags.forEach(function(t){html+='<span class="st-tag2">'+t+'</span>';});
+    html+='</div></div></div>';
+  });
+  document.getElementById('st-grid').innerHTML=html;
+}
+
+render(STORIES);
+</script>
