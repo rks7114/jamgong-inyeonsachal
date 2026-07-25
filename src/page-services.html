@@ -1,0 +1,123 @@
+<style>
+.sv{font-family:'Noto Sans KR',sans-serif;max-width:1100px;margin:0 auto;padding:60px 24px;color:#e2e8f0}
+.sv-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.sv-title{font-size:clamp(24px,3vw,38px);font-weight:900;color:#f8fafc;margin:0 0 12px}
+.sv-title em{color:#FBBF24;font-style:normal}
+.sv-sub{font-size:15px;color:#64748b;line-height:1.8;margin:0 0 50px}
+.sv-list{display:flex;flex-direction:column;gap:24px}
+.sv-item{display:grid;grid-template-columns:80px 1fr;gap:24px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;align-items:start;transition:all .2s}
+.sv-item:hover{border-color:rgba(251,191,36,0.3);background:rgba(255,255,255,0.05)}
+.sv-num{font-size:48px;font-weight:900;color:rgba(251,191,36,0.2);text-align:center;line-height:1}
+.sv-icon2{font-size:36px;text-align:center;margin-top:4px}
+.sv-name{font-size:20px;font-weight:800;color:#f8fafc;margin-bottom:8px}
+.sv-desc2{font-size:14px;color:#94a3b8;line-height:1.8;margin-bottom:14px}
+.sv-tags{display:flex;flex-wrap:wrap;gap:6px}
+.sv-tag{font-size:11px;font-weight:700;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);color:#FBBF24;border-radius:8px;padding:3px 10px}
+.sv-link{display:inline-block;margin-top:14px;background:linear-gradient(135deg,rgba(251,191,36,0.15),rgba(168,85,247,0.1));border:1.5px solid rgba(251,191,36,0.35);color:#FBBF24;font-size:13px;font-weight:700;padding:9px 22px;border-radius:20px;text-decoration:none;transition:all .2s}
+.sv-link:hover{transform:translateY(-1px)}
+.sv-faq{margin-top:70px}
+.sv-faq-title{font-size:24px;font-weight:900;color:#f8fafc;margin-bottom:28px}
+.sv-faq-title em{color:#FBBF24;font-style:normal}
+.sv-faq-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.sv-faq-q{padding:18px 22px;font-size:15px;font-weight:700;color:#f8fafc;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sv-faq-q:hover{background:rgba(255,255,255,0.03)}
+.sv-faq-a{padding:0 22px 18px;font-size:14px;color:#94a3b8;line-height:1.8;display:none}
+.sv-faq-a.show{display:block}
+</style>
+<div class="sv">
+  <div class="sv-badge">ALL SERVICES</div>
+  <div class="sv-title">잼공인연사찰의 <em>모든 서비스</em></div>
+  <p class="sv-sub">생년월일시 사주 오행 분석부터 전국 기도성지 탐방까지 — 나에게 맞는 모든 서비스를 한 곳에서.</p>
+  <div class="sv-list">
+    <div class="sv-item">
+      <div><div class="sv-num">01</div><div class="sv-icon2">🔮</div></div>
+      <div>
+        <div class="sv-name">인연사찰 찾기</div>
+        <div class="sv-desc2">생년월일시를 입력하면 AI가 사주 팔자의 오행 기운을 분석합니다. 목·화·토·금·수 오행의 균형을 파악해 지금 내게 가장 필요한 기운을 보충해 줄 인연사찰을 정밀 추천합니다. 기도 목적(재물·건강·학업·인연·가정·취업 등)과 결합해 최적의 사찰을 안내합니다.</div>
+        <div class="sv-tags"><span class="sv-tag">오행 분석</span><span class="sv-tag">기도 목적 매칭</span><span class="sv-tag">네이버 지도 연동</span></div>
+        <a class="sv-link" href="/manse">🔮 인연사찰 찾기 →</a>
+      </div>
+    </div>
+    <div class="sv-item">
+      <div><div class="sv-num">02</div><div class="sv-icon2">🌟</div></div>
+      <div>
+        <div class="sv-name">사주팔자 분석</div>
+        <div class="sv-desc2">생년월일시로 사주 팔자(四柱八字)를 뽑아 년주·월주·일주·시주를 한눈에 표시합니다. 오행 분포 게이지, 용신 후보, 대운(8주기), 삼재 여부까지 상세히 분석합니다. 양력·음력 모두 지원하며 절기 기준 진태양시 보정을 포함합니다.</div>
+        <div class="sv-tags"><span class="sv-tag">팔자 표</span><span class="sv-tag">오행·용신</span><span class="sv-tag">대운·삼재</span><span class="sv-tag">양력·음력</span></div>
+        <a class="sv-link" href="/saju">🌟 사주팔자 분석하기 →</a>
+      </div>
+    </div>
+    <div class="sv-item">
+      <div><div class="sv-num">03</div><div class="sv-icon2">💑</div></div>
+      <div>
+        <div class="sv-name">두 사람 궁합</div>
+        <div class="sv-desc2">연인·동업·친구·가족·직장 등 두 사람의 사주를 함께 분석해 천간합·지지합·삼합·충 관계를 살피고 궁합 점수와 등급을 제공합니다. 성별 구분 없이 모든 관계의 궁합을 볼 수 있으며, 양력·음력·출생지역 입력을 지원합니다.</div>
+        <div class="sv-tags"><span class="sv-tag">합충 분석</span><span class="sv-tag">궁합 점수</span><span class="sv-tag">관계유형 선택</span></div>
+        <a class="sv-link" href="/compatibility">💑 궁합 보기 →</a>
+      </div>
+    </div>
+    <div class="sv-item">
+      <div><div class="sv-num">04</div><div class="sv-icon2">📅</div></div>
+      <div>
+        <div class="sv-name">택일 (길일 선택)</div>
+        <div class="sv-desc2">결혼·개업·이사·수술·여행·계약 등 인생의 중요한 날을 위한 길일을 역법과 사주 오행을 결합해 선택합니다. 원하는 달의 좋은 날짜를 알려주며, 그날 방문하기 좋은 사찰도 함께 안내합니다.</div>
+        <div class="sv-tags"><span class="sv-tag">길일 계산</span><span class="sv-tag">목적별 택일</span><span class="sv-tag">사찰 연계</span></div>
+        <a class="sv-link" href="/taekil">📅 택일 하기 →</a>
+      </div>
+    </div>
+    <div class="sv-item">
+      <div><div class="sv-num">05</div><div class="sv-icon2">⭐</div></div>
+      <div>
+        <div class="sv-name">전국 기도성지 327곳</div>
+        <div class="sv-desc2">영험하기로 소문난 관음·약사·미륵·지장·나한·적멸보궁·독성 성지 327곳을 지역별·유형별로 탐색합니다. 각 성지의 역사, 기도 방법, 교통 정보와 네이버·카카오 지도 길찾기를 제공합니다.</div>
+        <div class="sv-tags"><span class="sv-tag">327개 성지</span><span class="sv-tag">지역별 필터</span><span class="sv-tag">유형별 필터</span><span class="sv-tag">지도 연동</span></div>
+        <a class="sv-link" href="/sacred">⭐ 기도성지 탐색 →</a>
+      </div>
+    </div>
+    <div class="sv-item">
+      <div><div class="sv-num">06</div><div class="sv-icon2">🏯</div></div>
+      <div>
+        <div class="sv-name">전국 사찰 찾기</div>
+        <div class="sv-desc2">전국 17,497개 사찰 데이터를 기반으로 지역별·기도목적별로 원하는 사찰을 검색합니다. 사찰 상세 정보, Wikipedia 이미지, 기도 방법, 네이버 지도 길찾기를 제공합니다.</div>
+        <div class="sv-tags"><span class="sv-tag">17,497개 사찰</span><span class="sv-tag">지역 검색</span><span class="sv-tag">Wikipedia 이미지</span></div>
+        <a class="sv-link" href="/temples">🏯 사찰 찾기 →</a>
+      </div>
+    </div>
+    <div class="sv-item">
+      <div><div class="sv-num">07</div><div class="sv-icon2">🌙</div></div>
+      <div>
+        <div class="sv-name">꿈해몽</div>
+        <div class="sv-desc2">꿈의 상징과 의미를 해석합니다. 길몽·흉몽·태몽 등 카테고리별 꿈 사전과 함께 AI가 꿈 내용을 직접 분석해 메시지와 기도 방법을 안내합니다. 30개 이상의 상세 해몽 카드를 제공합니다.</div>
+        <div class="sv-tags"><span class="sv-tag">AI 해몽</span><span class="sv-tag">길몽·흉몽·태몽</span><span class="sv-tag">기도 안내</span></div>
+        <a class="sv-link" href="/dream">🌙 꿈해몽 하기 →</a>
+      </div>
+    </div>
+    <div class="sv-item">
+      <div><div class="sv-num">08</div><div class="sv-icon2">🛒</div></div>
+      <div>
+        <div class="sv-name">잼공몰</div>
+        <div class="sv-desc2">사주·인연·기도를 담은 맞춤 큐레이션 상품 모음. 오행 에너지 팔찌, 전통 부적, 명상향 세트, 선물세트 등 인연과 운을 담은 특별한 상품들을 만나보세요.</div>
+        <div class="sv-tags"><span class="sv-tag">오행 팔찌</span><span class="sv-tag">전통 부적</span><span class="sv-tag">명상·향</span><span class="sv-tag">선물세트</span></div>
+        <a class="sv-link" href="/mall">🛒 잼공몰 바로가기 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="sv-faq">
+    <div class="sv-faq-title">자주 묻는 <em>질문</em></div>
+    <div class="sv-faq-item"><div class="sv-faq-q" onclick="toggleFaq(this)"><span>음력 생년월일도 입력할 수 있나요?</span><span>＋</span></div><div class="sv-faq-a">네, 모든 서비스에서 양력·음력 전환이 가능합니다. 입력창 상단의 양력/음력 셀렉터로 선택 후 생년월일을 입력하시면 됩니다.</div></div>
+    <div class="sv-faq-item"><div class="sv-faq-q" onclick="toggleFaq(this)"><span>태어난 시간을 모르면 어떻게 하나요?</span><span>＋</span></div><div class="sv-faq-a">시간 입력란에서 '시간 모름'을 선택하시면 됩니다. 시간 없이도 년·월·일만으로 사주 분석과 인연사찰 추천이 가능합니다. 다만 시주(時柱)가 포함된 경우보다 분석 정확도가 낮을 수 있습니다.</div></div>
+    <div class="sv-faq-item"><div class="sv-faq-q" onclick="toggleFaq(this)"><span>추천 결과는 얼마나 정확한가요?</span><span>＋</span></div><div class="sv-faq-a">잼공인연사찰의 분석은 전통 사주명리학과 오행 이론을 AI로 구현한 참고용 결과입니다. 정밀한 사주 감정이나 개인 상담이 필요하신 경우 전문 역술인을 찾아가시길 권합니다.</div></div>
+    <div class="sv-faq-item"><div class="sv-faq-q" onclick="toggleFaq(this)"><span>개인정보가 저장되나요?</span><span>＋</span></div><div class="sv-faq-a">입력하신 생년월일시 정보는 분석 결과를 생성하는 용도로만 사용되며 별도로 저장·보관되지 않습니다. 페이지를 새로 고침하면 입력 정보가 초기화됩니다.</div></div>
+    <div class="sv-faq-item"><div class="sv-faq-q" onclick="toggleFaq(this)"><span>특정 종파 사찰만 추천하나요?</span><span>＋</span></div><div class="sv-faq-a">아닙니다. 잼공인연사찰은 조계종·태고종·천태종·진각종 등 종파를 구분하지 않고 기도 영험과 오행 적합성을 기준으로 추천합니다.</div></div>
+  </div>
+</div>
+<script>
+function toggleFaq(el){
+  var a=el.nextElementSibling;
+  var icon=el.querySelector('span:last-child');
+  if(a.classList.contains('show')){a.classList.remove('show');icon.textContent='＋';}
+  else{a.classList.add('show');icon.textContent='－';}
+}
+</script>
