@@ -1,0 +1,184 @@
+<style>
+.hs{font-family:'Noto Sans KR',sans-serif;max-width:1200px;margin:0 auto;padding:60px 24px;color:#e2e8f0}
+.hs-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.hs-title{font-size:clamp(24px,3vw,40px);font-weight:900;color:#f8fafc;margin:0 0 12px;line-height:1.3}
+.hs-title em{color:#FBBF24;font-style:normal}
+.hs-sub{font-size:15px;color:#64748b;line-height:1.8;max-width:580px;margin:0 0 40px}
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-bottom:80px}
+.svc-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px 22px;transition:all .22s;text-decoration:none;display:block;color:inherit}
+.svc-card:hover{background:rgba(255,255,255,0.06);border-color:rgba(251,191,36,0.35);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+.svc-icon{font-size:34px;margin-bottom:14px}
+.svc-name{font-size:17px;font-weight:800;color:#f8fafc;margin-bottom:8px}
+.svc-desc{font-size:13px;color:#64748b;line-height:1.7;margin-bottom:12px}
+.svc-tag{font-size:11px;font-weight:700;color:#FBBF24;background:rgba(251,191,36,0.1);border-radius:8px;padding:3px 10px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border-radius:18px;overflow:hidden;margin-bottom:80px}
+.stat-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);padding:28px 16px;text-align:center}
+.stat-num{font-size:34px;font-weight:900;color:#FBBF24;margin-bottom:4px}
+.stat-label{font-size:12px;color:#64748b}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:80px}
+.how-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:24px;position:relative}
+.how-num{font-size:42px;font-weight:900;color:rgba(251,191,36,0.12);position:absolute;top:10px;right:14px;line-height:1}
+.how-icon{font-size:28px;margin-bottom:12px}
+.how-title{font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:8px}
+.how-text{font-size:13px;color:#64748b;line-height:1.7}
+.prev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:36px}
+.prev-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;transition:all .2s}
+.prev-card:hover{background:rgba(255,255,255,0.07);border-color:rgba(251,191,36,0.3);transform:translateY(-2px)}
+.prev-top{display:flex;align-items:center;gap:10px;padding-left:8px;margin-bottom:10px}
+.prev-icon{font-size:20px;flex-shrink:0}
+.prev-name{font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:2px}
+.prev-region{font-size:11px;color:#64748b}
+.prev-type{font-size:11px;color:#a78bfa;font-weight:600;margin-bottom:6px}
+.prev-desc{font-size:12px;color:#94a3b8;line-height:1.6}
+.more-btn{display:inline-block;background:linear-gradient(135deg,rgba(251,191,36,0.15),rgba(168,85,247,0.1));border:1.5px solid rgba(251,191,36,0.4);color:#FBBF24;font-size:14px;font-weight:700;padding:13px 32px;border-radius:50px;text-decoration:none;transition:all .2s}
+.more-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(251,191,36,0.2)}
+.cta-box{text-align:center;padding:60px 20px;background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(168,85,247,0.06));border:1px solid rgba(251,191,36,0.2);border-radius:24px;margin-top:20px}
+.cta-box h3{font-size:28px;font-weight:900;color:#FBBF24;margin:0 0 12px}
+.cta-box p{color:#94a3b8;font-size:15px;margin:0 0 28px}
+.cta-btn{display:inline-block;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:16px;font-weight:900;padding:16px 44px;border-radius:50px;text-decoration:none;transition:all .2s}
+.cta-btn:hover{transform:scale(1.05);box-shadow:0 8px 32px rgba(251,191,36,0.4)}
+.sec{margin-bottom:70px}
+.sec-head{margin-bottom:32px}
+</style>
+<div class="hs">
+
+  <!-- 서비스 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">SERVICES</div>
+      <div class="hs-title">나를 위한 <em>불교 맞춤 서비스</em></div>
+      <p class="hs-sub">생년월일시 사주 오행을 분석해 지금 이 순간 가장 필요한 사찰과 기도를 안내합니다.</p>
+    </div>
+    <div class="svc-grid">
+      <a class="svc-card" href="/manse">
+        <div class="svc-icon">🔮</div>
+        <div class="svc-name">인연사찰 찾기</div>
+        <div class="svc-desc">생년월일시 오행 분석으로 지금 나에게 가장 잘 맞는 인연사찰을 정밀 추천합니다.</div>
+        <span class="svc-tag">사주 기반 매칭</span>
+      </a>
+      <a class="svc-card" href="/manse">
+        <div class="svc-icon">🌟</div>
+        <div class="svc-name">사주팔자 분석</div>
+        <div class="svc-desc">오행·격국·용신·대운을 분석해 현재 운세와 기도 목적을 상세히 안내합니다.</div>
+        <span class="svc-tag">AI 사주 해석</span>
+      </a>
+      <a class="svc-card" href="/compatibility">
+        <div class="svc-icon">💑</div>
+        <div class="svc-name">두 사람 궁합</div>
+        <div class="svc-desc">연인·동업·친구·가족 등 두 사람의 사주 합충형을 분석해 궁합을 봅니다.</div>
+        <span class="svc-tag">합충형 분석</span>
+      </a>
+      <a class="svc-card" href="/taekil">
+        <div class="svc-icon">📅</div>
+        <div class="svc-name">택일</div>
+        <div class="svc-desc">결혼·개업·이사·수술 등 중요한 날의 좋은 날짜를 불교 역법으로 선택합니다.</div>
+        <span class="svc-tag">길일 선택</span>
+      </a>
+      <a class="svc-card" href="/sacred">
+        <div class="svc-icon">⭐</div>
+        <div class="svc-name">전국 기도성지</div>
+        <div class="svc-desc">검증된 불교 기도도량 327곳 — 관음·약사·미륵·지장·나한·적멸보궁·독성 성지.</div>
+        <span class="svc-tag">327개 기도도량</span>
+      </a>
+      <a class="svc-card" href="/dream">
+        <div class="svc-icon">🌙</div>
+        <div class="svc-name">꿈해몽</div>
+        <div class="svc-desc">꿈의 상징과 의미를 해석하고 관련 사찰과 기도 방법을 안내합니다.</div>
+        <span class="svc-tag">AI 꿈해몽</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 통계 -->
+  <div class="stats-row" style="margin-bottom:80px">
+    <div class="stat-item"><div class="stat-num">17,497</div><div class="stat-label">전국 사찰 데이터</div></div>
+    <div class="stat-item"><div class="stat-num">327</div><div class="stat-label">검증된 기도성지</div></div>
+    <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">기도 목적 분류</div></div>
+    <div class="stat-item"><div class="stat-num">AI</div><div class="stat-label">사주 분석 엔진</div></div>
+  </div>
+
+  <!-- 사용방법 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">HOW TO USE</div>
+      <div class="hs-title">이렇게 <em>사용하세요</em></div>
+    </div>
+    <div class="how-grid">
+      <div class="how-item"><div class="how-num">01</div><div class="how-icon">📝</div><div class="how-title">생년월일시 입력</div><div class="how-text">양력 또는 음력으로 생년월일과 태어난 시간을 입력합니다.</div></div>
+      <div class="how-item"><div class="how-num">02</div><div class="how-icon">🎯</div><div class="how-title">기도 목적 선택</div><div class="how-text">재물운·건강운·학업운·인연운·가정운·수험합격·취업운·출산기도 중 선택.</div></div>
+      <div class="how-item"><div class="how-num">03</div><div class="how-icon">🔮</div><div class="how-title">AI 오행 분석</div><div class="how-text">사주 오행과 기도 목적을 결합해 나에게 맞는 사찰을 정밀 분석합니다.</div></div>
+      <div class="how-item"><div class="how-num">04</div><div class="how-icon">🗺️</div><div class="how-title">사찰 방문</div><div class="how-text">추천된 사찰의 상세정보와 네이버·카카오 지도 길찾기로 바로 찾아갑니다.</div></div>
+    </div>
+  </div>
+
+  <!-- 기도성지 미리보기 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">SACRED SITES</div>
+      <div class="hs-title">전국 <em>대표 기도성지</em></div>
+      <p class="hs-sub">영험하기로 소문난 전국 327곳 기도도량 중 대표 성지를 소개합니다.</p>
+    </div>
+    <div class="prev-grid">
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #3b82f6"><span class="prev-icon">🌊</span><div><div class="prev-name">가평 현등사</div><div class="prev-region">경기 가평 운악산</div></div></div><div class="prev-type">관음 기도</div><div class="prev-desc">운악산 관음 성지. 경기 소금강이라 불리는 운악산 기암괴석과 어우러진 청정 사찰.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #22c55e"><span class="prev-icon">🌿</span><div><div class="prev-name">합천 해인사</div><div class="prev-region">경남 합천 가야산</div></div></div><div class="prev-type">소원성취 기도</div><div class="prev-desc">팔만대장경을 보존한 법보사찰. 가야산 깊은 숲속 천년 고찰로 소원성취 기도처로 유명.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #ef4444"><span class="prev-icon">🔥</span><div><div class="prev-name">양산 통도사</div><div class="prev-region">경남 양산 영축산</div></div></div><div class="prev-type">관음·소원성취</div><div class="prev-desc">불보사찰. 부처님 진신사리를 봉안한 금강계단이 있어 기도 영험이 높기로 유명.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #22c55e"><span class="prev-icon">🌿</span><div><div class="prev-name">순천 선암사</div><div class="prev-region">전남 순천 조계산</div></div></div><div class="prev-type">관음 기도</div><div class="prev-desc">천년의 아름다움. 유네스코 세계문화유산 조계산 선암사, 원통전 관음 기도처.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #3b82f6"><span class="prev-icon">🌊</span><div><div class="prev-name">강릉 낙산사</div><div class="prev-region">강원 강릉 낙산</div></div></div><div class="prev-type">약사 기도</div><div class="prev-desc">낙산사 경내 약사전. 동해 바다 기운과 함께 건강 기도. 의상대사 창건 동해 관음 성지.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #f59e0b"><span class="prev-icon">🍂</span><div><div class="prev-name">구례 화엄사</div><div class="prev-region">전남 구례 지리산</div></div></div><div class="prev-type">소원성취 기도</div><div class="prev-desc">지리산 대찰. 각황전과 4사자3층석탑 등 국보급 문화재를 보유한 화엄 도량.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #a78bfa"><span class="prev-icon">💜</span><div><div class="prev-name">서울 조계사</div><div class="prev-region">서울 종로</div></div></div><div class="prev-type">관음 기도</div><div class="prev-desc">대한불교조계종 총본산. 서울 도심 속 기도도량으로 연중 법회와 기도가 끊이지 않는 곳.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #22c55e"><span class="prev-icon">🌿</span><div><div class="prev-name">영주 부석사</div><div class="prev-region">경북 영주 소백산</div></div></div><div class="prev-type">소원성취 기도</div><div class="prev-desc">무량수전·선묘낭자 전설 깃든 유네스코 세계문화유산. 의상대사 창건 화엄 도량.</div></div>
+    </div>
+    <div style="text-align:center">
+      <a class="more-btn" href="/sacred">⭐ 전체 327곳 기도성지 보기 →</a>
+    </div>
+  </div>
+
+  <!-- 이용 후기 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">REVIEWS</div>
+      <div class="hs-title"><em>이용자 후기</em></div>
+      <p class="hs-sub">실제 이용자들의 경험을 들어보세요.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px">
+        <div style="color:#FBBF24;font-size:13px;margin-bottom:10px">★★★★★</div>
+        <div style="font-size:14px;color:#e2e8f0;line-height:1.8;margin-bottom:12px">"사주 오행을 분석해서 사찰을 추천해준다는 게 신기했어요. 추천받은 해인사에서 기도하고 나서 오랫동안 고민하던 사업 결정을 내렸습니다."</div>
+        <div style="font-size:12px;color:#475569">김○○ · 50대 · 사업가</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px">
+        <div style="color:#FBBF24;font-size:13px;margin-bottom:10px">★★★★★</div>
+        <div style="font-size:14px;color:#e2e8f0;line-height:1.8;margin-bottom:12px">"택일 서비스로 이사 날짜를 잡았는데 새 집에서 생활이 정말 순조로워졌어요. 생년월일 넣는 것만으로 이렇게 자세히 나올 줄 몰랐습니다."</div>
+        <div style="font-size:12px;color:#475569">이○○ · 30대 · 직장인</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px">
+        <div style="color:#FBBF24;font-size:13px;margin-bottom:10px">★★★★☆</div>
+        <div style="font-size:14px;color:#e2e8f0;line-height:1.8;margin-bottom:12px">"궁합을 봤는데 두 사람 모두 화(火) 기운이 강하다고 해서 수기(水氣)가 강한 해안 사찰을 추천받았어요. 함께 다녀왔는데 사이가 더 좋아진 것 같아요."</div>
+        <div style="font-size:12px;color:#475569">박○○ · 20대 · 연인과 함께</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px">
+        <div style="color:#FBBF24;font-size:13px;margin-bottom:10px">★★★★★</div>
+        <div style="font-size:14px;color:#e2e8f0;line-height:1.8;margin-bottom:12px">"꿈해몽이 정말 맞아떨어졌어요. 물에 빠지는 꿈을 꿨는데 재물운 관련 꿈이라고 해석해줬고, 추천받은 사찰에서 기도 후 좋은 일이 생겼습니다."</div>
+        <div style="font-size:12px;color:#475569">최○○ · 40대 · 주부</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px">
+        <div style="color:#FBBF24;font-size:13px;margin-bottom:10px">★★★★★</div>
+        <div style="font-size:14px;color:#e2e8f0;line-height:1.8;margin-bottom:12px">"사주팔자 분석이 정말 자세하게 나와서 놀랐어요. 오행 분포부터 대운까지 한눈에 볼 수 있어서 좋았습니다. 부모님께도 추천했어요."</div>
+        <div style="font-size:12px;color:#475569">정○○ · 30대 · 회사원</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px">
+        <div style="color:#FBBF24;font-size:13px;margin-bottom:10px">★★★★★</div>
+        <div style="font-size:14px;color:#e2e8f0;line-height:1.8;margin-bottom:12px">"전국 기도성지 327곳이 한 곳에 정리되어 있어서 정말 편리해요. 지역별로 필터도 되고 네이버 지도도 바로 열려서 처음 가는 사찰도 쉽게 찾았습니다."</div>
+        <div style="font-size:12px;color:#475569">한○○ · 60대 · 은퇴 후 여행 중</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <h3>⭐ 나와 인연이 닿는 절을 찾아보세요</h3>
+    <p>생년월일시만 입력하면 AI가 사주 오행을 분석해 지금 당신에게 필요한 사찰을 안내합니다.</p>
+    <a class="cta-btn" href="/manse">🔍 인연사찰 찾기</a>
+  </div>
+
+</div>
