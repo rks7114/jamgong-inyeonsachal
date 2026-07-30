@@ -8,13 +8,15 @@
 ```
 jamagong/
 ├── ebook/                     # [Step 1] 전자책 원고 + 상세페이지 카피
-│   ├── 00-목차.md
-│   ├── chapters/01-제1장.md   #  (제1장 전문 초안 완성)
+│   ├── 00-목차.md             #  8부 30장 전체 목차
+│   ├── chapters/              #  01-제1장.md, 02-제2장.md … (30장 목표)
 │   └── sales-page/상세페이지-카피.md
 ├── funnel/                    # [Step 2] 락인(Lock-in) 퍼널
 │   ├── cta_injector.py        #  각 장에 오행 매칭 CTA / 잼공몰 링크 자동 삽입
 │   └── ohang_product_map.json #  오행 → 잼공몰 기도용품 매칭 근거 테이블
 └── automation/               # [Step 3] 24시간 자율 파이프라인
+    ├── manuscript/            #  집필 진척 트래커 (30장 규모 상태 관리)
+    │   └── progress.py
     ├── threads/               #  스레드 자동 홍보 발행
     │   ├── post_scheduler.py
     │   └── templates/post_templates.json
@@ -63,6 +65,15 @@ crontab automation/crontab.example
 ```
 
 ## 각 컴포넌트
+
+### 0. 집필 진척 트래커 (`manuscript/progress.py`)
+- `ebook/chapters/*.md` 를 스캔해 **30장 진척률·분량·CTA 삽입 여부**를 집계.
+- 장당 목표 3,000~4,000자 대비 미달/과다를 표시하고, **다음 집필 대상 장을 자동 추천**.
+- `--next` 로 장 번호만 출력 → 자율 집필 루프의 입력으로 사용 가능.
+```bash
+python automation/manuscript/progress.py          # 진척 리포트
+python automation/manuscript/progress.py --next   # 다음 집필 대상
+```
 
 ### 1. 스레드 자동 홍보 (`threads/post_scheduler.py`)
 - 요일별 카테고리 로테이션(오행 팁 / 인연사찰 사례 / 철학)으로 글을 조립.

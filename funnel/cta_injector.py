@@ -34,8 +34,32 @@ BASE_URL = "https://jamgong-inyeonsachal.vercel.app"
 CTA_START = "<!-- CTA:AUTO-INSERT-START -->"
 CTA_END = "<!-- CTA:AUTO-INSERT-END -->"
 
-# 잼공몰 큐레이션을 직결할 장(개운·기도용품·실천 플랜)
-MALL_CHAPTERS = {"10", "11", "12"}
+# 잼공몰 큐레이션을 직결할 장 — 8부 30장 기준(개운·기도용품·실천 플랜)
+MALL_CHAPTERS = {"28", "29", "30"}
+
+# 부(部)별 CTA 문안 차별화 — 장 번호 → (부 제목, CTA 후킹 문장)
+PART_MAP = [
+    (range(1, 5),   "제1부 철학",     "이 장에서 말한 '근거 있는 분석'을 나의 사주로 직접 확인해 보세요."),
+    (range(5, 10),  "제2부 사주 읽기", "직접 계산해 본 오행 분포, 웹에서 3분 만에 검산해 보세요."),
+    (range(10, 15), "제3부 역학 문법", "합·충·용신까지 반영한 정밀 분석을 무료로 받아보세요."),
+    (range(15, 17), "제4부 시간의 흐름", "지금 나의 대운 흐름과 라이프사이클 지표를 확인해 보세요."),
+    (range(17, 22), "제5부 특허 기술", "이 매칭 엔진이 실제로 어떤 도량을 추천하는지 직접 돌려보세요."),
+    (range(22, 26), "제6부 사찰 DB",  "17,497곳 중 나와 맞는 도량을 지금 찾아보세요."),
+    (range(26, 28), "제7부 매칭 실전", "사례 속 그 과정을, 나의 생년월일시로 그대로 재현해 보세요."),
+    (range(28, 31), "제8부 개운·실천", "오행 균형을 맞추는 첫걸음, 나의 분석부터 시작하세요."),
+]
+
+
+def part_hook(ch: str) -> str:
+    """장 번호에 맞는 부(部)별 CTA 후킹 문장 반환."""
+    try:
+        n = int(ch)
+    except ValueError:
+        return PART_MAP[0][2]
+    for rng, _label, hook in PART_MAP:
+        if n in rng:
+            return hook
+    return PART_MAP[0][2]
 
 
 def utm(campaign: str, content: str, medium: str = "chapter") -> str:
@@ -55,7 +79,7 @@ def build_matching_cta(ch: str) -> str:
     link = f"{BASE_URL}/{utm('guide', f'ch{ch}')}"
     return (
         "> ### 🔮 나의 오행, 3분 만에 확인하기\n"
-        "> 이 장에서 다룬 내용을 나의 사주에 직접 대입해 보세요. "
+        f"> {part_hook(ch)} "
         "생년월일시만 입력하면 木火土金水 분포와 인연사찰 방향이 무료로 분석됩니다.\n"
         ">\n"
         f"> 👉 **[내 인연사찰 오행 매칭 시작하기]({link})**"

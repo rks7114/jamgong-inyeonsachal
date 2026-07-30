@@ -26,6 +26,9 @@ PYTHON=/usr/bin/python3
 # --- 락인 CTA 재삽입(원고 갱신 반영): 매주 월요일 새벽 3시 ---
 0 3 * * 1 cd $PROJECT_DIR && $PYTHON funnel/cta_injector.py >> automation/logs/cron.log 2>&1
 
+# --- 30장 집필 진척 리포트: 매주 월요일 새벽 3시 10분 (CTA 삽입 직후) ---
+10 3 * * 1 cd $PROJECT_DIR && $PYTHON automation/manuscript/progress.py >> automation/logs/cron.log 2>&1
+
 # 참고:
 #   Q&A 에이전트(qa_agent.py)는 크론이 아니라 유입 채널(웹 위젯/웹훅)에서
 #   실시간 호출하는 구조다. 상시 서비스로 띄우려면 프로세스 매니저(systemd/pm2)나
