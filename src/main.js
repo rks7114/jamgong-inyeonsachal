@@ -5823,8 +5823,14 @@ function render() {
         <label id="birth-label-a">생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
         <div class="birth-top-row">
           <div class="calendar-toggle">
-            <button type="button" class="calendar-toggle-btn active" data-calendar="solar">양력</button>
-            <button type="button" class="calendar-toggle-btn" data-calendar="lunar">음력</button>
+            <button type="button" class="calendar-toggle-btn" data-calendar="manse">📜 만세력</button>
+            <button type="button" class="calendar-toggle-btn active" data-calendar="solar">☀️ 양력</button>
+            <button type="button" class="calendar-toggle-btn" data-calendar="lunar">🌙 음력</button>
+          </div>
+          <div id="manse-notice" style="display:none;margin-top:6px;padding:8px 12px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;font-size:11px;color:#FBBF24;line-height:1.7">
+            📜 <strong>만세력 기준</strong>: 사주는 절기(節氣)로 월(月)이 바뀝니다.<br>
+            입춘(2월 4~5일) 이전 출생자는 <strong>전년도</strong>로 입력하세요.<br>
+            <span id="manse-ganji-label" style="color:#f8fafc;font-size:12px;font-weight:700"></span>
           </div>
           <div class="gender-toggle">
             <button type="button" class="gender-btn active" data-gender="male">👨 남(男)</button>
@@ -6049,6 +6055,25 @@ function render() {
     });
   });
 
+  const GANJI_STEM = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+  const GANJI_BRANCH = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  const GANJI_KR_STEM = ['갑','을','병','정','무','기','경','신','임','계'];
+  const GANJI_KR_BRANCH = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+  function getGanjiYear(year) {
+    var baseYear = 1984; // 갑자년
+    var diff = ((year - baseYear) % 60 + 60) % 60;
+    return GANJI_STEM[diff % 10] + GANJI_BRANCH[diff % 12]
+      + '(' + GANJI_KR_STEM[diff % 10] + GANJI_KR_BRANCH[diff % 12] + ')년';
+  }
+  function updateManseNotice() {
+    var yearEl = document.getElementById('birth-year');
+    var labelEl = document.getElementById('manse-ganji-label');
+    if(!yearEl || !labelEl) return;
+    var y = parseInt(yearEl.value);
+    if(y) labelEl.textContent = y + '년 → ' + getGanjiYear(y);
+    else labelEl.textContent = '';
+  }
+
   let selectedCalendar = "solar";
   document.querySelectorAll("[data-calendar]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -6056,7 +6081,13 @@ function render() {
       btn.classList.add("active");
       selectedCalendar = btn.dataset.calendar;
       document.getElementById("leap-month-wrap").classList.toggle("hidden", selectedCalendar !== "lunar");
+      var noticeEl = document.getElementById("manse-notice");
+      if(noticeEl) noticeEl.style.display = selectedCalendar === "manse" ? "block" : "none";
+      if(selectedCalendar === "manse") updateManseNotice();
     });
+  });
+  document.getElementById("birth-year")?.addEventListener("change", () => {
+    if(selectedCalendar === "manse") updateManseNotice();
   });
 
   // 시간 모름 선택 시 분(分) 비활성화
@@ -7520,7 +7551,7 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
     </div>`;
   }).join('');
 
-  const calStr = birthInput.calendarType === 'lunar' ? '음력' : '양력';
+  const calStr = birthInput.calendarType === 'lunar' ? '음력' : birthInput.calendarType === 'manse' ? '만세력' : '양력';
   const hourStr = `${birthInput.hour}시 ${birthInput.minute > 0 ? birthInput.minute+'분' : ''}`.trim();
   const cityCorrection = birthInput.birthLongitude
     ? ` · 출생지 진태양시 보정 (경도 ${birthInput.birthLongitude}°)`
