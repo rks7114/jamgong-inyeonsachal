@@ -49,11 +49,34 @@ module.exports = async function handler(req, res) {
 
   try {
     loadDeps();
-    const { birthDateTime, birthInput, purpose, userLat, userLng, memberUnlocked, region, maxDistanceKm } = req.body;
+    const { birthDateTime, birthInput: rawBirthInput, purpose, userLat, userLng, memberUnlocked, region, maxDistanceKm } = req.body;
 
-    if ((!birthDateTime && !birthInput) || !purpose) {
+    if ((!birthDateTime && !rawBirthInput) || !purpose) {
       res.status(400).json({ error: "생년월일시, 기도목적 정보가 필요합니다." });
       return;
+    }
+
+    // Normalize birthInput: { date:"YYYY-MM-DD", calendar:"양력"|"음력", gender, hour } → { calendarType, year, month, day, hour }
+    let birthInput = rawBirthInput;
+    if (rawBirthInput && typeof rawBirthInput === "object" && rawBirthInput.date && !rawBirthInput.year) {
+      const parts = String(rawBirthInput.date).split("-");
+      const yr = parseInt(parts[0], 10);
+      const mo = parseInt(parts[1], 10);
+      const dy = parseInt(parts[2], 10);
+      if (!yr || !mo || !dy) {
+        res.status(400).json({ error: "생년월일 형식 오류 (YYYY-MM-DD 필요)" });
+        return;
+      }
+      birthInput = {
+        calendarType: rawBirthInput.calendar === "음력" ? "lunar" : "solar",
+        year: yr,
+        month: mo,
+        day: dy,
+        hour: rawBirthInput.hour ?? 12,
+        minute: rawBirthInput.minute ?? 0,
+        gender: rawBirthInput.gender,
+        region: rawBirthInput.region || region || "",
+      };
     }
 
     const safeUserLat = userLat ?? 37.5665;
