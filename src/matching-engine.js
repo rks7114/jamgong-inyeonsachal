@@ -331,15 +331,15 @@ function scoreTemple(temple, matchContext) {
   const personalNeed = distribution ? Math.max(0, 4 - (distribution[templeOhaeng] || 0)) : 2;
   const personalResonance = personalNeed * 5; // 0~20점
 
-  // 1-c) 생년월일 친연도 (±18점) — 생년월일 변화마다 다른 사찰이 나오도록 폭 확대
+  // 1-c) 생년월일 친연도 (±30점) — 생년월일 변화마다 다른 사찰이 나오도록 폭 확대
   const birthYear = matchContext.birthYear || 2000;
   const birthMonth = matchContext.birthMonth || 1;
   const birthDay = matchContext.birthDay || 1;
   const templeKey = temple.id
     ? (parseInt(String(temple.id).replace(/\D/g, "").slice(-3)) || temple.name.length)
     : temple.name.charCodeAt(0);
-  const affinityRaw = (birthYear * 7 + birthMonth * 31 + birthDay * 17 + templeKey * 11) % 37;
-  const birthAffinity = affinityRaw - 18; // -18 ~ +18점
+  const affinityRaw = (birthYear * 7 + birthMonth * 31 + birthDay * 17 + templeKey * 11) % 61;
+  const birthAffinity = affinityRaw - 30; // -30 ~ +30점
 
   // 2) 목적 태그 일치도 (30점)
   const purposeTagMap = {
@@ -353,13 +353,14 @@ function scoreTemple(temple, matchContext) {
   const tagMatch = (temple.tags || []).some((t) => relevantTags.includes(t));
   const purposeScore = tagMatch ? 30 : 10;
 
-  // 3) 접근성 (20점) - 가까울수록 高, 200km 이상이면 0점 처리
-  const distance = calculateDistance(userLat, userLng, temple.lat, temple.lng);
-  const distanceScore = Math.max(0, 20 - (distance / 200) * 20);
+  // 3) 접근성 점수 — 인연사찰은 거리/지역 무관, 사주 오행으로만 전국에서 찾음
+  // 거리 점수 완전 제거: 서울에서 멀어도 인연이 맞으면 추천
+  const distance = (userLat && userLng) ? calculateDistance(userLat, userLng, temple.lat, temple.lng) : 0;
+  const distanceScore = 0; // 거리 점수 제거 — 전국 동등 경쟁
 
-  // 4) 데이터 신뢰도 + 조계종 보너스 (최대 17점)
-  // 조계종 보너스를 7점으로 낮춰 생년월일 다양성(±18점)이 결과에 충분히 반영되도록 조정
-  const jogyeBonus = JOGYE_TEMPLES.has(temple.name) ? 7 : 0;
+  // 4) 데이터 신뢰도 + 조계종 보너스 (최대 13점)
+  // 조계종 보너스를 3점으로 낮춰 생년월일 다양성(±30점)이 결과에 충분히 반영되도록 조정
+  const jogyeBonus = JOGYE_TEMPLES.has(temple.name) ? 3 : 0;
   const trustScore = (temple.verified ? 10 : 4) + jogyeBonus;
 
   // 5) 인연 시너지항 — 잼공감(CLI)·퍼피시너지(CSI)와 동일한 비가산 시너지 수학 코어
@@ -444,8 +445,15 @@ function matchTemples(request, templeDB) {
     '대각사',  // 서울 종로구 — 법당 1개, 기도 공간 부족
   ]);
 
-  // 좌표 정보 없는 사찰 + 제외 목록 사찰 모두 매칭 대상에서 제외
-  let validTemples = templeDB.filter((t) => t.lat != null && t.lng != null && !EXCLUDE_TEMPLES.has(t.name));
+  // 비사찰 이름 패턴 — 불교용품점, 굿당, 마트, 주유소, 음식점, 치킨집 등 사찰이 아닌 항목 제외
+  const NON_TEMPLE_PATTERN = /용품|상회|마트|주유소|굿당|무속|철물|식당|카페|홈쇼핑|불교마트|불교서적|장례|요양병원|수녀원|찐빵|음식체험|음식연구|음식문화원|음식협회|일관도|주점|편의점|농협(?!사)|슈퍼|마켓|주차|게스트하우스|펜션|호텔|모텔|민박|캠핑|공장|회사(?!불)|재단(?!불|법)|아파트|치킨|횟집|국수(?!암)|김밥나라|피자|커피(?!붓다)|벌크|코리엔탈|굽네|bhc|bhc/i;
+
+  // 좌표 정보 없는 사찰 + 제외 목록 사찰 + 비사찰 항목 모두 매칭 대상에서 제외
+  let validTemples = templeDB.filter((t) =>
+    t.lat != null && t.lng != null &&
+    !EXCLUDE_TEMPLES.has(t.name) &&
+    !NON_TEMPLE_PATTERN.test(t.name)
+  );
 
   // 기도 여행 지역 필터 — 특정 시/도를 선택하면 해당 지역 사찰만 대상으로 함
   if (request.region) {
@@ -481,9 +489,11 @@ function matchTemples(request, templeDB) {
   const dirMatched = allScored.filter(t => targetBearings.includes(t.detail.bearing));
   const dirOther   = allScored.filter(t => !targetBearings.includes(t.detail.bearing));
 
+  // 방위 일치 사찰 최대 10개 + 나머지 30개 = 40개 풀
+  // → 경기도처럼 특정 방위 사찰이 적은 지역에서도 다양한 결과 보장
   const primaryPool = dirMatched.length >= 2
-    ? [...dirMatched, ...dirOther].slice(0, 25)
-    : [...dirOther.slice(0, 5), ...dirMatched, ...dirOther.slice(5)].slice(0, 25);
+    ? [...dirMatched.slice(0, 10), ...dirOther.slice(0, 30)].slice(0, 40)
+    : [...dirOther.slice(0, 10), ...dirMatched, ...dirOther.slice(10)].slice(0, 40);
 
   // ── 시드 기반 셔플로 매번 다른 사찰 추출 ────────────────────────────────
   // 점수가 높은 특정 사찰(대각사 등)이 독점되지 않도록 Fisher-Yates 셔플 적용
@@ -504,19 +514,21 @@ function matchTemples(request, templeDB) {
       s = (s * 1664525 + 1013904223) >>> 0; // LCG
       // 점수가 높을수록 앞에 올 확률 높게: 점수 정규화 + 난수 혼합
       const scoreNorm = (a[i].item.score || 0) / 100;
-      a[i].order = scoreNorm * 0.55 + (s / 0xFFFFFFFF) * 0.45;
+      a[i].order = scoreNorm * 0.40 + (s / 0xFFFFFFFF) * 0.60;
     }
     return a.sort((x, y) => y.order - x.order).map(o => o.item);
   }
 
   const shuffled = seededShuffle(primaryPool, baseSeed);
 
-  // 중복 제거: 같은 이름 사찰 제외하고 3개 선택
+  // 중복 제거 + 최소 인연 점수 50점 이상만 선택
+  // 50점 미만은 인연이 너무 약해 추천 대상에서 제외
+  const MIN_SCORE = 50;
   const seenNames = new Set();
   const scored = [];
   for (let i = 0; scored.length < 3 && i < shuffled.length; i++) {
     const t = shuffled[i];
-    if (!seenNames.has(t.temple.name)) {
+    if (t.score >= MIN_SCORE && !seenNames.has(t.temple.name)) {
       seenNames.add(t.temple.name);
       scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose, weak.부족오행, purposeOhaeng) });
     }
@@ -626,7 +638,7 @@ function matchCoupleTemples(request, templeDB) {
     for (let i = 0; i < a.length; i++) {
       s = (s * 1664525 + 1013904223) >>> 0;
       const scoreNorm = (a[i].item.score || 0) / 100;
-      a[i].order = scoreNorm * 0.55 + (s / 0xFFFFFFFF) * 0.45;
+      a[i].order = scoreNorm * 0.40 + (s / 0xFFFFFFFF) * 0.60;
     }
     return a.sort((x, y) => y.order - x.order).map(o => o.item);
   }
