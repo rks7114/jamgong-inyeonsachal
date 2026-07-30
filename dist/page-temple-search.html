@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전국 사찰 검색 | 잼공인연사찰</title>
+<meta name="description" content="전국 17,497개 사찰을 검색하고 상세 정보를 확인하세요. 지역별 필터와 실시간 검색으로 원하는 사찰을 바로 찾을 수 있습니다.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+
+/* 히어로 */
+.ts-hero{position:relative;padding:72px 24px 48px;text-align:center;background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 60%,#1a1a2e 100%);overflow:hidden}
+.ts-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(139,92,246,0.15),transparent)}
+.ts-hero-badge{position:relative;display:inline-flex;align-items:center;gap:6px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 16px;border-radius:20px;margin-bottom:16px}
+.ts-hero-title{position:relative;font-size:clamp(26px,5vw,44px);font-weight:900;color:#f8fafc;margin-bottom:10px}
+.ts-hero-sub{position:relative;font-size:14px;color:#94a3b8;margin-bottom:0}
+.ts-hero-count{color:#FBBF24;font-weight:800}
+
+/* 검색 바 */
+.ts-search-wrap{position:relative;max-width:860px;margin:0 auto;padding:32px 24px 0}
+.ts-search-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.ts-input{flex:1;min-width:200px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px 20px;font-size:15px;color:#f1f5f9;outline:none;transition:border-color .2s}
+.ts-input::placeholder{color:#475569}
+.ts-input:focus{border-color:rgba(139,92,246,0.5);background:rgba(139,92,246,0.05)}
+.ts-select{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px 16px;font-size:14px;color:#e2e8f0;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
+.ts-select:focus{border-color:rgba(139,92,246,0.5)}
+.ts-select option{background:#1e293b;color:#e2e8f0}
+
+/* 결과 통계 */
+.ts-stats{font-size:13px;color:#64748b;padding-bottom:12px}
+.ts-stats strong{color:#94a3b8}
+
+/* 결과 그리드 */
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:0 24px 32px;max-width:860px;margin:0 auto}
+
+/* 카드 */
+.ts-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px 20px;cursor:pointer;transition:all .2s;text-decoration:none;display:block}
+.ts-card:hover{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.35);transform:translateY(-3px)}
+.ts-card-name{font-size:16px;font-weight:800;color:#f1f5f9;margin-bottom:6px}
+.ts-card-sido{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#a78bfa;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.ts-card-addr{font-size:12px;color:#64748b;line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ts-card-tags{display:flex;flex-wrap:wrap;gap:5px}
+.ts-card-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);color:#FBBF24}
+.ts-card-sect{font-size:10px;color:#475569;margin-top:6px}
+
+/* 더보기 버튼 */
+.ts-more-wrap{text-align:center;padding:8px 24px 60px;max-width:860px;margin:0 auto}
+.ts-more-btn{background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.35);color:#a78bfa;font-size:14px;font-weight:700;padding:14px 36px;border-radius:14px;cursor:pointer;transition:all .2s}
+.ts-more-btn:hover{background:rgba(139,92,246,0.25);transform:translateY(-2px)}
+.ts-more-btn:disabled{opacity:0.4;cursor:default;transform:none}
+
+/* 로딩 */
+.ts-loading{text-align:center;padding:60px 24px;color:#475569}
+.ts-loading-spin{display:inline-block;width:36px;height:36px;border:3px solid rgba(139,92,246,0.2);border-top-color:#8b5cf6;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 빈 결과 */
+.ts-empty{text-align:center;padding:60px 24px;color:#475569;font-size:15px}
+
+/* 지도 바로가기 버튼 */
+.ts-map-mini{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;text-decoration:none;margin-top:8px;background:rgba(66,133,244,0.1);border:1px solid rgba(66,133,244,0.25);color:#7ba7f5;transition:background .2s}
+.ts-map-mini:hover{background:rgba(66,133,244,0.2)}
+
+/* 반응형 */
+@media(max-width:600px){
+  .ts-grid{grid-template-columns:1fr 1fr}
+  .ts-card{padding:14px}
+  .ts-card-name{font-size:14px}
+}
+@media(max-width:400px){
+  .ts-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- 히어로 -->
+<div class="ts-hero">
+  <div class="ts-hero-badge">🏯 전국 사찰 데이터베이스</div>
+  <h1 class="ts-hero-title">전국 사찰 검색</h1>
+  <p class="ts-hero-sub">전국 <span class="ts-hero-count">17,497개</span> 사찰을 검색하고 상세 정보를 확인하세요</p>
+</div>
+
+<!-- 검색 -->
+<div class="ts-search-wrap">
+  <div class="ts-search-bar">
+    <input class="ts-input" id="ts-keyword" type="text" placeholder="사찰 이름 또는 지역 검색..." autocomplete="off">
+    <select class="ts-select" id="ts-sido">
+      <option value="">전체 지역</option>
+      <option value="서울">서울</option>
+      <option value="경기">경기</option>
+      <option value="인천">인천</option>
+      <option value="강원">강원</option>
+      <option value="충북">충북</option>
+      <option value="충남">충남</option>
+      <option value="대전">대전</option>
+      <option value="세종">세종</option>
+      <option value="경북">경북</option>
+      <option value="경남">경남</option>
+      <option value="대구">대구</option>
+      <option value="울산">울산</option>
+      <option value="부산">부산</option>
+      <option value="전북">전북</option>
+      <option value="전남">전남</option>
+      <option value="광주">광주</option>
+      <option value="제주">제주</option>
+    </select>
+  </div>
+  <div class="ts-stats" id="ts-stats">로딩 중...</div>
+</div>
+
+<!-- 결과 -->
+<div class="ts-grid" id="ts-grid">
+  <div style="grid-column:1/-1">
+    <div class="ts-loading">
+      <div class="ts-loading-spin"></div>
+      <div>전국 사찰 데이터 로딩 중...</div>
+    </div>
+  </div>
+</div>
+
+<div class="ts-more-wrap" id="ts-more-wrap" style="display:none">
+  <button type="button" class="ts-more-btn" id="ts-more-btn" onclick="loadMore()">더 보기</button>
+</div>
+
+<script src="temple-detail-db.js"></script>
+<script>
+var PAGE_SIZE = 48;
+var currentOffset = 0;
+var filteredData = [];
+var allData = [];
+var searchTimer = null;
+
+function init(){
+  if(typeof TEMPLE_DETAIL_DB === 'undefined'){
+    document.getElementById('ts-grid').innerHTML = '<div style="grid-column:1/-1"><div class="ts-empty">데이터를 불러올 수 없습니다.<br>temple-detail-db.js 파일을 확인해 주세요.</div></div>';
+    return;
+  }
+  allData = TEMPLE_DETAIL_DB;
+  doSearch();
+
+  document.getElementById('ts-keyword').addEventListener('input', function(){
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(doSearch, 200);
+  });
+  document.getElementById('ts-sido').addEventListener('change', doSearch);
+}
+
+function doSearch(){
+  var keyword = (document.getElementById('ts-keyword').value || '').trim().replace(/\s+/g,' ');
+  var sido = document.getElementById('ts-sido').value;
+
+  filteredData = allData.filter(function(t){
+    if(sido && t.s !== sido) return false;
+    if(!keyword) return true;
+    var kw = keyword.toLowerCase();
+    return (t.n && t.n.includes(kw)) ||
+           (t.a && t.a.includes(kw)) ||
+           (t.g && t.g.includes(kw)) ||
+           (t.s && t.s.includes(kw)) ||
+           (t.se && t.se.includes(kw));
+  });
+
+  currentOffset = 0;
+  renderGrid(true);
+  updateStats(keyword, sido);
+}
+
+function updateStats(keyword, sido){
+  var total = filteredData.length;
+  var statsEl = document.getElementById('ts-stats');
+  var desc = '';
+  if(sido) desc += sido + ' ';
+  if(keyword) desc += '"' + keyword + '" ';
+  if(desc) statsEl.innerHTML = desc + '검색 결과: <strong>' + total.toLocaleString() + '개</strong>';
+  else statsEl.innerHTML = '전국 사찰 <strong>' + total.toLocaleString() + '개</strong>';
+}
+
+function renderGrid(reset){
+  var grid = document.getElementById('ts-grid');
+  if(reset) grid.innerHTML = '';
+
+  if(filteredData.length === 0){
+    grid.innerHTML = '<div style="grid-column:1/-1"><div class="ts-empty">검색 결과가 없습니다.<br>다른 키워드나 지역으로 검색해 보세요.</div></div>';
+    document.getElementById('ts-more-wrap').style.display = 'none';
+    return;
+  }
+
+  var slice = filteredData.slice(currentOffset, currentOffset + PAGE_SIZE);
+  slice.forEach(function(t){
+    var card = makeCard(t);
+    grid.appendChild(card);
+  });
+
+  currentOffset += slice.length;
+
+  var moreWrap = document.getElementById('ts-more-wrap');
+  var moreBtn = document.getElementById('ts-more-btn');
+  if(currentOffset < filteredData.length){
+    moreWrap.style.display = 'block';
+    var remaining = filteredData.length - currentOffset;
+    moreBtn.textContent = '더 보기 (' + remaining.toLocaleString() + '개 남음)';
+    moreBtn.disabled = false;
+  } else {
+    moreWrap.style.display = 'none';
+  }
+}
+
+function loadMore(){
+  renderGrid(false);
+}
+
+function makeCard(t){
+  var detailUrl = 'page-temple-detail.html?name=' + encodeURIComponent(t.n);
+  var mapUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(t.n + ' ' + (t.a || t.s + ' ' + t.g));
+
+  var card = document.createElement('div');
+  card.style.cssText = 'display:flex;flex-direction:column;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px 20px;cursor:pointer;transition:all .2s;text-decoration:none';
+
+  // 마우스 이벤트
+  card.addEventListener('mouseenter', function(){ card.style.background='rgba(139,92,246,0.08)'; card.style.borderColor='rgba(139,92,246,0.35)'; card.style.transform='translateY(-3px)'; });
+  card.addEventListener('mouseleave', function(){ card.style.background='rgba(255,255,255,0.04)'; card.style.borderColor='rgba(255,255,255,0.08)'; card.style.transform=''; });
+
+  // 클릭 → 상세페이지
+  card.addEventListener('click', function(e){
+    if(e.target.tagName === 'A') return;
+    location.href = detailUrl;
+  });
+
+  // 사도 태그
+  var sidoTag = '';
+  if(t.s) sidoTag = '<span class="ts-card-sido">' + t.s + (t.g ? ' ' + t.g : '') + '</span>';
+
+  // 기도 태그
+  var tagHtml = '';
+  if(t.p && t.p.length){
+    t.p.slice(0,3).forEach(function(p){
+      tagHtml += '<span class="ts-card-tag">' + p + '</span>';
+    });
+  }
+
+  // 종파
+  var sectHtml = t.se ? '<div class="ts-card-sect">' + t.se + '</div>' : '';
+
+  // 창건
+  var fyHtml = t.fy ? '<div style="font-size:10px;color:#475569;margin-top:2px">창건 ' + t.fy + '년</div>' : '';
+
+  card.innerHTML =
+    sidoTag +
+    '<div class="ts-card-name">' + escHtml(t.n) + '</div>' +
+    '<div class="ts-card-addr">' + escHtml(t.a || (t.s + ' ' + t.g)) + '</div>' +
+    (tagHtml ? '<div class="ts-card-tags">' + tagHtml + '</div>' : '') +
+    sectHtml +
+    fyHtml +
+    '<a class="ts-map-mini" href="' + mapUrl + '" target="_blank">📍 구글 지도</a>';
+
+  return card;
+}
+
+function escHtml(s){
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// 초기화
+document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('load', init);
+setTimeout(init, 500);
+</script>
+</body>
+</html>
