@@ -1,0 +1,479 @@
+<meta charset="UTF-8">
+<style>
+*{box-sizing:border-box}
+.b8{font-family:'Noto Sans KR',sans-serif;max-width:960px;margin:0 auto;padding:48px 24px 80px;color:#e2e8f0}
+.b8-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.b8-title{font-size:clamp(24px,3.5vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.b8-title em{color:#FBBF24;font-style:normal}
+.b8-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+
+/* ── 카운터 박스 ── */
+.b8-counter{
+  position:relative;overflow:hidden;
+  background:linear-gradient(145deg,rgba(15,10,5,0.95),rgba(20,10,2,0.98));
+  border:1px solid rgba(251,191,36,0.18);
+  border-radius:28px;padding:44px 32px 36px;text-align:center;margin-bottom:40px;
+  box-shadow:0 0 60px rgba(251,191,36,0.06),inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.b8-counter::before{
+  content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  width:320px;height:320px;
+  background:radial-gradient(circle,rgba(251,191,36,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+/* 파티클 캔버스 */
+#b8-particles{position:absolute;inset:0;pointer-events:none;opacity:0.5}
+
+/* 목표 버튼 */
+.b8-target{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.b8-t-btn{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+  border-radius:10px;padding:7px 16px;font-size:12px;font-weight:700;
+  color:#64748b;cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.b8-t-btn.on{
+  background:rgba(251,191,36,0.13);border-color:rgba(251,191,36,0.45);
+  color:#FBBF24;box-shadow:0 0 12px rgba(251,191,36,0.15);
+}
+.b8-t-btn:hover:not(.on){background:rgba(255,255,255,0.07);color:#94a3b8}
+
+/* 공통 버튼 */
+.b8-btn{font-size:14px;font-weight:800;padding:12px 26px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:-0.01em}
+.b8-btn-main{
+  background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;
+  box-shadow:0 4px 20px rgba(251,191,36,0.3);
+}
+.b8-btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(251,191,36,0.45)}
+.b8-btn-main:active{transform:translateY(0)}
+.b8-btn-sub{
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);
+  color:#94a3b8;
+}
+.b8-btn-sub:hover{background:rgba(255,255,255,0.1);color:#cbd5e1}
+
+/* 시작 화면 */
+.b8-start-emoji{font-size:64px;margin-bottom:16px;display:block;filter:drop-shadow(0 0 20px rgba(251,191,36,0.3))}
+.b8-start-title{font-size:22px;font-weight:900;color:#f8fafc;margin-bottom:8px}
+.b8-start-hint{font-size:13px;color:#475569;margin-bottom:28px}
+
+/* 진행 화면 링 */
+.b8-ring-wrap{position:relative;width:220px;height:220px;margin:0 auto 24px}
+.b8-ring-label{font-size:11px;margin-top:5px;transition:color .3s}
+
+/* 컨트롤 */
+.b8-ctrl{display:flex;gap:10px;justify-content:center;margin-bottom:16px}
+
+/* 효과음 탭 */
+.b8-snd-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+
+/* 완료 화면 */
+.b8-done-emoji{font-size:64px;margin-bottom:12px;display:block;animation:b8pop .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes b8pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.b8-done-time{font-size:72px;font-weight:900;color:#FBBF24;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(251,191,36,0.4)}
+.b8-done-label{font-size:13px;color:#64748b;margin:6px 0 4px}
+.b8-done-avg{font-size:14px;color:#94a3b8;margin-bottom:20px}
+.b8-done-msg{font-size:15px;color:#FBBF24;font-weight:800;letter-spacing:-.01em}
+
+/* 섹션 헤더 */
+.b8-sec{
+  font-size:10px;font-weight:800;color:#FBBF24;letter-spacing:.2em;
+  margin:48px 0 18px;display:flex;align-items:center;gap:10px;
+}
+.b8-sec::after{content:'';flex:1;height:1px;background:rgba(251,191,36,0.15)}
+
+/* 방법 카드 */
+.b8-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:40px}
+.b8-step{
+  background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;padding:20px 18px;position:relative;overflow:hidden;
+  transition:border-color .2s,transform .2s;
+}
+.b8-step:hover{border-color:rgba(251,191,36,0.25);transform:translateY(-2px)}
+.b8-step::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(251,191,36,0.03),transparent);pointer-events:none}
+.b8-step-n{font-size:42px;font-weight:900;color:rgba(251,191,36,0.1);position:absolute;top:8px;right:12px;line-height:1}
+.b8-step-icon{font-size:26px;margin-bottom:10px}
+.b8-step-name{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:6px}
+.b8-step-desc{font-size:12px;color:#64748b;line-height:1.65}
+
+/* 횟수 카드 */
+.b8-counts{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:40px}
+.b8-c-item{
+  background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;padding:18px;transition:border-color .2s;
+}
+.b8-c-item:hover{border-color:rgba(251,191,36,0.25)}
+.b8-c-num{font-size:30px;font-weight:900;color:#FBBF24;margin-bottom:4px;line-height:1}
+.b8-c-name{font-size:13px;font-weight:700;color:#f8fafc;margin-bottom:5px}
+.b8-c-desc{font-size:12px;color:#64748b;line-height:1.55}
+
+/* 효과 카드 */
+.b8-effects{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:40px}
+.b8-eff{
+  background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;padding:20px;display:flex;gap:14px;align-items:flex-start;
+  transition:border-color .2s;
+}
+.b8-eff:hover{border-color:rgba(251,191,36,0.2)}
+.b8-eff-icon{font-size:30px;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(251,191,36,0.2))}
+.b8-eff-name{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:5px}
+.b8-eff-desc{font-size:12px;color:#64748b;line-height:1.6}
+
+/* 링 애니메이션 */
+@keyframes b8spinRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes b8glow{0%,100%{opacity:.6}50%{opacity:1}}
+</style>
+
+<!-- 히어로 배너 -->
+<div style="position:relative;width:100%;height:320px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1400&q=90&auto=format&fit=crop"
+    onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Naksansa07.jpg/1280px-Naksansa07.jpg'"
+    style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,5,0,0.55) 0%,rgba(0,0,0,0.82) 100%)"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(255,255,255,0.08);border:1px solid rgba(251,191,36,0.5);color:#FBBF24;font-size:10px;font-weight:800;letter-spacing:.25em;padding:5px 20px;border-radius:20px;margin-bottom:18px;font-family:'Noto Sans KR',sans-serif">108 BOWS · 절 수행 가이드</div>
+    <h1 style="font-size:clamp(30px,5vw,54px);font-weight:900;color:#fff;margin:0 0 12px;text-shadow:0 2px 30px rgba(0,0,0,0.8);font-family:'Noto Sans KR',sans-serif;line-height:1.15">108배 수행 가이드</h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.7);margin:0;line-height:1.75;font-family:'Noto Sans KR',sans-serif">절 하나하나에 담긴 참회와 발원의 의미를<br>깊이 이해하며 수행합니다</p>
+  </div>
+</div>
+
+<div class="b8">
+  <div class="b8-badge">108배 가이드</div>
+  <h1 class="b8-title">🙏 <em>108배</em> 수행 가이드</h1>
+  <p class="b8-sub">108번뇨(煩惱)를 소멸하는 절 수행. 타이머를 시작하고 수행을 마치면 완료 버튼을 누르세요.</p>
+
+  <!-- ── 카운터 ── -->
+  <div class="b8-counter" id="b8-counter-area">
+    <canvas id="b8-particles"></canvas>
+
+    <!-- 대기 -->
+    <div id="b8-state-ready" style="position:relative;z-index:1">
+      <span class="b8-start-emoji">🙏</span>
+      <div class="b8-start-title">목표 배수를 선택하고 시작하세요</div>
+      <div class="b8-start-hint">수행을 마치면 완료 버튼으로 시간을 기록합니다</div>
+      <div class="b8-target">
+        <button type="button" class="b8-t-btn" onclick="b8SetGoal(3,this)">3배</button>
+        <button type="button" class="b8-t-btn" onclick="b8SetGoal(21,this)">21배</button>
+        <button type="button" class="b8-t-btn" onclick="b8SetGoal(49,this)">49배</button>
+        <button type="button" class="b8-t-btn on" onclick="b8SetGoal(108,this)">108배</button>
+        <button type="button" class="b8-t-btn" onclick="b8SetGoal(300,this)">300배</button>
+        <button type="button" class="b8-t-btn" onclick="b8SetGoal(1000,this)">1000배</button>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:28px">
+        <button type="button" class="b8-btn b8-btn-main" onclick="b8Start()" style="font-size:16px;padding:15px 40px">▶ 시작</button>
+      </div>
+    </div>
+
+    <!-- 진행 -->
+    <div id="b8-state-running" style="display:none;position:relative;z-index:1">
+      <div style="font-size:13px;color:#64748b;margin-bottom:18px;letter-spacing:.05em">목표 <span id="b8-goal-disp" style="color:#FBBF24;font-weight:800">108</span>배 수행 중</div>
+      <div class="b8-ring-wrap">
+        <svg width="220" height="220" style="position:absolute;top:0;left:0">
+          <!-- 배경 트랙 -->
+          <circle cx="110" cy="110" r="96" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+          <!-- 글로우 트랙 -->
+          <circle cx="110" cy="110" r="96" fill="none" stroke="rgba(251,191,36,0.04)" stroke-width="18"/>
+          <!-- 회전 호 -->
+          <circle id="b8-ring-arc" cx="110" cy="110" r="96" fill="none"
+            stroke="url(#b8g)" stroke-width="10" stroke-linecap="round"
+            stroke-dasharray="452 150"
+            style="transform-origin:110px 110px;animation:b8spinRing 2s linear infinite;animation-play-state:paused"/>
+          <defs>
+            <linearGradient id="b8g" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FBBF24"/>
+              <stop offset="60%" stop-color="#f472b6"/>
+              <stop offset="100%" stop-color="#818cf8"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <!-- 중앙 -->
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-size:44px;font-weight:900;color:#FBBF24;font-variant-numeric:tabular-nums;line-height:1;text-shadow:0 0 30px rgba(251,191,36,0.4)" id="b8-timer">00:00</div>
+          <div style="font-size:11px;margin-top:6px;font-weight:600;letter-spacing:.05em" id="b8-timer-label" class="b8-ring-label" style="color:#64748b">경과 시간</div>
+        </div>
+      </div>
+      <!-- 컨트롤 -->
+      <div class="b8-ctrl">
+        <button type="button" class="b8-btn b8-btn-sub" id="b8-pause-btn" onclick="b8Pause()">⏸ 일시정지</button>
+        <button type="button" class="b8-btn b8-btn-main" onclick="b8Tap()">✅ 수행 완료</button>
+      </div>
+      <!-- 효과음 -->
+      <div class="b8-snd-row">
+        <button type="button" class="b8-t-btn on" id="snd-none"   onclick="b8SetSound('none',this)">🔇 없음</button>
+        <button type="button" class="b8-t-btn"    id="snd-moktak" onclick="b8SetSound('moktak',this)">🪘 목탁</button>
+        <button type="button" class="b8-t-btn"    id="snd-bell"   onclick="b8SetSound('bell',this)">🔔 범종</button>
+      </div>
+    </div>
+
+    <!-- 완료 -->
+    <div id="b8-state-done" style="display:none;position:relative;z-index:1">
+      <span class="b8-done-emoji">🎉</span>
+      <div style="font-size:14px;color:#64748b;margin-bottom:4px">목표 <span id="b8-goal-done" style="color:#FBBF24;font-weight:800">108</span>배 완료!</div>
+      <div class="b8-done-time" id="b8-result">00:00</div>
+      <div class="b8-done-label">소요 시간</div>
+      <div class="b8-done-avg" id="b8-avg-disp"></div>
+      <div class="b8-done-msg">수고하셨습니다. 발원이 이루어지길 바랍니다 🙏</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px">
+        <button type="button" class="b8-btn b8-btn-main" onclick="b8Share()" style="font-size:13px;padding:11px 22px">📤 SNS 공유</button>
+        <button type="button" class="b8-btn b8-btn-sub" onclick="b8Reset()">↺ 다시하기</button>
+      </div>
+    </div>
+  </div>
+
+  <style>@keyframes b8spinRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
+  <script>
+  /* ── 파티클 ── */
+  (function(){
+    var c=document.getElementById('b8-particles');
+    var wrap=document.getElementById('b8-counter-area');
+    function resize(){c.width=wrap.offsetWidth;c.height=wrap.offsetHeight}
+    resize();window.addEventListener('resize',resize);
+    var ctx=c.getContext('2d');
+    var pts=[];
+    for(var i=0;i<35;i++) pts.push({
+      x:Math.random()*c.width,y:Math.random()*c.height,
+      vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+      r:Math.random()*1.5+.5,op:Math.random()*.4+.1,
+      col:Math.random()>.6?'#FBBF24':'rgba(192,132,252,0.8)'
+    });
+    function draw(){
+      ctx.clearRect(0,0,c.width,c.height);
+      pts.forEach(function(p){
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.col;ctx.globalAlpha=p.op;ctx.fill();ctx.globalAlpha=1;
+        p.x+=p.vx;p.y+=p.vy;
+        if(p.x<0||p.x>c.width)p.vx*=-1;
+        if(p.y<0||p.y>c.height)p.vy*=-1;
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* ── 상태 ── */
+  var b8goal=108,b8timer=null,b8start=0,b8running=false;
+  var b8paused=false,b8elapsed=0;
+  var b8sound='none',b8soundTimer=null,b8audioCtx=null;
+
+  function b8SetGoal(n,btn){
+    if(b8running)return;
+    b8goal=n;
+    document.getElementById('b8-goal-disp').textContent=n;
+    document.getElementById('b8-goal-done').textContent=n;
+    document.querySelectorAll('.b8-t-btn').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');
+  }
+
+  /* ── 효과음 ── */
+  function b8SetSound(type,btn){
+    b8sound=type;
+    document.querySelectorAll('#snd-none,#snd-moktak,#snd-bell').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');
+    b8StopSound();
+    if(b8running&&!b8paused)b8StartSound();
+  }
+  function b8Ctx(){
+    if(!b8audioCtx)b8audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    return b8audioCtx;
+  }
+  function b8PlayMoktak(){
+    try{var c=b8Ctx(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);o.type='sine';
+      o.frequency.setValueAtTime(380,t);o.frequency.exponentialRampToValueAtTime(180,t+.07);
+      g.gain.setValueAtTime(.7,t);g.gain.exponentialRampToValueAtTime(.001,t+.22);
+      o.start(t);o.stop(t+.22);}catch(e){}
+  }
+  function b8PlayBell(){
+    try{var c=b8Ctx(),t=c.currentTime;
+      [1,2.76,5.4].forEach(function(r,i){
+        var o=c.createOscillator(),g=c.createGain();
+        o.connect(g);g.connect(c.destination);o.type='sine';
+        o.frequency.setValueAtTime(220*r,t);
+        g.gain.setValueAtTime(.3/(i+1),t);g.gain.exponentialRampToValueAtTime(.001,t+4);
+        o.start(t);o.stop(t+4);});
+    }catch(e){}
+  }
+  function b8StartSound(){
+    b8StopSound();if(b8sound==='none')return;
+    var play=b8sound==='moktak'?b8PlayMoktak:b8PlayBell;
+    var iv=b8sound==='moktak'?5000:18000;
+    play();b8soundTimer=setInterval(play,iv);
+  }
+  function b8StopSound(){if(b8soundTimer){clearInterval(b8soundTimer);b8soundTimer=null;}}
+
+  /* ── 시작 ── */
+  function b8Start(){
+    b8elapsed=0;b8paused=false;b8start=Date.now();b8running=true;
+    document.getElementById('b8-state-ready').style.display='none';
+    document.getElementById('b8-state-running').style.display='block';
+    var arc=document.getElementById('b8-ring-arc');
+    arc.style.animationPlayState='running';
+    var lbl=document.getElementById('b8-timer-label');
+    lbl.textContent='경과 시간';lbl.style.color='#64748b';
+    b8timer=setInterval(function(){
+      document.getElementById('b8-timer').textContent=b8Fmt(b8elapsed+Math.floor((Date.now()-b8start)/1000));
+    },500);
+    b8StartSound();
+  }
+
+  /* ── 일시정지/재개 ── */
+  function b8Pause(){
+    if(!b8running)return;
+    var btn=document.getElementById('b8-pause-btn');
+    var arc=document.getElementById('b8-ring-arc');
+    var lbl=document.getElementById('b8-timer-label');
+    if(!b8paused){
+      b8paused=true;b8elapsed+=Math.floor((Date.now()-b8start)/1000);
+      clearInterval(b8timer);b8timer=null;
+      arc.style.animationPlayState='paused';
+      lbl.textContent='일시정지';lbl.style.color='#f87171';
+      btn.textContent='▶ 재개';b8StopSound();
+    } else {
+      b8paused=false;b8start=Date.now();
+      arc.style.animationPlayState='running';
+      lbl.textContent='경과 시간';lbl.style.color='#64748b';
+      btn.textContent='⏸ 일시정지';
+      b8timer=setInterval(function(){
+        document.getElementById('b8-timer').textContent=b8Fmt(b8elapsed+Math.floor((Date.now()-b8start)/1000));
+      },500);
+      b8StartSound();
+    }
+  }
+
+  /* ── 완료 ── */
+  function b8Tap(){
+    if(!b8running)return;
+    b8StopSound();clearInterval(b8timer);b8running=false;b8paused=false;
+    var sec=b8elapsed+Math.floor((Date.now()-b8start)/1000);
+    document.getElementById('b8-result').textContent=b8Fmt(sec);
+    document.getElementById('b8-avg-disp').textContent='1배당 평균 '+Math.round(sec/b8goal)+'초';
+    document.getElementById('b8-state-running').style.display='none';
+    document.getElementById('b8-state-done').style.display='block';
+    b8PlayBell();
+  }
+
+  /* ── 초기화 ── */
+  function b8Reset(){
+    b8StopSound();clearInterval(b8timer);
+    b8running=false;b8paused=false;b8elapsed=0;
+    document.getElementById('b8-state-done').style.display='none';
+    document.getElementById('b8-state-running').style.display='none';
+    document.getElementById('b8-state-ready').style.display='block';
+    document.getElementById('b8-timer').textContent='00:00';
+    document.getElementById('b8-timer-label').textContent='경과 시간';
+    document.getElementById('b8-timer-label').style.color='#64748b';
+    document.getElementById('b8-pause-btn').textContent='⏸ 일시정지';
+    document.getElementById('b8-ring-arc').style.animationPlayState='paused';
+  }
+
+  function b8Fmt(s){var m=Math.floor(s/60),ss=s%60;return(m<10?'0':'')+m+':'+(ss<10?'0':'')+ss;}
+
+  /* ── 기록 저장 ── */
+  function b8SaveRecord(goal,sec){
+    try{
+      var records=JSON.parse(localStorage.getItem('b8records')||'[]');
+      records.unshift({date:new Date().toISOString(),goal:goal,sec:sec});
+      if(records.length>60)records=records.slice(0,60); /* 최대 60개 */
+      localStorage.setItem('b8records',JSON.stringify(records));
+      b8RenderRecords();
+    }catch(e){}
+  }
+
+  function b8RenderRecords(){
+    try{
+      var records=JSON.parse(localStorage.getItem('b8records')||'[]');
+      var el=document.getElementById('b8-records-list');
+      if(!el)return;
+      if(records.length===0){el.innerHTML='<div style="color:#475569;font-size:13px;text-align:center;padding:24px">아직 수행 기록이 없습니다</div>';return;}
+      /* 통계 */
+      var total=records.reduce(function(a,r){return a+r.goal;},0);
+      var totalSec=records.reduce(function(a,r){return a+r.sec;},0);
+      var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">';
+      html+='<div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:12px;padding:14px;text-align:center"><div style="font-size:22px;font-weight:900;color:#FBBF24">'+records.length+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">총 수행 횟수</div></div>';
+      html+='<div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:12px;padding:14px;text-align:center"><div style="font-size:22px;font-weight:900;color:#FBBF24">'+total.toLocaleString()+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">누적 배수</div></div>';
+      html+='<div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:12px;padding:14px;text-align:center"><div style="font-size:22px;font-weight:900;color:#FBBF24">'+Math.floor(totalSec/60)+'분</div><div style="font-size:11px;color:#64748b;margin-top:3px">누적 시간</div></div>';
+      html+='</div>';
+      /* 기록 목록 */
+      records.slice(0,10).forEach(function(r){
+        var d=new Date(r.date);
+        var ds=(d.getMonth()+1)+'/'+ d.getDate()+' '+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();
+        html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:7px">';
+        html+='<div><span style="font-size:13px;color:#f8fafc;font-weight:700">'+r.goal+'배</span><span style="font-size:11px;color:#475569;margin-left:8px">'+ds+'</span></div>';
+        html+='<div style="font-size:13px;color:#FBBF24;font-weight:700">'+b8Fmt(r.sec)+'</div></div>';
+      });
+      el.innerHTML=html;
+    }catch(e){}
+  }
+
+  /* ── SNS 공유 ── */
+  function b8Share(){
+    var sec=parseInt(document.getElementById('b8-result').textContent.split(':')[0])*60+parseInt(document.getElementById('b8-result').textContent.split(':')[1]);
+    var text='🙏 '+b8goal+'배 수행 완료! 소요 시간 '+document.getElementById('b8-result').textContent+' — 잼공인연사찰 108배 가이드';
+    if(navigator.share){
+      navigator.share({title:'108배 수행 완료',text:text,url:location.href}).catch(function(){});
+    } else {
+      navigator.clipboard.writeText(text+'\n'+location.href).then(function(){
+        alert('클립보드에 복사되었습니다. SNS에 붙여넣기 하세요!');
+      }).catch(function(){alert(text);});
+    }
+  }
+
+  /* 완료 시 기록 저장 포함 */
+  var _b8TapOrig=b8Tap;
+  b8Tap=function(){
+    if(!b8running)return;
+    var sec=b8elapsed+Math.floor((Date.now()-b8start)/1000);
+    _b8TapOrig();
+    b8SaveRecord(b8goal,sec);
+  };
+
+  /* 초기 렌더 */
+  b8RenderRecords();
+  </script>
+
+  <!-- 수행 기록 -->
+  <div class="b8-sec">📅 수행 기록</div>
+  <div id="b8-records-list" style="margin-bottom:40px"></div>
+
+  <!-- 절하는 방법 -->
+  <div class="b8-sec">📋 108배 하는 방법</div>
+  <div class="b8-steps">
+    <div class="b8-step"><div class="b8-step-n">1</div><div class="b8-step-icon">🧎</div><div class="b8-step-name">합장 (合掌)</div><div class="b8-step-desc">두 손을 모아 가슴 앞에. 마음을 모으고 부처님을 생각하며 시작.</div></div>
+    <div class="b8-step"><div class="b8-step-n">2</div><div class="b8-step-icon">⬇️</div><div class="b8-step-name">무릎 꿇기</div><div class="b8-step-desc">두 무릎을 바닥에 댄다. 쿠션이나 방석을 무릎 아래 받치면 좋음.</div></div>
+    <div class="b8-step"><div class="b8-step-n">3</div><div class="b8-step-icon">🤲</div><div class="b8-step-name">오체투지</div><div class="b8-step-desc">이마·두 손·두 무릎 — 다섯 곳이 모두 바닥에 닿도록. 손바닥은 위를 향해.</div></div>
+    <div class="b8-step"><div class="b8-step-n">4</div><div class="b8-step-icon">☝️</div><div class="b8-step-name">손 들어올리기</div><div class="b8-step-desc">엎드린 상태에서 손바닥을 귀 옆까지 들어올린다. 부처님 발을 받드는 의미.</div></div>
+    <div class="b8-step"><div class="b8-step-n">5</div><div class="b8-step-icon">⬆️</div><div class="b8-step-name">일어서기</div><div class="b8-step-desc">천천히 일어서서 합장 자세로 돌아온다. 1배 완료. 호흡 고르며 반복.</div></div>
+    <div class="b8-step"><div class="b8-step-n">💡</div><div class="b8-step-icon">🔔</div><div class="b8-step-name">마음가짐</div><div class="b8-step-desc">절마다 소원이나 감사의 마음을 담는다. 빠르게보다 정성스럽게가 중요.</div></div>
+  </div>
+
+  <!-- 횟수별 의미 -->
+  <div class="b8-sec">🔢 횟수별 의미</div>
+  <div class="b8-counts">
+    <div class="b8-c-item"><div class="b8-c-num">3배</div><div class="b8-c-name">삼배 (三拜)</div><div class="b8-c-desc">불·법·승 삼보에 귀의하는 가장 기본 예경. 법당 입장 시 기본.</div></div>
+    <div class="b8-c-item"><div class="b8-c-num">21배</div><div class="b8-c-name">기초 정진</div><div class="b8-c-desc">처음 시작하는 분께 적합. 매일 꾸준히 하면 업장 소멸 효과.</div></div>
+    <div class="b8-c-item"><div class="b8-c-num">49배</div><div class="b8-c-name">49재 정진</div><div class="b8-c-desc">49일 천도재 기간 중 매일 올리는 절. 7×7=49의 의미.</div></div>
+    <div class="b8-c-item"><div class="b8-c-num">108배</div><div class="b8-c-name">108번뇨 소멸</div><div class="b8-c-desc">눈·귀·코·혀·몸·의식 6근×3가지×과거·현재·미래 6=108.</div></div>
+    <div class="b8-c-item"><div class="b8-c-num">300배</div><div class="b8-c-name">용맹정진</div><div class="b8-c-desc">큰 소원이 있을 때, 입시·취업·사업 시작 전 드리는 집중 기도 절.</div></div>
+    <div class="b8-c-item"><div class="b8-c-num">1000배</div><div class="b8-c-name">천배 정진</div><div class="b8-c-desc">삶의 중요한 전환점에서 드리는 최고의 정진. 보통 하루 온종일 소요.</div></div>
+  </div>
+
+  <!-- 효과 -->
+  <div class="b8-sec">✨ 108배의 효과</div>
+  <div class="b8-effects">
+    <div class="b8-eff"><div class="b8-eff-icon">💪</div><div><div class="b8-eff-name">신체 건강</div><div class="b8-eff-desc">유산소·근력 운동을 겸한다. 30분 기준 약 200~300kcal 소모.</div></div></div>
+    <div class="b8-eff"><div class="b8-eff-icon">🧠</div><div><div class="b8-eff-name">마음 안정</div><div class="b8-eff-desc">반복 동작이 명상 효과를 내어 스트레스 호르몬(코르티솔) 감소.</div></div></div>
+    <div class="b8-eff"><div class="b8-eff-icon">🙏</div><div><div class="b8-eff-name">업장 소멸</div><div class="b8-eff-desc">절마다 교만한 마음을 낮추고 참회하는 행위로 마음의 짐을 덜어낸다.</div></div></div>
+    <div class="b8-eff"><div class="b8-eff-icon">🌿</div><div><div class="b8-eff-name">집중력 향상</div><div class="b8-eff-desc">108번 세는 행위 자체가 집중력 훈련. 수험생·직장인에게도 효과적.</div></div></div>
+    <div class="b8-eff"><div class="b8-eff-icon">⚡</div><div><div class="b8-eff-name">소원성취</div><div class="b8-eff-desc">정성스러운 절 수행은 발원한 소원에 힘을 더한다. 믿음과 정성이 핵심.</div></div></div>
+    <div class="b8-eff"><div class="b8-eff-icon">😴</div><div><div class="b8-eff-name">수면 개선</div><div class="b8-eff-desc">저녁 108배 후 숙면 효과. 몸이 피로하고 마음이 안정되어 잠이 잘 옴.</div></div></div>
+  </div>
+</div>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

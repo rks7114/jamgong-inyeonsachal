@@ -1,0 +1,233 @@
+<meta charset="UTF-8">
+<style>
+.et{font-family:'Noto Sans KR',sans-serif;max-width:1000px;margin:0 auto;padding:60px 24px 80px;color:#e2e8f0}
+.et-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.et-title{font-size:clamp(24px,3.5vw,42px);font-weight:900;color:#f8fafc;margin:0 0 12px;line-height:1.3}
+.et-title em{color:#FBBF24;font-style:normal}
+.et-sub{font-size:15px;color:#64748b;line-height:1.8;margin:0 0 40px;border-left:3px solid rgba(251,191,36,0.4);padding-left:16px}
+.et-sec-label{font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.15em;margin:48px 0 18px}
+.et-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:40px}
+.et-step{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;position:relative}
+.et-step-n{font-size:36px;font-weight:900;color:rgba(251,191,36,0.12);position:absolute;top:10px;right:14px;line-height:1}
+.et-step-icon{font-size:26px;margin-bottom:10px}
+.et-step-name{font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:6px}
+.et-step-desc{font-size:12px;color:#64748b;line-height:1.7}
+.et-section{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:26px;margin-bottom:20px}
+.et-sec-title{font-size:16px;font-weight:800;color:#f8fafc;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.et-sec-title span{font-size:22px}
+.et-list{list-style:none;padding:0;margin:0}
+.et-list li{font-size:14px;color:#94a3b8;line-height:1.9;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;gap:10px}
+.et-list li:last-child{border-bottom:none}
+.et-list li::before{content:'✦';color:rgba(251,191,36,0.5);flex-shrink:0;margin-top:2px}
+.et-do-dont{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:32px}
+.et-do{background:rgba(34,197,94,0.05);border:1px solid rgba(34,197,94,0.2);border-radius:14px;padding:18px}
+.et-dont{background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.2);border-radius:14px;padding:18px}
+.et-do-title{font-size:12px;font-weight:800;color:#4ade80;letter-spacing:.1em;margin-bottom:10px}
+.et-dont-title{font-size:12px;font-weight:800;color:#f87171;letter-spacing:.1em;margin-bottom:10px}
+.et-do-item,.et-dont-item{font-size:13px;color:#94a3b8;line-height:1.9}
+.et-tip{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:16px 20px;margin:16px 0;font-size:13px;color:#94a3b8;line-height:1.8}
+.et-tip strong{color:#FBBF24}
+.et-divider{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:40px 0}
+.et-link-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.et-link{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 18px;font-size:13px;font-weight:700;color:#94a3b8;text-decoration:none;transition:all .18s}
+.et-link:hover{border-color:rgba(251,191,36,0.4);color:#FBBF24}
+</style>
+
+<!-- 페이지 배너 -->
+<div style="position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Bulguksa_in_Gyeongju%2C_Korea.jpg/1280px-Bulguksa_in_Gyeongju%2C_Korea.jpg" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Bulguksa_in_Gyeongju%2C_Korea.jpg/1280px-Bulguksa_in_Gyeongju%2C_Korea.jpg'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.78) 100%)"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">TEMPLE ETIQUETTE · 사찰예절</div>
+    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:#ffffff;margin:0 0 10px;text-shadow:0 2px 20px rgba(0,0,0,0.7);font-family:'Noto Sans KR',sans-serif;line-height:1.2">사찰 예절 안내</h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif">사찰 방문 전 꼭 알아야 할 예절과 기도 방법</p>
+  </div>
+</div>
+
+<div class="et">
+  <div class="et-badge">TEMPLE ETIQUETTE</div>
+  <div class="et-title">사찰 방문 전 <em>꼭 알아야 할 예절</em></div>
+  <div class="et-sub">
+    처음 사찰을 방문하시나요? 법당 출입 방법부터 향 피우는 예절, 스님께 인사하는 방법까지 — 기도도량 방문이 더욱 의미 있어지는 기본 예절을 안내합니다.
+  </div>
+
+  <!-- 법당 출입 -->
+  <div class="et-sec-label">🚪 법당 출입 방법</div>
+  <div class="et-steps">
+    <div class="et-step"><div class="et-step-n">1</div><div class="et-step-icon">👟</div><div class="et-step-name">신발 벗기</div><div class="et-step-desc">법당 입구에서 반드시 신발을 벗습니다. 신발은 계단 아래 또는 신발장에 가지런히 놓습니다.</div></div>
+    <div class="et-step"><div class="et-step-n">2</div><div class="et-step-icon">🚶</div><div class="et-step-name">문 통과</div><div class="et-step-desc">법당 문은 가운데 문이 아닌 오른쪽 또는 왼쪽 옆문으로 출입합니다. 가운데는 부처님의 문입니다.</div></div>
+    <div class="et-step"><div class="et-step-n">3</div><div class="et-step-icon">🙏</div><div class="et-step-name">삼배 올리기</div><div class="et-step-desc">법당 안에 들어서면 부처님을 향해 합장하고 3번 절을 올립니다. 예배를 마친 후 기도 자리에 앉습니다.</div></div>
+    <div class="et-step"><div class="et-step-n">4</div><div class="et-step-icon">📿</div><div class="et-step-name">기도·독송</div><div class="et-step-desc">준비한 기도문을 독송하거나 염불합니다. 소리는 너무 크지 않게, 작은 소리로 독송합니다.</div></div>
+    <div class="et-step"><div class="et-step-n">5</div><div class="et-step-icon">🚪</div><div class="et-step-name">퇴장</div><div class="et-step-desc">기도 후 다시 부처님을 향해 합장하고 반배(허리를 90도 굽혀 예)를 한 후 뒷걸음으로 물러납니다.</div></div>
+  </div>
+
+  <!-- 절하는 방법 -->
+  <div class="et-sec-label">🙏 절하는 방법 (오체투지)</div>
+  <div class="et-section">
+    <div class="et-sec-title"><span>🧎</span> 큰절(오체투지) 순서</div>
+    <ul class="et-list">
+      <li>두 손을 모아 가슴 앞에 합장하고 부처님을 바라봅니다.</li>
+      <li>무릎을 꿇고 앉습니다. 방석이 있으면 무릎 아래에 받칩니다.</li>
+      <li>이마·두 손·두 무릎 — 다섯 곳이 바닥에 닿도록 엎드립니다 (오체투지).</li>
+      <li>엎드린 상태에서 손바닥을 뒤집어 귀 옆까지 들어올립니다 (부처님 발을 받드는 의미).</li>
+      <li>천천히 일어나 합장 자세로 돌아옵니다. 이것이 1배입니다.</li>
+    </ul>
+    <div class="et-tip"><strong>반배(半拜)</strong>: 법당 입·퇴장 시 또는 스님과 마주칠 때, 허리를 90도 굽혀 인사합니다. 큰절을 올리기 어려운 상황에 활용합니다.</div>
+  </div>
+
+  <!-- 향·초·공양 -->
+  <div class="et-sec-label">🕯️ 향·초·공양 예절</div>
+  <div class="et-section">
+    <div class="et-sec-title"><span>🪔</span> 향 피우는 방법</div>
+    <ul class="et-list">
+      <li>향은 1개 또는 3개를 피웁니다. 3개는 불·법·승 삼보에 공양하는 의미입니다.</li>
+      <li>향에 불을 붙인 뒤 손으로 살며시 부채질해 불을 끕니다. 입으로 불면 실례입니다.</li>
+      <li>향로 중앙에 반듯이 세워 꽂습니다. 기울거나 쓰러지지 않도록 합니다.</li>
+      <li>향을 꽂은 뒤 합장하고 발원한 뒤 절을 올립니다.</li>
+    </ul>
+    <div class="et-tip"><strong>초(촛불)</strong>: 부처님 앞 양쪽에 놓인 촛대에 자신이 준비한 초를 올릴 수 있습니다. 초에 불을 붙이고 합장·발원 후 절을 올립니다. 불을 끌 때는 손이나 촛불 끄개를 사용합니다.</div>
+    <div class="et-tip"><strong>공양물</strong>: 과일·떡·쌀 등 공양 음식은 공양대 위에 정성스럽게 올립니다. 육식·비린 음식은 법당에 올리지 않습니다. 꽃은 공양할 수 있습니다.</div>
+  </div>
+
+  <!-- 스님께 인사 -->
+  <div class="et-sec-label">👤 스님께 인사하는 방법</div>
+  <div class="et-section">
+    <div class="et-sec-title"><span>🙏</span> 스님 만났을 때</div>
+    <ul class="et-list">
+      <li>스님을 만나면 합장하고 가볍게 허리를 숙여 반배를 올립니다.</li>
+      <li>"안녕하세요" 대신 "스님, 법문 잘 듣겠습니다" 또는 단순히 합장 인사를 올립니다.</li>
+      <li>스님의 이름을 함부로 부르지 않으며, "스님"이라고 호칭합니다.</li>
+      <li>스님 앞에서 손을 내밀어 악수를 청하지 않습니다. 합장이 올바른 인사입니다.</li>
+      <li>스님께 말씀드릴 때는 공손하게 합장한 채 말합니다.</li>
+    </ul>
+    <div class="et-tip"><strong>재가 불자끼리</strong>: 사찰에서 불자끼리 만날 때도 합장 인사를 하며 "성불하십시오"라고 인사를 나누는 것이 불가의 예법입니다.</div>
+  </div>
+
+  <!-- 기도도량 방문 주의사항 -->
+  <div class="et-sec-label">⚠️ 기도도량 방문 시 주의사항</div>
+  <div class="et-do-dont">
+    <div class="et-do">
+      <div class="et-do-title">✅ 이렇게 하세요</div>
+      <div class="et-do-item">
+        ✓ 단정한 복장으로 방문합니다<br>
+        ✓ 법당 안에서는 조용히 합니다<br>
+        ✓ 사진 촬영 전 허락을 구합니다<br>
+        ✓ 쓰레기는 직접 가져갑니다<br>
+        ✓ 지정된 주차장과 탐방로를 이용합니다<br>
+        ✓ 법회 시간을 미리 확인하고 방문합니다<br>
+        ✓ 기도 중인 분을 배려합니다
+      </div>
+    </div>
+    <div class="et-dont">
+      <div class="et-dont-title">❌ 이것은 삼가세요</div>
+      <div class="et-dont-item">
+        ✗ 법당 안에서 큰 소리로 통화하기<br>
+        ✗ 반소매·반바지·민소매 복장<br>
+        ✗ 술·담배·육식 반입<br>
+        ✗ 법당 안에서 음식물 섭취<br>
+        ✗ 부처님 불상을 손으로 만지기<br>
+        ✗ 법당 문 가운데로 출입하기<br>
+        ✗ 스님의 법문 중 자리 이탈
+      </div>
+    </div>
+  </div>
+
+  <div class="et-section">
+    <div class="et-sec-title"><span>👗</span> 복장 안내</div>
+    <ul class="et-list">
+      <li>무릎 이하 길이의 하의, 어깨가 가려지는 상의를 권합니다.</li>
+      <li>진한 향수나 화장은 삼가는 것이 예의입니다.</li>
+      <li>일부 사찰에서는 법복(연두색 생활한복)을 무료로 대여해 드립니다.</li>
+      <li>산사 방문 시 미끄럼 방지 운동화가 좋습니다. 하이힐은 적합하지 않습니다.</li>
+    </ul>
+  </div>
+
+  <hr class="et-divider">
+
+  <!-- 처음 방문자 가이드 -->
+  <div class="et-sec-label">🗺️ 처음 사찰 방문자를 위한 간단 흐름</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:32px">
+    <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:14px;text-align:center">
+      <div style="font-size:22px;margin-bottom:6px">🅿️</div>
+      <div style="font-size:12px;font-weight:800;color:#FBBF24;margin-bottom:4px">주차·입장</div>
+      <div style="font-size:11px;color:#64748b">지정 주차장 이용, 입장료 납부 (사찰별 상이)</div>
+    </div>
+    <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:14px;text-align:center">
+      <div style="font-size:22px;margin-bottom:6px">🌲</div>
+      <div style="font-size:12px;font-weight:800;color:#FBBF24;margin-bottom:4px">경내 탐방</div>
+      <div style="font-size:11px;color:#64748b">대웅전·탑·요사채 등 경내를 조용히 둘러봅니다</div>
+    </div>
+    <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:14px;text-align:center">
+      <div style="font-size:22px;margin-bottom:6px">🪔</div>
+      <div style="font-size:12px;font-weight:800;color:#FBBF24;margin-bottom:4px">향·초 공양</div>
+      <div style="font-size:11px;color:#64748b">향 구입 후 법당 향로에 공양</div>
+    </div>
+    <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:14px;text-align:center">
+      <div style="font-size:22px;margin-bottom:6px">🙏</div>
+      <div style="font-size:12px;font-weight:800;color:#FBBF24;margin-bottom:4px">삼배·기도</div>
+      <div style="font-size:11px;color:#64748b">부처님 전 3배, 기도문 독송 또는 묵상</div>
+    </div>
+    <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:14px;text-align:center">
+      <div style="font-size:22px;margin-bottom:6px">🫖</div>
+      <div style="font-size:12px;font-weight:800;color:#FBBF24;margin-bottom:4px">공양·휴식</div>
+      <div style="font-size:11px;color:#64748b">공양간에서 사찰 음식 체험 (일부 사찰 운영)</div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="et-sec-label">❓ 자주 묻는 질문 (FAQ)</div>
+  <style>
+  .faq-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:14px;margin-bottom:10px;overflow:hidden}
+  .faq-q{font-size:14px;font-weight:800;color:#f8fafc;padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq-q::after{content:'＋';color:rgba(251,191,36,0.6);font-size:18px;flex-shrink:0;transition:transform .2s}
+  .faq-item.open .faq-q::after{content:'－';color:#FBBF24}
+  .faq-a{font-size:13.5px;color:#94a3b8;line-height:1.85;padding:0 20px 18px;display:none}
+  .faq-item.open .faq-a{display:block}
+  .faq-a strong{color:#e2e8f0}
+  </style>
+  <div>
+    <div class="faq-item open">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">처음 가는 사찰인데, 반드시 신도여야 하나요?</div>
+      <div class="faq-a">그렇지 않습니다. 불교는 출가·재가·신도가 아니더라도 사찰 방문을 열어두고 있습니다. 단정한 복장으로 조용히 방문하고 기본 예절을 지키면 누구든 기도하거나 경내를 둘러볼 수 있습니다. 일부 사찰은 법복(연두색 생활한복)을 무료 대여해 드리기도 합니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">절을 몇 번 해야 하나요? 3배가 맞나요?</div>
+      <div class="faq-a">일반적으로 법당에서는 <strong>3배(삼배)</strong>를 올립니다. 3배는 불(佛)·법(法)·승(僧) 삼보에 귀의하는 의미입니다. 법당 입장 시 3배, 퇴장 전 반배(허리를 90도 굽혀 인사)가 기본입니다. 형편이 어렵거나 무릎이 안 좋으신 분은 합장 반배로 대신해도 됩니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">향은 꼭 사야 하나요? 법당에 빈손으로 들어가도 되나요?</div>
+      <div class="faq-a">빈손으로도 기도할 수 있습니다. 향은 공양의 하나일 뿐, 의무가 아닙니다. 향을 드리고 싶으시면 사찰 매점에서 구입할 수 있습니다(보통 500~2,000원). 다만 법당 향로에 향을 올릴 때는 <strong>입으로 불지 않고 손으로 부채질해</strong> 끄는 예절을 지켜주세요.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">기도 중에 다른 사람이 절을 하면 비켜야 하나요?</div>
+      <div class="faq-a">법당 안에서 서로 배려하는 것이 기본입니다. 다른 분이 절을 올리고 있다면 방해하지 않도록 옆으로 살짝 비켜주세요. 기도 중인 분 앞을 가로질러 지나가는 것은 실례입니다. 불가피한 경우 합장하며 지나가시면 됩니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">사찰 음식(발우공양)을 체험하고 싶은데 어떻게 하나요?</div>
+      <div class="faq-a">많은 사찰에서 점심 공양 시간에 방문객도 함께 식사할 수 있도록 열어두고 있습니다. 사전에 해당 사찰에 문의하시거나, <strong>템플스테이</strong>를 신청하시면 발우공양을 포함한 다양한 불교 문화 체험을 할 수 있습니다. 조계종 공식 템플스테이 예약은 templestay.com에서 가능합니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">사진 촬영은 어디서나 할 수 있나요?</div>
+      <div class="faq-a">경내(마당·탑·건물 외부)는 대부분 촬영이 가능하지만, <strong>법당 내부는 반드시 허락을 받은 후</strong> 촬영해야 합니다. 불상·탱화 등 성물은 직접 촬영을 삼가는 것이 예의입니다. 사찰 입구나 법당에 '촬영 금지' 표시가 있다면 반드시 지켜주세요. 기도 중인 분이나 스님은 동의 없이 촬영하지 않습니다.</div>
+    </div>
+  </div>
+
+  <hr class="et-divider">
+
+  <div class="et-link-row">
+    <a class="et-link" href="/prayer">🙏 기도문·발원문 보기</a>
+    <a class="et-link" href="/ritual">🪔 불교의례 안내</a>
+    <a class="et-link" href="/sacred">⭐ 전국 기도도량 보기</a>
+    <a class="et-link" href="/manse">🔮 인연사찰 찾기</a>
+  </div>
+</div>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

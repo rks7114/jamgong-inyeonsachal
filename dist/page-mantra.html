@@ -1,0 +1,213 @@
+<meta charset="UTF-8">
+<style>
+.mn{font-family:'Noto Sans KR',sans-serif;max-width:960px;margin:0 auto;padding:56px 24px 80px;color:#e2e8f0}
+.mn-badge{display:inline-block;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);color:#c084fc;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.mn-title{font-size:clamp(24px,3.5vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.mn-title em{color:#c084fc;font-style:normal}
+.mn-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+.mn-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.mn-tab{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:99px;padding:8px 18px;font-size:13px;font-weight:700;color:#94a3b8;cursor:pointer;transition:all .2s;font-family:inherit}
+.mn-tab.active,.mn-tab:hover{background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.4);color:#c084fc}
+.mn-grid{display:flex;flex-direction:column;gap:20px}
+.mn-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:18px;overflow:hidden;transition:all .2s}
+.mn-card:hover{border-color:rgba(168,85,247,0.3)}
+.mn-card-head{display:flex;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;background:rgba(168,85,247,0.04)}
+.mn-card-icon{font-size:32px;flex-shrink:0}
+.mn-card-info{flex:1}
+.mn-card-name{font-size:18px;font-weight:800;color:#f8fafc;margin-bottom:3px}
+.mn-card-purpose{font-size:12px;color:#c084fc;font-weight:700}
+.mn-card-toggle{font-size:20px;color:#64748b}
+.mn-card-body{padding:0 24px;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s}
+.mn-card-body.open{max-height:600px;padding:0 24px 24px}
+.mn-text-ko{font-size:18px;font-weight:900;color:#FBBF24;text-align:center;letter-spacing:.15em;padding:18px;background:rgba(251,191,36,0.06);border-radius:12px;margin-bottom:12px;line-height:1.9}
+.mn-text-sa{font-size:13px;color:#94a3b8;text-align:center;font-style:italic;margin-bottom:16px;line-height:1.8}
+.mn-meaning{font-size:13px;color:#64748b;line-height:1.8;margin-bottom:14px}
+.mn-how{background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.15);border-radius:12px;padding:14px 18px}
+.mn-how-title{font-size:11px;font-weight:800;color:#c084fc;letter-spacing:.1em;margin-bottom:8px}
+.mn-how-text{font-size:13px;color:#94a3b8;line-height:1.8}
+.mn-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.mn-tag{font-size:11px;font-weight:700;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);color:#c084fc;border-radius:8px;padding:3px 10px}
+
+/* 기도 목적별 추천 */
+.mn-purpose-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:40px}
+.mn-pur-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px}
+.mn-pur-icon{font-size:24px;margin-bottom:8px}
+.mn-pur-goal{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:6px}
+.mn-pur-mantra{font-size:12px;color:#c084fc;font-weight:700;margin-bottom:4px}
+.mn-pur-how{font-size:11px;color:#64748b;line-height:1.5}
+.mn-sec{font-size:11px;font-weight:800;color:#c084fc;letter-spacing:.15em;margin:40px 0 16px}
+</style>
+<!-- 페이지 배너 -->
+<div style="position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://images.unsplash.com/photo-1508672019048-805c876b67e2?w=1400&q=90&auto=format&fit=crop" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Naksansa07.jpg/1280px-Naksansa07.jpg'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,0,30,0.6) 0%,rgba(0,0,0,0.75) 100%)"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">MANTRA GUIDE · 진언</div>
+    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:#ffffff;margin:0 0 10px;text-shadow:0 2px 20px rgba(0,0,0,0.7);font-family:'Noto Sans KR',sans-serif;line-height:1.2">진언·다라니 가이드</h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif">관음·지장·약사 진언부터 신묘장구대다라니까지 발음과 의미를 안내합니다</p>
+  </div>
+</div>
+
+<div class="mn">
+  <div class="mn-badge">진언·다라니</div>
+  <h1 class="mn-title">🔔 <em>진언·다라니</em> 가이드</h1>
+  <p class="mn-sub">주요 진언과 다라니의 의미, 독송 방법, 기도 목적별 추천을 안내합니다.</p>
+
+  <div class="mn-tabs">
+    <button type="button" class="mn-tab active" onclick="filterMn('all',this)">전체</button>
+    <button type="button" class="mn-tab" onclick="filterMn('관음',this)">🌊 관세음보살</button>
+    <button type="button" class="mn-tab" onclick="filterMn('약사',this)">💊 약사여래</button>
+    <button type="button" class="mn-tab" onclick="filterMn('지장',this)">🕯️ 지장보살</button>
+    <button type="button" class="mn-tab" onclick="filterMn('미륵',this)">🌅 미륵보살</button>
+    <button type="button" class="mn-tab" onclick="filterMn('기타',this)">✨ 기타</button>
+  </div>
+
+  <div class="mn-grid" id="mn-grid"></div>
+
+  <!-- 기도 목적별 추천 -->
+  <div class="mn-sec">🎯 기도 목적별 추천 진언</div>
+  <div class="mn-purpose-grid">
+    <div class="mn-pur-item"><div class="mn-pur-icon">💰</div><div class="mn-pur-goal">재물운</div><div class="mn-pur-mantra">관세음보살 본심미묘 진언</div><div class="mn-pur-how">매일 아침 108번 독송. 마음 속으로도 가능.</div></div>
+    <div class="mn-pur-item"><div class="mn-pur-icon">💊</div><div class="mn-pur-goal">건강·치유</div><div class="mn-pur-mantra">약사여래 진언</div><div class="mn-pur-how">환자 곁에서 독송하거나 본인이 직접 108번.</div></div>
+    <div class="mn-pur-item"><div class="mn-pur-icon">📚</div><div class="mn-pur-goal">학업·수험</div><div class="mn-pur-mantra">문수보살 진언</div><div class="mn-pur-how">공부 전 21번, 시험 당일 108번 독송.</div></div>
+    <div class="mn-pur-item"><div class="mn-pur-icon">💕</div><div class="mn-pur-goal">인연·결혼</div><div class="mn-pur-mantra">관세음보살 진언 + 관음재일 기도</div><div class="mn-pur-how">음력 24일 관음재일에 정성껏 108번 독송.</div></div>
+    <div class="mn-pur-item"><div class="mn-pur-icon">🏠</div><div class="mn-pur-goal">가정화합</div><div class="mn-pur-mantra">광명진언</div><div class="mn-pur-how">가족 이름을 넣어 발원하며 108번 독송.</div></div>
+    <div class="mn-pur-item"><div class="mn-pur-icon">👶</div><div class="mn-pur-goal">출산·태몽</div><div class="mn-pur-mantra">관세음보살 육자대명왕 진언</div><div class="mn-pur-how">임신 중 매일 108번. 태아에게도 들려주기.</div></div>
+    <div class="mn-pur-item"><div class="mn-pur-icon">🕯️</div><div class="mn-pur-goal">조상 천도</div><div class="mn-pur-mantra">지장보살 진언</div><div class="mn-pur-how">기일·명절·백중에 조상 이름 발원 후 독송.</div></div>
+    <div class="mn-pur-item"><div class="mn-pur-icon">💼</div><div class="mn-pur-goal">취업·사업</div><div class="mn-pur-mantra">대세지보살 진언</div><div class="mn-pur-how">취업 면접일 아침 21번, 평소 매일 108번.</div></div>
+  </div>
+</div>
+
+<script>
+var MANTRAS=[
+  {cat:'관음',icon:'🌊',name:'관세음보살 육자대명왕 진언',purpose:'소원성취·인연·모든 기도',
+   ko:'옴 마니 반메 훔\nOṃ Maṇi Padme Hūṃ',sa:'Om Mani Padme Hum',
+   meaning:'연꽃 속의 보석이여 — 관세음보살의 자비와 지혜를 담은 가장 널리 알려진 진언. 티베트·한국·중국 등 대승불교권 전역에서 독송한다.',
+   how:'언제 어디서나 독송 가능. 하루 108번이 기본. 마음속으로 반복하면서 보살의 자비를 생각한다. 염주를 돌리며 독송하면 더욱 집중된다.',
+   tags:['소원성취','인연','모든 기도','초보자 추천']},
+  {cat:'관음',icon:'🌸',name:'관세음보살 본심미묘 육자대다라니',purpose:'재물운·소원성취',
+   ko:'옴 아로릭 사바하',sa:'Om Arolik Svaha',
+   meaning:'관세음보살의 본심을 담은 다라니. 재물운과 소원성취에 영험이 높다고 전해지며, 관음재일(음력 24일)에 특히 효험이 있다.',
+   how:'관음재일(음력 24일) 새벽 정성껏 108번 독송. 향 한 자루 피워 올리고 촛불 켠 후 독송하면 정성이 더해진다.',
+   tags:['재물운','관음재일','소원성취']},
+  {cat:'약사',icon:'💊',name:'약사여래 진언',purpose:'건강·치유·병 쾌유',
+   ko:'옴 혜유혜유 만다라 아지라 혜 사바하',sa:'Om Heyuheyuh Mandala Ajila Hey Svaha',
+   meaning:'동방 유리광 세계의 약사여래 진언. 몸과 마음의 병을 치유하고 건강을 회복시키는 기도에 사용한다. 약사여래는 중생의 모든 질병을 고쳐주는 부처님.',
+   how:'환자 본인이나 가족이 매일 아침저녁 108번씩 독송. 약사재일(음력 8일) 약사전에서 기도하면 더욱 효험이 크다.',
+   tags:['건강','치유','병 쾌유','약사재일']},
+  {cat:'지장',icon:'🕯️',name:'지장보살 진언',purpose:'조상 천도·죄업 소멸',
+   ko:'옴 하라하라 지리지리 훔훔 아라약 사바하',sa:'Om Hara Hara Jili Jili Hum Hum Arayak Svaha',
+   meaning:'지옥 중생을 구제하고 조상의 영가를 천도하는 지장보살의 진언. 기일·백중·명절에 조상 천도 기도로 널리 사용된다.',
+   how:'조상 기일, 백중(음력 7월 15일), 기제사 때 향 올리고 독송. 지장재일(음력 18일)에 집중 기도하면 더욱 좋다.',
+   tags:['조상 천도','죄업 소멸','지장재일','백중']},
+  {cat:'미륵',icon:'🌅',name:'미륵보살 진언',purpose:'미래 소원·희망',
+   ko:'옴 마이다리 사바하',sa:'Om Maitri Svaha',
+   meaning:'도솔천에 계신 미래불 미륵보살의 진언. 미래의 좋은 인연과 새로운 시작을 위한 기도. 법주사·금산사 등 미륵 성지에서 독송한다.',
+   how:'새로운 시작을 앞두고 108번 독송. 미륵 성지 방문 시 미륵전 앞에서 정성껏 독송한다.',
+   tags:['미래 소원','새로운 시작','미륵 성지']},
+  {cat:'기타',icon:'✨',name:'광명진언 (光明眞言)',purpose:'업장 소멸·빛의 기도',
+   ko:'옴 아모가 바이로차나 마하무드라 마니 파드마 즈바라 프라바를타야 훔',sa:'Om Amogha Vairocana Mahamudra Mani Padma Jvala Pravarttaya Hum',
+   meaning:'비로자나불의 진언으로 업장을 소멸하고 빛으로 중생을 인도한다. 죄업이 무거울 때, 마음이 어두울 때, 새로운 시작을 위한 정화 기도.',
+   how:'아침 일출 시간에 동쪽을 향해 108번 독송. 가족 이름을 속으로 생각하며 독송하면 가족의 업장도 함께 소멸된다.',
+   tags:['업장 소멸','정화','비로자나불']},
+  {cat:'기타',icon:'🙏',name:'신묘장구대다라니 (천수경)',purpose:'모든 소원·종합 기도',
+   ko:'나모라 다나다라 야야 나막알약 바로기제…',sa:'Namo Ratna Trayaya...',
+   meaning:'관세음보살의 대자비를 담은 대다라니. 한국 불교에서 가장 많이 독송되는 긴 다라니. 모든 소원과 고통 해결에 효험이 높다고 전해진다.',
+   how:'매일 아침 법회에서 독송. 혼자 독송 시 천수경 전체를 독송하거나 대다라니 부분만 3번·7번·21번·108번 반복. 처음엔 천천히 정성을 담아.',
+   tags:['종합 기도','관음','천수경','법회']},
+  {cat:'기타',icon:'📿',name:'반야심경 (般若心經)',purpose:'지혜·마음 수행',
+   ko:'관자재보살 행심반야바라밀다시 조견오온개공 도일체고액…',sa:'Prajnaparamita Hrdaya Sutra',
+   meaning:'260자로 이루어진 불교 핵심 경전. "색즉시공 공즉시색" — 모든 것이 공(空)이라는 진리를 담고 있다. 마음 수행, 지혜 기도, 법회에서 가장 많이 독송.',
+   how:'아침저녁 1번씩 독송하는 것을 기본으로 한다. 마음이 혼란스럽거나 집착이 일 때 3번 독송. 외워서 독송하면 더욱 집중된다.',
+   tags:['지혜','마음 수행','법회','핵심 경전']},
+
+  /* ── 추가 진언 ── */
+  {cat:'관음',icon:'🪷',name:'준제진언 (准提眞言)',purpose:'소원성취·지혜 증장',
+   ko:'나무 사다남 삼먁삼못다 구치남 다냐타 옴 자례주례 준제 사바하',sa:'Namo Saptanam Samyaksambuddha Kotinam Tadyatha Om Cale Cule Cunde Svaha',
+   meaning:'준제보살(칠구지불모)의 진언으로 소원성취와 지혜 증장에 탁월한 효험이 있다. 84억 부처님의 어머니라 불리는 준제보살은 모든 소원을 들어주신다고 전해진다.',
+   how:'매일 아침 108번 독송. 준제진언을 외우면 과거 죄업이 소멸되고 복덕이 쌓인다고 한다. 처음엔 천천히 발음을 익히며 독송.',
+   tags:['소원성취','지혜','죄업 소멸','준제보살']},
+
+  {cat:'관음',icon:'🌺',name:'수리수리 마하수리 (정구업진언)',purpose:'입과 마음의 정화',
+   ko:'수리수리 마하수리 수수리 사바하',sa:'Suri Suri Mahasuri Susuri Svaha',
+   meaning:'입과 마음의 업을 정화하는 진언. 불경 독송이나 기도 전 가장 먼저 외우는 진언. 말로 지은 죄업을 씻어내고 청정한 마음으로 기도할 준비를 한다.',
+   how:'모든 기도나 경전 독송 전 3번 외운다. 아침에 일어나 세수 후 하루를 시작하기 전에도 3번 독송하면 하루 내내 말조심이 된다.',
+   tags:['정화','구업 소멸','기도 준비','초보자 추천']},
+
+  {cat:'약사',icon:'🌿',name:'문수보살 진언',purpose:'지혜·학업·기억력',
+   ko:'옴 아라 바차 나 디',sa:'Om Ara Paca Na Dhih',
+   meaning:'지혜의 보살 문수보살 진언. 학업 성취, 기억력 향상, 시험 합격을 위한 기도에 사용. 지혜의 칼로 어리석음을 끊는 문수보살의 가피를 구한다.',
+   how:'공부 전 21번 독송하면 집중력이 높아진다. 시험 당일 아침 108번 독송. 문수보살 상이 있는 절에서 기도하면 더욱 효험이 있다.',
+   tags:['학업','지혜','시험 합격','기억력']},
+
+  {cat:'기타',icon:'☀️',name:'대세지보살 진언',purpose:'취업·사업·결단력',
+   ko:'옴 삼바라 삼바라 훔',sa:'Om Sambhara Sambhara Hum',
+   meaning:'지혜의 빛으로 중생을 이끄는 대세지보살 진언. 아미타 삼존 중 한 분으로, 결단력·추진력·사업 성공에 영험이 높다. 취업 면접, 사업 시작, 중요한 결단 전에 독송.',
+   how:'취업 면접일 아침 21번, 사업 개시일 108번 독송. 매일 아침 3번 독송하면 하루의 결단력이 생긴다.',
+   tags:['취업','사업','결단력','추진력']},
+
+  {cat:'지장',icon:'🔥',name:'칠불멸죄진언',purpose:'죄업 소멸·업장 정화',
+   ko:'이파라 이파라 바라이파라 바라이파라 다라니파라 다라니파라 사바하',sa:'Iparā Iparā Parāiparā Parāiparā Dhāraṇīparā Dhāraṇīparā Svāhā',
+   meaning:'일곱 부처님의 힘으로 죄업을 녹이는 진언. 과거 전생부터 쌓인 무거운 업장을 소멸하고 죄업을 정화한다. 지장재일이나 백중에 특히 독송한다.',
+   how:'지장재일(음력 18일), 백중(음력 7월 15일), 기일에 향 올리고 108번 독송. 가족이 함께 독송하면 선망 조상의 업장도 함께 소멸된다.',
+   tags:['죄업 소멸','업장 정화','백중','기일']},
+
+  {cat:'기타',icon:'🌙',name:'나무아미타불 (六字洪名)',purpose:'극락왕생·마음 안정',
+   ko:'나무아미타불\n나무아미타불\n나무아미타불',sa:'Namo Amitabha Buddha',
+   meaning:'서방 극락세계 아미타불을 찬탄하고 귀의하는 염불. 불교에서 가장 쉽고도 강력한 수행법. 임종 시 아미타불을 염하면 극락왕생한다고 한다.',
+   how:'언제 어디서나 마음속으로 되뇔 수 있다. 잠들기 전 108번, 걷거나 이동할 때도 마음속으로 반복. 염주를 이용해 하루 1,000번 이상 염하는 것을 목표로.',
+   tags:['극락왕생','마음 안정','임종 기도','초보자 추천']},
+
+  {cat:'기타',icon:'💫',name:'보현보살 진언',purpose:'실천·서원·공덕 회향',
+   ko:'옴 삼만다 바달라 훔',sa:'Om Samanta Bhadra Hum',
+   meaning:'보현보살 진언. 말씀하신 대로 실천하는 보현보살의 십대원행(十大願行)을 본받아 공덕을 쌓고 서원을 굳건히 한다. 기도의 마무리 회향 진언으로 많이 쓰인다.',
+   how:'기도 마무리 시 회향 진언으로 3번 독송. "이 기도의 공덕을 모든 중생에게 돌립니다"라는 마음으로 독송하면 공덕이 배가된다.',
+   tags:['공덕 회향','서원','실천','기도 마무리']},
+];
+
+function filterMn(cat,btn){
+  document.querySelectorAll('.mn-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  var list=cat==='all'?MANTRAS:MANTRAS.filter(function(m){return m.cat===cat;});
+  render(list);
+}
+
+function render(list){
+  var html='';
+  list.forEach(function(m,i){
+    html+='<div class="mn-card">';
+    html+='<div class="mn-card-head" onclick="toggle(this)">';
+    html+='<div class="mn-card-icon">'+m.icon+'</div>';
+    html+='<div class="mn-card-info"><div class="mn-card-name">'+m.name+'</div><div class="mn-card-purpose">'+m.purpose+'</div></div>';
+    html+='<div class="mn-card-toggle">＋</div></div>';
+    html+='<div class="mn-card-body">';
+    html+='<div class="mn-text-ko">'+m.ko.replace(/\n/g,'<br>')+'</div>';
+    if(m.sa)html+='<div class="mn-text-sa">'+m.sa+'</div>';
+    html+='<div class="mn-meaning">'+m.meaning+'</div>';
+    html+='<div class="mn-how"><div class="mn-how-title">📿 독송 방법</div><div class="mn-how-text">'+m.how+'</div></div>';
+    html+='<div class="mn-tags">';
+    m.tags.forEach(function(t){html+='<span class="mn-tag">'+t+'</span>';});
+    html+='</div></div></div>';
+  });
+  document.getElementById('mn-grid').innerHTML=html;
+}
+
+function toggle(head){
+  var body=head.nextElementSibling;
+  var icon=head.querySelector('.mn-card-toggle');
+  if(body.classList.contains('open')){body.classList.remove('open');icon.textContent='＋';}
+  else{body.classList.add('open');icon.textContent='－';}
+}
+
+render(MANTRAS);
+</script>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

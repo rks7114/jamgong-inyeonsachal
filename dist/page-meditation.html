@@ -1,0 +1,397 @@
+<meta charset="UTF-8">
+<style>
+.md{font-family:'Noto Sans KR',sans-serif;max-width:1000px;margin:0 auto;padding:60px 24px 100px;color:#e2e8f0}
+.md-badge{display:inline-block;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);color:#a78bfa;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.md-title{font-size:clamp(24px,3.5vw,42px);font-weight:900;color:#f8fafc;margin:0 0 12px;line-height:1.3}
+.md-title em{color:#a78bfa;font-style:normal}
+.md-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 40px;border-left:3px solid rgba(139,92,246,0.4);padding-left:16px}
+.md-sec-label{font-size:11px;font-weight:800;color:#a78bfa;letter-spacing:.15em;margin:48px 0 18px}
+/* ── 유형 카드 ── */
+.md-type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:40px}
+.md-type{border-radius:18px;padding:24px;border:1px solid transparent;transition:all .2s}
+.md-type.seon{background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.25)}
+.md-type.念{background:rgba(59,130,246,0.07);border-color:rgba(59,130,246,0.25)}
+.md-type.호흡{background:rgba(20,184,166,0.07);border-color:rgba(20,184,166,0.25)}
+.md-type.염불{background:rgba(251,191,36,0.07);border-color:rgba(251,191,36,0.25)}
+.md-type:hover{transform:translateY(-2px)}
+.md-type-icon{font-size:34px;margin-bottom:12px}
+.md-type-name{font-size:15px;font-weight:900;color:#f8fafc;margin-bottom:6px}
+.md-type-en{font-size:11px;color:#64748b;margin-bottom:10px;letter-spacing:.05em}
+.md-type-desc{font-size:12px;color:#94a3b8;line-height:1.7}
+/* ── 단계별 가이드 ── */
+.md-guide{margin-bottom:40px}
+.md-step{display:flex;gap:20px;margin-bottom:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px}
+.md-step-num{width:36px;height:36px;border-radius:50%;background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.35);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#a78bfa;flex-shrink:0;margin-top:2px}
+.md-step-body{flex:1}
+.md-step-title{font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:6px}
+.md-step-desc{font-size:13px;color:#94a3b8;line-height:1.8}
+.md-step-time{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;color:#a78bfa;background:rgba(139,92,246,0.1);padding:3px 10px;border-radius:10px}
+/* ── 호흡 가이드 ── */
+.md-breath{background:rgba(20,184,166,0.05);border:1px solid rgba(20,184,166,0.2);border-radius:18px;padding:26px 30px;margin-bottom:40px}
+.md-breath-title{font-size:15px;font-weight:800;color:#5eead4;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.md-breath-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.md-breath-step{background:rgba(20,184,166,0.06);border:1px solid rgba(20,184,166,0.15);border-radius:12px;padding:16px;text-align:center}
+.md-breath-icon{font-size:28px;margin-bottom:8px}
+.md-breath-name{font-size:12px;font-weight:800;color:#5eead4;margin-bottom:4px}
+.md-breath-count{font-size:22px;font-weight:900;color:#f8fafc;margin-bottom:4px}
+.md-breath-desc{font-size:11px;color:#64748b}
+/* ── 자세 ── */
+.md-posture{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:40px}
+.md-posture-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px}
+.md-posture-icon{font-size:26px;margin-bottom:8px}
+.md-posture-name{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:5px}
+.md-posture-desc{font-size:11px;color:#64748b;line-height:1.6}
+.md-posture-level{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}
+.md-posture-level.beg{background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.2)}
+.md-posture-level.mid{background:rgba(251,191,36,0.1);color:#FBBF24;border:1px solid rgba(251,191,36,0.2)}
+.md-posture-level.adv{background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
+/* ── 수행 일과 ── */
+.md-schedule{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:26px 30px;margin-bottom:40px}
+.md-schedule-title{font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.md-schedule-row{display:flex;align-items:flex-start;gap:16px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.md-schedule-row:last-child{border-bottom:none}
+.md-schedule-time{font-size:13px;font-weight:800;color:#a78bfa;width:90px;flex-shrink:0;padding-top:1px}
+.md-schedule-act{font-size:13px;color:#94a3b8;line-height:1.7}
+.md-schedule-act strong{color:#e2e8f0}
+/* ── 공안·화두 ── */
+.md-hwadu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:40px}
+.md-hwadu{background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.18);border-radius:16px;padding:22px}
+.md-hwadu-q{font-size:15px;font-weight:900;color:#f8fafc;margin-bottom:10px;line-height:1.4}
+.md-hwadu-q::before{content:'"';color:#a78bfa;font-size:22px;line-height:0;vertical-align:-5px;margin-right:3px}
+.md-hwadu-q::after{content:'"';color:#a78bfa;font-size:22px;line-height:0;vertical-align:-5px;margin-left:3px}
+.md-hwadu-desc{font-size:12px;color:#64748b;line-height:1.7}
+.md-hwadu-master{font-size:11px;color:rgba(139,92,246,0.7);margin-top:8px;font-weight:700}
+/* ── 심리 효과 ── */
+.md-effect-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:40px}
+.md-effect{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px}
+.md-effect-icon{font-size:26px;margin-bottom:8px}
+.md-effect-name{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:5px}
+.md-effect-desc{font-size:11px;color:#64748b;line-height:1.6}
+/* ── tip / 주의 ── */
+.md-tip{background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.18);border-radius:12px;padding:14px 18px;font-size:13px;color:#94a3b8;line-height:1.8;margin:12px 0}
+.md-tip strong{color:#a78bfa}
+.md-warn{background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:12px;padding:14px 18px;font-size:13px;color:#94a3b8;line-height:1.8;margin:12px 0}
+.md-warn strong{color:#FBBF24}
+.md-divider{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:40px 0}
+/* ── 108배 연계 ── */
+.md-108{background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(251,191,36,0.08));border:1px solid rgba(139,92,246,0.2);border-radius:18px;padding:26px 30px;margin-bottom:40px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:560px){.md-108{grid-template-columns:1fr}}
+.md-108-heading{font-size:18px;font-weight:900;color:#f8fafc;margin:0 0 10px;line-height:1.3}
+.md-108-heading em{color:#a78bfa;font-style:normal}
+.md-108-body{font-size:13px;color:#94a3b8;line-height:1.9}
+.md-108-stat{display:flex;flex-direction:column;justify-content:center;gap:14px}
+.md-108-item{display:flex;align-items:center;gap:12px}
+.md-108-num{font-size:28px;font-weight:900;color:#a78bfa;line-height:1}
+.md-108-desc{font-size:12px;color:#64748b;line-height:1.5}
+</style>
+
+<!-- HERO -->
+<div style="position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Bulguksa_in_Gyeongju%2C_Korea.jpg/1280px-Bulguksa_in_Gyeongju%2C_Korea.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,5,30,0.55),rgba(10,5,30,0.88))"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.5);color:#a78bfa;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">MEDITATION · 명상·참선</div>
+    <h1 style="font-size:clamp(26px,4.5vw,48px);font-weight:900;color:#fff;margin:0 0 10px;font-family:'Noto Sans KR',sans-serif;line-height:1.2">명상·참선 <span style="color:#a78bfa">입문 가이드</span></h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.7);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif">마음이 고요해질 때, 비로소 내가 보인다 — 한국 불교 수행의 첫걸음</p>
+  </div>
+</div>
+
+<div class="md">
+  <div class="md-badge">MEDITATION · 명상·참선</div>
+  <div class="md-title">마음을 <em>고요히 하는 수행</em></div>
+  <div class="md-sub">
+    명상(冥想)은 '고요히 생각한다'는 뜻입니다. 한국 불교의 참선(參禪)은 화두(話頭)를 들고 자신의 본성을 직접 보는 수행법입니다. 처음부터 완벽하게 할 필요 없습니다 — 딱 5분, 조용히 앉는 것부터 시작하세요.
+  </div>
+
+  <!-- 수행 유형 -->
+  <div class="md-sec-label">🧘 한국 불교 수행법 종류</div>
+  <div class="md-type-grid">
+    <div class="md-type seon">
+      <div class="md-type-icon">🔆</div>
+      <div class="md-type-name">참선 (參禪)</div>
+      <div class="md-type-en">Chan / Zen Meditation</div>
+      <div class="md-type-desc">한국 불교 대표 수행법. 화두(공안)를 들고 마음의 근원을 탐구합니다. 조계종 중심 수행법.</div>
+    </div>
+    <div class="md-type 念">
+      <div class="md-type-icon">📿</div>
+      <div class="md-type-name">염불 수행 (念佛)</div>
+      <div class="md-type-en">Nembutsu Practice</div>
+      <div class="md-type-desc">'나무아미타불'을 반복 염송하며 아미타불을 염(念)하는 수행. 극락왕생 발원과 마음 정화.</div>
+    </div>
+    <div class="md-type 호흡">
+      <div class="md-type-icon">🌬️</div>
+      <div class="md-type-name">호흡 명상 (數息觀)</div>
+      <div class="md-type-en">Breath Awareness</div>
+      <div class="md-type-desc">숨을 세며(1~10) 마음을 집중하는 가장 기초적인 명상. 초보자에게 가장 추천.</div>
+    </div>
+    <div class="md-type 염불">
+      <div class="md-type-icon">🕯️</div>
+      <div class="md-type-name">위빠사나 (觀)</div>
+      <div class="md-type-en">Vipassana</div>
+      <div class="md-type-desc">몸과 마음에서 일어나는 현상을 있는 그대로 관찰하는 수행. 통찰 명상의 원류.</div>
+    </div>
+  </div>
+
+  <!-- 단계별 입문 가이드 -->
+  <div class="md-sec-label">🪷 초보자 10분 명상 — 단계별 가이드</div>
+  <div class="md-guide">
+    <div class="md-step">
+      <div class="md-step-num">1</div>
+      <div class="md-step-body">
+        <div class="md-step-title">🌿 자리 만들기</div>
+        <div class="md-step-desc">조용하고 방해받지 않는 공간을 선택합니다. 방석이나 쿠션을 깔고 앉거나, 의자에 앉아도 됩니다. 향을 하나 피워두면 마음이 더 빨리 가라앉습니다. 스마트폰은 무음·뒤집어 놓으세요.</div>
+        <div class="md-step-time">⏱ 1~2분</div>
+      </div>
+    </div>
+    <div class="md-step">
+      <div class="md-step-num">2</div>
+      <div class="md-step-body">
+        <div class="md-step-title">🧎 자세 잡기</div>
+        <div class="md-step-desc">허리를 곧게 세우되 긴장하지 않습니다. 양손은 무릎 위 또는 배꼽 아래서 법계정인(오른손 위에 왼손, 엄지를 가볍게 맞댐)을 취합니다. 눈은 반쯤 감아 시선을 45도 아래 바닥에 둡니다.</div>
+        <div class="md-step-time">⏱ 1분</div>
+      </div>
+    </div>
+    <div class="md-step">
+      <div class="md-step-num">3</div>
+      <div class="md-step-body">
+        <div class="md-step-title">🌬️ 호흡 관찰 (수식관)</div>
+        <div class="md-step-desc">코끝에서 공기가 들어오고 나가는 감각에 집중합니다. 숨을 들이쉬며 속으로 '하나', 내쉬며 '둘', 이렇게 10까지 셉니다. 10이 되면 다시 1부터. 잡념이 생기면 "아, 생각이구나"하고 알아차리고 호흡으로 돌아옵니다.</div>
+        <div class="md-step-time">⏱ 5~7분</div>
+      </div>
+    </div>
+    <div class="md-step">
+      <div class="md-step-num">4</div>
+      <div class="md-step-body">
+        <div class="md-step-title">🙏 발원과 회향</div>
+        <div class="md-step-desc">명상을 마칠 때 합장하고 오늘의 수행 공덕을 일체 중생에게 돌리는 회향(廻向)을 합니다. "오늘 쌓은 공덕으로 모든 생명이 행복하기를" 마음으로 빌어보세요. 천천히 눈을 뜹니다.</div>
+        <div class="md-step-time">⏱ 1~2분</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="md-tip"><strong>💡 잡념이 생겼을 때:</strong> 잡념은 명상 실패가 아닙니다. 잡념을 알아차리고 다시 호흡으로 돌아오는 그 순간이 바로 수행입니다. 하루 5분이라도 꾸준히 하는 것이 1시간 한 번보다 효과적입니다.</div>
+
+  <hr class="md-divider">
+
+  <!-- 호흡 리듬 -->
+  <div class="md-sec-label">🌬️ 기본 호흡 리듬 — 4·4·4 호흡법</div>
+  <div class="md-breath">
+    <div class="md-breath-title"><span>🔄</span> 박스 호흡 (Box Breathing) — 가장 쉬운 명상 호흡</div>
+    <div class="md-breath-steps">
+      <div class="md-breath-step">
+        <div class="md-breath-icon">🌊</div>
+        <div class="md-breath-name">들이쉬기</div>
+        <div class="md-breath-count">4초</div>
+        <div class="md-breath-desc">코로 천천히 들이마신다. 배가 먼저 부풀어 오르도록</div>
+      </div>
+      <div class="md-breath-step">
+        <div class="md-breath-icon">⏸️</div>
+        <div class="md-breath-name">멈추기</div>
+        <div class="md-breath-count">4초</div>
+        <div class="md-breath-desc">숨을 머금고 온몸에 산소가 퍼지는 느낌을 관찰</div>
+      </div>
+      <div class="md-breath-step">
+        <div class="md-breath-icon">🍃</div>
+        <div class="md-breath-name">내쉬기</div>
+        <div class="md-breath-count">4초</div>
+        <div class="md-breath-desc">입으로 천천히 내보낸다. 긴장이 함께 빠져나간다고 상상</div>
+      </div>
+      <div class="md-breath-step">
+        <div class="md-breath-icon">⏸️</div>
+        <div class="md-breath-name">비우기</div>
+        <div class="md-breath-count">4초</div>
+        <div class="md-breath-desc">폐를 완전히 비우고 다음 호흡을 기다린다</div>
+      </div>
+    </div>
+    <div class="md-tip" style="margin-top:16px"><strong>💡 목표:</strong> 처음에는 4초가 길게 느껴질 수 있습니다. 2초→3초→4초로 점차 늘려가세요. 10회 반복하면 약 3분, 집중력과 평온함이 확 달라집니다.</div>
+  </div>
+
+  <!-- 자세 -->
+  <div class="md-sec-label">🧘 명상 자세</div>
+  <div class="md-posture">
+    <div class="md-posture-card">
+      <div class="md-posture-icon">🪑</div>
+      <div class="md-posture-name">의자 앉기</div>
+      <div class="md-posture-desc">등받이 없이, 등을 세우고 두 발은 바닥에 평평하게. 가장 쉬운 자세.</div>
+      <div class="md-posture-level beg">초보자</div>
+    </div>
+    <div class="md-posture-card">
+      <div class="md-posture-icon">🧎</div>
+      <div class="md-posture-name">반가부좌</div>
+      <div class="md-posture-desc">한쪽 발을 반대편 허벅지 위에 올린다. 방석 사용 권장.</div>
+      <div class="md-posture-level beg">초보자</div>
+    </div>
+    <div class="md-posture-card">
+      <div class="md-posture-icon">🧘</div>
+      <div class="md-posture-name">결가부좌</div>
+      <div class="md-posture-desc">양발을 교차해 올리는 연꽃 자세. 가장 안정적이나 유연성 필요.</div>
+      <div class="md-posture-level adv">상급</div>
+    </div>
+    <div class="md-posture-card">
+      <div class="md-posture-icon">🙇</div>
+      <div class="md-posture-name">무릎 꿇기 (跪坐)</div>
+      <div class="md-posture-desc">무릎 꿇고 방석 위에 앉는 선자세. 허리 통증 없이 등을 세울 수 있다.</div>
+      <div class="md-posture-level mid">중급</div>
+    </div>
+    <div class="md-posture-card">
+      <div class="md-posture-icon">🛏️</div>
+      <div class="md-posture-name">누운 자세 (사바사나)</div>
+      <div class="md-posture-desc">바닥에 편안히 눕는다. 잠들기 쉬우니 처음에는 비권장.</div>
+      <div class="md-posture-level mid">중급</div>
+    </div>
+    <div class="md-posture-card">
+      <div class="md-posture-icon">🚶</div>
+      <div class="md-posture-name">걷기 명상 (行禪)</div>
+      <div class="md-posture-desc">천천히 걸으며 발바닥의 감각에 집중. 체력 향상 + 마음 안정.</div>
+      <div class="md-posture-level beg">초보자</div>
+    </div>
+  </div>
+
+  <hr class="md-divider">
+
+  <!-- 화두 -->
+  <div class="md-sec-label">🔆 화두 (話頭) — 참선의 핵심</div>
+  <div class="md-tip" style="margin-bottom:18px"><strong>화두(話頭)란?</strong> 논리적 사고로는 풀 수 없는 질문. 답을 찾는 것이 아니라, 그 질문을 온몸으로 들고 있는 것 자체가 수행입니다. 의심이 깊어질수록 수행이 깊어집니다.</div>
+  <div class="md-hwadu-grid">
+    <div class="md-hwadu">
+      <div class="md-hwadu-q">이 뭣고? (是甚麽)</div>
+      <div class="md-hwadu-desc">지금 이 순간 생각하고 느끼는 '이것'은 무엇인가? 한국 선불교에서 가장 많이 사용하는 화두. 언제 어디서나 들 수 있다.</div>
+      <div class="md-hwadu-master">한국 조계종 대표 화두</div>
+    </div>
+    <div class="md-hwadu">
+      <div class="md-hwadu-q">개에게 불성이 있는가? 없다 (無)</div>
+      <div class="md-hwadu-desc">조주 스님의 무자(無字) 화두. '없다'는 그 없음은 무엇인가. 세계 선불교에서 가장 유명한 공안.</div>
+      <div class="md-hwadu-master">趙州禪師 · 무문관 제1칙</div>
+    </div>
+    <div class="md-hwadu">
+      <div class="md-hwadu-q">부모에게 나기 전, 나의 본래 면목은?</div>
+      <div class="md-hwadu-desc">태어나기 이전 나는 무엇이었는가. 자신의 근원적 존재를 탐구하는 화두. 깊은 자아 성찰로 이끈다.</div>
+      <div class="md-hwadu-master">본래면목 (本來面目)</div>
+    </div>
+    <div class="md-hwadu">
+      <div class="md-hwadu-q">손뼉 한 쪽이 내는 소리는?</div>
+      <div class="md-hwadu-desc">한쪽 손으로 치는 소리 — 들어본 적 없는 소리를 들어보라. 일본 임제종을 통해 서구에 가장 많이 알려진 공안.</div>
+      <div class="md-hwadu-master">白隱慧鶴 · 片手音</div>
+    </div>
+  </div>
+
+  <div class="md-warn"><strong>⚠️ 초보자 주의:</strong> 화두 수행은 반드시 스님 또는 선지식(善知識)의 지도 아래 시작하는 것이 좋습니다. 혼자 화두를 깊이 들다 보면 의식의 혼란을 겪을 수 있습니다. 처음에는 호흡 명상으로 기초를 다지세요.</div>
+
+  <hr class="md-divider">
+
+  <!-- 사찰 수행 일과 -->
+  <div class="md-sec-label">🕐 사찰 수행 일과 (템플스테이 기준)</div>
+  <div class="md-schedule">
+    <div class="md-schedule-title"><span>📅</span> 하루 수행 일과표</div>
+    <div class="md-schedule-row">
+      <div class="md-schedule-time">03:30</div>
+      <div class="md-schedule-act"><strong>도량석 (道場釋)</strong> — 새벽 목탁 소리와 함께 도량을 깨우는 의식. 잠에서 깨어 수행을 시작하는 신호.</div>
+    </div>
+    <div class="md-schedule-row">
+      <div class="md-schedule-time">04:00</div>
+      <div class="md-schedule-act"><strong>새벽 예불 (새벽 예불)</strong> — 법당에서 삼배 올리고 반야심경·천수경 독송. 하루 중 가장 맑은 시간.</div>
+    </div>
+    <div class="md-schedule-row">
+      <div class="md-schedule-time">04:30</div>
+      <div class="md-schedule-act"><strong>좌선 (坐禪)</strong> — 선방에서 1시간 이상 참선 수행. 고요히 앉아 화두를 든다.</div>
+    </div>
+    <div class="md-schedule-row">
+      <div class="md-schedule-time">06:30</div>
+      <div class="md-schedule-act"><strong>공양 (아침 식사)</strong> — 발우공양. 묵언 속에 감사하며 먹는 수행 식사.</div>
+    </div>
+    <div class="md-schedule-row">
+      <div class="md-schedule-time">08:00</div>
+      <div class="md-schedule-act"><strong>울력 (運力)</strong> — 대중이 함께 절 청소·텃밭 가꾸기. 노동 자체가 수행.</div>
+    </div>
+    <div class="md-schedule-row">
+      <div class="md-schedule-time">10:00</div>
+      <div class="md-schedule-act"><strong>108배 · 경전 독송</strong> — 108번 절하며 번뇌를 씻거나 경전을 필사하는 수행.</div>
+    </div>
+    <div class="md-schedule-row">
+      <div class="md-schedule-time">18:00</div>
+      <div class="md-schedule-act"><strong>저녁 예불</strong> — 하루를 마무리하는 예불. 지장보살 염불과 아미타경 독송.</div>
+    </div>
+    <div class="md-schedule-row">
+      <div class="md-schedule-time">19:00</div>
+      <div class="md-schedule-act"><strong>야간 좌선</strong> — 조용한 밤, 다시 선방으로. 화두를 들고 밤을 맞이한다.</div>
+    </div>
+    <div class="md-schedule-row">
+      <div class="md-schedule-time">21:00</div>
+      <div class="md-schedule-act"><strong>방선 (放禪) · 취침</strong> — 수행을 마치고 취침. 내일의 새벽을 위해 일찍 잠자리에 든다.</div>
+    </div>
+  </div>
+
+  <!-- 108배 연계 -->
+  <div class="md-108">
+    <div>
+      <div class="md-108-heading">🙏 108배 — <em>몸으로 하는 명상</em></div>
+      <div class="md-108-body">
+        108배는 단순한 운동이 아닙니다. 인간의 번뇌 108가지를 한 번씩 절하며 내려놓는 수행입니다.<br><br>
+        절을 하는 동안 무릎이 바닥에 닿을 때마다 오만함이, 이마가 닿을 때마다 집착이 사라집니다. 전신의 근육을 사용하여 30~40분이 소요되며, 마치고 나면 마음이 놀랍도록 가벼워집니다.<br><br>
+        <strong style="color:#e2e8f0">잼공인연사찰의 108배 카운터</strong>로 오늘 시작해보세요.
+      </div>
+    </div>
+    <div class="md-108-stat">
+      <div class="md-108-item">
+        <div class="md-108-num">108</div>
+        <div class="md-108-desc">인간이 가진<br>번뇌의 수</div>
+      </div>
+      <div class="md-108-item">
+        <div class="md-108-num">35~40</div>
+        <div class="md-108-desc">108배 소요 시간<br>(분)</div>
+      </div>
+      <div class="md-108-item">
+        <div class="md-108-num">500+</div>
+        <div class="md-108-desc">소모 칼로리<br>(kcal)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 효과 -->
+  <div class="md-sec-label">✨ 명상의 효과 — 과학이 증명한 변화</div>
+  <div class="md-effect-grid">
+    <div class="md-effect">
+      <div class="md-effect-icon">🧠</div>
+      <div class="md-effect-name">전전두엽 강화</div>
+      <div class="md-effect-desc">8주 명상 후 집중력·의사결정 담당 전전두엽 회백질 밀도 증가 (하버드 연구)</div>
+    </div>
+    <div class="md-effect">
+      <div class="md-effect-icon">😌</div>
+      <div class="md-effect-name">스트레스 감소</div>
+      <div class="md-effect-desc">코르티솔(스트레스 호르몬) 수치 평균 23% 감소. 불안·우울 증상 완화.</div>
+    </div>
+    <div class="md-effect">
+      <div class="md-effect-icon">❤️</div>
+      <div class="md-effect-name">심혈관 건강</div>
+      <div class="md-effect-desc">혈압 낮아지고 심박 변이도 개선. 미국심장협회 명상의 심장 건강 효과 인정.</div>
+    </div>
+    <div class="md-effect">
+      <div class="md-effect-icon">😴</div>
+      <div class="md-effect-name">수면 질 향상</div>
+      <div class="md-effect-desc">잠드는 시간 단축, 깊은 수면 시간 증가. 불면증에 명상이 수면제만큼 효과적이라는 연구 결과.</div>
+    </div>
+    <div class="md-effect">
+      <div class="md-effect-icon">🎯</div>
+      <div class="md-effect-name">집중력 향상</div>
+      <div class="md-effect-desc">마음 방황(mind-wandering)이 줄어들고 현재 순간에 머무는 능력 향상.</div>
+    </div>
+    <div class="md-effect">
+      <div class="md-effect-icon">🤗</div>
+      <div class="md-effect-name">자비심 증가</div>
+      <div class="md-effect-desc">자애명상(慈悲觀) 수행 후 타인에 대한 공감 능력과 이타적 행동 유의미하게 증가.</div>
+    </div>
+  </div>
+
+  <div class="md-tip"><strong>🌸 오늘 시작하는 방법:</strong> 타이머를 5분으로 설정하고, 지금 이 자리에서 눈을 감으세요. 코끝의 호흡에 집중하며 숨을 하나부터 열까지 세어보세요. 그것만으로도 오늘의 수행은 완성입니다.</div>
+
+</div>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

@@ -1,0 +1,383 @@
+<meta charset="UTF-8">
+<style>
+.fd{font-family:'Noto Sans KR',sans-serif;max-width:1000px;margin:0 auto;padding:60px 24px 100px;color:#e2e8f0}
+.fd-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.fd-title{font-size:clamp(24px,3.5vw,42px);font-weight:900;color:#f8fafc;margin:0 0 12px;line-height:1.3}
+.fd-title em{color:#FBBF24;font-style:normal}
+.fd-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 40px;border-left:3px solid rgba(251,191,36,0.4);padding-left:16px}
+.fd-sec-label{font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.15em;margin:48px 0 18px}
+/* ── 원칙 카드 ── */
+.fd-principle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:40px}
+.fd-principle{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;text-align:center}
+.fd-principle-icon{font-size:30px;margin-bottom:10px}
+.fd-principle-name{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:6px}
+.fd-principle-desc{font-size:11px;color:#64748b;line-height:1.6}
+/* ── 오신채 금지 ── */
+.fd-osin{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:16px;padding:22px 26px;margin-bottom:40px}
+.fd-osin-title{font-size:14px;font-weight:800;color:#f87171;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.fd-osin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.fd-osin-item{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:10px 14px;font-size:12px;color:#94a3b8;display:flex;align-items:center;gap:8px}
+.fd-osin-icon{font-size:18px;flex-shrink:0}
+/* ── 레시피 카드 ── */
+.fd-recipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-bottom:40px}
+.fd-recipe{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;transition:all .2s}
+.fd-recipe:hover{border-color:rgba(251,191,36,0.3);transform:translateY(-2px)}
+.fd-recipe-head{padding:18px 20px 14px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.fd-recipe-emoji{font-size:36px;margin-bottom:8px}
+.fd-recipe-name{font-size:16px;font-weight:900;color:#f8fafc;margin-bottom:4px}
+.fd-recipe-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.fd-tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px}
+.fd-tag.easy{background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.2)}
+.fd-tag.mid{background:rgba(251,191,36,0.1);color:#FBBF24;border:1px solid rgba(251,191,36,0.2)}
+.fd-tag.hard{background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
+.fd-tag.time{background:rgba(148,163,184,0.08);color:#94a3b8;border:1px solid rgba(148,163,184,0.15)}
+.fd-tag.season{background:rgba(20,184,166,0.1);color:#5eead4;border:1px solid rgba(20,184,166,0.2)}
+.fd-recipe-body{padding:16px 20px 18px}
+.fd-recipe-desc{font-size:12px;color:#64748b;line-height:1.7;margin-bottom:14px}
+.fd-recipe-section{font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:6px}
+.fd-recipe-list{list-style:none;padding:0;margin:0 0 12px}
+.fd-recipe-list li{font-size:12px;color:#94a3b8;line-height:1.8;padding:2px 0;display:flex;gap:8px}
+.fd-recipe-list li::before{content:'·';color:rgba(251,191,36,0.5);flex-shrink:0}
+.fd-recipe-steps{list-style:none;padding:0;margin:0;counter-reset:step}
+.fd-recipe-steps li{font-size:12px;color:#94a3b8;line-height:1.7;padding:5px 0;display:flex;gap:10px;counter-increment:step;border-bottom:1px solid rgba(255,255,255,0.04)}
+.fd-recipe-steps li:last-child{border-bottom:none}
+.fd-recipe-steps li::before{content:counter(step);color:#FBBF24;font-weight:900;font-size:11px;flex-shrink:0;width:16px;text-align:right}
+/* ── 식재료 표 ── */
+.fd-ingredients{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:40px}
+.fd-ing-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px}
+.fd-ing-icon{font-size:22px;margin-bottom:6px}
+.fd-ing-name{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:4px}
+.fd-ing-desc{font-size:11px;color:#64748b;line-height:1.6}
+/* ── 공양 문화 ── */
+.fd-gongyang{background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.15);border-radius:18px;padding:26px 30px;margin-bottom:40px}
+.fd-gongyang-title{font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.fd-gongyang-list{list-style:none;padding:0;margin:0}
+.fd-gongyang-list li{font-size:13px;color:#94a3b8;line-height:1.9;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;gap:10px}
+.fd-gongyang-list li:last-child{border-bottom:none}
+.fd-gongyang-list li::before{content:'🙏';flex-shrink:0}
+/* ── tip ── */
+.fd-tip{background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.15);border-radius:12px;padding:14px 18px;font-size:13px;color:#94a3b8;line-height:1.8;margin:12px 0}
+.fd-tip strong{color:#FBBF24}
+.fd-divider{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:40px 0}
+</style>
+
+<!-- HERO -->
+<div style="position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Haeinsa_Janggyeong_Panjeon.jpg/1280px-Haeinsa_Janggyeong_Panjeon.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.45),rgba(0,0,0,0.82))"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">TEMPLE FOOD · 사찰음식</div>
+    <h1 style="font-size:clamp(26px,4.5vw,48px);font-weight:900;color:#fff;margin:0 0 10px;font-family:'Noto Sans KR',sans-serif;line-height:1.2">사찰음식 <span style="color:#fbbf24">레시피</span></h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif">자연과 수행이 담긴 천년의 사찰음식 — 오신채 없이, 마음으로 짓는 밥</p>
+  </div>
+</div>
+
+<div class="fd">
+  <div class="fd-badge">TEMPLE FOOD · 사찰음식</div>
+  <div class="fd-title">자연이 주는 <em>청정한 밥상</em></div>
+  <div class="fd-sub">
+    사찰음식은 단순한 채식이 아닙니다. 살아있는 것을 해치지 않고(불살생), 욕망을 자극하는 재료를 멀리하며, 음식을 만드는 과정 자체가 수행이 되는 — 천 년을 이어온 한국 불교의 밥상 문화입니다.
+  </div>
+
+  <!-- 오원칙 -->
+  <div class="fd-sec-label">🌿 사찰음식 5원칙</div>
+  <div class="fd-principle-grid">
+    <div class="fd-principle">
+      <div class="fd-principle-icon">🌱</div>
+      <div class="fd-principle-name">불살생 (不殺生)</div>
+      <div class="fd-principle-desc">살아있는 생명을 해치지 않는다. 육류·어류 일체 사용하지 않음</div>
+    </div>
+    <div class="fd-principle">
+      <div class="fd-principle-icon">🧘</div>
+      <div class="fd-principle-name">청정심 (淸淨心)</div>
+      <div class="fd-principle-desc">조리하는 마음 자체가 수행. 화내지 않고 감사하며 음식을 만든다</div>
+    </div>
+    <div class="fd-principle">
+      <div class="fd-principle-icon">⚖️</div>
+      <div class="fd-principle-name">절제 (節制)</div>
+      <div class="fd-principle-desc">과식하지 않고, 필요한 만큼만 먹는다. 공양은 수행의 일부</div>
+    </div>
+    <div class="fd-principle">
+      <div class="fd-principle-icon">♻️</div>
+      <div class="fd-principle-name">무낭비 (無浪費)</div>
+      <div class="fd-principle-desc">식재료를 버리지 않는다. 껍질도 줄기도 모두 활용하는 지혜</div>
+    </div>
+    <div class="fd-principle">
+      <div class="fd-principle-icon">🌍</div>
+      <div class="fd-principle-name">제철·지역 재료</div>
+      <div class="fd-principle-desc">그 땅, 그 계절에 나는 재료를 사용. 인공 첨가물·화학조미료 금지</div>
+    </div>
+  </div>
+
+  <!-- 오신채 -->
+  <div class="fd-osin">
+    <div class="fd-osin-title">🚫 오신채 (五辛菜) — 사찰음식에 절대 사용 금지</div>
+    <div style="font-size:13px;color:#94a3b8;margin-bottom:14px;line-height:1.7">오신채는 마음을 어지럽히고 화·욕정을 일으키는 다섯 가지 채소입니다. 익혀 먹으면 음욕(淫慾)이, 날로 먹으면 분노심이 생긴다 하여 수행자의 음식에서 반드시 제외합니다.</div>
+    <div class="fd-osin-grid">
+      <div class="fd-osin-item"><div class="fd-osin-icon">🧄</div><div>마늘 — 화를 돋움</div></div>
+      <div class="fd-osin-item"><div class="fd-osin-icon">🌿</div><div>파 (대파·쪽파)</div></div>
+      <div class="fd-osin-item"><div class="fd-osin-icon">🪴</div><div>부추 — 욕정을 자극</div></div>
+      <div class="fd-osin-item"><div class="fd-osin-icon">🌱</div><div>달래 — 몸에 열 일으킴</div></div>
+      <div class="fd-osin-item"><div class="fd-osin-icon">🌿</div><div>흥거 (아위) — 분노 유발</div></div>
+    </div>
+  </div>
+
+  <!-- 레시피 -->
+  <div class="fd-sec-label">🍲 대표 사찰음식 레시피</div>
+  <div class="fd-recipe-grid">
+
+    <!-- 된장찌개 -->
+    <div class="fd-recipe">
+      <div class="fd-recipe-head">
+        <div class="fd-recipe-emoji">🍲</div>
+        <div class="fd-recipe-name">사찰 된장찌개</div>
+        <div class="fd-recipe-tags">
+          <span class="fd-tag easy">초급</span>
+          <span class="fd-tag time">⏱ 25분</span>
+          <span class="fd-tag season">사계절</span>
+        </div>
+      </div>
+      <div class="fd-recipe-body">
+        <div class="fd-recipe-desc">파·마늘 없이도 재료 본연의 맛으로 깊은 구수함을 내는 사찰식 된장찌개. 다시마 육수가 핵심입니다.</div>
+        <div class="fd-recipe-section">재료 (2인분)</div>
+        <ul class="fd-recipe-list">
+          <li>사찰 된장 2큰술, 두부 200g</li>
+          <li>애호박 1/2개, 표고버섯 3개</li>
+          <li>다시마(10×10cm) 2장, 물 500ml</li>
+          <li>들깨가루 1작은술 (선택)</li>
+        </ul>
+        <div class="fd-recipe-section">만드는 법</div>
+        <ol class="fd-recipe-steps">
+          <li>다시마를 찬물에 30분 불린 후 중불에서 10분 끓여 육수를 만든다 (다시마는 건진다).</li>
+          <li>육수에 된장을 풀어 넣고 끓인다.</li>
+          <li>한입 크기로 자른 두부, 호박, 버섯을 넣고 10분 더 끓인다.</li>
+          <li>마지막에 들깨가루를 넣으면 고소함이 배가된다.</li>
+        </ol>
+        <div class="fd-tip" style="margin-top:12px"><strong>💡 Tip:</strong> 사찰 된장은 일반 된장과 달리 화학조미료 무첨가. 시중 재래 된장으로 대체 가능합니다.</div>
+      </div>
+    </div>
+
+    <!-- 나물 비빔밥 -->
+    <div class="fd-recipe">
+      <div class="fd-recipe-head">
+        <div class="fd-recipe-emoji">🥗</div>
+        <div class="fd-recipe-name">오색 나물 비빔밥</div>
+        <div class="fd-recipe-tags">
+          <span class="fd-tag mid">중급</span>
+          <span class="fd-tag time">⏱ 40분</span>
+          <span class="fd-tag season">봄·여름</span>
+        </div>
+      </div>
+      <div class="fd-recipe-body">
+        <div class="fd-recipe-desc">오방색(청·적·황·백·흑)을 담은 나물 비빔밥. 시각적으로도 아름다우며, 각 나물이 오장(五臟)을 돕는다고 전해집니다.</div>
+        <div class="fd-recipe-section">재료 (2인분)</div>
+        <ul class="fd-recipe-list">
+          <li>시금치 80g, 도라지 60g, 당근 1/2개</li>
+          <li>고사리(삶은 것) 60g, 표고버섯 4개</li>
+          <li>밥 2공기, 참기름·들기름·소금</li>
+          <li>고추장 (사찰식: 마늘·젓갈 무첨가)</li>
+        </ul>
+        <div class="fd-recipe-section">만드는 법</div>
+        <ol class="fd-recipe-steps">
+          <li>시금치·도라지·고사리·당근·버섯 각각 볶거나 무쳐 나물을 준비한다.</li>
+          <li>나물 양념은 소금·참기름만 사용. 오신채 없이 재료 본 맛을 살린다.</li>
+          <li>따뜻한 밥 위에 오색 나물을 색깔별로 올린다.</li>
+          <li>사찰 고추장을 곁들여 낸다. 참기름 한 방울 마무리.</li>
+        </ol>
+        <div class="fd-tip" style="margin-top:12px"><strong>💡 Tip:</strong> 도라지는 소금에 주물러 씁쓸한 맛을 뺀 뒤 깨끗이 헹구어 사용합니다.</div>
+      </div>
+    </div>
+
+    <!-- 연근조림 -->
+    <div class="fd-recipe">
+      <div class="fd-recipe-head">
+        <div class="fd-recipe-emoji">🪷</div>
+        <div class="fd-recipe-name">연근조림</div>
+        <div class="fd-recipe-tags">
+          <span class="fd-tag easy">초급</span>
+          <span class="fd-tag time">⏱ 30분</span>
+          <span class="fd-tag season">가을·겨울</span>
+        </div>
+      </div>
+      <div class="fd-recipe-body">
+        <div class="fd-recipe-desc">연꽃의 뿌리 연근은 불교에서 '더러운 물 속에서 피어나는 청정함'을 상징합니다. 달콤짭짤한 조림으로 밥상의 중심이 됩니다.</div>
+        <div class="fd-recipe-section">재료</div>
+        <ul class="fd-recipe-list">
+          <li>연근 300g, 간장 3큰술</li>
+          <li>매실액(또는 조청) 2큰술, 참기름 1작은술</li>
+          <li>통깨, 물 200ml</li>
+        </ul>
+        <div class="fd-recipe-section">만드는 법</div>
+        <ol class="fd-recipe-steps">
+          <li>연근을 0.5cm 두께로 동글납작하게 썬다. 식초물에 10분 담가 갈변을 막는다.</li>
+          <li>팬에 연근과 물을 넣고 중불에서 5분 끓인다.</li>
+          <li>간장·매실액을 넣고 약불에서 국물이 거의 없어질 때까지 조린다 (약 15분).</li>
+          <li>불을 끄고 참기름·통깨로 마무리한다.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 두부구이 -->
+    <div class="fd-recipe">
+      <div class="fd-recipe-head">
+        <div class="fd-recipe-emoji">🟨</div>
+        <div class="fd-recipe-name">양념 두부구이</div>
+        <div class="fd-recipe-tags">
+          <span class="fd-tag easy">초급</span>
+          <span class="fd-tag time">⏱ 20분</span>
+          <span class="fd-tag season">사계절</span>
+        </div>
+      </div>
+      <div class="fd-recipe-body">
+        <div class="fd-recipe-desc">마늘 없이도 충분히 맛있는 사찰식 두부구이. 생강·간장·매실액으로 깊은 풍미를 냅니다.</div>
+        <div class="fd-recipe-section">재료</div>
+        <ul class="fd-recipe-list">
+          <li>두부 1모 (300g), 들기름 2큰술</li>
+          <li>간장 1.5큰술, 매실액 1큰술</li>
+          <li>생강즙 1/2작은술, 통깨·참기름</li>
+        </ul>
+        <div class="fd-recipe-section">만드는 법</div>
+        <ol class="fd-recipe-steps">
+          <li>두부를 1cm 두께로 썰고 키친타월로 물기를 꼼꼼히 제거한다.</li>
+          <li>간장·매실액·생강즙을 섞어 양념장을 만든다.</li>
+          <li>들기름 두른 팬에 두부를 노릇하게 앞뒤로 굽는다 (각 3분).</li>
+          <li>양념장을 두부 위에 끼얹고 약불에서 1분 더 졸인다. 통깨로 마무리.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 버섯탕 -->
+    <div class="fd-recipe">
+      <div class="fd-recipe-head">
+        <div class="fd-recipe-emoji">🍄</div>
+        <div class="fd-recipe-name">사찰 버섯탕</div>
+        <div class="fd-recipe-tags">
+          <span class="fd-tag mid">중급</span>
+          <span class="fd-tag time">⏱ 35분</span>
+          <span class="fd-tag season">가을·겨울</span>
+        </div>
+      </div>
+      <div class="fd-recipe-body">
+        <div class="fd-recipe-desc">표고·느타리·팽이·송이 네 가지 버섯의 깊은 우마미로 고기 육수 부럽지 않은 사찰식 맑은 탕.</div>
+        <div class="fd-recipe-section">재료</div>
+        <ul class="fd-recipe-list">
+          <li>표고버섯 4개, 느타리 100g, 팽이 50g</li>
+          <li>다시마 육수 700ml, 국간장 1.5큰술</li>
+          <li>두부 1/2모, 애호박 1/3개, 소금·후추</li>
+        </ul>
+        <div class="fd-recipe-section">만드는 법</div>
+        <ol class="fd-recipe-steps">
+          <li>다시마 육수를 끓인다 (다시마 20g + 물 800ml, 10분).</li>
+          <li>육수에 국간장을 넣고, 두부·호박·버섯을 넣는다.</li>
+          <li>중불에서 10분 끓인 뒤 소금·후추로 간을 맞춘다.</li>
+          <li>마지막에 팽이버섯을 넣고 2분 더 끓인다.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 깻잎김치 -->
+    <div class="fd-recipe">
+      <div class="fd-recipe-head">
+        <div class="fd-recipe-emoji">🌿</div>
+        <div class="fd-recipe-name">깻잎 간장절임</div>
+        <div class="fd-recipe-tags">
+          <span class="fd-tag easy">초급</span>
+          <span class="fd-tag time">⏱ 10분 + 숙성 1일</span>
+          <span class="fd-tag season">여름</span>
+        </div>
+      </div>
+      <div class="fd-recipe-body">
+        <div class="fd-recipe-desc">오신채 없이 깻잎·간장·생강·들기름으로만 만드는 사찰식 밑반찬. 밥 한 공기가 뚝딱 사라집니다.</div>
+        <div class="fd-recipe-section">재료</div>
+        <ul class="fd-recipe-list">
+          <li>깻잎 40장, 간장 4큰술</li>
+          <li>매실액 2큰술, 생강즙 1작은술</li>
+          <li>들기름 1큰술, 통깨</li>
+        </ul>
+        <div class="fd-recipe-section">만드는 법</div>
+        <ol class="fd-recipe-steps">
+          <li>간장·매실액·생강즙·들기름을 섞어 양념장을 만든다.</li>
+          <li>깻잎을 2~3장씩 쌓고 양념장을 골고루 끼얹는다.</li>
+          <li>밀폐용기에 담아 하루 냉장 숙성 후 먹는다.</li>
+        </ol>
+        <div class="fd-tip" style="margin-top:12px"><strong>💡 Tip:</strong> 3일 이내에 드시는 것이 가장 맛있습니다.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="fd-divider">
+
+  <!-- 주요 식재료 -->
+  <div class="fd-sec-label">🧺 사찰음식 주요 식재료</div>
+  <div class="fd-ingredients">
+    <div class="fd-ing-card">
+      <div class="fd-ing-icon">🍄</div>
+      <div class="fd-ing-name">버섯류</div>
+      <div class="fd-ing-desc">표고·느타리·팽이·송이·목이버섯. 깊은 우마미 제공, 육류 대체</div>
+    </div>
+    <div class="fd-ing-card">
+      <div class="fd-ing-icon">🥬</div>
+      <div class="fd-ing-name">제철 나물</div>
+      <div class="fd-ing-desc">시금치·도라지·고사리·취나물·냉이·달래(달래는 오신채 아님)</div>
+    </div>
+    <div class="fd-ing-card">
+      <div class="fd-ing-icon">🪷</div>
+      <div class="fd-ing-name">연근·우엉</div>
+      <div class="fd-ing-desc">불교 상징 재료. 조림·볶음·튀김 등 다양하게 활용 가능</div>
+    </div>
+    <div class="fd-ing-card">
+      <div class="fd-ing-icon">🫘</div>
+      <div class="fd-ing-name">두부·콩류</div>
+      <div class="fd-ing-desc">단백질 주요 공급원. 두부·순두부·된장·청국장·두유 모두 활용</div>
+    </div>
+    <div class="fd-ing-card">
+      <div class="fd-ing-icon">🌊</div>
+      <div class="fd-ing-name">해조류</div>
+      <div class="fd-ing-desc">다시마·미역·김·파래. 육수·반찬으로 미네랄을 풍부하게 제공</div>
+    </div>
+    <div class="fd-ing-card">
+      <div class="fd-ing-icon">🌾</div>
+      <div class="fd-ing-name">잡곡·쌀</div>
+      <div class="fd-ing-desc">현미·찰보리·흑미·콩 혼합 잡곡밥. 영양 균형과 포만감</div>
+    </div>
+    <div class="fd-ing-card">
+      <div class="fd-ing-icon">🫙</div>
+      <div class="fd-ing-name">사찰 장류</div>
+      <div class="fd-ing-desc">화학조미료 없는 전통 된장·간장·고추장·청국장으로 깊은 맛</div>
+    </div>
+    <div class="fd-ing-card">
+      <div class="fd-ing-icon">🌰</div>
+      <div class="fd-ing-name">견과·씨앗류</div>
+      <div class="fd-ing-desc">들깨·참깨·호두·잣·은행. 고소한 풍미와 양질의 지방 공급</div>
+    </div>
+  </div>
+
+  <hr class="fd-divider">
+
+  <!-- 공양 문화 -->
+  <div class="fd-sec-label">🍚 공양 (供養) 문화</div>
+  <div class="fd-gongyang">
+    <div class="fd-gongyang-title"><span>🙏</span> 사찰에서 밥 먹는 방법 — 발우공양</div>
+    <ul class="fd-gongyang-list">
+      <li>발우(鉢盂): 스님의 밥그릇. 4개로 구성 (밥·국·반찬·물그릇). 식사 전후 직접 씻어 관리합니다.</li>
+      <li>묵언(默言): 식사 중 대화하지 않습니다. 음식을 천천히 씹으며 감사함을 느끼는 시간입니다.</li>
+      <li>오관게(五觀偈): 밥 먹기 전 "이 음식이 어디서 왔는가..." 다섯 가지를 생각하는 게송을 외웁니다.</li>
+      <li>천발(淺鉢): 그릇에 밥·국을 끝까지 먹어 남기지 않습니다. 숭늉으로 그릇을 헹궈 마시기도 합니다.</li>
+      <li>절 방문객도 공양 시간에 참여할 수 있습니다. 미리 주지 스님께 허락을 구하는 것이 예의입니다.</li>
+    </ul>
+  </div>
+
+  <div class="fd-tip"><strong>🌿 사찰음식과 건강:</strong> 사찰음식은 저지방·고섬유·저나트륨 식단으로 현대 영양학에서도 최적의 건강식으로 인정받고 있습니다. 유네스코 무형문화유산 등재를 추진 중인 한국의 소중한 식문화입니다.</div>
+
+</div>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

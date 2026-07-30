@@ -1,0 +1,871 @@
+<meta charset="UTF-8">
+<style>
+.jm{font-family:'Noto Sans KR',sans-serif;max-width:960px;margin:0 auto;padding:56px 24px 80px;color:#e2e8f0}
+.jm-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.jm-title{font-size:clamp(26px,4vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.jm-title em{color:#FBBF24;font-style:normal}
+.jm-sub{font-size:14px;color:#cbd5e1;line-height:1.8;margin:0 0 36px}
+
+/* 카테고리 탭 */
+.jm-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.jm-tab{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:99px;padding:8px 18px;font-size:13px;font-weight:700;color:#94a3b8;cursor:pointer;transition:all .2s;font-family:inherit}
+.jm-tab.active,.jm-tab:hover{background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.4);color:#FBBF24}
+
+/* 상품 그리드 */
+.jm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+.jm-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:18px;overflow:hidden;transition:all .25s;cursor:pointer}
+.jm-card:hover{border-color:rgba(251,191,36,0.35);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.3)}
+.jm-card-img{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,rgba(255,255,255,0.04),rgba(251,191,36,0.05));position:relative;overflow:hidden}
+.jm-card-body{padding:16px}
+.jm-card-cat{font-size:10px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:4px}
+.jm-card-name{font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:4px;line-height:1.4}
+.jm-card-desc{font-size:12px;color:#64748b;line-height:1.6;margin-bottom:12px}
+.jm-card-row{display:flex;align-items:center;justify-content:space-between}
+.jm-card-price{display:none}
+.jm-card-btn{background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;padding:6px 14px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s}
+.jm-card-btn:hover{background:rgba(251,191,36,0.25)}
+
+/* 배너 */
+.jm-banner{background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(168,85,247,0.06));border:1px solid rgba(251,191,36,0.2);border-radius:18px;padding:28px 32px;margin-bottom:32px;display:flex;align-items:center;gap:24px}
+.jm-banner-icon{font-size:48px;flex-shrink:0}
+.jm-banner-text h3{font-size:18px;font-weight:900;color:#f8fafc;margin:0 0 6px}
+.jm-banner-text p{font-size:13px;color:#64748b;margin:0;line-height:1.7}
+
+/* 모달 */
+.jm-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.jm-modal.show{display:flex}
+.jm-modal-box{background:#0f0e13;border:1px solid rgba(251,191,36,0.25);border-radius:20px;max-width:480px;width:100%;padding:32px;position:relative;max-height:90vh;overflow-y:auto}
+.jm-modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1}
+.jm-modal-img{font-size:80px;text-align:center;margin-bottom:16px}
+.jm-modal-cat{font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:6px}
+.jm-modal-name{font-size:22px;font-weight:900;color:#f8fafc;margin-bottom:8px}
+.jm-modal-price{display:none}
+.jm-modal-desc{font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:20px}
+.jm-modal-buy{display:block;width:100%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:15px;font-weight:900;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;box-sizing:border-box;transition:all .2s}
+.jm-modal-buy:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(251,191,36,0.4)}
+
+/* ── 사주 궁합 추천 시스템 ── */
+.jm-saju-rec{background:linear-gradient(135deg,rgba(251,191,36,0.07),rgba(168,85,247,0.07));border:1px solid rgba(251,191,36,0.25);border-radius:20px;padding:22px 24px;margin-bottom:24px}
+.jm-saju-form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:16px}
+.jm-saju-inp{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 12px;color:#f8fafc;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;box-sizing:border-box}
+.jm-saju-inp:focus{border-color:rgba(251,191,36,0.5)}
+.jm-saju-inp option{background:#1e1b2e;color:#f8fafc}
+.jm-saju-btn{background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:13px;font-weight:900;padding:11px 22px;border-radius:10px;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;transition:filter .2s}
+.jm-saju-btn:hover{filter:brightness(1.1)}
+.jm-saju-btn2{background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.35);color:#c084fc;font-size:12px;font-weight:800;padding:9px 16px;border-radius:10px;border-style:solid;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;transition:all .2s}
+.jm-saju-btn2:hover{background:rgba(168,85,247,0.25)}
+.jm-saju-btn2.active{background:rgba(168,85,247,0.3);border-color:rgba(168,85,247,0.6)}
+.jm-rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:14px}
+.jm-rec-card{background:rgba(251,191,36,0.05);border:1.5px solid rgba(251,191,36,0.25);border-radius:14px;padding:14px 16px;cursor:pointer;transition:all .2s;display:flex;gap:12px;align-items:center}
+.jm-rec-card:hover{background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.5);transform:translateY(-2px)}
+.jm-score-badge{position:absolute;top:10px;left:10px;font-size:10px;font-weight:900;padding:4px 8px;border-radius:8px;z-index:2;line-height:1.3;text-align:center;letter-spacing:-.01em}
+</style>
+
+<!-- ── HERO BANNER ── -->
+<div style="position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Haeinsa_Janggyeong_Panjeon.jpg/1280px-Haeinsa_Janggyeong_Panjeon.jpg" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Naksansa07.jpg/1280px-Naksansa07.jpg'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.45) 0%,rgba(0,0,0,0.82) 100%)"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">JAMGONG MALL · 잼공몰</div>
+    <h1 style="font-size:clamp(26px,4.5vw,50px);font-weight:900;color:#ffffff;margin:0 0 10px;text-shadow:0 2px 20px rgba(0,0,0,0.7);font-family:'Noto Sans KR',sans-serif;line-height:1.2">🛒 <span style="color:#fbbf24">잼공몰</span></h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif">인연과 운을 담은 특별한 불교 상품 — 사주·기도 맞춤 큐레이션</p>
+  </div>
+</div>
+
+<script>
+// ── 잼공몰 개방 플래그 ──────────────────────────
+// false = 멤버십 잠금 / true = 완전 개방
+var MALL_OPEN = true;
+// ────────────────────────────────────────────────
+</script>
+
+<div id="jm-lock" style="display:none;text-align:center;padding:80px 24px 100px;max-width:480px;margin:0 auto">
+  <div style="font-size:64px;margin-bottom:24px">🔒</div>
+  <div style="display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:18px">MEMBERS ONLY</div>
+  <h2 style="font-size:26px;font-weight:900;color:#f8fafc;margin:0 0 10px;font-family:'Noto Sans KR',sans-serif">잼공몰 준비 중</h2>
+  <p style="font-size:13px;color:#64748b;line-height:1.9;margin:0 0 28px;font-family:'Noto Sans KR',sans-serif">검증된 사찰 소품·부적·기도용품을 엄선해 곧 선보입니다.</p>
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:24px;margin-bottom:12px">
+    <div style="font-size:12px;font-weight:800;color:#64748b;letter-spacing:.08em;margin-bottom:12px;font-family:'Noto Sans KR',sans-serif">관리자 비밀번호</div>
+    <div style="display:flex;gap:8px">
+      <input id="jm-pw" type="password" placeholder="비밀번호 입력"
+        style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px 16px;color:#f8fafc;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none"
+        onkeydown="if(event.key==='Enter')checkPw()">
+      <button type="button" onclick="checkPw()"
+        style="background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:13px;font-weight:900;padding:12px 20px;border-radius:10px;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">입장</button>
+    </div>
+    <div id="jm-pw-err" style="display:none;color:#f87171;font-size:12px;margin-top:8px;font-family:'Noto Sans KR',sans-serif">❌ 비밀번호가 틀렸습니다</div>
+  </div>
+  <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px 20px;text-align:left;margin-bottom:24px">
+    <div style="font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:8px">오픈 예정 카테고리</div>
+    <div style="font-size:12px;color:#64748b;line-height:2;font-family:'Noto Sans KR',sans-serif">🧿 부적 · 📿 팔찌 · 🧘 명상용품 · 🏮 불교용품 · 🍵 차·식품 · 📚 도서</div>
+  </div>
+</div>
+
+<div id="jm-content" style="display:none">
+<div class="jm">
+  <div class="jm-badge">잼공몰</div>
+  <h1 class="jm-title">🛒 <em>잼공몰</em></h1>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px">
+    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.4);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.12em;padding:5px 12px;border-radius:20px">✨ 잼공 궁합 엔진</span>
+    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.35);color:#c084fc;font-size:11px;font-weight:800;letter-spacing:.1em;padding:5px 12px;border-radius:20px">📋 특허 출원 중</span>
+  </div>
+  <p class="jm-sub">사주와 물건의 인연, 데이터로 풀어드립니다 — 오행 분석으로 나에게 맞는 상품의 궁합 점수를 확인하세요.</p>
+
+  <!-- 잼공 궁합 엔진 광고 섹션 (애니메이션) -->
+  <div style="position:relative;background:#050010;border:1px solid rgba(251,191,36,0.3);border-radius:24px;overflow:hidden;margin-bottom:28px;padding:40px 36px 36px">
+    <canvas id="mall-eng-bg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+    <div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.3),transparent);animation:mallScan 3s 1s linear infinite"></div>
+    <style>@keyframes mallScan{0%{top:0;opacity:0}5%{opacity:1}95%{opacity:1}100%{top:100%;opacity:0}}
+    .mall-tchar{display:inline-block;opacity:0;transform:translateY(12px);transition:opacity .3s ease,transform .3s ease;font-family:'Noto Sans KR',sans-serif}
+    .mall-tchar.mv{opacity:1;transform:none}</style>
+
+    <div style="position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:28px;align-items:center">
+      <div style="flex:1;min-width:240px">
+        <div style="font-size:10px;font-weight:800;color:#FBBF24;letter-spacing:.2em;margin-bottom:10px">✨ JAMGONG AFFINITY COMPATIBILITY ENGINE</div>
+        <div style="font-size:clamp(13px,1.6vw,16px);font-weight:700;color:rgba(192,132,252,.9);margin-bottom:10px;letter-spacing:.01em" id="mall-typo-sub"></div>
+        <div style="font-size:clamp(20px,2.8vw,30px);font-weight:900;color:#fff;line-height:1.35;margin-bottom:14px;word-break:keep-all">
+          내 사주에 맞는 물건이<br><span style="background:linear-gradient(90deg,#FBBF24,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">따로 있습니다</span>
+        </div>
+        <p style="font-size:13px;color:#94a3b8;line-height:1.9;margin:0 0 20px;word-break:keep-all">오행 분석 · 용신 보완 · 기도 목적까지 고려한<br>잼공만의 사주-상품 궁합 점수 시스템.<br><strong style="color:#e2e8f0">나와 맞는 상품이 자동으로 순위를 바꿉니다.</strong></p>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px">
+          <span style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:#FBBF24;font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px">오행 보완 분석</span>
+          <span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);color:#c084fc;font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px">용신 맞춤 추천</span>
+          <span style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:#60a5fa;font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px">기도 목적 연동</span>
+          <span style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#4ade80;font-size:10px;font-weight:700;padding:4px 11px;border-radius:20px">특허 출원 중</span>
+        </div>
+        <button type="button" onclick="toggleSajuForm();document.getElementById('saju-fw').style.display='block';document.getElementById('saju-ico').style.transform='rotate(180deg)';window.scrollTo({top:document.getElementById('saju-fw').getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'})" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:13px;font-weight:900;padding:13px 26px;border-radius:12px;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✨ 내 사주 궁합 점수 보기</button>
+      </div>
+      <!-- 오행 궤도 -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0">
+        <div style="font-size:9px;color:#475569;letter-spacing:.1em">오행 분석 차트</div>
+        <canvas id="mall-orb" width="280" height="280" style="width:140px;height:140px"></canvas>
+        <!-- 점수 예시 -->
+        <div style="display:flex;flex-direction:column;gap:7px;width:160px">
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(251,191,36,.25);border-radius:11px;padding:10px 13px;display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:11px;color:#94a3b8">자수정 팔찌</div>
+            <div style="font-size:22px;font-weight:900;color:#FBBF24" id="mall-s1">0</div>
+          </div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(168,85,247,.25);border-radius:11px;padding:10px 13px;display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:11px;color:#94a3b8">관음 부적</div>
+            <div style="font-size:22px;font-weight:900;color:#c084fc" id="mall-s2">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+(function(){
+  // 배경 파티클
+  var bc=document.getElementById('mall-eng-bg');
+  if(!bc)return;
+  var bx=bc.getContext('2d');
+  function rsz(){bc.width=bc.offsetWidth||600;bc.height=bc.offsetHeight||400}rsz();
+  var pp=[];for(var i=0;i<45;i++)pp.push({x:Math.random()*bc.width,y:Math.random()*bc.height,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.2+.3,op:Math.random()*.35+.08,col:Math.random()>.6?'#FBBF24':Math.random()>.5?'#c084fc':'#60a5fa'});
+  function dbg(){bx.clearRect(0,0,bc.width,bc.height);pp.forEach(function(a,i){pp.slice(i+1).forEach(function(b){var d=Math.hypot(a.x-b.x,a.y-b.y);if(d<60){bx.beginPath();bx.strokeStyle='rgba(255,255,255,'+(0.02*(1-d/60))+')';bx.lineWidth=.5;bx.moveTo(a.x,a.y);bx.lineTo(b.x,b.y);bx.stroke()}});bx.beginPath();bx.arc(a.x,a.y,a.r,0,Math.PI*2);bx.fillStyle=a.col;bx.globalAlpha=a.op;bx.fill();bx.globalAlpha=1;a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>bc.width)a.vx*=-1;if(a.y<0||a.y>bc.height)a.vy*=-1});requestAnimationFrame(dbg)}dbg();
+  // 타이포모션 (자막)
+  var subEl=document.getElementById('mall-typo-sub');
+  if(subEl){'하늘이 기록한 당신의 데이터 — AI가 인연을 분석합니다'.split('').forEach(function(ch,i){var s=document.createElement('span');s.className='mall-tchar';s.textContent=ch===' '?' ':ch;subEl.appendChild(s);setTimeout(function(){s.classList.add('mv')},400+i*40)})}
+  // 오행 궤도
+  var oc=document.getElementById('mall-orb');
+  if(!oc)return;
+  var ox=oc.getContext('2d'),CX=140,CY=140,R=110,ot=0,oStarted=false;
+  setTimeout(function(){oStarted=true},800);
+  var oh=[{l:'木',c:'#4ade80',t:18,v:0},{l:'火',c:'#f87171',t:22,v:0},{l:'土',c:'#FBBF24',t:20,v:0},{l:'金',c:'#e2e8f0',t:17,v:0},{l:'水',c:'#60a5fa',t:23,v:0}];
+  function dro(){ox.clearRect(0,0,280,280);ot+=.014;ox.beginPath();ox.arc(CX,CY,R,0,Math.PI*2);ox.strokeStyle='rgba(255,255,255,.05)';ox.lineWidth=1;ox.stroke();
+  if(oStarted)oh.forEach(function(o,i){o.v=Math.min(o.v+.4,o.t);var sA=-Math.PI/2+(i/5)*Math.PI*2,eA=sA+(o.v/100)*Math.PI*2;ox.beginPath();ox.arc(CX,CY,R-8,sA,eA);ox.strokeStyle=o.c;ox.lineWidth=9;ox.lineCap='round';ox.shadowColor=o.c;ox.shadowBlur=8;ox.stroke();ox.shadowBlur=0});
+  oh.forEach(function(o,i){var a=-Math.PI/2+(i/5)*Math.PI*2+ot*.14,nx=CX+Math.cos(a)*R,ny=CY+Math.sin(a)*R,p=1+Math.sin(ot*3+i)*.07;ox.beginPath();ox.arc(nx,ny,7*p,0,Math.PI*2);ox.fillStyle=o.c;ox.shadowColor=o.c;ox.shadowBlur=8;ox.fill();ox.shadowBlur=0;ox.fillStyle='#000';ox.font='bold 7px sans-serif';ox.textAlign='center';ox.textBaseline='middle';ox.fillText(o.l,nx,ny)});
+  var g=ox.createRadialGradient(CX,CY,0,CX,CY,42);g.addColorStop(0,'rgba(168,85,247,.18)');g.addColorStop(1,'rgba(0,0,0,0)');ox.beginPath();ox.arc(CX,CY,42,0,Math.PI*2);ox.fillStyle=g;ox.fill();
+  ox.fillStyle='rgba(192,132,252,.6)';ox.font='bold 8px sans-serif';ox.textAlign='center';ox.textBaseline='middle';ox.fillText('水氣 부족',CX,CY-8);ox.fillStyle='#60a5fa';ox.font='bold 16px sans-serif';ox.fillText('-23%',CX,CY+9);requestAnimationFrame(dro)}dro();
+  // 점수 카운터
+  function cu(id,tgt,delay){setTimeout(function(){var el=document.getElementById(id),v=0,st=Math.ceil(tgt/25);var ti=setInterval(function(){v=Math.min(v+st,tgt);el.textContent=v;if(v>=tgt)clearInterval(ti)},35)},delay)}
+  cu('mall-s1',94,1200);cu('mall-s2',88,1500);
+})();
+</script>
+
+  <!-- ✨ 사주 상품 궁합 분석 섹션 -->
+  <div class="jm-saju-rec">
+    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleSajuForm()">
+      <div>
+        <div style="font-size:10px;font-weight:800;color:#FBBF24;letter-spacing:.15em;margin-bottom:4px">✨ AI 오행 분석 · 사주 상품 궁합</div>
+        <div style="font-size:17px;font-weight:900;color:#f8fafc;font-family:'Noto Sans KR',sans-serif">내 사주로 상품 궁합 점수 분석하기</div>
+        <div style="font-size:12px;color:#64748b;margin-top:3px">생년월일을 입력하면 모든 상품에 나와의 궁합 점수가 표시됩니다</div>
+      </div>
+      <div id="saju-ico" style="font-size:20px;color:#FBBF24;transition:transform .3s;flex-shrink:0;margin-left:16px">▼</div>
+    </div>
+
+    <div id="saju-fw" style="display:none;margin-top:18px">
+      <!-- 본인/선물 모드 탭 -->
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button type="button" id="mode-self" class="jm-saju-btn2 active" onclick="setMode('self')">👤 본인 사주</button>
+        <button type="button" id="mode-gift" class="jm-saju-btn2" onclick="setMode('gift')">🎁 선물 궁합</button>
+      </div>
+
+      <!-- 본인 입력 -->
+      <div style="font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:.05em;margin-bottom:10px">본인 생년월일</div>
+
+      <!-- 음력/양력 토글 -->
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <button type="button" id="cal-solar" onclick="setCalType('solar',this)" style="font-size:11px;font-weight:800;padding:5px 14px;border-radius:20px;border:1px solid rgba(251,191,36,.6);background:rgba(251,191,36,.15);color:#FBBF24;cursor:pointer;font-family:'Noto Sans KR',sans-serif">☀️ 양력</button>
+        <button type="button" id="cal-lunar" onclick="setCalType('lunar',this)" style="font-size:11px;font-weight:800;padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:transparent;color:#64748b;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🌙 음력</button>
+        <span id="cal-leap-wrap" style="display:none;align-items:center;gap:4px;margin-left:4px">
+          <input type="checkbox" id="cal-leap" style="accent-color:#c084fc">
+          <label for="cal-leap" style="font-size:11px;color:#c084fc;font-weight:700">윤달</label>
+        </span>
+      </div>
+      <input type="hidden" id="sj2-cal" value="solar">
+
+      <!-- 년/월/일/시 -->
+      <div class="jm-saju-form">
+        <div><div style="font-size:11px;color:#64748b;margin-bottom:5px">년도</div>
+          <input id="sj2-y" class="jm-saju-inp" type="number" placeholder="1990" min="1900" max="2099" style="width:78px"></div>
+        <div><div style="font-size:11px;color:#64748b;margin-bottom:5px">월</div>
+          <input id="sj2-m" class="jm-saju-inp" type="number" placeholder="7" min="1" max="12" style="width:56px"></div>
+        <div><div style="font-size:11px;color:#64748b;margin-bottom:5px">일</div>
+          <input id="sj2-d" class="jm-saju-inp" type="number" placeholder="1" min="1" max="31" style="width:56px"></div>
+        <div><div style="font-size:11px;color:#64748b;margin-bottom:5px">성별</div>
+          <select id="sj2-g" class="jm-saju-inp" style="width:68px"><option value="M">남</option><option value="F">여</option></select></div>
+      </div>
+
+      <!-- 출생 시간 (시진 선택) -->
+      <div style="margin-top:12px">
+        <div style="font-size:11px;color:#64748b;margin-bottom:8px;font-weight:700">출생 시간 <span style="color:#475569;font-weight:400">(선택)</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px" id="sijin-grid-mall">
+        </div>
+        <input type="hidden" id="sj2-h" value="">
+      </div>
+
+      <!-- 출생지역 -->
+      <div style="margin-top:12px">
+        <div style="font-size:11px;color:#64748b;margin-bottom:6px;font-weight:700">출생지역 <span style="color:#475569;font-weight:400">(선택)</span></div>
+        <select id="sj2-region" class="jm-saju-inp" style="width:160px">
+          <option value="">선택 안함</option>
+          <option value="서울">서울</option><option value="경기">경기</option><option value="인천">인천</option>
+          <option value="강원">강원</option><option value="충북">충북</option><option value="충남">충남</option>
+          <option value="대전">대전</option><option value="세종">세종</option><option value="전북">전북</option>
+          <option value="전남">전남</option><option value="광주">광주</option><option value="경북">경북</option>
+          <option value="경남">경남</option><option value="대구">대구</option><option value="울산">울산</option>
+          <option value="부산">부산</option><option value="제주">제주</option>
+          <option value="해외">해외 거주</option>
+        </select>
+      </div>
+
+      <!-- 선물 모드: 상대방 입력 -->
+      <div id="gift-wrap" style="display:none;margin-top:18px">
+        <div style="font-size:11px;font-weight:800;color:#c084fc;letter-spacing:.05em;margin-bottom:10px">선물받을 분 생년월일</div>
+        <!-- 음력/양력 토글 (상대방) -->
+        <div style="display:flex;gap:6px;margin-bottom:12px">
+          <button type="button" id="gcal-solar" onclick="setGCalType('solar',this)" style="font-size:11px;font-weight:800;padding:5px 14px;border-radius:20px;border:1px solid rgba(192,132,252,.5);background:rgba(192,132,252,.12);color:#c084fc;cursor:pointer;font-family:'Noto Sans KR',sans-serif">☀️ 양력</button>
+          <button type="button" id="gcal-lunar" onclick="setGCalType('lunar',this)" style="font-size:11px;font-weight:800;padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:transparent;color:#64748b;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🌙 음력</button>
+        </div>
+        <input type="hidden" id="sj2-gcal" value="solar">
+        <div class="jm-saju-form">
+          <div><div style="font-size:11px;color:#64748b;margin-bottom:5px">년도</div>
+            <input id="sj2-gy" class="jm-saju-inp" type="number" placeholder="1990" min="1900" max="2099" style="width:78px"></div>
+          <div><div style="font-size:11px;color:#64748b;margin-bottom:5px">월</div>
+            <input id="sj2-gm" class="jm-saju-inp" type="number" placeholder="7" min="1" max="12" style="width:56px"></div>
+          <div><div style="font-size:11px;color:#64748b;margin-bottom:5px">일</div>
+            <input id="sj2-gd" class="jm-saju-inp" type="number" placeholder="1" min="1" max="31" style="width:56px"></div>
+          <div><div style="font-size:11px;color:#64748b;margin-bottom:5px">성별</div>
+            <select id="sj2-gg" class="jm-saju-inp" style="width:68px"><option value="M">남</option><option value="F">여</option></select></div>
+        </div>
+        <!-- 상대방 시진 -->
+        <div style="margin-top:10px">
+          <div style="font-size:11px;color:#64748b;margin-bottom:7px;font-weight:700">출생 시간 <span style="color:#475569;font-weight:400">(선택)</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px" id="gsijin-grid-mall"></div>
+          <input type="hidden" id="sj2-gh" value="">
+        </div>
+      </div>
+
+      <!-- 구매 목적 + 분석 버튼 -->
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:14px">
+        <div><div style="font-size:11px;color:#64748b;margin-bottom:5px">구매 목적</div>
+          <select id="sj2-pur" class="jm-saju-inp" style="width:130px">
+            <option value="">선택 안함</option>
+            <option value="인연">💕 인연·연애</option>
+            <option value="재물">💰 재물·사업</option>
+            <option value="건강">💚 건강·장수</option>
+            <option value="학업">📚 학업·공부</option>
+            <option value="합격">🎓 합격·취업</option>
+            <option value="가정">🏠 가정화합</option>
+            <option value="명상">🧘 명상·마음안정</option>
+            <option value="기도">🙏 기도·불교용품</option>
+            <option value="선물">🎁 선물</option>
+          </select>
+        </div>
+        <button type="button" class="jm-saju-btn" onclick="runSajuRec()">✨ 궁합 분석하기</button>
+        <button type="button" id="saju-reset-btn" style="display:none;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:#64748b;font-size:12px;font-weight:700;padding:11px 16px;border-radius:10px;border-style:solid;cursor:pointer;font-family:'Noto Sans KR',sans-serif" onclick="resetSaju()">✕ 초기화</button>
+      </div>
+      <div id="sj2-res" style="margin-top:18px"></div>
+    </div>
+  </div>
+
+  <!-- 카테고리 탭 -->
+  <div class="jm-tabs">
+    <button type="button" class="jm-tab active" onclick="filterCat('all',this)">전체</button>
+    <button type="button" class="jm-tab" onclick="filterCat('부적',this)">🔮 부적·수호</button>
+    <button type="button" class="jm-tab" onclick="filterCat('팔찌',this)">📿 팔찌·주얼리</button>
+    <button type="button" class="jm-tab" onclick="filterCat('명상',this)">🧘 명상·향</button>
+    <button type="button" class="jm-tab" onclick="filterCat('불교용품',this)">🔔 불교용품</button>
+    <button type="button" class="jm-tab" onclick="filterCat('차·식품',this)">🍵 사찰차·식품</button>
+    <button type="button" class="jm-tab" onclick="filterCat('도서',this)">📖 도서·카드</button>
+    <button type="button" class="jm-tab" onclick="filterCat('선물',this)">🎀 선물세트</button>
+  </div>
+
+  <!-- 상품 그리드 -->
+  <div class="jm-grid" id="jm-grid"></div>
+</div>
+
+<!-- 상품 모달 -->
+<div class="jm-modal" id="jm-modal" onclick="closeModal(event)">
+  <div class="jm-modal-box" id="jm-modal-box">
+    <button type="button" class="jm-modal-close" onclick="closeModal(null)">✕</button>
+    <div class="jm-modal-img" id="md-img"></div>
+    <div class="jm-modal-cat" id="md-cat"></div>
+    <div class="jm-modal-name" id="md-name"></div>
+    <div class="jm-modal-price" id="md-price"></div>
+    <!-- 사주 궁합 점수 블록 (사주 분석 후 표시) -->
+    <div id="md-score-block" style="display:none"></div>
+    <div class="jm-modal-desc" id="md-desc"></div>
+    <a class="jm-modal-buy" id="md-buy" href="#" target="_blank">🛒 구매하기</a>
+  </div>
+</div>
+
+<script>
+var PRODUCTS=[
+  {id:1,cat:'부적',icon:'🔴',name:'인연부적 — 붉은 실 부적',price:'18,000원',desc:'손으로 쓴 전통 인연부적. 붉은 실에 담은 만남의 기운.',detail:'전통 필사 기법으로 제작한 인연 부적입니다. 붉은 실에 담긴 기운이 좋은 인연을 끌어당깁니다.\n\n• 크기: 6×9cm\n• 소재: 한지·붉은 실\n• 보관: 지갑 또는 핸드백 안쪽',link:'https://smartstore.naver.com/'},
+  {id:2,cat:'부적',icon:'🟡',name:'재물운 황금 부적',price:'22,000원',desc:'금색 한지에 담긴 재물·사업 기운 부적.',detail:'금색 한지에 전통 먹으로 제작한 재물 부적입니다.\n\n• 크기: 7×10cm\n• 금색 한지 사용\n• 재물·사업 기운 강화',link:'https://smartstore.naver.com/'},
+  {id:3,cat:'팔찌',icon:'📿',name:'오행 에너지 팔찌 — 목',price:'35,000원',desc:'목(木) 기운 강화. 초록빛 천연석 팔찌.',detail:'오행 중 목(木) 기운이 부족한 분께 추천합니다. 천연 녹색 마노 원석으로 제작.\n\n• 소재: 천연 녹마노\n• 직경: 8mm 구슬\n• 기운: 성장·창의·시작',link:'https://smartstore.naver.com/'},
+  {id:4,cat:'팔찌',icon:'🔴',name:'오행 에너지 팔찌 — 화',price:'35,000원',desc:'화(火) 기운 강화. 붉은 천연석 팔찌.',detail:'오행 중 화(火) 기운이 부족한 분께 추천합니다. 천연 홍마노 원석으로 제작.\n\n• 소재: 천연 홍마노\n• 기운: 열정·명예·활력',link:'https://smartstore.naver.com/'},
+  {id:5,cat:'팔찌',icon:'⚪',name:'오행 에너지 팔찌 — 금',price:'35,000원',desc:'금(金) 기운 강화. 흰빛 천연석 팔찌.',detail:'오행 중 금(金) 기운이 부족한 분께 추천합니다. 천연 백수정 원석으로 제작.\n\n• 소재: 천연 백수정\n• 기운: 결단·재물·집중',link:'https://smartstore.naver.com/'},
+  {id:6,cat:'명상',icon:'🪷',name:'연꽃 천연 향 세트',price:'28,000원',desc:'사찰 향 블렌딩. 마음을 고요히 하는 연꽃 향.',detail:'국내 사찰에서 사용하는 천연 재료로 블렌딩한 향입니다.\n\n• 구성: 향 30개입 + 향꽂이\n• 성분: 천연 백단향·연꽃 오일\n• 연소시간: 개당 약 25분',link:'https://smartstore.naver.com/'},
+  {id:7,cat:'명상',icon:'🕯️',name:'소원 초 — 금빛 108개',price:'32,000원',desc:'108번뇌를 녹이는 금빛 소원 초 세트.',detail:'108배의 의미를 담은 소원 초 세트. 작은 초에 소원을 담아 밝히세요.\n\n• 수량: 108개\n• 색상: 금빛\n• 크기: 지름 1.5cm',link:'https://smartstore.naver.com/'},
+  {id:8,cat:'도서',icon:'📖',name:'사주 입문 — 내 팔자의 비밀',price:'19,800원',desc:'어렵지 않은 사주 입문서. 오행·십신 쉽게 이해하기.',detail:'사주팔자를 처음 접하는 분도 쉽게 읽을 수 있는 입문서입니다.\n\n• 분량: 320페이지\n• 출판사: 잼공출판\n• 내용: 사주·오행·십신·대운',link:'https://smartstore.naver.com/'},
+  {id:9,cat:'도서',icon:'🃏',name:'인연 타로 카드 — 78장',price:'42,000원',desc:'동양 인연철학을 담은 독자적인 타로 덱.',detail:'서양 타로에 동양 인연철학을 결합한 독특한 타로 카드입니다.\n\n• 구성: 78장 + 가이드북\n• 인쇄: 무광 코팅\n• 크기: 7×12cm',link:'https://smartstore.naver.com/'},
+  {id:10,cat:'선물',icon:'🎁',name:'인연 선물세트 — S',price:'65,000원',desc:'부적·팔찌·향이 담긴 인연 기원 선물세트.',detail:'소중한 분께 드리는 인연 기원 선물세트입니다.\n\n• 구성: 인연부적 + 오행팔찌 + 연꽃향\n• 포장: 고급 한지 박스\n• 리본 포장 가능',link:'https://smartstore.naver.com/'},
+  {id:11,cat:'선물',icon:'🎀',name:'행운 선물세트 — L',price:'98,000원',desc:'재물·건강·인연 기운을 담은 프리미엄 선물세트.',detail:'프리미엄 선물을 원하는 분께 추천합니다.\n\n• 구성: 황금부적 + 오행팔찌 + 향세트 + 소원초\n• 고급 목함 포장\n• 메시지 카드 포함',link:'https://smartstore.naver.com/'},
+  {id:12,cat:'명상',icon:'🧘',name:'명상 쿠션 — 둥근 방석',price:'45,000원',desc:'허리를 편안하게 받쳐주는 명상 전용 둥근 방석.',detail:'명상과 기도 시간을 더 깊게 만들어주는 명상 쿠션입니다.\n\n• 지름: 35cm\n• 소재: 천연 메밀껍질 충전\n• 커버: 면 100%',link:'https://smartstore.naver.com/'},
+
+  /* ── 오행 팔찌 추가 ── */
+  {id:13,cat:'팔찌',icon:'🟡',name:'오행 에너지 팔찌 — 토',price:'35,000원',desc:'토(土) 기운 강화. 황금빛 천연 황수정 팔찌.',detail:'오행 중 토(土) 기운이 부족한 분께 추천합니다. 천연 황수정 원석으로 제작.\n\n• 소재: 천연 황수정\n• 직경: 8mm 구슬\n• 기운: 안정·신뢰·중용·건강',link:'https://smartstore.naver.com/'},
+  {id:14,cat:'팔찌',icon:'🔵',name:'오행 에너지 팔찌 — 수',price:'35,000원',desc:'수(水) 기운 강화. 푸른 천연 청금석 팔찌.',detail:'오행 중 수(水) 기운이 부족한 분께 추천합니다. 천연 청금석 원석으로 제작.\n\n• 소재: 천연 청금석(라피스라줄리)\n• 기운: 지혜·인내·유연·학업',link:'https://smartstore.naver.com/'},
+  {id:15,cat:'팔찌',icon:'💜',name:'자수정 명상 팔찌',price:'42,000원',desc:'마음의 평화와 영성을 높이는 자수정 팔찌.',detail:'자수정은 마음을 차분하게 하고 직관을 높이는 보석입니다.\n\n• 소재: 천연 자수정\n• 직경: 10mm 구슬\n• 기운: 평화·집중·영성·수면 개선',link:'https://smartstore.naver.com/'},
+  {id:16,cat:'팔찌',icon:'🪵',name:'백단향 나무 팔찌 — 108알',price:'38,000원',desc:'사찰 법회에서도 쓰이는 천연 백단향 108알 팔찌.',detail:'기도·명상 시 염주로 활용할 수 있는 백단향 팔찌입니다.\n\n• 소재: 천연 백단향 나무\n• 알 수: 108알\n• 향: 기도·명상 시 은은한 향기 발산',link:'https://smartstore.naver.com/'},
+  {id:17,cat:'팔찌',icon:'❤️',name:'인연 커플 팔찌 세트',price:'68,000원',desc:'두 사람의 인연을 잇는 붉은 실 커플 팔찌 세트.',detail:'오행 음양 원리를 담은 커플 팔찌입니다.\n\n• 구성: 2개 세트 (남·여 각 1개)\n• 소재: 천연 홍옥수(적마노) + 천연 백수정\n• 의미: 음양(陰陽) 조화로 인연 강화',link:'https://smartstore.naver.com/'},
+
+  /* ── 부적 추가 ── */
+  {id:18,cat:'부적',icon:'📝',name:'합격·취업 부적',price:'18,000원',desc:'수험생·취업 준비생을 위한 전통 합격 기원 부적.',detail:'문수보살에게 합격 기도를 올린 후 제작한 전통 부적입니다.\n\n• 크기: 6×9cm\n• 소재: 황색 한지\n• 보관: 수험표·지갑 안쪽\n• 기운: 학업·합격·취업·면접',link:'https://smartstore.naver.com/'},
+  {id:19,cat:'부적',icon:'💚',name:'건강 장수 부적',price:'18,000원',desc:'약사여래 기운을 담은 전통 건강 장수 기원 부적.',detail:'약사여래 진언이 담긴 건강 기원 부적입니다.\n\n• 크기: 6×9cm\n• 소재: 청색 한지\n• 보관: 지갑·핸드백 안쪽\n• 기운: 건강·치유·장수',link:'https://smartstore.naver.com/'},
+  {id:20,cat:'부적',icon:'🏠',name:'가정화합·가정수호 부적',price:'20,000원',desc:'가족 화합과 집안 평안을 기원하는 가정 수호 부적.',detail:'관세음보살 기운이 담긴 가정 수호 부적입니다.\n\n• 크기: 8×12cm (대형)\n• 소재: 황금 한지\n• 보관: 현관 안쪽 또는 거실\n• 기운: 가정화합·자녀건강·재물',link:'https://smartstore.naver.com/'},
+  {id:21,cat:'부적',icon:'💎',name:'오행 수정 원석 세트',price:'55,000원',desc:'목·화·토·금·수 오행 기운을 담은 천연 수정 5종 세트.',detail:'다섯 가지 천연 원석이 오행의 기운을 고르게 채워줍니다.\n\n• 구성: 녹마노·홍마노·황수정·백수정·자수정 각 1개\n• 크기: 각 3~4cm 원석\n• 활용: 집 방위별 배치 또는 명상 시 활용',link:'https://smartstore.naver.com/'},
+
+  /* ── 불교용품 ── */
+  {id:22,cat:'불교용품',icon:'🔔',name:'소형 청동 범종 — 탁상용',price:'78,000원',desc:'기도 시작과 마무리에 울리는 탁상용 청동 소형 범종.',detail:'수행·기도 시 맑은 종소리로 마음을 모을 수 있는 탁상용 범종입니다.\n\n• 소재: 청동\n• 크기: 지름 8cm, 높이 12cm\n• 구성: 범종 + 나무 받침대 + 목탁채',link:'https://smartstore.naver.com/'},
+  {id:23,cat:'불교용품',icon:'📿',name:'소형 108 염주 — 흑단목',price:'28,000원',desc:'108번뇌를 헤아리는 흑단목 소형 염주.',detail:'손안에 들어오는 소형 염주로 언제 어디서나 기도할 수 있습니다.\n\n• 소재: 천연 흑단목\n• 알 수: 108알\n• 크기: 6mm 구슬',link:'https://smartstore.naver.com/'},
+  {id:24,cat:'불교용품',icon:'🪷',name:'연꽃 향로 — 청자',price:'65,000원',desc:'연꽃 문양의 청자 향로. 향 피우기에 최적화된 디자인.',detail:'한국 전통 청자로 제작한 연꽃 향로입니다.\n\n• 소재: 청자\n• 크기: 지름 12cm\n• 용도: 막대향·가루향 모두 사용 가능',link:'https://smartstore.naver.com/'},
+  {id:25,cat:'불교용품',icon:'🕯️',name:'연등 — 소원 연꽃등',price:'15,000원',desc:'소원을 담아 밝히는 전통 연꽃 연등.',detail:'석가탄신일이나 특별한 날 밝히는 전통 연꽃 연등입니다.\n\n• 소재: 한지 + 대나무 살\n• 색상: 분홍·흰색·노랑 중 선택\n• 용도: 법회·기도·인테리어',link:'https://smartstore.naver.com/'},
+  {id:26,cat:'불교용품',icon:'🪵',name:'목탁 — 소형 탁상용',price:'45,000원',desc:'기도·명상 시 리듬을 맞추는 소형 탁상용 목탁.',detail:'수행 중 리듬감을 유지하는 데 도움이 되는 소형 목탁입니다.\n\n• 소재: 천연 목재\n• 크기: 지름 10cm\n• 구성: 목탁 + 채 + 나무 받침',link:'https://smartstore.naver.com/'},
+
+  /* ── 사찰차·식품 ── */
+  {id:27,cat:'차·식품',icon:'🍵',name:'사찰 녹차 — 지리산 야생차',price:'32,000원',desc:'지리산 야생 차밭의 천연 녹차. 화학 비료 없이 자란 차.',detail:'지리산 쌍계사 주변 야생 차밭에서 수확한 순수 녹차입니다.\n\n• 중량: 50g\n• 산지: 경남 하동 지리산\n• 특징: 농약·화학비료 무사용\n• 효능: 항산화·마음 안정·집중력',link:'https://smartstore.naver.com/'},
+  {id:28,cat:'차·식품',icon:'🌸',name:'사찰 연꽃차 — 건조 연꽃',price:'28,000원',desc:'직접 건조한 연꽃잎 차. 불교 수행자들이 즐기는 명상 차.',detail:'사찰 연못에서 채취한 연꽃을 저온 건조해 만든 연꽃차입니다.\n\n• 중량: 30g\n• 특징: 저온 건조, 무방부제\n• 효능: 마음 안정·피부 미용·불면 개선',link:'https://smartstore.naver.com/'},
+  {id:29,cat:'차·식품',icon:'🌿',name:'사찰 발효차 — 황차',price:'42,000원',desc:'국내 사찰 전통 방식으로 발효한 황차.',detail:'전통 사찰 발효 방식으로 만든 황차입니다. 깊고 부드러운 맛.\n\n• 중량: 50g\n• 발효도: 50% (황차)\n• 특징: 카페인 낮음, 위장 편안',link:'https://smartstore.naver.com/'},
+  {id:30,cat:'차·식품',icon:'🍯',name:'사찰 꿀 — 야생 백화밀',price:'38,000원',desc:'사찰 주변 야생 꽃에서 채취한 백화밀 벌꿀.',detail:'사찰 인근 청정 자연에서 채취한 야생 꿀입니다.\n\n• 중량: 500g\n• 산지: 강원도 오대산 인근\n• 특징: 비가열·순수 원료 그대로',link:'https://smartstore.naver.com/'},
+  {id:31,cat:'차·식품',icon:'🧂',name:'사찰 청국장 가루 — 발효',price:'22,000원',desc:'108일 발효 전통 사찰식 청국장 분말.',detail:'사찰 전통 방식으로 108일 이상 발효한 청국장 분말입니다.\n\n• 중량: 200g\n• 발효: 108일 이상\n• 활용: 된장국·샐러드 드레싱',link:'https://smartstore.naver.com/'},
+
+  /* ── 도서·카드 추가 ── */
+  {id:32,cat:'도서',icon:'📚',name:'60갑자 사주 카드 — 60장',price:'36,000원',desc:'60갑자를 카드로 익히는 사주 학습 카드 덱.',detail:'60갑자 천간·지지 조합을 카드 게임처럼 익힐 수 있습니다.\n\n• 구성: 60장 카드 + 해설집\n• 크기: 6×9cm\n• 내용: 갑자·을축·병인 등 60甲子 전체',link:'https://smartstore.naver.com/'},
+  {id:33,cat:'도서',icon:'🌙',name:'꿈해몽 사전 — 1,200가지',price:'24,000원',desc:'1,200가지 꿈 상징 해석 + 기도 처방 안내.',detail:'꿈의 상징부터 기도 처방까지 담은 꿈해몽 전문 서적입니다.\n\n• 분량: 380페이지\n• 수록 꿈 상징: 1,200가지 이상\n• 특징: 불교 관점 꿈해몽 + 기도 처방',link:'https://smartstore.naver.com/'},
+
+  /* ── 선물세트 추가 ── */
+  {id:34,cat:'선물',icon:'🎓',name:'합격 기원 선물세트',price:'55,000원',desc:'수험생·취업 준비생을 위한 합격 기원 선물세트.',detail:'소중한 수험생에게 드리는 합격 기원 선물세트입니다.\n\n• 구성: 합격부적 + 수정팔찌 + 문수보살 기원향\n• 포장: 한지 박스 + 합격 기원 카드 포함',link:'https://smartstore.naver.com/'},
+  {id:35,cat:'선물',icon:'💒',name:'결혼·인연 기원 선물세트',price:'88,000원',desc:'두 사람의 인연을 기원하는 결혼 선물세트.',detail:'신혼부부 또는 인연을 기원하는 분께 드리는 특별 선물입니다.\n\n• 구성: 인연커플팔찌 + 인연부적 + 연꽃향 + 소원초\n• 포장: 고급 목함 + 리본\n• 메시지 카드 포함',link:'https://smartstore.naver.com/'},
+  {id:36,cat:'선물',icon:'👴',name:'어른 건강 장수 선물세트',price:'75,000원',desc:'부모님·어른께 드리는 건강 장수 기원 선물.',detail:'어른께 드리는 정성 가득한 건강 장수 선물세트입니다.\n\n• 구성: 건강부적 + 자수정팔찌 + 지리산 야생차 + 사찰꿀\n• 포장: 전통 한지 박스\n• 메시지 카드 포함',link:'https://smartstore.naver.com/'},
+];
+
+// ══════════════════════════════════════════════════════════
+// 사주 기반 상품 궁합 추천 시스템 (잼공 AI 엔진 v1.0)
+// 특허출원 중: 사주팔자·관계궁합 및 대상 속성정보를 이용한
+//              맞춤형 대상 추천 시스템 및 방법
+// ══════════════════════════════════════════════════════════
+
+// 상품 속성 벡터 (오행·구매목적·색상오행)
+var PROD_ATTRS={
+  1:{oh:['화'],pur:['인연'],coh:'화',mat:'직물',lbl:'인연 에너지'},
+  2:{oh:['토'],pur:['재물'],coh:'토',mat:'직물',lbl:'재물 에너지'},
+  3:{oh:['목'],pur:['건강','인연'],coh:'목',mat:'석재',lbl:'목(木) 보충'},
+  4:{oh:['화'],pur:['인연','재물'],coh:'화',mat:'석재',lbl:'화(火) 보충'},
+  5:{oh:['금'],pur:['재물','합격'],coh:'금',mat:'석재',lbl:'금(金) 보충'},
+  6:{oh:['화'],pur:['명상','인연'],coh:'화',mat:'식물',lbl:'향기 에너지'},
+  7:{oh:['화'],pur:['기도','명상'],coh:'화',mat:'왁스',lbl:'기도 에너지'},
+  8:{oh:['수'],pur:['학업'],coh:'수',mat:'종이',lbl:'지혜 습득'},
+  9:{oh:['수'],pur:['인연','명상'],coh:'수',mat:'종이',lbl:'직관 에너지'},
+  10:{oh:['목','화','토','금','수'],pur:['인연','선물'],coh:null,mat:'혼합',lbl:'종합 선물'},
+  11:{oh:['목','화','토','금','수'],pur:['재물','선물'],coh:null,mat:'혼합',lbl:'프리미엄 선물'},
+  12:{oh:['토'],pur:['명상','건강'],coh:'토',mat:'직물',lbl:'안정 에너지'},
+  13:{oh:['토'],pur:['건강','재물'],coh:'토',mat:'석재',lbl:'토(土) 보충'},
+  14:{oh:['수'],pur:['학업','명상'],coh:'수',mat:'석재',lbl:'수(水) 보충'},
+  15:{oh:['수'],pur:['명상','건강'],coh:'수',mat:'석재',lbl:'평화 에너지'},
+  16:{oh:['목'],pur:['기도','명상'],coh:'목',mat:'목재',lbl:'목향 에너지'},
+  17:{oh:['화'],pur:['인연'],coh:'화',mat:'석재',lbl:'인연 연결'},
+  18:{oh:['금'],pur:['합격','학업'],coh:'토',mat:'직물',lbl:'합격 기원'},
+  19:{oh:['목'],pur:['건강'],coh:'목',mat:'직물',lbl:'건강 기원'},
+  20:{oh:['토'],pur:['가정'],coh:'토',mat:'직물',lbl:'가정 수호'},
+  21:{oh:['목','화','토','금','수'],pur:['명상','기도'],coh:null,mat:'석재',lbl:'오행 균형'},
+  22:{oh:['금'],pur:['기도'],coh:'금',mat:'금속',lbl:'금(金) 에너지'},
+  23:{oh:['목'],pur:['기도','명상'],coh:'목',mat:'목재',lbl:'목재 에너지'},
+  24:{oh:['수'],pur:['기도','명상'],coh:'수',mat:'도자기',lbl:'수(水) 에너지'},
+  25:{oh:['화'],pur:['기도'],coh:'화',mat:'종이',lbl:'빛 에너지'},
+  26:{oh:['목'],pur:['기도','명상'],coh:'목',mat:'목재',lbl:'목탁 에너지'},
+  27:{oh:['목'],pur:['건강','명상'],coh:'목',mat:'식물',lbl:'자연 에너지'},
+  28:{oh:['수'],pur:['건강','명상'],coh:'수',mat:'식물',lbl:'청정 에너지'},
+  29:{oh:['토'],pur:['건강'],coh:'토',mat:'식물',lbl:'토(土) 에너지'},
+  30:{oh:['토'],pur:['건강'],coh:'토',mat:'식품',lbl:'자연 에너지'},
+  31:{oh:['토'],pur:['건강'],coh:'토',mat:'식품',lbl:'발효 에너지'},
+  32:{oh:['수'],pur:['학업'],coh:'수',mat:'종이',lbl:'학습 에너지'},
+  33:{oh:['수'],pur:['명상'],coh:'수',mat:'종이',lbl:'직관 에너지'},
+  34:{oh:['금'],pur:['합격','선물'],coh:'금',mat:'혼합',lbl:'합격 기원'},
+  35:{oh:['화'],pur:['인연','선물'],coh:'화',mat:'혼합',lbl:'인연 선물'},
+  36:{oh:['목'],pur:['건강','선물'],coh:'목',mat:'혼합',lbl:'건강 선물'}
+};
+
+var OH_CLR={목:'#22c55e',화:'#ef4444',토:'#eab308',금:'#cbd5e1',수:'#3b82f6'};
+var OH_CHN={목:'木',화:'火',토:'土',금:'金',수:'水'};
+var OH_DESC={목:'성장·건강·창의',화:'인연·열정·명예',토:'안정·신뢰·재물',금:'결단·집중·금',수:'지혜·학업·유연'};
+var OH_EMJ={목:'🌿',화:'🔥',토:'🟡',금:'⚪',수:'💧'};
+// 상생 관계: 목→화→토→금→수→목
+var OH_SHENG={목:'화',화:'토',토:'금',금:'수',수:'목'};
+
+// 시스템 상태
+var sajuActive=false, sajuScores={}, sajuWeak=[], sajuDist={}, sajuPurpose='';
+var sajuMode='self'; // 'self' or 'gift'
+var giftWeak=[], giftDist={};
+
+// ── 시진 데이터 ──
+var SIJIN_MALL=[
+  {name:'자시',hanja:'子',time:'23~1시',h:23},{name:'축시',hanja:'丑',time:'1~3시',h:1},
+  {name:'인시',hanja:'寅',time:'3~5시',h:3},{name:'묘시',hanja:'卯',time:'5~7시',h:5},
+  {name:'진시',hanja:'辰',time:'7~9시',h:7},{name:'사시',hanja:'巳',time:'9~11시',h:9},
+  {name:'오시',hanja:'午',time:'11~13시',h:11},{name:'미시',hanja:'未',time:'13~15시',h:13},
+  {name:'신시',hanja:'申',time:'15~17시',h:15},{name:'유시',hanja:'酉',time:'17~19시',h:17},
+  {name:'술시',hanja:'戌',time:'19~21시',h:19},{name:'해시',hanja:'亥',time:'21~23시',h:21}
+];
+
+function buildSijinGrid(gridId, hiddenId){
+  var grid=document.getElementById(gridId);
+  if(!grid)return;
+  var html='';
+  SIJIN_MALL.forEach(function(s){
+    html+='<button type="button" onclick="selSijin(\''+gridId+'\',\''+hiddenId+'\','+s.h+',this)" style="font-size:10px;padding:5px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#94a3b8;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;transition:all .2s">'
+      +'<span style="font-size:12px;font-weight:900;color:#c084fc">'+s.hanja+'</span> '+s.name+'<br><span style="color:#475569;font-size:9px">'+s.time+'</span></button>';
+  });
+  html+='<button type="button" onclick="selSijin(\''+gridId+'\',\''+hiddenId+'\',-1,this)" style="font-size:10px;padding:5px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#64748b;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif">모름</button>';
+  grid.innerHTML=html;
+}
+
+function selSijin(gridId, hiddenId, val, el){
+  document.querySelectorAll('#'+gridId+' button').forEach(function(b){
+    b.style.background='rgba(255,255,255,.03)';b.style.borderColor='rgba(255,255,255,.1)';b.style.color='#94a3b8';
+  });
+  el.style.background='rgba(192,132,252,.15)';el.style.borderColor='rgba(192,132,252,.5)';el.style.color='#c084fc';
+  document.getElementById(hiddenId).value=val>=0?val:'';
+}
+
+function setCalType(type, el){
+  document.getElementById('sj2-cal').value=type;
+  document.getElementById('cal-solar').style.background=type==='solar'?'rgba(251,191,36,.15)':'transparent';
+  document.getElementById('cal-solar').style.borderColor=type==='solar'?'rgba(251,191,36,.6)':'rgba(255,255,255,.1)';
+  document.getElementById('cal-solar').style.color=type==='solar'?'#FBBF24':'#64748b';
+  document.getElementById('cal-lunar').style.background=type==='lunar'?'rgba(192,132,252,.12)':'transparent';
+  document.getElementById('cal-lunar').style.borderColor=type==='lunar'?'rgba(192,132,252,.5)':'rgba(255,255,255,.1)';
+  document.getElementById('cal-lunar').style.color=type==='lunar'?'#c084fc':'#64748b';
+  document.getElementById('cal-leap-wrap').style.display=type==='lunar'?'flex':'none';
+}
+
+function setGCalType(type, el){
+  document.getElementById('sj2-gcal').value=type;
+  document.getElementById('gcal-solar').style.background=type==='solar'?'rgba(192,132,252,.12)':'transparent';
+  document.getElementById('gcal-solar').style.borderColor=type==='solar'?'rgba(192,132,252,.5)':'rgba(255,255,255,.1)';
+  document.getElementById('gcal-solar').style.color=type==='solar'?'#c084fc':'#64748b';
+  document.getElementById('gcal-lunar').style.background=type==='lunar'?'rgba(192,132,252,.12)':'transparent';
+  document.getElementById('gcal-lunar').style.borderColor=type==='lunar'?'rgba(192,132,252,.5)':'rgba(255,255,255,.1)';
+  document.getElementById('gcal-lunar').style.color=type==='lunar'?'#c084fc':'#64748b';
+}
+
+// 시진 그리드 초기화
+document.addEventListener('DOMContentLoaded',function(){
+  buildSijinGrid('sijin-grid-mall','sj2-h');
+  buildSijinGrid('gsijin-grid-mall','sj2-gh');
+});
+
+// ── 궁합 점수 계산 엔진 ──────────────────────────────
+// 상품 속성 벡터 × 사용자 특성 벡터 = 궁합 적합도
+function calcScore(pid, weak, dist, purpose, gWeak){
+  var a=PROD_ATTRS[pid]; if(!a)return 65;
+  var s=0;
+  var total=(['목','화','토','금','수'].reduce(function(a,k){return a+(dist[k]||0);},0))||8;
+  var avg=total/5;
+
+  // 1. 오행 보완도 (0~40점) — 핵심 지표
+  a.oh.forEach(function(oh){
+    if(weak[0]&&oh===weak[0])s+=28;      // 1순위 부족 오행 일치
+    else if(weak[1]&&oh===weak[1])s+=18; // 2순위 부족 오행 일치
+    else if((dist[oh]||0)<avg*0.8)s+=8;  // 평균 이하 오행 일치
+    // 상생: 부족 오행을 도와주는 오행
+    if(weak[0]&&OH_SHENG[oh]===weak[0])s+=10;
+    if(weak[1]&&OH_SHENG[oh]===weak[1])s+=6;
+  });
+  s=Math.min(40,s);
+
+  // 2. 구매 목적 적합도 (0~25점)
+  if(purpose){
+    if(a.pur.indexOf(purpose)>=0)s+=25;
+    else if(a.pur.indexOf('선물')>=0&&purpose==='선물')s+=20;
+  }
+
+  // 3. 색상 오행 (0~15점)
+  if(!a.coh){s+=12;} // 전체 오행 포함 상품
+  else if(weak.indexOf(a.coh)>=0)s+=15;
+  else if(weak[0]&&OH_SHENG[a.coh]===weak[0])s+=8;
+
+  // 4. 선물 궁합 (0~15점) — 선물 모드일 때 상대방 오행도 반영
+  if(gWeak&&gWeak.length>0){
+    a.oh.forEach(function(oh){
+      if(gWeak[0]&&oh===gWeak[0])s+=10;
+      if(gWeak[1]&&oh===gWeak[1])s+=5;
+    });
+    s=Math.min(s,s); // 자연스럽게 합산
+  }
+
+  // 기본 점수 55점 + 계산값 → 범위 55~97
+  return Math.min(97,55+Math.round(s*0.9));
+}
+
+// 점수 → 등급 라벨
+function scoreLabel(s){
+  if(s>=92)return {grade:'★ 최상',bg:'rgba(251,191,36,0.9)',tc:'#0a0a0a'};
+  if(s>=85)return {grade:'◎ 추천',bg:'rgba(34,197,94,0.85)',tc:'#022c22'};
+  if(s>=77)return {grade:'○ 좋음',bg:'rgba(59,130,246,0.85)',tc:'#eff6ff'};
+  return       {grade:'△ 보통',bg:'rgba(100,116,139,0.7)',tc:'#e2e8f0'};
+}
+
+// ── UI 컨트롤러 ───────────────────────────────────────
+function toggleSajuForm(){
+  var w=document.getElementById('saju-fw');
+  var ico=document.getElementById('saju-ico');
+  var open=w.style.display==='none';
+  w.style.display=open?'block':'none';
+  ico.style.transform=open?'rotate(180deg)':'';
+  if(open){
+    try{var sv=JSON.parse(localStorage.getItem('jm_sb')||'{}');
+      if(sv.y)document.getElementById('sj2-y').value=sv.y;
+      if(sv.m)document.getElementById('sj2-m').value=sv.m;
+      if(sv.d)document.getElementById('sj2-d').value=sv.d;
+      if(sv.h)document.getElementById('sj2-h').value=sv.h;
+      if(sv.g)document.getElementById('sj2-g').value=sv.g;
+      if(sv.pur)document.getElementById('sj2-pur').value=sv.pur;
+    }catch(e){}
+  }
+}
+
+function setMode(mode){
+  sajuMode=mode;
+  document.getElementById('mode-self').classList.toggle('active',mode==='self');
+  document.getElementById('mode-gift').classList.toggle('active',mode==='gift');
+  document.getElementById('gift-wrap').style.display=mode==='gift'?'block':'none';
+}
+
+function resetSaju(){
+  sajuActive=false; sajuScores={}; sajuWeak=[]; sajuDist={}; giftWeak=[]; giftDist={};
+  document.getElementById('sj2-res').innerHTML='';
+  document.getElementById('saju-reset-btn').style.display='none';
+  render();
+}
+
+async function runSajuRec(){
+  var y=parseInt(document.getElementById('sj2-y').value)||0;
+  var m=parseInt(document.getElementById('sj2-m').value)||0;
+  var d=parseInt(document.getElementById('sj2-d').value)||0;
+  var hv=document.getElementById('sj2-h').value.trim();
+  var g=document.getElementById('sj2-g').value;
+  var pur=document.getElementById('sj2-pur').value;
+  var cal=document.getElementById('sj2-cal').value||'solar';
+  var leap=document.getElementById('cal-leap')&&document.getElementById('cal-leap').checked;
+  var region=document.getElementById('sj2-region')?document.getElementById('sj2-region').value:'';
+  var res=document.getElementById('sj2-res');
+  if(!y||!m||!d){res.innerHTML='<p style="color:#f87171;font-size:13px;margin:0">❌ 년·월·일을 입력해주세요</p>';return;}
+  try{localStorage.setItem('jm_sb',JSON.stringify({y:y,m:m,d:d,h:hv,g:g,pur:pur,cal:cal,region:region}));}catch(e){}
+  res.innerHTML='<p style="color:#FBBF24;font-size:13px;text-align:center;padding:20px">🔮 오행 분석 중...</p>';
+
+  try{
+    // 본인 사주 API 호출
+    var bi={year:y,month:m,day:d,gender:g,calendar:cal};
+    if(cal==='lunar')bi.isLeapMonth=!!leap;
+    if(region)bi.region=region;
+    if(hv!=='')bi.hour=parseInt(hv);
+    var r=await fetch('https://jamgong-inyeonsachal.vercel.app/api/saju',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({birthInput:bi})});
+    var data=await r.json();
+    if(!data.success){res.innerHTML='<p style="color:#f87171;font-size:13px;margin:0">❌ '+(data.error||'분석 오류')+'</p>';return;}
+
+    sajuDist=data.distribution||{};
+    var total=(['목','화','토','금','수'].reduce(function(a,k){return a+(sajuDist[k]||0);},0))||8;
+    var sorted=['목','화','토','금','수'].slice().sort(function(a,b){return (sajuDist[a]||0)-(sajuDist[b]||0);});
+    var minV=sajuDist[sorted[0]]||0;
+    sajuWeak=sorted.filter(function(k){return (sajuDist[k]||0)<=minV+1;}).slice(0,2);
+    sajuPurpose=pur;
+
+    // 선물 모드: 상대방 사주도 분석
+    giftWeak=[]; giftDist={};
+    if(sajuMode==='gift'){
+      var gy=parseInt(document.getElementById('sj2-gy').value)||0;
+      var gm=parseInt(document.getElementById('sj2-gm').value)||0;
+      var gd=parseInt(document.getElementById('sj2-gd').value)||0;
+      var gh=document.getElementById('sj2-gh').value.trim();
+      var gg=document.getElementById('sj2-gg').value;
+      if(gy&&gm&&gd){
+        var gbi={year:gy,month:gm,day:gd,gender:gg,calendar:'solar'};
+        if(gh!=='')gbi.hour=parseInt(gh);
+        try{
+          var gr=await fetch('https://jamgong-inyeonsachal.vercel.app/api/saju',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({birthInput:gbi})});
+          var gdata=await gr.json();
+          if(gdata.success&&gdata.distribution){
+            giftDist=gdata.distribution;
+            var gsorted=['목','화','토','금','수'].slice().sort(function(a,b){return (giftDist[a]||0)-(giftDist[b]||0);});
+            var gminV=giftDist[gsorted[0]]||0;
+            giftWeak=gsorted.filter(function(k){return (giftDist[k]||0)<=gminV+1;}).slice(0,2);
+          }
+        }catch(e){}
+      }
+    }
+
+    // 모든 상품 궁합 점수 계산
+    sajuScores={};
+    PRODUCTS.forEach(function(p){
+      sajuScores[p.id]=calcScore(p.id,sajuWeak,sajuDist,pur,giftWeak);
+    });
+    sajuActive=true;
+
+    // 결과 UI 렌더링
+    var html='';
+    html+='<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px 18px;margin-bottom:12px">';
+    html+='<div style="font-size:11px;font-weight:800;color:#94a3b8;margin-bottom:10px">📊 오행 분포</div>';
+    ['목','화','토','금','수'].forEach(function(k){
+      var v=sajuDist[k]||0,pct=Math.round(v/total*100),iw=sajuWeak.indexOf(k)>=0;
+      html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+      html+='<div style="width:34px;font-size:11px;font-weight:800;color:'+(iw?OH_CLR[k]:'#475569')+'">'+OH_EMJ[k]+' '+k+'</div>';
+      html+='<div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px"><div style="width:'+pct+'%;height:100%;background:'+(iw?OH_CLR[k]:'rgba(100,116,139,0.35)')+';border-radius:3px"></div></div>';
+      html+='<div style="width:40px;font-size:10px;color:'+(iw?OH_CLR[k]:'#475569')+';text-align:right">'+(iw?'⚠ ':'')+pct+'%</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+
+    // 부족 오행 태그
+    html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">';
+    sajuWeak.forEach(function(k){
+      html+='<div style="background:rgba(255,255,255,0.04);border:1px solid '+OH_CLR[k]+'60;border-radius:10px;padding:8px 14px">';
+      html+='<div style="font-size:12px;font-weight:900;color:'+OH_CLR[k]+'">'+OH_EMJ[k]+' '+k+'('+OH_CHN[k]+') 기운 보충 필요</div>';
+      html+='<div style="font-size:11px;color:#64748b;margin-top:1px">'+OH_DESC[k]+'</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+
+    // 선물 모드 결과
+    if(sajuMode==='gift'&&giftWeak.length>0){
+      html+='<div style="background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.25);border-radius:10px;padding:10px 14px;margin-bottom:12px">';
+      html+='<div style="font-size:11px;font-weight:800;color:#c084fc;margin-bottom:4px">선물받을 분 오행 분석</div>';
+      giftWeak.forEach(function(k){
+        html+='<span style="font-size:12px;color:#c084fc;margin-right:8px">'+OH_EMJ[k]+' '+k+' 부족</span>';
+      });
+      html+='</div>';
+    }
+
+    html+='<div style="font-size:12px;color:#94a3b8;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:10px 14px">';
+    html+=(sajuMode==='gift'
+      ? '🎁 선물 궁합 모드: 두 분의 사주를 분석하여 '
+      : '✨ ');
+    html+='아래 상품에 <strong style="color:#FBBF24">궁합 점수</strong>가 표시되었습니다. 점수 순으로 정렬됩니다.';
+    html+='</div>';
+
+    res.innerHTML=html;
+    document.getElementById('saju-reset-btn').style.display='inline-block';
+    render();
+
+  }catch(e){
+    sajuActive=false;
+    res.innerHTML='<p style="color:#f87171;font-size:13px;margin:0">❌ 연결 오류: '+e.message+'</p>';
+  }
+}
+
+var CAT_BG={
+  '부적':'linear-gradient(135deg,rgba(220,38,38,0.35),rgba(127,29,29,0.6))',
+  '팔찌':'linear-gradient(135deg,rgba(124,58,237,0.35),rgba(76,29,149,0.6))',
+  '명상':'linear-gradient(135deg,rgba(14,116,144,0.35),rgba(8,51,68,0.6))',
+  '불교용품':'linear-gradient(135deg,rgba(180,120,10,0.35),rgba(120,70,5,0.6))',
+  '차·식품':'linear-gradient(135deg,rgba(21,128,61,0.35),rgba(5,46,22,0.6))',
+  '도서':'linear-gradient(135deg,rgba(67,56,202,0.35),rgba(30,27,75,0.6))',
+  '선물':'linear-gradient(135deg,rgba(190,24,93,0.35),rgba(112,26,117,0.6))'
+};
+var current='all';
+function filterCat(cat,btn){
+  current=cat;
+  document.querySelectorAll('.jm-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  render();
+}
+function render(){
+  var list=current==='all'?PRODUCTS:PRODUCTS.filter(function(p){return p.cat===current;});
+  // 사주 모드: 궁합 점수 순으로 정렬
+  if(sajuActive){
+    list=list.slice().sort(function(a,b){return (sajuScores[b.id]||65)-(sajuScores[a.id]||65);});
+  }
+  var html='';
+  list.forEach(function(p){
+    var bg=CAT_BG[p.cat]||'linear-gradient(135deg,rgba(251,191,36,0.1),rgba(168,85,247,0.08))';
+    var score=sajuActive?(sajuScores[p.id]||65):null;
+    var lbl=score?scoreLabel(score):null;
+    html+='<div class="jm-card" onclick="openModal('+p.id+')" style="'+(score&&score>=85?'border-color:rgba(251,191,36,0.35)':'')+'">';
+    html+='<div class="jm-card-img" style="background:'+bg+';position:relative">';
+    html+='<div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 35%,rgba(255,255,255,0.1),transparent 65%)"></div>';
+    // 궁합 점수 배지
+    if(score){
+      html+='<div class="jm-score-badge" style="background:'+lbl.bg+';color:'+lbl.tc+'">';
+      html+=lbl.grade+'<br><span style="font-size:13px;font-weight:900;letter-spacing:-.02em">'+score+'점</span></div>';
+    }
+    html+='<span style="font-size:72px;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.6));position:relative;z-index:1">'+p.icon+'</span>';
+    html+='<div style="position:absolute;bottom:10px;right:12px;font-size:9px;font-weight:800;color:rgba(255,255,255,0.3);letter-spacing:.08em">'+p.cat+'</div>';
+    html+='</div>';
+    html+='<div class="jm-card-body">';
+    html+='<div class="jm-card-cat">'+p.cat+'</div>';
+    html+='<div class="jm-card-name">'+p.name+'</div>';
+    html+='<div class="jm-card-desc">'+p.desc+'</div>';
+    // 사주 모드: 점수 행 표시
+    if(score){
+      var modeLabel=sajuMode==='gift'?'선물 궁합':'나와의 궁합';
+      var scoreColor=score>=92?'#d97706':score>=85?'#16a34a':score>=77?'#2563eb':'#64748b';
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06)">';
+      html+='<span style="font-size:11px;color:'+scoreColor+';font-weight:900">'+modeLabel+' '+score+'점</span>';
+      html+='<button type="button" class="jm-card-btn">분석보기</button>';
+      html+='</div>';
+    } else {
+      html+='<div class="jm-card-row"><span class="jm-card-price">'+p.price+'</span><button type="button" class="jm-card-btn">자세히</button></div>';
+    }
+    html+='</div></div>';
+  });
+  document.getElementById('jm-grid').innerHTML=html;
+}
+function openModal(id){
+  var p=PRODUCTS.find(function(x){return x.id===id;});
+  if(!p)return;
+  document.getElementById('md-img').textContent=p.icon;
+  document.getElementById('md-cat').textContent=p.cat;
+  document.getElementById('md-name').textContent=p.name;
+  document.getElementById('md-price').textContent=p.price;
+  document.getElementById('md-desc').innerHTML=p.detail.replace(/\n/g,'<br>');
+  document.getElementById('md-buy').href=p.link;
+
+  // 사주 궁합 분석 블록
+  var scoreEl=document.getElementById('md-score-block');
+  if(sajuActive&&scoreEl){
+    var score=sajuScores[p.id]||65;
+    var lbl=scoreLabel(score);
+    var attrs=PROD_ATTRS[p.id]||{};
+    var modeLabel=sajuMode==='gift'?'선물 궁합 점수':'나와의 궁합 점수';
+
+    // 추천 이유 생성
+    var reasons=[];
+    var weak1=sajuWeak[0]||'';
+    var weak2=sajuWeak[1]||'';
+    if(attrs.oh){
+      if(weak1&&attrs.oh.indexOf(weak1)>=0)
+        reasons.push('부족한 '+OH_EMJ[weak1]+' '+weak1+'('+OH_CHN[weak1]+') 기운을 보충하는 상품입니다');
+      else if(weak2&&attrs.oh.indexOf(weak2)>=0)
+        reasons.push(OH_EMJ[weak2]+' '+weak2+'('+OH_CHN[weak2]+') 기운 보충에 도움이 됩니다');
+      attrs.oh.forEach(function(oh){
+        if(OH_SHENG[oh]===weak1)
+          reasons.push(oh+'('+OH_CHN[oh]+')의 상생으로 '+weak1+'('+OH_CHN[weak1]+') 기운을 강화합니다');
+      });
+      if(attrs.oh.length>=4)reasons.push('오행 에너지를 골고루 담은 균형 상품입니다');
+    }
+    if(sajuPurpose&&attrs.pur&&attrs.pur.indexOf(sajuPurpose)>=0)
+      reasons.push('선택하신 목적('+sajuPurpose+')과 상품 용도가 일치합니다');
+    if(attrs.coh&&sajuWeak.indexOf(attrs.coh)>=0)
+      reasons.push('상품의 색상이 부족한 오행 색상과 일치합니다');
+    if(sajuMode==='gift'&&giftWeak.length>0&&attrs.oh){
+      attrs.oh.forEach(function(oh){
+        if(giftWeak.indexOf(oh)>=0)
+          reasons.push('선물받을 분의 부족한 '+oh+'('+OH_CHN[oh]+') 기운에도 적합합니다');
+      });
+    }
+    if(reasons.length===0)reasons.push('전통 오행 에너지가 담긴 상품으로 일상에 도움이 됩니다');
+
+    var html='<div style="background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(168,85,247,0.06));border:1px solid rgba(251,191,36,0.25);border-radius:14px;padding:16px 18px;margin-bottom:16px">';
+    html+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">';
+    html+='<div style="background:'+lbl.bg+';color:'+lbl.tc+';font-size:11px;font-weight:900;padding:6px 12px;border-radius:10px;text-align:center">';
+    html+=lbl.grade+'<br><span style="font-size:18px;letter-spacing:-.02em">'+score+'점</span></div>';
+    html+='<div><div style="font-size:13px;font-weight:900;color:#f8fafc">'+modeLabel+'</div>';
+    html+='<div style="font-size:11px;color:#64748b;margin-top:2px">잼공 AI 오행 분석 결과</div></div>';
+    html+='</div>';
+    html+='<div style="font-size:11px;font-weight:800;color:#94a3b8;margin-bottom:8px">📋 추천 근거</div>';
+    reasons.forEach(function(r,i){
+      html+='<div style="font-size:12px;color:#e2e8f0;line-height:1.7;padding:2px 0">'+(i+1)+'. '+r+'</div>';
+    });
+    // 오행 속성 표시
+    if(attrs.oh&&attrs.oh.length>0){
+      html+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">';
+      attrs.oh.forEach(function(oh){
+        html+='<span style="background:'+OH_CLR[oh]+'22;border:1px solid '+OH_CLR[oh]+'60;color:'+OH_CLR[oh]+';font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px">'+OH_EMJ[oh]+' '+oh+'('+OH_CHN[oh]+')</span>';
+      });
+      if(attrs.pur)attrs.pur.forEach(function(pr){
+        html+='<span style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);color:#FBBF24;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px">'+pr+'</span>';
+      });
+      html+='</div>';
+    }
+    html+='<div style="font-size:10px;color:#334155;margin-top:10px;line-height:1.6">※ 전통 명리 해석을 활용한 개인화 추천 정보이며, 상품의 효능이나 미래 결과를 보장하지 않습니다.</div>';
+    html+='</div>';
+    scoreEl.innerHTML=html;
+    scoreEl.style.display='block';
+  } else if(scoreEl){
+    scoreEl.style.display='none';
+  }
+
+  document.getElementById('jm-modal').classList.add('show');
+}
+function closeModal(e){
+  if(!e||e.target===document.getElementById('jm-modal'))
+    document.getElementById('jm-modal').classList.remove('show');
+}
+// ── 잠금 / 개방 초기화 ──────────────────────────
+var MALL_PW = 'jag2026-'; // ← 비밀번호 여기서 변경
+
+function checkPw(){
+  var v = document.getElementById('jm-pw').value;
+  if(v === MALL_PW){
+    document.getElementById('jm-lock').style.display='none';
+    document.getElementById('jm-content').style.display='block';
+    render();
+  } else {
+    document.getElementById('jm-pw-err').style.display='block';
+    document.getElementById('jm-pw').value='';
+    document.getElementById('jm-pw').focus();
+  }
+}
+
+(function init(){
+  if(MALL_OPEN){
+    document.getElementById('jm-content').style.display='block';
+    render();
+  } else {
+    document.getElementById('jm-lock').style.display='block';
+  }
+})();
+</script>
+</div><!-- /jm-content -->
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

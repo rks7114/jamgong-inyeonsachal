@@ -1,0 +1,181 @@
+<meta charset="UTF-8">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.engine-wrap{width:100%;background:#050010;min-height:520px;position:relative;overflow:hidden;font-family:'Noto Sans KR',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 16px}
+canvas#eng-bg{position:absolute;inset:0;width:100%;height:100%}
+.eng-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;width:100%;max-width:720px}
+.eng-tag{font-size:9px;font-weight:800;letter-spacing:.22em;color:#FBBF24;opacity:0;animation:engFadeUp .6s .1s ease forwards;margin-bottom:12px}
+@keyframes engFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.typo-line{display:flex;flex-wrap:wrap;justify-content:center;margin-bottom:4px;min-height:38px}
+.typo-line2{display:flex;flex-wrap:wrap;justify-content:center;margin-bottom:20px;min-height:38px}
+.tchar{display:inline-block;font-size:clamp(17px,3vw,28px);font-weight:900;color:#fff;opacity:0;transform:translateY(20px) scale(.8);transition:opacity .35s ease,transform .35s ease}
+.tchar.gold{background:linear-gradient(90deg,#FBBF24,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tchar.vis{opacity:1;transform:none}
+.eng-sub{font-size:11px;color:rgba(192,132,252,.75);text-align:center;opacity:0;letter-spacing:.04em;margin-bottom:26px}
+.eng-sub.vis{animation:engFadeUp .6s ease forwards}
+.eng-scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.35),transparent);animation:engScan 3.5s 1s linear infinite}
+@keyframes engScan{0%{top:0;opacity:0}5%{opacity:1}95%{opacity:1}100%{top:100%;opacity:0}}
+.eng-main-row{display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%}
+.eng-orbit-wrap{position:relative;width:170px;height:170px;flex-shrink:0}
+.eng-cards{display:flex;flex-direction:column;gap:9px;flex:1;min-width:200px}
+.eng-card{background:rgba(255,255,255,.03);border-radius:13px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;opacity:0;transform:translateX(16px)}
+.ec1{border:1px solid rgba(251,191,36,.3);animation:ecIn .5s 2.4s ease forwards}
+.ec2{border:1px solid rgba(168,85,247,.3);animation:ecIn .5s 2.7s ease forwards}
+.ec3{border:1px solid rgba(96,165,250,.25);animation:ecIn .5s 3.0s ease forwards}
+@keyframes ecIn{to{opacity:1;transform:none}}
+.ec-shine{position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);transform:translateX(-100%)}
+.ec1 .ec-shine{animation:ecSh .7s 2.9s ease forwards}
+.ec2 .ec-shine{animation:ecSh .7s 3.2s ease forwards}
+.ec3 .ec-shine{animation:ecSh .7s 3.5s ease forwards}
+@keyframes ecSh{to{transform:translateX(200%)}}
+.ec-name{font-size:12px;color:#e2e8f0;font-weight:700;margin-bottom:2px;font-family:'Noto Sans KR',sans-serif}
+.ec-sub{font-size:10px;color:#64748b;font-family:'Noto Sans KR',sans-serif}
+.ec-score{font-size:26px;font-weight:900;line-height:1}
+.ec-unit{font-size:9px;font-weight:700}
+.eng-badges{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:20px;opacity:0;animation:engFadeUp .5s 3.6s ease forwards}
+.eng-badge{font-size:9px;font-weight:800;padding:4px 10px;border-radius:20px;font-family:'Noto Sans KR',sans-serif}
+.eb1{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:#FBBF24}
+.eb2{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);color:#c084fc}
+.eb3{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:#60a5fa}
+.eb4{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#4ade80}
+.eng-btns{display:flex;gap:8px;margin-top:16px;opacity:0;animation:engFadeUp .5s 4s ease forwards}
+.eng-btn{font-size:12px;font-weight:700;padding:10px 20px;border-radius:10px;cursor:pointer;border:none;font-family:'Noto Sans KR',sans-serif;text-decoration:none;display:inline-flex;align-items:center}
+.eng-btn-s{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);color:#e2e8f0}
+.eng-btn-p{background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a}
+</style>
+
+<div class="engine-wrap" id="engineWrap">
+  <canvas id="eng-bg"></canvas>
+  <div class="eng-scan"></div>
+  <div class="eng-content">
+    <div class="eng-tag">✨ JAMGONG AFFINITY COMPATIBILITY ENGINE · 잼공 궁합 엔진</div>
+    <div class="typo-line" id="eng-line1"></div>
+    <div class="typo-line2" id="eng-line2"></div>
+    <div class="eng-sub" id="eng-sub">태어난 순간의 천문 데이터 → 오행 벡터화 → 궁합 점수 산출</div>
+    <div class="eng-main-row">
+      <div class="eng-orbit-wrap">
+        <canvas id="eng-orb" width="340" height="340" style="width:170px;height:170px"></canvas>
+      </div>
+      <div class="eng-cards">
+        <div style="font-size:9px;color:#475569;letter-spacing:.1em;margin-bottom:1px;font-family:'Noto Sans KR',sans-serif">인연 궁합 순위</div>
+        <div class="eng-card ec1"><div class="ec-shine"></div>
+          <div><div class="ec-name">천연 자수정 팔찌</div><div class="ec-sub">水氣 보완 · 인연운</div></div>
+          <div style="text-align:right"><div class="ec-score" style="color:#FBBF24" id="eng-s1">0</div><div class="ec-unit" style="color:#FBBF24">점</div></div>
+        </div>
+        <div class="eng-card ec2"><div class="ec-shine"></div>
+          <div><div class="ec-name">관음보살 목각 부적</div><div class="ec-sub">木氣 강화 · 재물운</div></div>
+          <div style="text-align:right"><div class="ec-score" style="color:#c084fc" id="eng-s2">0</div><div class="ec-unit" style="color:#c084fc">점</div></div>
+        </div>
+        <div class="eng-card ec3"><div class="ec-shine"></div>
+          <div><div class="ec-name">청금석 연꽃 묵주</div><div class="ec-sub">金氣 정화 · 마음안정</div></div>
+          <div style="text-align:right"><div class="ec-score" style="color:#60a5fa" id="eng-s3">0</div><div class="ec-unit" style="color:#60a5fa">점</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="eng-badges">
+      <span class="eng-badge eb1">오행 보완 분석</span>
+      <span class="eng-badge eb2">용신 맞춤</span>
+      <span class="eng-badge eb3">기도 목적 연동</span>
+      <span class="eng-badge eb4">특허 출원 중</span>
+    </div>
+    <div class="eng-btns">
+      <a class="eng-btn eng-btn-p" href="/manse">🔮 내 인연사찰 확인하기</a>
+      <a class="eng-btn eng-btn-s" href="/shop">🛒 상품 궁합 보기</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // 배경 파티클
+  const bgC=document.getElementById('eng-bg');
+  const bgX=bgC.getContext('2d');
+  function resizeBg(){bgC.width=bgC.offsetWidth;bgC.height=bgC.offsetHeight||520}
+  resizeBg();
+  const pts=[];
+  for(let i=0;i<70;i++)pts.push({x:Math.random()*bgC.width,y:Math.random()*bgC.height,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:Math.random()*1.4+.4,op:Math.random()*.5+.1,col:Math.random()>.7?'#FBBF24':Math.random()>.5?'#c084fc':'#60a5fa'});
+  function drawBg(){
+    bgX.clearRect(0,0,bgC.width,bgC.height);
+    pts.forEach((a,i)=>{
+      pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<75){bgX.beginPath();bgX.strokeStyle=`rgba(255,255,255,${.035*(1-d/75)})`;bgX.lineWidth=.5;bgX.moveTo(a.x,a.y);bgX.lineTo(b.x,b.y);bgX.stroke()}});
+      bgX.beginPath();bgX.arc(a.x,a.y,a.r,0,Math.PI*2);bgX.fillStyle=a.col;bgX.globalAlpha=a.op;bgX.fill();bgX.globalAlpha=1;
+      a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>bgC.width)a.vx*=-1;if(a.y<0||a.y>bgC.height)a.vy*=-1;
+    });
+    requestAnimationFrame(drawBg);
+  }
+  drawBg();
+
+  // 타이포모션
+  function typeMotion(elId,text,startDelay,isGold){
+    const el=document.getElementById(elId);
+    text.split('').forEach((ch,i)=>{
+      const span=document.createElement('span');
+      span.className='tchar'+(isGold?' gold':'');
+      span.textContent=ch===' '?' ':ch;
+      el.appendChild(span);
+      setTimeout(()=>span.classList.add('vis'),startDelay+i*55);
+    });
+  }
+  typeMotion('eng-line1','하늘이 기록한 당신의 데이터',300,false);
+  typeMotion('eng-line2','AI가 인연을 분석합니다',900,true);
+  setTimeout(()=>{const s=document.getElementById('eng-sub');s.classList.add('vis')},1700);
+
+  // 오행 궤도
+  const orbC=document.getElementById('eng-orb');
+  const ctx=orbC.getContext('2d');
+  const CX=170,CY=170,R=135;
+  const oheng=[
+    {label:'木',color:'#4ade80',target:18,cur:0},
+    {label:'火',color:'#f87171',target:22,cur:0},
+    {label:'土',color:'#FBBF24',target:20,cur:0},
+    {label:'金',color:'#e2e8f0',target:17,cur:0},
+    {label:'水',color:'#60a5fa',target:23,cur:0}
+  ];
+  let t=0,arcStarted=false;
+  setTimeout(()=>arcStarted=true,1200);
+  function drawOrb(){
+    ctx.clearRect(0,0,340,340);t+=.013;
+    ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;ctx.stroke();
+    ctx.save();ctx.translate(CX,CY);ctx.rotate(t*.25);
+    for(let i=0;i<36;i++){const a=(i/36)*Math.PI*2;ctx.beginPath();ctx.arc(Math.cos(a)*R,Math.sin(a)*R,1.2,0,Math.PI*2);ctx.fillStyle=i%3===0?'rgba(251,191,36,.25)':'rgba(255,255,255,.04)';ctx.fill()}
+    ctx.restore();
+    if(arcStarted){
+      oheng.forEach((o,i)=>{
+        o.cur=Math.min(o.cur+.35,o.target);
+        const sA=-Math.PI/2+(i/5)*Math.PI*2,eA=sA+(o.cur/100)*Math.PI*2;
+        ctx.beginPath();ctx.arc(CX,CY,R-10,sA,eA);ctx.strokeStyle=o.color;ctx.lineWidth=11;ctx.lineCap='round';ctx.shadowColor=o.color;ctx.shadowBlur=10;ctx.stroke();ctx.shadowBlur=0;
+      });
+    }
+    oheng.forEach((o,i)=>{
+      const a=-Math.PI/2+(i/5)*Math.PI*2+t*.14;
+      const nx=CX+Math.cos(a)*R,ny=CY+Math.sin(a)*R;
+      const pulse=1+Math.sin(t*3+i)*.07;
+      ctx.beginPath();ctx.arc(nx,ny,8*pulse,0,Math.PI*2);ctx.fillStyle=o.color;ctx.shadowColor=o.color;ctx.shadowBlur=10;ctx.fill();ctx.shadowBlur=0;
+      ctx.fillStyle='#000';ctx.font='bold 8px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(o.label,nx,ny);
+      ctx.beginPath();ctx.moveTo(CX,CY);ctx.lineTo(nx,ny);ctx.strokeStyle=o.color;ctx.globalAlpha=.1;ctx.lineWidth=1;ctx.stroke();ctx.globalAlpha=1;
+    });
+    const g=ctx.createRadialGradient(CX,CY,0,CX,CY,52);g.addColorStop(0,'rgba(168,85,247,.2)');g.addColorStop(1,'rgba(168,85,247,.01)');
+    ctx.beginPath();ctx.arc(CX,CY,52,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+    ctx.fillStyle='rgba(192,132,252,.65)';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('水氣 부족',CX,CY-10);
+    ctx.fillStyle='#60a5fa';ctx.font='bold 19px sans-serif';ctx.fillText('-23%',CX,CY+11);
+    requestAnimationFrame(drawOrb);
+  }
+  drawOrb();
+
+  // 점수 카운터
+  function countUp(id,tgt,delay){
+    setTimeout(()=>{const el=document.getElementById(id);let v=0;const st=Math.ceil(tgt/25);const ti=setInterval(()=>{v=Math.min(v+st,tgt);el.textContent=v;if(v>=tgt)clearInterval(ti)},35)},delay);
+  }
+  countUp('eng-s1',94,2500);countUp('eng-s2',88,2800);countUp('eng-s3',79,3100);
+})();
+</script>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>
