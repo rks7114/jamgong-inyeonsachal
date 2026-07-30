@@ -5664,7 +5664,7 @@ function render() {
     <div class="trust-bar">
       <div class="trust-item">
         <div class="trust-icon">🏯</div>
-        <div class="trust-number">13,736<span>곳</span></div>
+        <div class="trust-number">17,497<span>곳</span></div>
         <div class="trust-label">전국 사찰 데이터</div>
       </div>
       <div class="trust-divider"></div>
@@ -7498,15 +7498,27 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
   })() : '<p style="color:rgba(255,255,255,0.5);text-align:center;">사주 계산 결과를 불러올 수 없습니다.</p>';
 
   const dist = data.distribution || {};
-  const distHtml = Object.entries(dist).map(([k,v])=>`
-    <div class="saju-dist-item">
-      <span class="saju-dist-label" style="color:${colorMap[k]||'#fff'}">${ohaengKo[k]||k}</span>
+  // 부족 오행 판별 (값이 가장 낮은 항목)
+  const distEntries = Object.entries(dist);
+  const minVal = distEntries.length ? Math.min(...distEntries.map(([,v])=>v)) : 0;
+  // 잼공몰 오행 키워드 매핑
+  const ohMallKw = {목:'목기운 나무 초록 성장',화:'화기운 붉은 열정 활력',토:'토기운 황토 안정 중심',금:'금기운 금속 흰 결단',수:'수기운 물 파랑 지혜'};
+  const ohChineseMap = {목:'木',화:'火',토:'土',금:'金',수:'水'};
+  const distHtml = distEntries.map(([k,v])=>{
+    const isWeak = v===minVal;
+    const mallUrl = `/shop?energy=${encodeURIComponent(k)}&q=${encodeURIComponent(ohMallKw[k]||k)}`;
+    const weakBadge = isWeak ? `<span style="background:rgba(251,191,36,0.18);border:1px solid rgba(251,191,36,0.45);color:#FBBF24;font-size:9px;font-weight:900;padding:1px 6px;border-radius:8px;margin-left:4px;vertical-align:middle">부족</span>` : '';
+    const mallTip = isWeak ? `<a href="${mallUrl}" title="${k} 기운 보충 상품 보기" style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(90deg,rgba(251,191,36,0.15),rgba(168,85,247,0.12));border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;text-decoration:none;margin-left:6px;white-space:nowrap;cursor:pointer" onclick="event.stopPropagation()">🛒 잼공몰</a>` : '';
+    return `
+    <div class="saju-dist-item" style="${isWeak?'background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:4px 6px;':''}cursor:${isWeak?'pointer':'default'}" ${isWeak?`onclick="window.open('${mallUrl}','_blank')" title="${k}(${ohChineseMap[k]||''}) 기운 부족 — 클릭하면 잼공몰에서 보충 상품을 볼 수 있습니다"`:''}>
+      <span class="saju-dist-label" style="color:${colorMap[k]||'#fff'}">${ohaengKo[k]||k}${weakBadge}</span>
       <div class="saju-dist-bar-wrap">
         <div class="saju-dist-bar" style="width:${Math.min(v*25,100)}%;background:${colorMap[k]||'#00d2ff'}"></div>
       </div>
-      <span class="saju-dist-val">${v}</span>
-    </div>
-  `).join('');
+      <span class="saju-dist-val" style="${isWeak?'color:#FBBF24;font-weight:900':''}">${v}</span>
+      ${mallTip}
+    </div>`;
+  }).join('');
 
   const calStr = birthInput.calendarType === 'lunar' ? '음력' : '양력';
   const hourStr = `${birthInput.hour}시 ${birthInput.minute > 0 ? birthInput.minute+'분' : ''}`.trim();
@@ -7626,7 +7638,7 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
     <div class="saju-explain-card">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <div class="saju-card-title" style="margin-bottom:0;">📖 나의 사주 풀이</div>
-        ${explanation ? `<button id="saju-download-btn" style="background:linear-gradient(135deg,#00d2ff,#7b5ea7);border:none;border-radius:10px;padding:9px 18px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;">📥 결과 다운받기</button>` : ''}
+        ${explanation ? `<button id="saju-download-btn" style="background:linear-gradient(135deg,#FBBF24,#f59e0b);border:none;border-radius:12px;padding:10px 20px;color:#0a0a0a;font-weight:900;font-size:13px;cursor:pointer;white-space:nowrap;letter-spacing:.02em;box-shadow:0 4px 16px rgba(251,191,36,0.35);transition:all .2s;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(251,191,36,0.5)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 16px rgba(251,191,36,0.35)'">📥 사주 결과 저장</button>` : ''}
       </div>
       <div class="saju-explain-body" id="saju-ai-explanation">${explanation ? explanationBodyHtml : `
         <div style="display:flex;flex-direction:column;gap:10px;padding:8px 0;">
@@ -7769,32 +7781,47 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       <title>${title}</title>
       <style>
         *{box-sizing:border-box;margin:0;padding:0;}
-        body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#1a1a2e;background:#fff;padding:0;}
-        .page{max-width:740px;margin:0 auto;padding:36px 40px;}
-        .header{text-align:center;border-bottom:3px double #4a3f8f;padding-bottom:18px;margin-bottom:24px;}
-        .header h1{font-size:22px;color:#2c1f6b;letter-spacing:.1em;}
-        .header .sub{font-size:13px;color:#666;margin-top:6px;}
-        .section{margin-bottom:28px;}
-        .section-title{font-size:15px;font-weight:800;color:#2c1f6b;border-left:4px solid #4a3f8f;padding-left:10px;margin-bottom:12px;}
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+        body{font-family:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:#e2e8f0;background:#070510;padding:0;min-height:100vh;}
+        /* 워터마크 */
+        body::before{content:'四柱\\A八字\\A命';white-space:pre;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-15deg);font-size:220px;font-weight:900;color:rgba(251,191,36,0.04);line-height:1.1;pointer-events:none;z-index:0;letter-spacing:.1em;text-align:center;}
+        body::after{content:'잼공인연사찰';position:fixed;bottom:30px;right:40px;font-size:13px;color:rgba(251,191,36,0.18);font-weight:700;letter-spacing:.08em;pointer-events:none;z-index:0;}
+        .page{max-width:740px;margin:0 auto;padding:40px 44px;position:relative;z-index:1;}
+        /* 헤더 */
+        .header{text-align:center;border-bottom:1px solid rgba(251,191,36,0.3);padding-bottom:22px;margin-bottom:28px;position:relative;}
+        .header::before{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:60px;height:2px;background:linear-gradient(90deg,#FBBF24,#c084fc);}
+        .header-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);color:#FBBF24;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 14px;border-radius:20px;margin-bottom:12px;}
+        .header h1{font-size:24px;color:#f8fafc;letter-spacing:.06em;font-weight:900;text-shadow:0 0 20px rgba(251,191,36,0.3);}
+        .header .sub{font-size:12px;color:#64748b;margin-top:8px;letter-spacing:.02em;}
+        /* 섹션 */
+        .section{margin-bottom:28px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 24px;}
+        .section-title{font-size:13px;font-weight:800;color:#FBBF24;letter-spacing:.12em;border-left:3px solid #FBBF24;padding-left:10px;margin-bottom:16px;}
+        /* 사주 테이블 */
         .p-table{width:100%;border-collapse:collapse;text-align:center;margin:8px 0;}
-        .p-table th{background:#f0eeff;font-size:12px;padding:7px;border:1px solid #c5bfea;}
-        .p-table td{border:1px solid #ddd;padding:8px;}
-        .explain{font-size:13.5px;line-height:2;color:#222;}
-        .explain-heading{display:block;font-size:14px;font-weight:800;color:#2c1f6b;margin:18px 0 6px;padding:4px 0 4px 10px;border-left:3px solid #7b5ea7;background:#f5f3ff;}
-        .p-temple{padding:10px 0;border-bottom:1px dashed #ddd;font-size:13px;}
-        .p-rank{display:inline-block;background:#4a3f8f;color:#fff;border-radius:4px;padding:1px 7px;margin-right:6px;font-size:12px;}
-        .p-addr{color:#777;font-size:12px;}
-        .dayun-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
-        .dayun-chip{border:1px solid #c5bfea;border-radius:6px;padding:5px 10px;font-size:12px;background:#f8f7ff;}
-        .dayun-chip.current{background:#4a3f8f;color:#fff;font-weight:700;}
-        .footer{margin-top:32px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#999;text-align:center;}
-        @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+        .p-table th{background:rgba(251,191,36,0.08);font-size:12px;padding:10px;border:1px solid rgba(255,255,255,0.07);color:#94a3b8;font-weight:700;}
+        .p-table td{border:1px solid rgba(255,255,255,0.06);padding:10px;font-size:15px;}
+        /* 설명 */
+        .explain{font-size:13.5px;line-height:2.1;color:#cbd5e1;}
+        .explain-heading{display:block;font-size:13px;font-weight:800;color:#FBBF24;margin:18px 0 8px;padding:5px 0 5px 12px;border-left:3px solid #FBBF24;background:rgba(251,191,36,0.05);border-radius:0 6px 6px 0;}
+        /* 사찰 */
+        .p-temple{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px;color:#e2e8f0;display:flex;align-items:center;gap:10px;}
+        .p-rank{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;border-radius:6px;padding:2px 8px;margin-right:2px;font-size:11px;font-weight:900;min-width:28px;}
+        .p-addr{color:#475569;font-size:11px;}
+        /* 대운 */
+        .dayun-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+        .dayun-chip{border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 12px;font-size:11px;color:#94a3b8;background:rgba(255,255,255,0.03);}
+        .dayun-chip.current{background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(168,85,247,0.15));border-color:rgba(251,191,36,0.4);color:#FBBF24;font-weight:800;}
+        /* 푸터 */
+        .footer{margin-top:32px;padding:16px 0;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;color:#334155;text-align:center;display:flex;align-items:center;justify-content:center;gap:16px;}
+        .footer-logo{color:#FBBF24;font-weight:900;font-size:13px;}
+        @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#070510!important;}}
       </style>
     </head><body><div class="page">
       <div class="header">
-        <h1>🔮 나의 사주 풀이 결과</h1>
-        <div class="sub">${title} · 잼공인연사찰 (jamgong-inyeonsachal.vercel.app)</div>
-        <div class="sub" style="margin-top:4px;">발행일: ${new Date().toLocaleDateString('ko-KR')}</div>
+        <div class="header-badge">✨ JAMGONG · 잼공인연사찰</div>
+        <h1>🔮 나의 사주팔자 풀이</h1>
+        <div class="sub">${title}</div>
+        <div class="sub" style="margin-top:4px;">발행: ${new Date().toLocaleDateString('ko-KR')} · jamgong.kr</div>
       </div>
 
       <div class="section">
@@ -7823,7 +7850,13 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       </div>` : ''}
 
       <div class="footer">
-        잼공인연사찰 · 절기 기준 만세력 데이터 연동 · 사주 풀이는 AI 분석 기반 참고용입니다
+        <span class="footer-logo">잼공인연사찰</span>
+        <span>·</span>
+        <span>절기 기준 만세력 연동</span>
+        <span>·</span>
+        <span>AI 분석 기반 참고용</span>
+        <span>·</span>
+        <span>jamgong.kr</span>
       </div>
     </div>
     <script>window.onload=function(){window.print();}</script>
@@ -7914,7 +7947,9 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
     : (historyFull.length > 120
         ? historyFull.slice(0, 120) + '… <span style="color:rgba(255,255,255,0.35);font-size:12px;">🔒 전체보기는 멤버 전용</span>'
         : historyFull || '정보 없음');
-  const mapUrl = 'https://map.naver.com/v5/search/' + encodeURIComponent((t.name || '') + ' ' + (t.address || ''));
+  const mapUrl = (t.lng && t.lat)
+    ? 'https://map.naver.com/p/entry/coords/' + t.lng + ',' + t.lat + '?c=15.00,0,0,0,dh'
+    : 'https://map.naver.com/v5/search/' + encodeURIComponent((t.name || '') + ' ' + (t.address || ''));
   const distText = d.distanceKm != null
     ? (d.distanceKm < 1 ? Math.round(d.distanceKm * 1000) + 'm' : d.distanceKm.toFixed(1) + 'km')
     : '정보 없음';
