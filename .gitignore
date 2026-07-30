@@ -1,0 +1,17 @@
+# 자동화 런타임 산출물(로그·리포트)은 커밋하지 않음 — 디렉터리는 .gitkeep로 유지
+automation/logs/*
+!automation/logs/.gitkeep
+
+# 자격증명 / 환경변수
+automation/.env
+.env
+*.pem
+
+# 파이썬
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS
+.DS_Store

@@ -1,0 +1,32 @@
+# 잼공인연사찰 완전 자동화 크론탭 예시 (Step 3)
+# ------------------------------------------------------------------
+# 설치:  crontab automation/crontab.example
+# 확인:  crontab -l
+# 로그:  automation/logs/ 에 각 스크립트가 jsonl/md 로 기록
+#
+# 전제:
+#   - PROJECT_DIR 를 실제 경로로 수정
+#   - 실발행에 필요한 환경변수(THREADS_*, ANTHROPIC_API_KEY)를
+#     크론 환경 또는 automation/.env 에 주입 (아래 env 로더 참고)
+# ------------------------------------------------------------------
+
+PROJECT_DIR=/home/user/jamagong
+PYTHON=/usr/bin/python3
+
+# (선택) 환경변수 로더: automation/.env 를 읽어 크론에 주입하려면
+#   각 명령 앞에 `set -a; . $PROJECT_DIR/automation/.env; set +a;` 를 붙인다.
+
+# --- 스레드 자동 홍보 발행: 매일 오전 9시, 저녁 8시 (하루 2회) ---
+0 9  * * * cd $PROJECT_DIR && $PYTHON automation/threads/post_scheduler.py >> automation/logs/cron.log 2>&1
+0 20 * * * cd $PROJECT_DIR && $PYTHON automation/threads/post_scheduler.py >> automation/logs/cron.log 2>&1
+
+# --- 일일 셀프 최적화 회고: 매일 밤 11시 55분 ---
+55 23 * * * cd $PROJECT_DIR && $PYTHON automation/analytics/daily_report.py >> automation/logs/cron.log 2>&1
+
+# --- 락인 CTA 재삽입(원고 갱신 반영): 매주 월요일 새벽 3시 ---
+0 3 * * 1 cd $PROJECT_DIR && $PYTHON funnel/cta_injector.py >> automation/logs/cron.log 2>&1
+
+# 참고:
+#   Q&A 에이전트(qa_agent.py)는 크론이 아니라 유입 채널(웹 위젯/웹훅)에서
+#   실시간 호출하는 구조다. 상시 서비스로 띄우려면 프로세스 매니저(systemd/pm2)나
+#   서버리스 함수로 answer() 를 감싸 배포한다. (automation/README.md 참고)

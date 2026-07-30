@@ -1,0 +1,78 @@
+{
+  "_meta": {
+    "description": "오행(木火土金水) 균형 상태 → 잼공몰 맞춤 기도용품 큐레이션 매핑. 책 속 '오행 균형 및 개운법' 내용을 잼공몰 상품으로 직결하기 위한 근거 테이블.",
+    "philosophy": "주술이 아니라 오행 상생/상극 논리에 근거한 매칭. '부족한 오행은 보(補)하고, 과한 오행은 설기(泄)한다'는 원칙.",
+    "base_url": "https://jamgong-inyeonsachal.vercel.app",
+    "mall_path": "/mall",
+    "utm_template": "?utm_source=ebook&utm_medium=product_cta&utm_campaign=ohang_curation&utm_content={element}",
+    "version": "0.1.0",
+    "updated": "2026-07-30"
+  },
+  "elements": {
+    "木": {
+      "name_ko": "목(木)",
+      "keywords": ["성장", "확장", "인(仁)", "봄", "동방", "청색"],
+      "color": ["청색", "녹색"],
+      "direction": "동(東)",
+      "deficiency_signs": "추진력·기획력 저하, 우유부단, 새 시작이 어려움",
+      "excess_signs": "조급함, 분노 과다, 벌여만 놓고 마무리 부족",
+      "recommend_products": [
+        {"sku": "JM-WOOD-001", "name": "편백(측백) 향·향꽂이 세트", "reason": "나무 기운(木)을 보(補)하는 목재·수목 계열 향으로 부족한 木을 채움", "for": "deficiency"},
+        {"sku": "JM-WOOD-002", "name": "청색 계열 합장주(단주)", "reason": "木의 방위색(청/녹)을 지닌 염주로 木 기운을 일상에서 유지", "for": "deficiency"},
+        {"sku": "JM-FIRE-003", "name": "적색 초 세트", "reason": "木이 과할 때 木生火로 기운을 설기(泄)해 균형", "for": "excess"}
+      ]
+    },
+    "火": {
+      "name_ko": "화(火)",
+      "keywords": ["열정", "표현", "예(禮)", "여름", "남방", "적색"],
+      "color": ["적색", "자색"],
+      "direction": "남(南)",
+      "deficiency_signs": "의욕·표현력 저하, 냉담, 순환 정체",
+      "excess_signs": "감정 기복, 성급함, 번아웃",
+      "recommend_products": [
+        {"sku": "JM-FIRE-001", "name": "적색 밀랍초·연꽃 초 세트", "reason": "불 기운(火)을 보하는 촛불 공양구로 부족한 火를 밝힘", "for": "deficiency"},
+        {"sku": "JM-FIRE-002", "name": "자단(紫檀) 108염주", "reason": "火의 방위색(적/자)을 지닌 목재 염주", "for": "deficiency"},
+        {"sku": "JM-EARTH-003", "name": "황토·백자 향로", "reason": "火가 과할 때 火生土로 기운을 설기해 진정", "for": "excess"}
+      ]
+    },
+    "土": {
+      "name_ko": "토(土)",
+      "keywords": ["안정", "포용", "신(信)", "환절기", "중앙", "황색"],
+      "color": ["황색", "갈색"],
+      "direction": "중앙(中)",
+      "deficiency_signs": "중심 흔들림, 신뢰·꾸준함 부족, 소화·근심",
+      "excess_signs": "고집, 정체, 변화 거부",
+      "recommend_products": [
+        {"sku": "JM-EARTH-001", "name": "황토 향로·백자 불전함", "reason": "흙 기운(土)을 보하는 도자·황토 공양구", "for": "deficiency"},
+        {"sku": "JM-EARTH-002", "name": "황색 방석·좌복", "reason": "土의 방위색(황)으로 기도 중 중심을 안정", "for": "deficiency"},
+        {"sku": "JM-METAL-003", "name": "백색 유기 요령(搖鈴)", "reason": "土가 과할 때 土生金으로 기운을 설기", "for": "excess"}
+      ]
+    },
+    "金": {
+      "name_ko": "금(金)",
+      "keywords": ["결단", "정리", "의(義)", "가을", "서방", "백색"],
+      "color": ["백색", "은색"],
+      "direction": "서(西)",
+      "deficiency_signs": "결단력·마무리 부족, 정리 안 됨",
+      "excess_signs": "냉정·경직, 관계 단절, 과한 원칙주의",
+      "recommend_products": [
+        {"sku": "JM-METAL-001", "name": "유기(놋) 다기·요령 세트", "reason": "쇠 기운(金)을 보하는 금속 공양구", "for": "deficiency"},
+        {"sku": "JM-METAL-002", "name": "백색 수정 108염주", "reason": "金의 방위색(백)을 지닌 염주", "for": "deficiency"},
+        {"sku": "JM-WATER-003", "name": "흑요석 단주", "reason": "金이 과할 때 金生水로 기운을 설기해 유연화", "for": "excess"}
+      ]
+    },
+    "水": {
+      "name_ko": "수(水)",
+      "keywords": ["지혜", "유연", "지(智)", "겨울", "북방", "흑색"],
+      "color": ["흑색", "감색"],
+      "direction": "북(北)",
+      "deficiency_signs": "지혜·유연성 저하, 경직, 두려움 과다",
+      "excess_signs": "우울·침체, 우유부단, 냉기",
+      "recommend_products": [
+        {"sku": "JM-WATER-001", "name": "흑요석·오닉스 108염주", "reason": "물 기운(水)을 보하는 흑색 계열 염주", "for": "deficiency"},
+        {"sku": "JM-WATER-002", "name": "감색 가사·해수 정화수 공양구", "reason": "水의 방위색(흑/감)으로 지혜의 기운을 보", "for": "deficiency"},
+        {"sku": "JM-WOOD-003", "name": "청색 편백 향 세트", "reason": "水가 과할 때 水生木으로 기운을 설기", "for": "excess"}
+      ]
+    }
+  }
+}

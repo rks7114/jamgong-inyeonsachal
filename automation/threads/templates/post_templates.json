@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "description": "스레드(Threads) 자동 발행용 홍보 글 템플릿. 사주 오행 분석 팁 + 인연사찰 추천 사례. 잼공인연사찰 톤앤매너: 정중하고 담백하며, 맹신/공포 마케팅 배제, 근거 제시.",
+    "tone": ["정중함", "담백함", "근거 제시", "과장·공포 금지", "이모지 절제"],
+    "hashtags_pool": ["#사주", "#오행", "#인연사찰", "#사찰추천", "#기도도량", "#개운법", "#잼공인연사찰", "#마음챙김"],
+    "cta_url": "https://jamgong-inyeonsachal.vercel.app/?utm_source=threads&utm_medium=social&utm_campaign=daily",
+    "max_length": 500,
+    "placeholders": {
+      "{element}": "오행 글자(木/火/土/金/水)",
+      "{element_kw}": "해당 오행 키워드",
+      "{temple_example}": "인연사찰 추천 사례 문구",
+      "{cta}": "표준 CTA 링크 문장"
+    }
+  },
+  "categories": [
+    {
+      "id": "ohang_tip",
+      "label": "오행 분석 팁",
+      "templates": [
+        "오늘의 오행 이야기 — {element}({element_kw})\n\n{element}가 부족하면 추진력이 흔들리고, 과하면 조급해집니다. 중요한 건 '좋다/나쁘다'가 아니라 균형이에요.\n\n내 사주에 {element}가 어떤지 궁금하다면, 생년월일시로 3분이면 확인할 수 있습니다.\n{cta}",
+        "'이게 좋다더라'는 잠시 내려두세요.\n\n{element}({element_kw})의 기운은 부적으로 채우는 게 아니라, 맞는 환경과 습관으로 균형을 맞추는 겁니다. 색·방위·소재에도 오행이 담겨 있어요.\n\n내 오행 균형표부터 확인해 보세요.\n{cta}",
+        "사주 오행은 미래를 '맞히는' 도구가 아니라, 지금의 나를 '기술하는' 언어입니다.\n\n木火土金水 중 무엇이 과하고 무엇이 부족한지 — 그걸 아는 것이 개운의 첫걸음이에요.\n{cta}"
+      ]
+    },
+    {
+      "id": "temple_case",
+      "label": "인연사찰 추천 사례",
+      "templates": [
+        "인연사찰 매칭 사례\n\n{element}가 부족한 분께는 {temple_example} 도량을 추천드린 적이 있습니다. 산세와 본존, 기도 성향이 그분의 오행과 맞았기 때문이에요. '유명해서'가 아니라 '맞아서'입니다.\n\n내게 맞는 도량이 궁금하다면:\n{cta}",
+        "전국 사찰 17,497곳, 기도도량 465곳.\n\n숫자가 중요한 게 아니라 '나와 맞는 한 곳'을 찾는 게 중요합니다. 오행 좌표를 겹쳐 가장 가까운 도량을 찾아드려요.\n{cta}"
+      ]
+    },
+    {
+      "id": "philosophy",
+      "label": "철학·브랜드",
+      "templates": [
+        "저희는 부적을 팔지 않습니다.\n\n대신 왜 이 사찰이, 왜 이 기도용품이 당신에게 맞는지를 오행 논리로 설명합니다. 설명할 수 없으면 권하지 않습니다.\n\n맹신이 끝나는 곳에서 정성이 시작됩니다.\n{cta}"
+      ]
+    }
+  ],
+  "weekly_schedule": {
+    "_comment": "요일별 카테고리 로테이션(발행 시각은 cron에서 관리). 하루 1~2회 권장.",
+    "mon": ["ohang_tip"],
+    "tue": ["temple_case"],
+    "wed": ["ohang_tip"],
+    "thu": ["temple_case"],
+    "fri": ["philosophy"],
+    "sat": ["ohang_tip", "temple_case"],
+    "sun": ["philosophy"]
+  }
+}
