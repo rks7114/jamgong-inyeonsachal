@@ -5822,15 +5822,12 @@ function render() {
       <div class="field">
         <label id="birth-label-a">생년월일시 <span class="help-tip" tabindex="0">?<span class="help-tip-bubble">사주 오행 계산의 기준이 되는 정보입니다. 시간을 모르셔도 괜찮습니다 — "시간 모름"을 선택하시면 정오 기준으로 계산됩니다.</span></span></label>
         <div class="birth-top-row">
-          <div class="calendar-toggle">
-            <button type="button" class="calendar-toggle-btn" data-calendar="manse">📜 만세력</button>
-            <button type="button" class="calendar-toggle-btn active" data-calendar="solar">☀️ 양력</button>
-            <button type="button" class="calendar-toggle-btn" data-calendar="lunar">🌙 음력</button>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);color:#FBBF24;font-size:12px;font-weight:800;padding:6px 14px;border-radius:20px;letter-spacing:.05em">📜 만세력(萬歲曆) 기준</span>
+            <span id="manse-ganji-label" style="font-size:13px;font-weight:700;color:#f8fafc"></span>
           </div>
-          <div id="manse-notice" style="display:none;margin-top:6px;padding:8px 12px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;font-size:11px;color:#FBBF24;line-height:1.7">
-            📜 <strong>만세력 기준</strong>: 사주는 절기(節氣)로 월(月)이 바뀝니다.<br>
-            입춘(2월 4~5일) 이전 출생자는 <strong>전년도</strong>로 입력하세요.<br>
-            <span id="manse-ganji-label" style="color:#f8fafc;font-size:12px;font-weight:700"></span>
+          <div style="margin-top:8px;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;font-size:11px;color:#64748b;line-height:1.8">
+            사주(四柱)는 절기(節氣) 기준으로 월주가 바뀝니다. 입춘(立春, 2월 4~5일) 이전 출생자는 <strong style="color:#94a3b8">전년도로 입력</strong>하세요.
           </div>
           <div class="gender-toggle">
             <button type="button" class="gender-btn active" data-gender="male">👨 남(男)</button>
@@ -5912,9 +5909,9 @@ function render() {
       <div class="field hidden" id="birth-b-field" style="display:none">
         <label class="label-partner"><span class="label-badge-b">상대방</span> 생년월일시</label>
         <div class="birth-top-row">
-          <div class="calendar-toggle calendar-toggle-b">
-            <button type="button" class="calendar-toggle-btn active" data-calendar-b="solar">양력</button>
-            <button type="button" class="calendar-toggle-btn" data-calendar-b="lunar">음력</button>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);color:#FBBF24;font-size:12px;font-weight:800;padding:6px 14px;border-radius:20px;letter-spacing:.05em">📜 만세력(萬歲曆) 기준</span>
+            <span id="manse-ganji-label-b" style="font-size:13px;font-weight:700;color:#f8fafc"></span>
           </div>
           <div class="gender-toggle gender-toggle-b">
             <button type="button" class="gender-btn-b" data-gender-b="male">👨 남(男)</button>
@@ -6060,34 +6057,28 @@ function render() {
   const GANJI_KR_STEM = ['갑','을','병','정','무','기','경','신','임','계'];
   const GANJI_KR_BRANCH = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
   function getGanjiYear(year) {
-    var baseYear = 1984; // 갑자년
+    var baseYear = 1984;
     var diff = ((year - baseYear) % 60 + 60) % 60;
     return GANJI_STEM[diff % 10] + GANJI_BRANCH[diff % 12]
       + '(' + GANJI_KR_STEM[diff % 10] + GANJI_KR_BRANCH[diff % 12] + ')년';
   }
-  function updateManseNotice() {
+  function updateGanjiLabel() {
     var yearEl = document.getElementById('birth-year');
     var labelEl = document.getElementById('manse-ganji-label');
     if(!yearEl || !labelEl) return;
     var y = parseInt(yearEl.value);
-    if(y) labelEl.textContent = y + '년 → ' + getGanjiYear(y);
-    else labelEl.textContent = '';
+    labelEl.textContent = y ? getGanjiYear(y) : '';
   }
 
+  // 만세력 고정 — 토글 없음 (내부적으로 solar=절기 기준 양력)
   let selectedCalendar = "solar";
-  document.querySelectorAll("[data-calendar]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll("[data-calendar]").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      selectedCalendar = btn.dataset.calendar;
-      document.getElementById("leap-month-wrap").classList.toggle("hidden", selectedCalendar !== "lunar");
-      var noticeEl = document.getElementById("manse-notice");
-      if(noticeEl) noticeEl.style.display = selectedCalendar === "manse" ? "block" : "none";
-      if(selectedCalendar === "manse") updateManseNotice();
-    });
-  });
-  document.getElementById("birth-year")?.addEventListener("change", () => {
-    if(selectedCalendar === "manse") updateManseNotice();
+  document.getElementById("birth-year")?.addEventListener("change", updateGanjiLabel);
+  document.getElementById("birth-year-b")?.addEventListener("change", () => {
+    var yearEl = document.getElementById('birth-year-b');
+    var labelEl = document.getElementById('manse-ganji-label-b');
+    if(!yearEl || !labelEl) return;
+    var y = parseInt(yearEl.value);
+    labelEl.textContent = y ? getGanjiYear(y) : '';
   });
 
   // 시간 모름 선택 시 분(分) 비활성화
