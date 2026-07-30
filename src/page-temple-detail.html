@@ -1,0 +1,731 @@
+<meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">사찰 상세 | 잼공인연사찰</title>
+<meta name="description" id="page-desc" content="잼공인연사찰 사찰 상세 정보">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+
+/* 히어로 */
+.td-hero{position:relative;padding:80px 24px 60px;text-align:center;background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 60%,#1a1a2e 100%);overflow:hidden}
+.td-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(139,92,246,0.15),transparent)}
+.td-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 16px;border-radius:20px;margin-bottom:16px}
+.td-title{font-size:clamp(28px,5vw,48px);font-weight:900;color:#f8fafc;margin-bottom:10px;line-height:1.2}
+.td-addr{font-size:15px;color:#64748b;margin-bottom:20px}
+.td-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.td-tag{font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px}
+
+/* 지도 버튼 */
+.td-map-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.td-map-btn{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:700;padding:12px 24px;border-radius:12px;text-decoration:none;transition:all .2s}
+.td-map-btn:hover{transform:translateY(-2px)}
+
+/* 본문 */
+.td-body{max-width:860px;margin:0 auto;padding:48px 24px 80px}
+
+/* 섹션 카드 */
+.td-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:28px;margin-bottom:20px}
+.td-card-title{font-size:17px;font-weight:800;color:#FBBF24;letter-spacing:.06em;margin-bottom:18px}
+.td-card-body{font-size:17px;color:#94a3b8;line-height:2.1}
+.td-card-body strong{color:#f8fafc}
+
+/* 정보 그리드 */
+.td-info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.td-info-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px}
+.td-info-label{font-size:13px;font-weight:700;color:#475569;letter-spacing:.05em;margin-bottom:6px}
+.td-info-value{font-size:16px;color:#e2e8f0;font-weight:600}
+
+/* 기도 유형 배지 */
+.td-prayer-grid{display:flex;gap:8px;flex-wrap:wrap}
+.td-prayer-badge{font-size:14px;font-weight:700;padding:8px 18px;border-radius:20px;border:1px solid}
+
+/* 구글맵 임베드 */
+.td-map-embed{width:100%;height:320px;border-radius:16px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;margin-top:16px}
+.td-map-embed iframe{width:100%;height:100%;border:none}
+
+/* 관련 링크 */
+.td-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.td-link-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;text-decoration:none;color:inherit;display:block;transition:all .2s}
+.td-link-card:hover{border-color:rgba(251,191,36,0.4);background:rgba(251,191,36,0.05);transform:translateY(-2px)}
+.td-link-icon{font-size:22px;margin-bottom:8px}
+.td-link-name{font-size:13px;font-weight:700;color:#f8fafc;margin-bottom:4px}
+.td-link-desc{font-size:11px;color:#64748b}
+
+/* 주변 사찰 카드 */
+.td-nearby-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.td-nearby-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;cursor:pointer;text-decoration:none;display:block;transition:all .2s}
+.td-nearby-card:hover{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.35);transform:translateY(-2px)}
+.td-nearby-name{font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:4px}
+.td-nearby-dist{display:inline-block;font-size:10px;font-weight:700;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#a78bfa;padding:2px 8px;border-radius:20px;margin-bottom:6px}
+.td-nearby-addr{font-size:11px;color:#64748b;line-height:1.4}
+.td-nearby-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.td-nearby-tag{font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);color:#FBBF24}
+
+/* 스크롤 상단 */
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s,transform .2s}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+
+@media(max-width:640px){
+  .td-hero{padding:60px 16px 40px}
+  .td-body{padding:32px 16px 60px}
+  .td-card{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<div class="td-hero">
+  <div class="td-badge" id="td-badge">🏯 기도도량</div>
+  <h1 class="td-title" id="td-title">사찰명</h1>
+  <div class="td-addr" id="td-addr">📍 주소 로딩 중...</div>
+  <div class="td-tags" id="td-tags"></div>
+  <div class="td-map-row" id="td-map-row"></div>
+</div>
+
+<div class="td-body">
+
+  <!-- 소개 -->
+  <div class="td-card" id="td-intro-card">
+    <div class="td-card-title">🙏 사찰 소개</div>
+    <div class="td-card-body" id="td-intro"></div>
+  </div>
+
+  <!-- 기본 정보 -->
+  <div class="td-card">
+    <div class="td-card-title">📋 기본 정보</div>
+    <div class="td-info-grid" id="td-info-grid"></div>
+  </div>
+
+  <!-- 기도 유형 -->
+  <div class="td-card" id="td-prayer-card">
+    <div class="td-card-title">🕯️ 기도 유형</div>
+    <div class="td-prayer-grid" id="td-prayer-grid"></div>
+  </div>
+
+  <!-- 영험 이야기 -->
+  <div class="td-card" id="td-story-card" style="display:none">
+    <div class="td-card-title">✨ 영험 이야기</div>
+    <div class="td-card-body" id="td-story"></div>
+  </div>
+
+  <!-- 교통·방문 정보 -->
+  <div class="td-card" id="td-visit-card" style="display:none">
+    <div class="td-card-title">🚌 방문 정보</div>
+    <div class="td-card-body" id="td-visit"></div>
+  </div>
+
+  <!-- 지도 -->
+  <div class="td-card">
+    <div class="td-card-title">🗺️ 위치</div>
+    <div class="td-map-embed" id="td-map-embed"></div>
+  </div>
+
+  <!-- 주변 사찰 -->
+  <div class="td-card" id="td-nearby-card" style="display:none">
+    <div class="td-card-title">🏯 주변 사찰</div>
+    <div class="td-nearby-grid" id="td-nearby-grid"></div>
+  </div>
+
+  <!-- 관련 서비스 -->
+  <div class="td-card">
+    <div class="td-card-title">🔗 관련 서비스</div>
+    <div class="td-links">
+      <a class="td-link-card" href="/manse">
+        <div class="td-link-icon">🔮</div>
+        <div class="td-link-name">인연사찰 찾기</div>
+        <div class="td-link-desc">내 사주와 맞는 사찰 매칭</div>
+      </a>
+      <a class="td-link-card" href="/sacred">
+        <div class="td-link-icon">⭐</div>
+        <div class="td-link-name">전국 기도도량</div>
+        <div class="td-link-desc">465곳 기도도량 전체 보기</div>
+      </a>
+      <a class="td-link-card" href="/prayer">
+        <div class="td-link-icon">🪔</div>
+        <div class="td-link-name">기도문·발원문</div>
+        <div class="td-link-desc">관음·지장·약사 기도문</div>
+      </a>
+      <a class="td-link-card" href="/etiquette">
+        <div class="td-link-icon">🏯</div>
+        <div class="td-link-name">사찰예절</div>
+        <div class="td-link-desc">처음 방문자 안내</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- 스크롤 상단 -->
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>(function(){var b=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){b.classList.toggle('show',window.scrollY>300)},{passive:true});})();</script>
+
+<script src="temple-detail-db.js"></script>
+<script>
+/* ── 큐레이션 DB (영험 사찰 상세 스토리) ── */
+var TEMPLE_DB = {
+
+  '낙산사홍련암': {
+    name:'낙산사 홍련암', badge:'🌊 3대 관음도량',
+    addr:'강원도 양양군 강현면 전진리 산1',
+    sido:'강원도', phone:'033-672-2378',
+    prayers:['관음기도','인연기도','결혼기도'],
+    prayerColors:['#c4b5fd','#f472b6','#fb923c'],
+    intro:'671년 의상대사가 창건한 동해 제일 관음도량입니다. 동굴 속 관음보살이 동해바다를 바라보는 절경으로 유명하며, 인연·결혼 기도로 전국에서 참배객이 몰립니다. 해수관음상(15m)은 동양 최대급으로 꼽힙니다.',
+    story:'의상대사가 관음보살의 진신을 친견하고자 이곳에서 기도를 드렸으며, 관음보살이 바다 위에 홍련(붉은 연꽃)을 피워 나타났다는 설화가 전해집니다. 예로부터 인연을 구하는 기도처로 이름이 높아 전국 각지에서 참배객이 끊이지 않습니다.',
+    visit:'서울 → 동서울터미널 양양행 버스 약 2시간 30분. 양양터미널에서 낙산사행 버스 10분. 주차장에서 홍련암까지 도보 15분.',
+    mapQuery:'낙산사+홍련암+강원도+양양',
+    category:'관음도량', established:'671년 (신라 문무왕)'
+  },
+
+  '강화보문사': {
+    name:'강화도 보문사', badge:'🌊 3대 관음도량',
+    addr:'인천광역시 강화군 삼산면 매음리 629',
+    sido:'인천', phone:'032-933-8271',
+    prayers:['관음기도','소원기도'],
+    prayerColors:['#c4b5fd','#fbbf24'],
+    intro:'서해의 관음도량으로, 눈썹바위 마애관음상이 유명합니다. 서해 바다가 내려다보이는 절경 속 관음보살 기도처로, 눈썹바위 마애관음상은 조선 후기 최고의 마애불로 꼽힙니다.',
+    story:'신라 선덕여왕 때 회정대사가 창건하였으며, 눈썹바위 마애석불은 1928년 금강산 표훈사의 이화응 스님이 조성하였습니다. 이 관음보살상 앞에서 기도하면 소원이 이루어진다는 영험담이 전해집니다.',
+    visit:'서울 신촌 → 강화 직행버스 약 1시간. 강화 외포리 선착장에서 배로 석모도 이동 후 버스. 또는 강화대교 → 석모대교 경유 자가용.',
+    mapQuery:'강화도+보문사+인천+강화군',
+    category:'관음도량', established:'신라 선덕여왕 시기'
+  },
+
+  '여수향일암': {
+    name:'여수 향일암', badge:'🌅 남해 관음도량',
+    addr:'전라남도 여수시 돌산읍 율림리 17',
+    sido:'전남', phone:'061-644-4742',
+    prayers:['관음기도','소원기도','일출기도'],
+    prayerColors:['#c4b5fd','#fbbf24','#fb923c'],
+    intro:'남해 제일 관음도량. 기암괴석 절벽 위에 자리한 암자로 일출이 아름답기로 유명합니다. 원효대사가 창건하였으며, 좁은 석굴을 통과하는 참배 코스가 독특하고 소원성취로 이름 높습니다.',
+    story:'원효대사가 이곳에서 관음보살을 친견하고 암자를 세웠다고 전해집니다. 해돋이를 향해 앉아있는 암자라 하여 향일암(向日庵)이라 불리며, 매년 새해 일출 명소로 수만 명이 찾습니다.',
+    visit:'서울 센트럴시티 → 여수 버스 약 4시간. 여수시내에서 돌산행 버스 후 택시. 또는 여수엑스포역에서 택시 30분.',
+    mapQuery:'향일암+전남+여수+돌산읍',
+    category:'관음도량', established:'644년 (신라 선덕여왕)'
+  },
+
+  '남해보리암': {
+    name:'남해 보리암', badge:'🌊 3대 관음도량',
+    addr:'경상남도 남해군 상주면 상주리 산1-1',
+    sido:'경남', phone:'055-862-6115',
+    prayers:['관음기도','소원기도','국태민안기도'],
+    prayerColors:['#c4b5fd','#fbbf24','#34d399'],
+    intro:'3대 관음도량 중 하나. 금산 정상 해발 681m에 위치한 절경의 암자. 이성계가 이곳에서 기도 후 조선을 건국했다는 설화가 전해집니다.',
+    story:'고려 말 이성계가 조선 건국을 위해 이곳에서 100일 기도를 드렸으며, 소원이 이루어지자 금산에 비단을 둘렀다는 이야기가 전해집니다. 지금도 국태민안과 소원성취의 기도처로 전국 불자들이 찾습니다.',
+    visit:'서울 센트럴시티 → 남해 버스 약 4시간. 남해터미널에서 상주행 버스 후 금산 등산 30분. 또는 자가용 이용.',
+    mapQuery:'남해+보리암+경남+남해군+금산',
+    category:'관음도량', established:'683년 (신라 신문왕)'
+  },
+
+  '오대산상원사': {
+    name:'오대산 상원사', badge:'📚 문수보살 성지',
+    addr:'강원도 평창군 진부면 동산리 산1',
+    sido:'강원도', phone:'033-332-6666',
+    prayers:['문수기도','지혜기도','합격기도'],
+    prayerColors:['#34d399','#60a5fa','#fbbf24'],
+    intro:'문수보살 성지. 세조가 문수동자를 친견한 영험 설화로 유명합니다. 지혜·합격·학업 성취 기도처로 이름 높으며, 오대산 월정사의 말사입니다.',
+    story:'세조가 피부병을 치료하기 위해 이곳을 방문했을 때 문수동자가 나타나 세조의 등을 밀어주었고, 그 후 병이 나았다는 설화가 전해집니다. 이후 세조는 상원사에 큰 시주를 했다고 합니다.',
+    visit:'서울 동서울터미널 → 진부 버스 약 2시간. 진부터미널에서 월정사행 버스 후 상원사까지 셔틀버스 또는 도보.',
+    mapQuery:'오대산+상원사+강원+평창',
+    category:'문수도량', established:'705년 (신라 성덕왕)'
+  },
+
+  '통도사': {
+    name:'통도사', badge:'☸️ 불보사찰 · 적멸보궁',
+    addr:'경상남도 양산시 하북면 통도사로 108',
+    sido:'경남', phone:'055-382-7182',
+    prayers:['적멸보궁기도','관음기도','미타기도'],
+    prayerColors:['#fbbf24','#c4b5fd','#60a5fa'],
+    intro:'부처님의 진신사리와 가사를 봉안한 불보사찰. 5대 적멸보궁 중 으뜸으로, 불상 없이 금강계단을 향해 예배합니다. 646년 자장율사가 창건한 한국 최대 사찰 중 하나.',
+    story:'자장율사가 당나라에서 부처님의 진신사리와 가사를 가져와 금강계단에 봉안하였습니다. 사찰 이름 통도(通度)는 "승려가 되려면 반드시 이곳을 통해야 한다"는 의미를 담고 있습니다.',
+    visit:'서울 → KTX 양산역 약 2시간 30분. 양산역에서 통도사행 버스. 또는 울산·부산에서 버스 이용.',
+    mapQuery:'통도사+경남+양산+하북면',
+    category:'적멸보궁', established:'646년 (신라 선덕여왕)'
+  },
+
+  '마이산탑사': {
+    name:'마이산 탑사', badge:'🗿 소원성취 명소',
+    addr:'전라북도 진안군 마령면 마이산남로 367',
+    sido:'전북', phone:'063-432-0012',
+    prayers:['소원기도','재물기도','건강기도'],
+    prayerColors:['#f87171','#fbbf24','#34d399'],
+    intro:'108개의 돌탑으로 유명한 소원성취 기도처. 이갑룡 처사가 30년간 혼자 쌓은 돌탑들이 태풍에도 무너지지 않아 신비를 더합니다. 전국적인 소원 기도 명소.',
+    story:'이갑룡 처사가 1885년부터 30여 년간 홀로 돌탑을 쌓았습니다. 접착제 없이 돌만으로 쌓았음에도 강한 바람에도 무너지지 않아 많은 이들이 신령한 힘이 작용한다고 믿습니다.',
+    visit:'서울 센트럴시티 → 진안 버스 약 3시간. 진안터미널에서 마이산행 버스 20분. 주차장에서 탑사까지 도보 20분.',
+    mapQuery:'마이산+탑사+전북+진안',
+    category:'소원성취', established:'1885년'
+  },
+
+  /* ══ 1순위: 3보사찰 + 5대 적멸보궁 ══ */
+
+  '해인사': {
+    name:'해인사', badge:'☸️ 법보사찰 · 팔만대장경',
+    addr:'경상남도 합천군 가야면 해인사길 122',
+    sido:'경남', phone:'055-934-3000',
+    prayers:['적멸보궁기도','법보기도','지혜기도','소원기도'],
+    prayerColors:['#fbbf24','#34d399','#60a5fa','#f87171'],
+    intro:'팔만대장경을 봉안한 법보사찰. 802년 순응·이정 두 스님이 창건하였으며, 가야산 깊은 품속에 자리합니다. 유네스코 세계문화유산으로 등재된 장경판전에 고려 팔만대장경이 보존되어 있습니다.',
+    story:'고려 고종 때 몽골 침입을 부처님의 가호로 물리치고자 16년에 걸쳐 8만여 장의 대장경판을 조성했습니다. 창건 설화에는 순응 스님이 선정에 들었을 때 산신이 나타나 이곳에 절을 지으라 했다고 전해집니다.',
+    visit:'서울 → KTX 대구역 약 1시간 50분. 대구서부터미널에서 해인사행 버스 1시간 20분. 또는 부산 사상터미널에서 버스 1시간 30분.',
+    mapQuery:'해인사+경남+합천군+가야면',
+    category:'법보사찰', established:'802년 (신라 애장왕)'
+  },
+
+  '송광사': {
+    name:'송광사', badge:'☸️ 승보사찰',
+    addr:'전라남도 순천시 송광면 송광사안길 100',
+    sido:'전남', phone:'061-755-0107',
+    prayers:['선기도','참회기도','수행기도','소원기도'],
+    prayerColors:['#34d399','#a78bfa','#60a5fa','#fbbf24'],
+    intro:'한국 불교 승보사찰. 보조국사 지눌 스님이 중창하여 16명의 국사를 배출한 수행의 본고장입니다. 조계산 맑은 물과 숲 속에 자리한 천년 고찰로, 선(禪) 수행의 중심 도량.',
+    story:'보조국사 지눌이 정혜결사 운동을 일으켜 타락한 고려 불교를 개혁했습니다. 이후 16명의 국사가 배출되어 한국 불교 역사상 가장 많은 고승을 낳은 사찰로 기록됩니다.',
+    visit:'서울 센트럴시티 → 순천 버스 약 3시간 30분. 순천터미널에서 송광사행 버스 40분. 또는 순천역에서 택시 30분.',
+    mapQuery:'송광사+전남+순천시+송광면',
+    category:'승보사찰', established:'867년 (신라 경문왕)'
+  },
+
+  '법주사': {
+    name:'법주사', badge:'🏯 미륵도량',
+    addr:'충청북도 보은군 속리산면 법주사로 379',
+    sido:'충북', phone:'043-543-3615',
+    prayers:['미륵기도','소원기도','재물기도','건강기도'],
+    prayerColors:['#60a5fa','#fbbf24','#fb923c','#34d399'],
+    intro:'속리산 자락의 미륵도량. 553년 의신조사가 창건하였으며, 33m 금동미륵대불이 장엄합니다. 세계문화유산 산사(山寺) 7곳 중 하나로 등재된 천년 고찰.',
+    story:'신라 진흥왕 때 의신조사가 서역에서 불경을 백마에 싣고 와 이곳에 절을 세웠다고 전해집니다. 법주(法住)는 "불법이 머무는 곳"이라는 의미로, 통일신라 시대 최대 사찰 중 하나였습니다.',
+    visit:'서울 → 고속버스 보은 약 2시간. 보은터미널에서 법주사행 버스 30분. 또는 자가용 속리산IC 이용.',
+    mapQuery:'법주사+충북+보은군+속리산면',
+    category:'미륵도량', established:'553년 (신라 진흥왕)'
+  },
+
+  '법흥사': {
+    name:'법흥사 적멸보궁', badge:'☸️ 5대 적멸보궁',
+    addr:'강원도 영월군 수주면 법흥리 422',
+    sido:'강원도', phone:'033-374-9177',
+    prayers:['적멸보궁기도','진신사리기도','소원기도'],
+    prayerColors:['#fbbf24','#c4b5fd','#f87171'],
+    intro:'5대 적멸보궁 중 하나. 사자산 깊은 골짜기에 위치한 고요한 기도처. 자장율사가 당나라에서 가져온 부처님 진신사리를 봉안한 곳으로, 비구니 수행 도량으로도 유명합니다.',
+    story:'자장율사가 643년 당나라에서 가져온 부처님 사리를 봉안하기 위해 창건하였습니다. 사자산(獅子山)이라는 이름은 문수보살이 사자를 타고 나타났다는 설화에서 유래합니다.',
+    visit:'서울 동서울터미널 → 영월 버스 약 2시간 30분. 영월터미널에서 택시 30분. 산길이 험하므로 자가용 권장.',
+    mapQuery:'법흥사+강원+영월군+수주면',
+    category:'적멸보궁', established:'643년 (신라 선덕여왕)'
+  },
+
+  '정암사': {
+    name:'정암사 적멸보궁', badge:'☸️ 5대 적멸보궁',
+    addr:'강원도 정선군 고한읍 정암사길 33',
+    sido:'강원도', phone:'033-591-2469',
+    prayers:['적멸보궁기도','진신사리기도','소원기도'],
+    prayerColors:['#fbbf24','#c4b5fd','#f87171'],
+    intro:'태백산 자락 5대 적멸보궁 중 하나. 수마노탑(보물)에 부처님 진신사리를 봉안하고 있습니다. 자장율사가 창건한 깊은 산중 청정 기도처로 고한읍 탄광 지역 불자들의 신앙 중심지.',
+    story:'자장율사가 당나라에서 귀국 후 수마노석(水瑪瑙石)으로 탑을 쌓고 부처님 사리를 봉안하였습니다. 수마노탑은 이후 강원도 유형문화재로 지정되어 보호받고 있습니다.',
+    visit:'서울 청량리역 → 기차 고한역 약 3시간. 고한역에서 택시 10분. 또는 강릉·영월에서 버스 이용.',
+    mapQuery:'정암사+강원+정선군+고한읍',
+    category:'적멸보궁', established:'643년 (신라 선덕여왕)'
+  },
+
+  /* ══ 2순위: 전국 유명 기도처 ══ */
+
+  '수덕사': {
+    name:'수덕사', badge:'🌸 관음기도 · 선찰대본산',
+    addr:'충청남도 예산군 덕산면 수덕사안길 79',
+    sido:'충남', phone:'041-330-7700',
+    prayers:['관음기도','참선수행','소원기도','건강기도'],
+    prayerColors:['#c4b5fd','#34d399','#fbbf24','#4ade80'],
+    intro:'충남 예산 덕숭산의 천년 고찰. 고려시대 건축의 백미로 꼽히는 수덕사 대웅전(국보)이 있습니다. 경허 스님, 만공 스님 등 근대 선맥이 이어진 선찰대본산으로 수행 분위기가 깊습니다.',
+    story:'백제 위덕왕 때 창건된 것으로 전해지며, 근대에는 경허·만공 스님이 수행하며 한국 선불교를 중흥시킨 곳입니다. 나혜석 화가가 말년을 이곳에서 보낸 것으로도 유명합니다.',
+    visit:'서울 센트럴시티 → 예산 버스 약 1시간 40분. 예산터미널에서 덕산행 버스 후 수덕사 하차. 또는 서울 남부터미널에서 덕산 직행.',
+    mapQuery:'수덕사+충남+예산군+덕산면',
+    category:'선찰대본산', established:'599년 (백제 위덕왕)'
+  },
+
+  '월정사': {
+    name:'월정사', badge:'📚 문수성지 · 오대산',
+    addr:'강원도 평창군 진부면 오대산로 374-8',
+    sido:'강원도', phone:'033-339-6800',
+    prayers:['문수기도','지혜기도','합격기도','소원기도'],
+    prayerColors:['#34d399','#60a5fa','#fbbf24','#f87171'],
+    intro:'오대산 문수성지의 중심 사찰. 643년 자장율사가 창건하였으며, 전나무 숲길(약 1km)이 아름답기로 유명합니다. 팔각구층석탑(국보)이 있으며 문수보살 기도처로 이름 높습니다.',
+    story:'자장율사가 오대산에서 문수보살을 친견하고자 기도하던 중 나타난 문수보살의 계시에 따라 창건하였습니다. 오대(五臺)는 동·서·남·북·중대로 각각 다른 불보살이 상주한다고 전해집니다.',
+    visit:'서울 동서울터미널 → 진부 버스 약 2시간. 진부터미널에서 월정사행 버스 20분. 전나무 숲길 산책 후 참배 권장.',
+    mapQuery:'월정사+강원+평창군+진부면',
+    category:'문수성지', established:'643년 (신라 선덕여왕)'
+  },
+
+  '선암사': {
+    name:'선암사', badge:'🌺 태고종 본산',
+    addr:'전라남도 순천시 승주읍 선암사길 450',
+    sido:'전남', phone:'061-754-5247',
+    prayers:['관음기도','소원기도','건강기도','참선수행'],
+    prayerColors:['#c4b5fd','#fbbf24','#34d399','#60a5fa'],
+    intro:'유네스코 세계문화유산 등재 산사. 고즈넉한 분위기와 매화·홍매화로 봄이 아름답기로 유명합니다. 875년 도선국사가 창건한 천년 고찰로 승선교(보물)와 삼층석탑이 유명합니다.',
+    story:'도선국사가 이곳에서 수행 중 선인(仙人)을 만나 절을 지었다는 설화가 전해집니다. 조선 시대 임진왜란에도 소실되지 않은 몇 안 되는 사찰 중 하나로 원형이 잘 보존되어 있습니다.',
+    visit:'서울 센트럴시티 → 순천 버스 약 3시간 30분. 순천터미널에서 선암사행 버스 40분. 봄 매화 시즌(2~3월) 방문 강력 추천.',
+    mapQuery:'선암사+전남+순천시+승주읍',
+    category:'태고종 본산', established:'875년 (신라 헌강왕)'
+  },
+
+  '화엄사': {
+    name:'화엄사', badge:'🌿 화엄성지',
+    addr:'전라남도 구례군 마산면 화엄사로 539',
+    sido:'전남', phone:'061-782-7600',
+    prayers:['화엄기도','관음기도','소원기도','건강기도'],
+    prayerColors:['#34d399','#c4b5fd','#fbbf24','#4ade80'],
+    intro:'지리산 자락의 화엄성지. 544년 연기조사가 창건하였으며, 각황전(국보)과 사사자삼층석탑(국보)이 있습니다. 유네스코 세계문화유산 등재 산사로 화엄종의 근본 도량.',
+    story:'연기조사가 화엄경을 바탕으로 창건하였으며, 의상대사가 중창하여 화엄사상의 중심 도량으로 발전했습니다. 각황전은 단층 불전으로는 국내 최대 규모를 자랑합니다.',
+    visit:'서울 센트럴시티 → 구례 버스 약 3시간. 구례터미널에서 화엄사행 버스 20분. 지리산 노고단 등산과 함께 일정 추천.',
+    mapQuery:'화엄사+전남+구례군+마산면',
+    category:'화엄성지', established:'544년 (백제 성왕)'
+  },
+
+  '마곡사': {
+    name:'마곡사', badge:'🌾 태화산 고찰',
+    addr:'충청남도 공주시 사곡면 마곡사로 966',
+    sido:'충남', phone:'041-841-6220',
+    prayers:['관음기도','소원기도','건강기도','재물기도'],
+    prayerColors:['#c4b5fd','#fbbf24','#34d399','#fb923c'],
+    intro:'유네스코 세계문화유산 등재 산사. 640년 자장율사가 창건한 충남 대표 사찰. 김구 선생이 독립운동 중 승려로 숨어 지낸 곳으로도 유명하며, 5층석탑(보물)과 대웅보전(보물)이 있습니다.',
+    story:'자장율사가 당나라에서 귀국 후 창건하였으며, 무왕 때 그 아들 의각이 중창하였습니다. 춘마곡 추갑사(봄엔 마곡사, 가을엔 갑사)라는 말이 있을 만큼 봄 경치가 아름답습니다.',
+    visit:'서울 센트럴시티 → 공주 버스 약 1시간 30분. 공주터미널에서 마곡사행 버스 40분. 또는 KTX 공주역에서 택시.',
+    mapQuery:'마곡사+충남+공주시+사곡면',
+    category:'조계종 6교구 본사', established:'640년 (신라 선덕여왕)'
+  },
+
+  '직지사': {
+    name:'직지사', badge:'🏔️ 황악산 고찰',
+    addr:'경상북도 김천시 대항면 직지사길 95',
+    sido:'경북', phone:'054-429-1700',
+    prayers:['관음기도','소원기도','건강기도','합격기도'],
+    prayerColors:['#c4b5fd','#fbbf24','#34d399','#60a5fa'],
+    intro:'418년 아도화상이 창건한 영남 제일의 고찰. 황악산 맑은 계곡과 울창한 숲이 아름다우며, 임진왜란 때 의승군의 근거지였습니다. 사명대사가 출가한 사찰로도 유명합니다.',
+    story:'아도화상이 손가락으로 황악산을 가리키며 "저 산 아래에 큰 절을 지으리라"하여 직지사(直指寺)라 이름 지었다는 설화가 있습니다. 사명대사가 이곳에서 출가하여 임진왜란 때 의병을 이끌었습니다.',
+    visit:'서울 → KTX 김천구미역 약 1시간 30분. 김천역에서 직지사행 버스 30분. 또는 고속버스 김천터미널에서 버스.',
+    mapQuery:'직지사+경북+김천시+대항면',
+    category:'조계종 8교구 본사', established:'418년 (신라 눌지왕)'
+  },
+
+  /* ══ 3순위: 수도권 ══ */
+
+  '조계사': {
+    name:'조계사', badge:'🏛️ 한국불교 총본산',
+    addr:'서울특별시 종로구 우정국로 55',
+    sido:'서울', phone:'02-768-8600',
+    prayers:['관음기도','소원기도','연등기도','천도재'],
+    prayerColors:['#c4b5fd','#fbbf24','#f472b6','#60a5fa'],
+    intro:'대한불교 조계종 총본산. 1395년 조선 초 창건된 서울 도심 사찰로, 연등축제와 부처님오신날 행사의 중심지. 천년수 백송(천연기념물)이 경내에 있으며, 외국인 참배객이 가장 많이 찾는 사찰.',
+    story:'일제강점기인 1910년 지금의 자리에 각황사로 창건되었다가 1938년 조계사로 개칭했습니다. 해방 이후 불교정화운동의 중심지가 되었으며, 현재 전국 조계종 사찰을 총괄하는 본산입니다.',
+    visit:'지하철 3호선 안국역 6번 출구 도보 5분. 또는 1·3·5호선 종로3가역 5번 출구 도보 10분. 주차 어려우므로 대중교통 이용 권장.',
+    mapQuery:'조계사+서울+종로구+우정국로',
+    category:'조계종 총본산', established:'1395년'
+  },
+
+  '봉은사': {
+    name:'봉은사', badge:'🌆 강남 천년 고찰',
+    addr:'서울특별시 강남구 봉은사로 531',
+    sido:'서울', phone:'02-3218-4800',
+    prayers:['관음기도','소원기도','재물기도','건강기도'],
+    prayerColors:['#c4b5fd','#fbbf24','#fb923c','#34d399'],
+    intro:'강남 코엑스 옆 도심 속 천년 사찰. 794년 연회국사가 창건하였으며, 23m 미륵대불이 도시와 어우러진 독특한 경관을 자랑합니다. 직장인과 외국인 불자들이 많이 찾는 현대적 사찰.',
+    story:'조선 성종의 능인 선릉의 원찰로 지정되어 왕실의 지원을 받았습니다. 임진왜란으로 소실 후 중창되었으며, 조선 명종 때 보우대사가 이곳에서 불교 중흥 운동을 펼쳤습니다.',
+    visit:'지하철 9호선 봉은사역 1번 출구 도보 5분. 또는 2호선 삼성역 6번 출구 도보 10분. COEX 방문과 연계 가능.',
+    mapQuery:'봉은사+서울+강남구+봉은사로',
+    category:'조계종 직할교구', established:'794년 (신라 원성왕)'
+  },
+
+  '삼막사': {
+    name:'삼막사', badge:'🌙 관악산 관음도량',
+    addr:'경기도 안양시 만안구 삼막로 478',
+    sido:'경기', phone:'031-441-4444',
+    prayers:['관음기도','소원기도','합격기도','건강기도'],
+    prayerColors:['#c4b5fd','#fbbf24','#60a5fa','#34d399'],
+    intro:'관악산 중턱의 신라 고찰. 677년 원효·의상·윤필 세 스님이 함께 창건하여 삼막사(三幕寺)라 이름 지었습니다. 마애삼존불(경기도 유형문화재)과 삼층석탑이 있으며 수도권 등산객이 즐겨 찾는 기도처.',
+    story:'원효·의상·윤필 세 대사가 이곳에서 초막(草幕)을 치고 수행하였다는 데서 삼막사라는 이름이 유래합니다. 관음보살 기도처로 특히 합격·취업 기도로 유명합니다.',
+    visit:'지하철 4호선 안양역 또는 1호선 석수역에서 버스. 관악산 등산로 이용 도보 약 1시간 30분. 케이블카 없음, 등산 필수.',
+    mapQuery:'삼막사+경기+안양시+만안구',
+    category:'관음도량', established:'677년 (신라 문무왕)'
+  },
+
+  '흥국사': {
+    name:'흥국사', badge:'🌿 북한산 고찰',
+    addr:'경기도 고양시 덕양구 흥국사길 46',
+    sido:'경기', phone:'031-964-5800',
+    prayers:['관음기도','소원기도','건강기도','재물기도'],
+    prayerColors:['#c4b5fd','#fbbf24','#34d399','#fb923c'],
+    intro:'북한산 자락 고양시의 천년 사찰. 고려 시대 창건된 관음기도처로, 수도권 북부 불자들의 참배지. 조용한 분위기와 북한산 경관이 어우러져 도심에서 가까운 힐링 기도처로 인기.',
+    story:'고려 시대 창건 이후 조선 시대 여러 차례 중창되었으며, 의승군이 활동한 역사적 사찰입니다. 나라가 흥하길 기원한다는 뜻의 흥국사(興國寺) 이름처럼 호국불교의 전통을 이어오고 있습니다.',
+    visit:'지하철 3호선 원당역 또는 화정역에서 버스. 자가용 자유로 통일로 IC 이용. 북한산 등산과 함께 일정 추천.',
+    mapQuery:'흥국사+경기+고양시+덕양구',
+    category:'관음도량', established:'고려 시대'
+  }
+};
+
+/* ── URL 파라미터에서 사찰 키 추출 ── */
+function getParam(key){
+  var p=new URLSearchParams(window.location.search);
+  return p.get(key)||'';
+}
+
+function normalizeKey(s){
+  return s.replace(/\s/g,'').replace(/[·\-_]/g,'').toLowerCase();
+}
+
+function findTemple(query){
+  if(!query) return null;
+  var nq=normalizeKey(query);
+
+  // 1순위: 큐레이션 DB (스토리·상세 정보 있는 영험 사찰)
+  for(var k in TEMPLE_DB){
+    if(normalizeKey(k)===nq || normalizeKey(TEMPLE_DB[k].name)===nq) return TEMPLE_DB[k];
+  }
+  for(var k in TEMPLE_DB){
+    if(normalizeKey(k).includes(nq) || nq.includes(normalizeKey(k))) return TEMPLE_DB[k];
+  }
+
+  // 2순위: 전체 17,497개 DB
+  if(typeof TEMPLE_DETAIL_DB !== 'undefined'){
+    // 정확 일치
+    var found = TEMPLE_DETAIL_DB.find(function(t){ return normalizeKey(t.n)===nq; });
+    // 부분 일치
+    if(!found) found = TEMPLE_DETAIL_DB.find(function(t){ return normalizeKey(t.n).includes(nq) || nq.includes(normalizeKey(t.n)); });
+    if(found){
+      // 전체 DB 포맷 → 큐레이션 포맷으로 변환
+      var pColors=['#c4b5fd','#34d399','#fbbf24','#f472b6','#60a5fa','#fb923c'];
+      var sidoFull={
+        '서울':'서울특별시','경기':'경기도','인천':'인천광역시',
+        '강원':'강원도','충북':'충청북도','충남':'충청남도',
+        '대전':'대전광역시','세종':'세종특별자치시',
+        '경북':'경상북도','경남':'경상남도','대구':'대구광역시',
+        '울산':'울산광역시','부산':'부산광역시',
+        '전북':'전라북도','전남':'전라남도','광주':'광주광역시','제주':'제주특별자치도'
+      };
+      var sidoLong = sidoFull[found.s] || found.s || '';
+      var prayers = found.p || [];
+      var prayerDescs = {
+        '재물운':'재물·사업 기도처로','건강운':'건강·치유 기도처로','소원성취':'소원성취 기도처로',
+        '합격기도':'학업·합격 기도처로','관음기도':'관음 신앙의','인연기도':'인연·결혼 기도처로',
+        '선기도':'참선 수행 도량으로','지혜기도':'지혜를 구하는 기도처로',
+        '천도재':'천도재·추모 기도처로'
+      };
+      // 자동 소개 생성
+      var intro = found.n + (found.n.slice(-1)==='사'||found.n.slice(-1)==='암'?'은':'은') + ' ';
+      intro += (found.g ? sidoLong+' '+found.g : sidoLong) + '에 자리한';
+      if(found.se) intro += ' ' + found.se + ' 소속';
+      intro += ' 사찰입니다.';
+      if(found.fy) intro += ' ' + found.fy + '년에 창건된 유서 깊은 도량으로,';
+      if(prayers.length>0){
+        var pdesc = prayerDescs[prayers[0]] || (prayers[0]+' 기도처로');
+        intro += ' ' + pdesc + ' 널리 알려져 있으며,';
+      }
+      intro += ' 지역 불자들의 신앙 생활의 중심이 되고 있습니다.';
+      if(found.h && found.h.length>10) intro += '\n\n' + found.h;
+
+      return {
+        name: found.n,
+        badge: '🏯 ' + (found.se||'사찰'),
+        addr: found.a || (found.s+' '+found.g),
+        sido: sidoLong || found.s,
+        prayers: prayers,
+        prayerColors: pColors,
+        intro: intro,
+        mapQuery: found.n+' '+(found.a||found.s+' '+found.g),
+        category: found.se || '사찰',
+        established: found.fy ? found.fy+'년' : '',
+        lat: found.la,
+        lng: found.lo,
+        _raw: found
+      };
+    }
+  }
+  return null;
+}
+
+/* ── 렌더링 ── */
+function render(){
+  var q = getParam('name') || getParam('temple') || getParam('q');
+  var t = findTemple(q);
+
+  if(!t){
+    // 모든 콘텐츠 카드 숨기기
+    ['td-intro-card','td-prayer-card','td-story-card','td-visit-card','td-nearby-card'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.style.display='none';
+    });
+    document.querySelectorAll('.td-card').forEach(function(c){ c.style.display='none'; });
+
+    if(!q){
+      // 파라미터 없음 → 인라인 검색창 표시
+      document.getElementById('td-badge').textContent = '🏯 전국 사찰 검색';
+      document.getElementById('td-title').textContent = '사찰을 검색하세요';
+      document.getElementById('td-addr').textContent = '사찰 이름을 입력하면 바로 상세 정보를 확인할 수 있습니다';
+      document.getElementById('td-map-row').innerHTML =
+        '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:420px;margin:0 auto">'+
+        '<input id="td-search-input" type="text" placeholder="사찰 이름 입력 (예: 해인사)" autocomplete="off" '+
+        'style="flex:1;min-width:200px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:14px 18px;font-size:16px;color:#f1f5f9;outline:none">'+
+        '<button type="button" onclick="goSearch()" style="background:rgba(251,191,36,0.2);border:1px solid rgba(251,191,36,0.4);color:#FBBF24;font-size:16px;font-weight:700;padding:14px 24px;border-radius:12px;cursor:pointer">검색</button>'+
+        '</div>';
+      document.getElementById('td-search-input').addEventListener('keydown', function(e){ if(e.key==='Enter') goSearch(); });
+    } else {
+      // 사찰 못 찾음
+      document.getElementById('td-badge').textContent = '🔍 검색 결과 없음';
+      document.getElementById('td-title').textContent = '"'+q+'"';
+      document.getElementById('td-addr').textContent = '일치하는 사찰 정보를 찾을 수 없습니다';
+      var gUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q+' 사찰');
+      document.getElementById('td-map-row').innerHTML=
+        '<a class="td-map-btn" style="background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.35);color:#7ba7f5" href="'+gUrl+'" target="_blank">📍 구글 지도에서 검색</a>'+
+        '<a class="td-map-btn" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.35);color:#a78bfa" href="page-temple-search.html">🏯 전체 사찰 검색</a>';
+    }
+    return;
+  }
+
+  // 기본 카드 표시 (story/visit/nearby는 데이터 있을 때만)
+  ['td-intro-card','td-prayer-card'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.style.display='';
+  });
+  document.querySelectorAll('.td-card:not(#td-story-card):not(#td-visit-card):not(#td-nearby-card)').forEach(function(c){ c.style.display=''; });
+
+  // 메타
+  document.title = t.name + ' | 잼공인연사찰';
+  document.getElementById('page-desc').content = t.name + ' — ' + (t.intro||'').slice(0,80);
+
+  // 히어로
+  document.getElementById('td-badge').textContent = t.badge || '🏯 기도도량';
+  document.getElementById('td-title').textContent = t.name;
+  document.getElementById('td-addr').textContent = '📍 ' + (t.addr||'');
+
+  // 태그
+  var tagsEl=document.getElementById('td-tags');
+  var tagColors=['#c4b5fd','#34d399','#fbbf24','#f472b6','#60a5fa'];
+  (t.prayers||[]).forEach(function(p,i){
+    var span=document.createElement('span');
+    span.className='td-tag';
+    var c=t.prayerColors&&t.prayerColors[i]?t.prayerColors[i]:tagColors[i%tagColors.length];
+    span.style.cssText='background:'+c.replace(')',',0.12)').replace('rgb','rgba')+';border:1px solid '+c.replace(')',',0.35)').replace('rgb','rgba')+';color:'+c;
+    span.textContent=p;
+    tagsEl.appendChild(span);
+  });
+
+  // 지도 버튼
+  var gUrl=(t.lat&&t.lng)
+    ?'https://www.google.com/maps/search/?api=1&query='+t.lat+','+t.lng
+    :'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(t.mapQuery||t.name);
+  var nUrl=(t.lng&&t.lat)
+    ?'https://map.naver.com/p/entry/coords/'+t.lng+','+t.lat+'?c=15.00,0,0,0,dh'
+    :'https://map.naver.com/v5/search/'+encodeURIComponent(t.name+' '+(t.sido||''));
+  document.getElementById('td-map-row').innerHTML=
+    '<a class="td-map-btn" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80" href="'+nUrl+'" target="_blank">🗺️ 네이버 지도</a>'+
+    '<a class="td-map-btn" style="background:rgba(66,133,244,0.1);border:1px solid rgba(66,133,244,0.3);color:#7ba7f5" href="'+gUrl+'" target="_blank">📍 구글 지도</a>';
+
+  // 소개
+  document.getElementById('td-intro').textContent = t.intro||'';
+
+  // 기본 정보
+  var infoItems=[
+    {label:'소재지', value:t.sido||'-'},
+    {label:'창건', value:t.established||'-'},
+    {label:'분류', value:t.category||'-'},
+    {label:'전화', value:t.phone||'-'}
+  ];
+  var infoHtml='';
+  infoItems.forEach(function(item){
+    infoHtml+='<div class="td-info-item"><div class="td-info-label">'+item.label+'</div><div class="td-info-value">'+item.value+'</div></div>';
+  });
+  document.getElementById('td-info-grid').innerHTML=infoHtml;
+
+  // 기도 유형
+  var prayerHtml='';
+  (t.prayers||[]).forEach(function(p,i){
+    var c=t.prayerColors&&t.prayerColors[i]?t.prayerColors[i]:'#FBBF24';
+    prayerHtml+='<span class="td-prayer-badge" style="color:'+c+';background:'+c.replace(')',',0.1)').replace('rgb','rgba')+';border-color:'+c.replace(')',',0.3)').replace('rgb','rgba')+'">'+p+'</span>';
+  });
+  document.getElementById('td-prayer-grid').innerHTML=prayerHtml;
+
+  // 영험 이야기
+  if(t.story){
+    document.getElementById('td-story').textContent=t.story;
+    document.getElementById('td-story-card').style.display='';
+  }
+
+  // 방문 정보
+  if(t.visit){
+    document.getElementById('td-visit').textContent=t.visit;
+    document.getElementById('td-visit-card').style.display='';
+  }
+
+  // 지도 임베드 — lat/lng 있으면 OpenStreetMap, 없으면 링크
+  var mapEl = document.getElementById('td-map-embed');
+  if(t.lat && t.lng && t.lat !== 0){
+    var osmUrl = 'https://www.openstreetmap.org/export/embed.html?bbox='
+      +(t.lng-0.01)+'%2C'+(t.lat-0.01)+'%2C'+(t.lng+0.01)+'%2C'+(t.lat+0.01)
+      +'&layer=mapnik&marker='+t.lat+'%2C'+t.lng;
+    mapEl.innerHTML='<iframe loading="lazy" src="'+osmUrl+'" style="width:100%;height:100%;border:none;border-radius:16px"></iframe>';
+  } else {
+    mapEl.innerHTML=
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:14px">'+
+      '<div style="font-size:36px">🗺️</div>'+
+      '<div style="font-size:13px;color:#64748b">지도를 보려면 아래 버튼을 클릭하세요</div>'+
+      '<a href="'+gUrl+'" target="_blank" style="background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.35);color:#7ba7f5;font-size:13px;font-weight:700;padding:10px 22px;border-radius:12px;text-decoration:none">📍 구글 지도에서 보기</a>'+
+      '</div>';
+  }
+
+  // 주변 사찰 (lat/lng 있을 때, 비동기)
+  if(t.lat && t.lng && t.lat !== 0 && typeof TEMPLE_DETAIL_DB !== 'undefined'){
+    setTimeout(function(){
+      var nearby = findNearby(t.lat, t.lng, t.name, 6);
+      if(nearby.length > 0){
+        var nearbyCard = document.getElementById('td-nearby-card');
+        var nearbyGrid = document.getElementById('td-nearby-grid');
+        nearbyCard.style.display = '';
+        var html = '';
+        nearby.forEach(function(item){
+          var nt = item.t;
+          var dist = item.dist < 1 ? Math.round(item.dist*1000)+'m' : item.dist.toFixed(1)+'km';
+          var tags = (nt.p||[]).slice(0,2).map(function(p){
+            return '<span class="td-nearby-tag">'+escHtml(p)+'</span>';
+          }).join('');
+          var detailUrl = 'page-temple-detail.html?name='+encodeURIComponent(nt.n);
+          html += '<a class="td-nearby-card" href="'+detailUrl+'">';
+          html += '<div class="td-nearby-dist">'+dist+'</div>';
+          html += '<div class="td-nearby-name">'+escHtml(nt.n)+'</div>';
+          html += '<div class="td-nearby-addr">'+escHtml(nt.a||(nt.s+' '+nt.g))+'</div>';
+          if(tags) html += '<div class="td-nearby-tags">'+tags+'</div>';
+          html += '</a>';
+        });
+        nearbyGrid.innerHTML = html;
+      }
+    }, 100);
+  }
+}
+
+function findNearby(lat, lng, excludeName, maxCount){
+  var R = 6371;
+  var results = [];
+  var latRad = lat * Math.PI / 180;
+  for(var i=0; i<TEMPLE_DETAIL_DB.length; i++){
+    var nt = TEMPLE_DETAIL_DB[i];
+    if(!nt.la || !nt.lo || nt.la===0 || nt.n===excludeName) continue;
+    var dlat = (nt.la - lat) * Math.PI / 180;
+    var dlng = (nt.lo - lng) * Math.PI / 180;
+    var a = Math.sin(dlat/2)*Math.sin(dlat/2) + Math.cos(latRad)*Math.cos(nt.la*Math.PI/180)*Math.sin(dlng/2)*Math.sin(dlng/2);
+    var dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    if(dist < 5) results.push({t:nt, dist:dist});
+  }
+  results.sort(function(a,b){return a.dist-b.dist});
+  return results.slice(0, maxCount||6);
+}
+
+function goSearch(){
+  var v = (document.getElementById('td-search-input')||{}).value||'';
+  if(v.trim()) location.href = 'page-temple-detail.html?name='+encodeURIComponent(v.trim());
+}
+
+function escHtml(s){
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+render();
+</script>
+</body>
+</html>
