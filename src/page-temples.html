@@ -347,7 +347,7 @@ async function doTemples(){
     results.slice(0,12).forEach(function(item){
       var t=item.temple||{};
       var naverUrl=(t.lng&&t.lat)
-        ?'https://map.naver.com/p/entry/coords/'+t.lng+','+t.lat+'?c=15.00,0,0,0,dh'
+        ?'https://map.naver.com/p/entry/coords/'+t.lng+','+t.lat
         :'https://map.naver.com/v5/search/'+encodeURIComponent((t.name||'')+' '+(t.address||''));
       var googleUrl=(t.lat&&t.lng)
         ?'https://www.google.com/maps/search/?api=1&query='+t.lat+','+t.lng

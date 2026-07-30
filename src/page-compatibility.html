@@ -396,7 +396,7 @@ async function doCouple(){
         var tName=t.name||item.name||'';
         var tAddr=t.address||item.address||t.sido||'';
         var naverUrl=(t.lng&&t.lat)
-          ?'https://map.naver.com/p/entry/coords/'+t.lng+','+t.lat+'?c=15.00,0,0,0,dh'
+          ?'https://map.naver.com/p/entry/coords/'+t.lng+','+t.lat
           :'https://map.naver.com/v5/search/'+encodeURIComponent(tName+' '+tAddr);
         var googleUrl=(t.lat&&t.lng)
           ?'https://www.google.com/maps/search/?api=1&query='+t.lat+','+t.lng

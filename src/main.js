@@ -7948,7 +7948,7 @@ function renderTempleDetailPage(result, parentData, memberUnlocked, onBack) {
         ? historyFull.slice(0, 120) + '… <span style="color:rgba(255,255,255,0.35);font-size:12px;">🔒 전체보기는 멤버 전용</span>'
         : historyFull || '정보 없음');
   const mapUrl = (t.lng && t.lat)
-    ? 'https://map.naver.com/p/entry/coords/' + t.lng + ',' + t.lat + '?c=15.00,0,0,0,dh'
+    ? 'https://map.naver.com/p/entry/coords/' + t.lng + ',' + t.lat
     : 'https://map.naver.com/v5/search/' + encodeURIComponent((t.name || '') + ' ' + (t.address || ''));
   const distText = d.distanceKm != null
     ? (d.distanceKm < 1 ? Math.round(d.distanceKm * 1000) + 'm' : d.distanceKm.toFixed(1) + 'km')
