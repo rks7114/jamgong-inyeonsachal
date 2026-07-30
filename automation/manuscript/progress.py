@@ -5,7 +5,7 @@ progress.py — 30장 원고 집필 진척 트래커 (Step 1 심화)
 
 역할:
   - ebook/chapters/*.md 를 스캔해 장별 집필 상태·분량을 집계.
-  - 목표 분량(장당 3,000~4,000자) 대비 미달/과다 장을 표시.
+  - 목표 분량(장당 2,500~3,800자, 공백·마크다운 제외 실질 본문) 대비 미달/과다 장을 표시.
   - CTA 삽입 여부를 함께 점검(락인 퍼널 누락 방지).
   - 다음에 집필할 장을 자동 추천 → 자율 집필 루프의 입력으로 사용.
 
@@ -29,8 +29,8 @@ CHAPTERS_DIR = ROOT / "ebook" / "chapters"
 TOC = ROOT / "ebook" / "00-목차.md"
 
 TOTAL_CHAPTERS = 30
-TARGET_MIN = 3000
-TARGET_MAX = 4000
+TARGET_MIN = 2500
+TARGET_MAX = 3800
 
 CTA_MARKER = "<!-- CTA:AUTO-INSERT-START -->"
 
