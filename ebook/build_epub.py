@@ -235,20 +235,32 @@ _CHIP_ROWS = [  # 5x5 관계행렬 모티프 (행마다 한 칸씩 회전하는 
 
 
 def cover_svg() -> str:
+    """
+    표지 레이아웃 (1200x1800, 2:3)
+      상단  제호 블록      300 ~  940
+      중단  5x5 관계행렬    990 ~ 1542
+      하단  서지 블록      1620 ~ 1754   ← 저자·발행을 좌측 축에 세로로 묶음
+    모든 요소가 x=150 좌측 축을 공유한다.
+    """
     W, H = 1200, 1800
+    MARGIN = 150
+
+    # 5x5 칩 — 정사각 격자를 하나의 오브제로 좌측 정렬
+    size, gap, gx0, gy0 = 100, 13, MARGIN, 990
     chips = []
-    cx, cy, size, gap = 150, 1180, 148, 18
     for r, row in enumerate(_CHIP_ROWS):
         for c, (col, op) in enumerate(row):
-            x = cx + c * (size + gap)
-            y = cy + r * (size + gap)
+            x = gx0 + c * (size + gap)
+            y = gy0 + r * (size + gap)
             chips.append(f'<rect x="{x}" y="{y}" width="{size}" height="{size}" '
-                         f'rx="6" fill="{col}" opacity="{op:.2f}"/>')
+                         f'rx="5" fill="{col}" opacity="{op:.2f}"/>')
+    grid_bottom = gy0 + 4 * (size + gap) + size
+
     grid = []
-    for gx in range(0, W + 1, 60):
-        grid.append(f'<line x1="{gx}" y1="0" x2="{gx}" y2="{H}"/>')
-    for gy in range(0, H + 1, 60):
-        grid.append(f'<line x1="0" y1="{gy}" x2="{W}" y2="{gy}"/>')
+    for x in range(0, W + 1, 60):
+        grid.append(f'<line x1="{x}" y1="0" x2="{x}" y2="{H}"/>')
+    for y in range(0, H + 1, 60):
+        grid.append(f'<line x1="0" y1="{y}" x2="{W}" y2="{y}"/>')
 
     return f"""<?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">
@@ -261,19 +273,26 @@ def cover_svg() -> str:
   <rect width="{W}" height="{H}" fill="#0E1518"/>
   <g stroke="#EDEDEA" stroke-opacity=".05" stroke-width="1">{''.join(grid)}</g>
   <rect width="{W}" height="{H}" fill="url(#ember)"/>
-  <text x="150" y="300" fill="{_EMBER}" font-size="34" letter-spacing="10"
+
+  <text x="{MARGIN}" y="300" fill="{_EMBER}" font-size="34" letter-spacing="10"
         font-family="sans-serif">JAMGONG INYEONSACHAL</text>
-  <text x="150" y="520" fill="{_EMBER}" font-size="132" font-weight="bold"
+  <text x="{MARGIN}" y="520" fill="{_EMBER}" font-size="132" font-weight="bold"
         font-family="sans-serif">부적을 태우고</text>
-  <text x="150" y="680" fill="{_MOK}" font-size="132" font-weight="bold"
+  <text x="{MARGIN}" y="680" fill="{_MOK}" font-size="132" font-weight="bold"
         font-family="sans-serif">데이터를 켜다</text>
-  <line x1="150" y1="780" x2="1050" y2="780" stroke="#2A383E" stroke-width="2"/>
-  <text x="150" y="860" fill="#94A3A9" font-size="44" font-family="sans-serif">사주 오행으로 찾는 나의 인연 도량</text>
-  <text x="150" y="940" fill="#6B7B82" font-size="34" font-family="sans-serif">생년월일시 오행 분석 · 전국 사찰 매칭</text>
+  <line x1="{MARGIN}" y1="780" x2="{W-MARGIN}" y2="780" stroke="#2A383E" stroke-width="2"/>
+  <text x="{MARGIN}" y="862" fill="#94A3A9" font-size="44"
+        font-family="sans-serif">사주 오행으로 찾는 나의 인연 도량</text>
+  <text x="{MARGIN}" y="932" fill="#6B7B82" font-size="34"
+        font-family="sans-serif">생년월일시 오행 분석 · 전국 사찰 매칭</text>
+
   {''.join(chips)}
-  <text x="150" y="1720" fill="#EDEDEA" font-size="46" font-weight="bold"
+
+  <line x1="{MARGIN}" y1="{grid_bottom + 78}" x2="{MARGIN + 300}" y2="{grid_bottom + 78}"
+        stroke="{_EMBER}" stroke-width="3"/>
+  <text x="{MARGIN}" y="{grid_bottom + 152}" fill="#EDEDEA" font-size="52" font-weight="bold"
         font-family="sans-serif">{AUTHOR}</text>
-  <text x="1050" y="1720" fill="#6B7B82" font-size="34" text-anchor="end"
+  <text x="{MARGIN}" y="{grid_bottom + 212}" fill="#7C8B92" font-size="34" letter-spacing="3"
         font-family="sans-serif">{PUBLISHER}</text>
 </svg>"""
 
