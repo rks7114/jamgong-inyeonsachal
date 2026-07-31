@@ -44,15 +44,12 @@
 .sj-dy-age{font-size:10px;color:#64748b}
 .sj-dy-year{font-size:10px;color:#475569}
 
-/* 삼재 */
-.sj-samjae{background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.2);border-radius:14px;padding:18px}
-.sj-samjae-ok{background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.2)}
 </style>
 
 <div class="sj">
   <div class="sj-badge">사주팔자</div>
   <h1 class="sj-title">🔮 <em>사주팔자</em> 분석</h1>
-  <p class="sj-sub">생년월일시를 입력하면 사주 팔자(四柱八字)·오행·대운·삼재를 분석합니다.</p>
+  <p class="sj-sub">생년월일시를 입력하면 사주 팔자(四柱八字)·오행·대운·용신을 분석합니다.</p>
 
   <!-- 신비 메인 배너 -->
   <div style="background:linear-gradient(135deg,rgba(15,8,40,0.97),rgba(30,15,60,0.92));border:1px solid rgba(251,191,36,0.25);border-radius:24px;padding:40px 32px;margin-bottom:20px;position:relative;overflow:hidden">
@@ -66,7 +63,7 @@
       <div style="font-size:14px;color:#94a3b8;line-height:2;margin-bottom:28px;max-width:620px">
         사주팔자란 태어난 <strong style="color:#e2e8f0">연·월·일·시</strong>의 네 기둥(四柱)에 담긴 여덟 글자(八字)입니다.<br>
         수천 년 동양 철학의 정수 <strong style="color:#c4b5fd">만세력 200년 데이터</strong>와 최신 <strong style="color:#FBBF24">AI 분석 엔진</strong>이<br>
-        결합하여 오행의 균형, 대운의 흐름, 삼재의 위협까지 단 한 번에 해석합니다.
+        결합하여 오행의 균형, 대운의 흐름, 용신의 좌표까지 단 한 번에 해석합니다.
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:10px">
         <span style="background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#FBBF24">📅 만세력 200년</span>
@@ -90,8 +87,8 @@
         <div style="font-size:13px;color:#94a3b8;line-height:1.8">10년마다 찾아오는 대운(大運)은 인생의 큰 흐름을 좌우합니다. 현재 어느 대운에 있는지, 언제 전환점이 오는지를 정확히 알고 준비하세요.</div>
       </div>
       <div>
-        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🔥 삼재(三災) 주의</div>
-        <div style="font-size:13px;color:#94a3b8;line-height:1.8">3년간 찾아오는 삼재는 재물·건강·인간관계에 장애가 생기는 시기입니다. 삼재 여부를 확인하고 사찰 기도로 미리 대비하세요.</div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🧭 용신(用神) 좌표</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">여덟 글자 전체와 지장간·월령까지 계산해 지금 나에게 가장 필요한 기운을 찾습니다. 인연사찰 매칭이 실제로 쓰는 기준이 이 값입니다.</div>
       </div>
     </div>
   </div>
@@ -114,9 +111,9 @@
       <div style="font-size:11px;color:#64748b;line-height:1.5">10년 단위<br>운세 흐름</div>
     </div>
     <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:14px;padding:16px;text-align:center">
-      <div style="font-size:24px;margin-bottom:8px">🔥</div>
-      <div style="font-size:12px;font-weight:800;color:#f8fafc;margin-bottom:4px">삼재 확인</div>
-      <div style="font-size:11px;color:#64748b;line-height:1.5">올해 삼재<br>즉시 판단</div>
+      <div style="font-size:24px;margin-bottom:8px">🧭</div>
+      <div style="font-size:12px;font-weight:800;color:#f8fafc;margin-bottom:4px">용신 판정</div>
+      <div style="font-size:11px;color:#64748b;line-height:1.5">여덟 글자<br>전체 계산</div>
     </div>
     <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:14px;padding:16px;text-align:center">
       <div style="font-size:24px;margin-bottom:8px">🏯</div>
@@ -277,28 +274,6 @@ async function doSaju(){
       html+='</div>';
     }
 
-    /* ─── 4. 삼재 ─── */
-    var sj=data.samjae;
-    if(sj&&sj.groups){
-      var curYear=new Date().getFullYear();
-      var inSamjae=sj.groups.some(function(g){return g.some(function(y2){return y2.year===curYear;});});
-      html+='<div class="sj-sec">⚠️ 삼재 (三災)</div>';
-      html+='<div class="sj-samjae'+(inSamjae?'':' sj-samjae-ok')+'">';
-      if(inSamjae){
-        html+='<div style="font-size:14px;font-weight:800;color:#f87171;margin-bottom:8px">⚠️ 현재 삼재 기간</div>';
-      } else {
-        html+='<div style="font-size:14px;font-weight:800;color:#34d399;margin-bottom:8px">✅ 현재 삼재 아님</div>';
-      }
-      html+='<div style="font-size:12px;color:#94a3b8;line-height:1.8">';
-      html+='출생 띠 그룹: <strong style="color:#f8fafc">'+sj.animalsKo+'띠</strong><br>';
-      sj.groups.slice(0,2).forEach(function(g){
-        if(!g.length)return;
-        var years=g.map(function(x){return x.year+'('+x.zhiKo+'년)';}).join(' · ');
-        var isCur=g.some(function(x){return x.year===curYear;});
-        html+='삼재 기간: <span style="color:'+(isCur?'#f87171':'#64748b')+'">'+years+'</span><br>';
-      });
-      html+='</div></div>';
-    }
 
     if(!html)html='<div class="sj-err">결과를 불러오지 못했습니다.</div>';
     res.innerHTML=html;

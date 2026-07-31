@@ -37,7 +37,7 @@ const OH_DESC = {
 };
 
 /** 템플릿 기반 사주 풀이 생성 (API 불필요) */
-function generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInput }) {
+function generateTemplateExplanation({ ec, dist, weakOh, daYun, birthInput }) {
   const currentYear = new Date().getFullYear();
   const gender = birthInput?.gender === "female" ? "여성" : "남성";
   const ilgan = ec.day?.[0] ?? "";
@@ -50,13 +50,6 @@ function generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInp
   const currentDaYun = daYun?.list?.find(d => d.isCurrent);
   const nextDaYun    = daYun?.list?.find(d => d.startYear > (currentDaYun?.startYear || 0));
   const currentLiuNian = currentDaYun?.liuNian?.find(ln => ln.year === currentYear);
-
-  const isSamjae = samjae?.groups?.some(g => g.some(y => Math.abs(y.year - currentYear) <= 1));
-  const nowGrp   = isSamjae ? (samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear) <= 1)) || []) : [];
-  // 삼재 단계: 그룹을 연도 오름차순 정렬 후 currentYear 인덱스로 판정 (배열 순서 의존 버그 제거)
-  const sortedGrp = [...nowGrp].sort((a, b) => a.year - b.year);
-  const samjaeIdx = sortedGrp.findIndex(y => y.year === currentYear);
-  const samjaeStep = samjaeIdx === 0 ? "들삼재(시작)" : samjaeIdx === 1 ? "눌삼재(중반)" : samjaeIdx === 2 ? "날삼재(마무리)" : "";
 
   const pastDayuns = (daYun?.list || []).filter(dy => !dy.isCurrent && dy.startYear < currentYear && dy.startAge >= 20);
 
@@ -108,13 +101,6 @@ function generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInp
     text += `올해의 세운 정보가 확인되지 않습니다. 현재 대운의 흐름에 맞춰 안정을 중시하고, 새로운 도전보다는 기존 관계와 사업을 내실 있게 다지는 해로 삼으세요.\n\n`;
   }
 
-  // 5. 삼재 (해당 시)
-  if (isSamjae && nowY) {
-    text += `**삼재(三災) 주의사항**\n`;
-    text += `현재 ${samjaeStep} 기간입니다. 삼재 기간에는 무리한 확장, 큰 이동, 새로운 사업 시작을 자제하고 기존의 것을 안전하게 지키는 전략이 최선입니다. `;
-    text += `사찰 참배와 기도를 통해 삼재의 기운을 다스리고 마음의 평정을 유지하세요.\n\n`;
-  }
-
   // 6. 인연사찰 안내
   text += `**인연사찰과 기운 보완**\n`;
   if (weakInfo) {
@@ -149,7 +135,7 @@ module.exports = async function handler(req, res) {
     const ec     = body.ec     || body.eightChar   || {};
     const dist   = body.dist   || body.distribution || {};
     const weakOh = body.weakOh || body.weak?.부족오행  || body.weak?.weakest || "";
-    const { daYun, samjae, birthInput } = body;
+    const { daYun, birthInput } = body;
     let explanation = "";
     if (process.env.ANTHROPIC_API_KEY) {
       try {
@@ -166,7 +152,7 @@ module.exports = async function handler(req, res) {
         console.error("AI 풀이 실패, 템플릿으로 대체:", aiErr.message);
       }
     }
-    explanation = generateTemplateExplanation({ ec, dist, weakOh, daYun, samjae, birthInput });
+    explanation = generateTemplateExplanation({ ec, dist, weakOh, daYun, birthInput });
     return res.status(200).json({ success: true, explanation, source: "template" });
   } catch(err) {
     console.error("saju-explain 오류:", err);

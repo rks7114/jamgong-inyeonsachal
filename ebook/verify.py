@@ -304,6 +304,50 @@ def check_service_promises() -> None:
                if re.search(r"소원[^\n]{0,20}반드시 이루어진", t)]
     check("결과 약속 문구 없음", not promise, str(promise))
 
+    # ⑥ 삼재를 서비스가 판정·표시·권유하지 않는다
+    #    신살은 여덟 글자 중 생년 지지 하나만 쓰는 룩업이라 계산에 넣지 않기로 했다.
+    #    지명(성삼재)·사찰 설화·'쓰지 말라'는 지시문·사전의 정직한 주석만 허용한다.
+    allow = ("성삼재", "서산대사", "쓰지 마세요", "사용하지 않는다",
+             "다루지 않습니다", "다루지 않는")
+    intrude = []
+    for p in sorted((ROOT / "src").glob("*.*")) + sorted((ROOT / "api").glob("*.js")):
+        if p.suffix not in (".js", ".html", ".css"):
+            continue
+        for seg in p.read_text(encoding="utf-8").splitlines():
+            if not re.search(r"삼재|samjae", seg, re.I):
+                continue
+            if not any(a in seg for a in allow):
+                intrude.append(f"{p.name}: {seg.strip()[:70]}")
+    check("삼재 미취급 유지", not intrude, f"{len(intrude)}건 {intrude[:2]}")
+
+    # ⑦ 손 없는 날을 '점수 근거'로 주장하지 않는다 (제20장 1·2절이 반례로 쓴 관행)
+    basis = []
+    for p in sorted((ROOT / "src").glob("*.*")):
+        if p.suffix not in (".js", ".html"):
+            continue
+        t = p.read_text(encoding="utf-8")
+        for m in re.finditer(r"[^\n]{0,80}손 없는 날[^\n]{0,80}", t):
+            seg = m.group(0)
+            if re.search(r"(기반|계산에 반영|근거로 (?!쓰지|삼지))", seg) or "잡귀" in seg:
+                basis.append(f"{p.name}: {seg.strip()[:70]}")
+    check("손 없는 날 근거 주장 없음", not basis, str(basis[:2]))
+
+    # ⑧ '편차 감쇠'는 명세서의 Δ(요소 간 최대−최소)를 가리킨다.
+    #    과잉을 누르는 g(x)=Kx/(K+x)에 같은 이름을 다시 붙이지 않는다.
+    misname = []
+    for rel in ("ebook/chapters/19-제19장.md", "funnel/matcher.py",
+                "src/matching-engine.js"):
+        p = ROOT / rel
+        if not p.exists():
+            continue
+        for seg in p.read_text(encoding="utf-8").splitlines():
+            if "편차 감쇠" not in seg:
+                continue
+            if re.search(r"(기준값|K\s*=\s*40|g\(x\)|## 2\.)", seg) and not re.search(
+                    r"(다른 장치|가 아니다|아니다\.)", seg):
+                misname.append(f"{p.name}: {seg.strip()[:70]}")
+    check("편차 감쇠 명칭 혼동 없음", not misname, str(misname[:2]))
+
     # ⑤ 외부로 나가는 홍보 문구도 같은 잣대로
     tpl = ROOT / "automation" / "threads" / "templates" / "post_templates.json"
     if tpl.exists():

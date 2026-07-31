@@ -447,13 +447,6 @@ body {
 .liunian-item.liunian-current .liunian-gz { color:#ffc832; text-shadow:0 0 8px rgba(255,200,50,0.5); }
 .liunian-age { font-size:11px; color:rgba(255,255,255,0.45); }
 
-/* 삼재 */
-.samjae-info { display:flex; gap:16px; flex-wrap:wrap; font-size:13px; margin-bottom:12px; color:rgba(255,255,255,0.7); }
-.samjae-info strong { color:#fff; }
-.samjae-group { background:rgba(255,255,255,0.03); border-radius:10px; padding:10px 12px; margin-bottom:8px; font-size:13px; color:rgba(255,255,255,0.7); position:relative; }
-.samjae-group.samjae-active { background:rgba(255,80,80,0.12); border:1px solid rgba(255,100,100,0.3); }
-.samjae-now-badge { display:inline-block; background:#e53935; color:#fff; font-size:10px; font-weight:700; border-radius:4px; padding:2px 6px; margin-right:8px; }
-.samjae-year-item { margin-right:4px; }
 
 /* 남/여 성별 토글 */
 .birth-top-row { display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }

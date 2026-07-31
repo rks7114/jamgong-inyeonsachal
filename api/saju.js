@@ -1,4 +1,4 @@
-// api/saju.js — 사주 팔자 + 대운 + 삼재 조회
+// api/saju.js — 사주 팔자 + 대운 조회
 // 음양력 변환: 한국천문연구원(KASI) 공식 API 사용
 
 const KASI_KEY = "66bb0a1efed77224a45a1776addae85dc5f2814918052d59e9de44c0fcbb1651";
@@ -71,19 +71,6 @@ try {
   console.error("[saju] matching-engine load error:", loadErr.message);
   // 로드 오류를 전역에 기록, 핸들러에서 체크
 }
-
-// 삼재(三災) 계산 — 띠별 삼재 해(年)
-// 삼재는 12지지 중 4그룹, 각 그룹마다 3년 삼재
-const SAMJAE_MAP = {
-  // 인오술(寅午戌)생 → 申酉戌년
-  인: ["신", "유", "술"], 오: ["신", "유", "술"], 술: ["신", "유", "술"],
-  // 사유축(巳酉丑)생 → 亥子丑년
-  사: ["해", "자", "축"], 유: ["해", "자", "축"], 축: ["해", "자", "축"],
-  // 신자진(申子辰)생 → 寅卯辰년
-  신: ["인", "묘", "진"], 자: ["인", "묘", "진"], 진: ["인", "묘", "진"],
-  // 해묘미(亥卯未)생 → 巳午未년
-  해: ["사", "오", "미"], 묘: ["사", "오", "미"], 미: ["사", "오", "미"],
-};
 
 // 12지지 한국어 → 중국어 변환 및 역방향
 const ZHI_KO = ["자","축","인","묘","진","사","오","미","신","유","술","해"];
@@ -201,64 +188,12 @@ module.exports = async function handler(req, res) {
       console.error("사주 계산 오류:", e.message);
     }
 
-    // 삼재 계산
-    let samjae = null;
-    try {
-      // 출생 년도의 지지(地支) 추출 — 년주 지지 사용
-      const yearZhiCn = eightChar?.year ? eightChar.year[1] : null;
-      if (yearZhiCn) {
-        const yearZhiKo = zhiCnToKo(yearZhiCn);
-        const samjaeZhiList = SAMJAE_MAP[yearZhiKo];
-        if (samjaeZhiList) {
-          const currentYear = new Date().getFullYear();
-          const samjaeYears = [];
-          // 현재 및 ±12년 범위에서 삼재 해 찾기 (-6: 직전 삼재 사이클 전체 포착)
-          for (let y = currentYear - 6; y <= currentYear + 14; y++) {
-            const yZhi = getCurrentYearZhi(y);
-            if (samjaeZhiList.includes(yZhi)) {
-              samjaeYears.push({ year: y, zhi: zhiKoToCn(yZhi), zhiKo: yZhi });
-            }
-          }
-          // 연속 3년 묶음으로 그룹화
-          const groups = [];
-          for (let i = 0; i < samjaeYears.length; i += 3) {
-            groups.push(samjaeYears.slice(i, i + 3));
-          }
-          // 지지 → 띠 이름 매핑
-          const ZHI_ANIMAL = {
-            자:'쥐', 축:'소', 인:'호랑이', 묘:'토끼', 진:'용', 사:'뱀',
-            오:'말', 미:'양', 신:'원숭이', 유:'닭', 술:'개', 해:'돼지'
-          };
-          // 같은 삼재 그룹의 띠 이름 (e.g. 인오술 → 호랑이·말·개)
-          const BIRTH_GROUP = {
-            인:['인','오','술'], 오:['인','오','술'], 술:['인','오','술'],
-            사:['사','유','축'], 유:['사','유','축'], 축:['사','유','축'],
-            신:['신','자','진'], 자:['신','자','진'], 진:['신','자','진'],
-            해:['해','묘','미'], 묘:['해','묘','미'], 미:['해','묘','미'],
-          };
-          const groupMembers = BIRTH_GROUP[yearZhiKo] || [];
-          const animalsKo = groupMembers.map(z => ZHI_ANIMAL[z] || z).join('·');
-
-          samjae = {
-            birthZhi: yearZhiCn,
-            birthZhiKo: yearZhiKo,
-            animalsKo,
-            samjaeTarget: samjaeZhiList.map(zhiKoToCn).join("·"),
-            groups,
-          };
-        }
-      }
-    } catch (e) {
-      console.error("삼재 계산 오류:", e.message);
-    }
-
     return res.status(200).json({
       success: true,
       distribution,
       weak,
       eightChar,
       daYun,
-      samjae,
       notice: "절기(節氣) 기준 만세력 데이터 연동 · 진태양시 보정 포함",
     });
 

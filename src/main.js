@@ -6324,7 +6324,6 @@ function render() {
                   daYun: sajuData.daYun
                     ? { ...sajuData.daYun, list: sajuData.daYun.list?.filter(d => d.isCurrent || (d.startAge >= 30)) }
                     : null,
-                  samjae: sajuData.samjae,
                   birthInput,
                 }),
               }),
@@ -7468,7 +7467,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
     distribution: data.distribution,
     weak: data.weak,
     daYun: data.daYun,
-    samjae: data.samjae,
     birthInput,
     temples: matchData?.results?.slice(0,3).map(r => ({ name: r.temple?.name, address: r.temple?.address })) || [],
   };
@@ -7620,42 +7618,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       </div>
     </details>` : '';
 
-  // ── 삼재 상세 안내 접힌 블록 ──────────────────────────────────────────
-  const samjaeDetailHtml = data.samjae ? `
-    <details class="samjae-section">
-      <summary style="cursor:pointer;padding:14px 18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:14px;font-size:14px;font-weight:700;color:rgba(255,200,200,0.8);list-style:none;display:flex;justify-content:space-between;align-items:center;">
-        <span>📅 삼재(三災) 표기 — ${data.samjae?.animalsKo || ''}띠 해당 · 추천 계산에는 쓰지 않습니다</span>
-        <span style="font-size:11px;color:rgba(255,255,255,0.3);">클릭해서 보기 ▼</span>
-      </summary>
-      <div class="saju-dist-section" style="margin-top:4px;border-radius:0 0 14px 14px;">
-        <div style="padding:8px 2px;">
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center;">
-          <span class="samjae-target">삼재 해: <strong>${data.samjae.samjaeTarget}</strong>년</span>
-        </div>
-        ${data.samjae.groups.map((grp)=>{
-          const now=new Date().getFullYear();
-          const isNow=grp.some(y=>y.year===now||y.year===now-1||y.year===now+1);
-          return `<div class="samjae-group ${isNow?'samjae-active':''}">
-            ${isNow?'<span class="samjae-now-badge">현재 삼재</span>':''}
-            ${grp.map((y,i)=>`<span class="samjae-year-item">${y.year}년(${y.zhiKo}·${i===0?'들삼재':i===1?'눌삼재':'날삼재'})</span>`).join(' → ')}
-          </div>`;
-        }).join('')}
-      </div>
-    </details>` : '';
-
-  // AI 풀이 텍스트 → HTML 변환 (마크다운 처리)
-  const explanationBodyHtml = explanation
-    ? explanation
-        .replace(/^#{1,3}\s+(.+)$/gm, '<h3 class="saju-explain-h3">$1</h3>')   // # ## ### 제목
-        .replace(/^---+$/gm, '<hr style="border:none;border-top:1px solid rgba(0,210,255,0.15);margin:12px 0;">')  // 구분선
-        .replace(/\*\*(.+?)\*\*/g, '<strong class="saju-explain-heading">$1</strong>')  // **굵게**
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br>')
-        .replace(/^/, '<p>').replace(/$/, '</p>')
-        .replace(/<p>\s*(<h3|<hr)/g, '$1')   // h3/hr 앞 빈 p 제거
-        .replace(/(<\/h3>|<hr[^>]*>)\s*<\/p>/g, '$1')  // h3/hr 뒤 빈 p 제거
-    : '';
-
   const explanationHtml = `
     <div class="saju-explain-card">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
@@ -7673,32 +7635,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
           </div>
         </div>`}</div>
     </div>`;
-
-  // 삼재 해당자에게만 경고 카드 표시
-  const currentYear2 = new Date().getFullYear();
-  const isSamjaeNow = data.samjae?.groups?.some(g => g.some(y => Math.abs(y.year - currentYear2) <= 1));
-  const samjaeAlertHtml = isSamjaeNow ? (() => {
-    const nowGrp = data.samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear2) <= 1)) || [];
-    const nowY = nowGrp.find(y => Math.abs(y.year - currentYear2) <= 1);
-    const step = nowY?.year < currentYear2 ? "들삼재 마무리 단계" : nowY?.year === currentYear2 ? "눌삼재(삼재 중반)" : "날삼재(삼재 마무리)";
-    // 겁주지 않는다. 삼재는 널리 쓰이는 표기라 함께 보여주되,
-    // 경고색·경고 아이콘을 쓰지 않고 계산에 넣지 않는다는 사실을 함께 밝힌다.
-    // 이름에 '살(殺)'이 붙는 순간 중립적 판단이 어려워진다 — 책 제12장 5절.
-    return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:14px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;">
-      <span style="font-size:20px;opacity:.7;">📅</span>
-      <div>
-        <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.9);margin-bottom:4px;">삼재(三災) 표기</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;">
-          ${nowGrp.map((y,i)=>`<span>${y.year}년(${['들삼재','눌삼재','날삼재'][i]})</span>`).join(' → ')}<br>
-          현재 <strong style="color:rgba(255,255,255,0.9);">${step}</strong>에 해당합니다.
-        </div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;margin-top:8px;">
-          널리 쓰이는 표기라 함께 적어 둡니다. <strong style="color:rgba(255,255,255,0.72);">다만 저희는 이 값을 사찰 추천 계산에 넣지 않습니다.</strong>
-          근거를 설명할 수 있는 것만 계산에 쓴다는 원칙 때문입니다. 나쁜 일이 예정되어 있다는 뜻이 아닙니다.
-        </div>
-      </div>
-    </div>`;
-  })() : '';
 
   const _isPremium = isMember();
   const _premiumZone = _isPremium
@@ -7741,7 +7677,6 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
       <button class="home-btn" id="saju-go-home">🏠 처음으로</button>
     </div>
     <div class="saju-page-wrap">
-      <div id="saju-noprint-top">${samjaeAlertHtml}</div>
       ${explanationHtml}
       ${_premiumZone}
     </div>`;
@@ -9954,7 +9889,7 @@ function renderTaegilPage() {
   if (existing) { existing.style.display = ''; return; }
 
   var TAEGIL_TYPES = [
-    { icon: '🏠', label: '이사', desc: '손 없는 날 · 오행 방위' },
+    { icon: '🏠', label: '이사', desc: '일진 오행 · 방위' },
     { icon: '💍', label: '결혼', desc: '사주 합 · 봄/가을 길일' },
     { icon: '🏪', label: '개업', desc: '재성(財星) 강한 날' },
     { icon: '✈️', label: '여행', desc: '안전한 출발일 선택' },
@@ -9976,7 +9911,7 @@ function renderTaegilPage() {
     + '<div style="text-align:center;padding:8px 0 18px;">'
     + '<div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:2.5px;color:#ffd060;background:rgba(200,140,0,0.15);border:1px solid rgba(255,200,60,0.4);border-radius:20px;padding:5px 16px;margin-bottom:16px;">✦ 잼공오라클 택일(擇日) ✦</div>'
     + '<div style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#ffe08a,#ffd060,#ffb300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.4;margin-bottom:10px;">인생의 중요한 날,<br>좋은 날을 골라드립니다</div>'
-    + '<div style="font-size:13px;color:rgba(255,210,100,0.5);line-height:1.8;max-width:360px;margin:0 auto;">사주팔자·음양오행·손 없는 날 기반<br>잼공오라클 AI 택일 서비스 (특허 출원 중)</div>'
+    + '<div style="font-size:13px;color:rgba(255,210,100,0.5);line-height:1.8;max-width:360px;margin:0 auto;">일진 오행과 용신의 관계로 계산<br>잼공오라클 AI 택일 서비스 (특허 출원 중)</div>'
     + '</div>'
     // 채팅 영역
     + '<div id="taegil-chat" style="background:rgba(15,10,0,0.75);border:1px solid rgba(255,180,0,0.22);border-radius:22px;padding:18px 16px;min-height:340px;max-height:70vh;overflow-y:auto;box-shadow:0 4px 28px rgba(200,140,0,0.12);">'
@@ -10317,7 +10252,9 @@ function renderTaegilPage() {
         + '[날짜] YYYY년 MM월 DD일 (요일) [점수] 88 [이유] 이유 한 줄 [태그] 길일\n'
         + '(3~5개 날짜 이 형식으로)\n\n'
         + '[근거] 일진 오행과 용신의 관계를 기준으로 2줄 이내 핵심 근거\n'
-        + '손 없는 날·삼재 같은 관행은 근거로 쓰지 마세요. 날짜를 놓치면 안 된다는 식으로 재촉하지도 마세요.\n\n'
+        + '점수 근거는 일진 오행과 용신의 관계만 쓰세요. 손 없는 날 같은 전승 관행은 점수 근거가 아니며,\n'
+        + '언급하더라도 \'전통에서는 이렇게 봅니다\' 수준의 참고로만 적으세요. 신살(삼재 등)은 쓰지 마세요.\n'
+        + '날짜를 놓치면 안 된다는 식으로 재촉하지 마세요.\n\n'
         + '점수는 60~100 사이 숫자로 표시. 사주 분석 문단은 쓰지 마세요.';
 
 
