@@ -304,6 +304,20 @@ def check_service_promises() -> None:
                if re.search(r"소원[^\n]{0,20}반드시 이루어진", t)]
     check("결과 약속 문구 없음", not promise, str(promise))
 
+    # ⑤ 외부로 나가는 홍보 문구도 같은 잣대로
+    tpl = ROOT / "automation" / "threads" / "templates" / "post_templates.json"
+    if tpl.exists():
+        t = tpl.read_text(encoding="utf-8")
+        bad = []
+        if "쓸모 있는지를 학습" in t:
+            bad.append("학습하지 않는 것을 학습한다고 적음")
+        if re.search(r"산세[^\n]{0,20}(맞았|맞기|때문)", t):
+            bad.append("아직 계산에 안 들어가는 산세를 근거로 제시")
+        for w in ("액운", "놓치면", "서두르", "반드시 이루"):
+            if w in t:
+                bad.append(f"공포·희소성 문구 '{w}'")
+        check("홍보 문구 과장·공포 없음", not bad, str(bad))
+
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="원고 자동 검사")
