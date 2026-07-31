@@ -238,15 +238,16 @@ def cover_svg() -> str:
     """
     표지 레이아웃 (1200x1800, 2:3)
       상단  제호 블록      300 ~  940
-      중단  5x5 관계행렬    990 ~ 1542
-      하단  서지 블록      1620 ~ 1754   ← 저자·발행을 좌측 축에 세로로 묶음
+      중단  5x5 관계행렬    962 ~ 1514
+      하단  서지 블록      1590 ~ 1732   ← 저자·발행을 좌측 축에 세로로 묶음
+            구분선 폭(308)을 저자명 폭에 맞춰 블록으로 묶는다
     모든 요소가 x=150 좌측 축을 공유한다.
     """
     W, H = 1200, 1800
     MARGIN = 150
 
     # 5x5 칩 — 정사각 격자를 하나의 오브제로 좌측 정렬
-    size, gap, gx0, gy0 = 100, 13, MARGIN, 990
+    size, gap, gx0, gy0 = 100, 13, MARGIN, 962
     chips = []
     for r, row in enumerate(_CHIP_ROWS):
         for c, (col, op) in enumerate(row):
@@ -288,11 +289,11 @@ def cover_svg() -> str:
 
   {''.join(chips)}
 
-  <line x1="{MARGIN}" y1="{grid_bottom + 78}" x2="{MARGIN + 300}" y2="{grid_bottom + 78}"
+  <line x1="{MARGIN}" y1="{grid_bottom + 76}" x2="{MARGIN + 308}" y2="{grid_bottom + 76}"
         stroke="{_EMBER}" stroke-width="3"/>
-  <text x="{MARGIN}" y="{grid_bottom + 152}" fill="#EDEDEA" font-size="52" font-weight="bold"
+  <text x="{MARGIN}" y="{grid_bottom + 154}" fill="#EDEDEA" font-size="56" font-weight="bold"
         font-family="sans-serif">{AUTHOR}</text>
-  <text x="{MARGIN}" y="{grid_bottom + 212}" fill="#7C8B92" font-size="34" letter-spacing="3"
+  <text x="{MARGIN}" y="{grid_bottom + 218}" fill="#7C8B92" font-size="30"
         font-family="sans-serif">{PUBLISHER}</text>
 </svg>"""
 
