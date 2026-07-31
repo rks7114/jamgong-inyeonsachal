@@ -95,7 +95,7 @@ def render(out: Path, long_edge: int) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description="표지 SVG를 PNG로 렌더링합니다.")
     ap.add_argument("-o", "--out", type=Path,
-                    default=Path(__file__).resolve().parents[1] / "dist" / "cover.png")
+                    default=Path(__file__).resolve().parent / "dist" / "cover.png")
     ap.add_argument("--long-edge", type=int, default=2560,
                     help="긴 변(세로) 픽셀. 기본 2560")
     args = ap.parse_args()

@@ -29,8 +29,8 @@
 - 전 장 CTA 삽입 완료 · 28~30장은 잼공몰 큐레이션 직결
 
 ```bash
-python ebook/build_epub.py     # → dist/부적을태우고데이터를켜다.epub
-python ebook/render_cover.py   # → dist/cover.png (1707×2560, 판매 등록용)
+python ebook/build_epub.py     # → ebook/dist/부적을태우고데이터를켜다.epub
+python ebook/render_cover.py   # → ebook/dist/cover.png (1707×2560, 판매 등록용)
 ```
 
 외부 의존성(pandoc·calibre) 없이 표준 라이브러리만으로 EPUB 3을 생성합니다.

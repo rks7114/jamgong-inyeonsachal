@@ -9,8 +9,8 @@ build_epub.py — 마크다운 원고 → EPUB 3 변환기 (표준 라이브러�
   코드펜스(```) · 수평선(---) · 링크 · HTML 주석(CTA 마커, 제거)
 
 사용법:
-  python ebook/build_epub.py                    # dist/*.epub 생성
-  python ebook/build_epub.py --out dist/book.epub
+  python ebook/build_epub.py                    # ebook/dist/*.epub 생성
+  python ebook/build_epub.py --out ebook/dist/book.epub
 """
 from __future__ import annotations
 
@@ -408,7 +408,7 @@ img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="마크다운 원고 → EPUB 3 변환")
-    ap.add_argument("--out", default=str(ROOT / "dist" / "부적을태우고데이터를켜다.epub"))
+    ap.add_argument("--out", default=str(ROOT / "ebook" / "dist" / "부적을태우고데이터를켜다.epub"))
     args = ap.parse_args()
     build(Path(args.out))
 

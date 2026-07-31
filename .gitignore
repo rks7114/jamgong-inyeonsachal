@@ -15,4 +15,4 @@ venv/
 
 # OS
 .DS_Store
-dist/
+ebook/dist/
