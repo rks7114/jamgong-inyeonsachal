@@ -1,0 +1,269 @@
+// api/saju.js — 사주 팔자 + 대운 + 삼재 조회
+// 음양력 변환: 한국천문연구원(KASI) 공식 API 사용
+
+const KASI_KEY = "66bb0a1efed77224a45a1776addae85dc5f2814918052d59e9de44c0fcbb1651";
+const KASI_BASE = "https://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService";
+
+// 음력 → 양력 변환 (KASI 공식 API)
+async function lunarToSolar(year, month, day, isLeap = false) {
+  try {
+    const params = new URLSearchParams({
+      serviceKey: KASI_KEY,
+      lunYear: String(year),
+      lunMonth: String(month).padStart(2, "0"),
+      lunDay: String(day).padStart(2, "0"),
+      lunLeapmonth: isLeap ? "윤" : "",
+      _type: "json"
+    });
+    const url = `${KASI_BASE}/getSolCalInfo?${params}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const item = data?.response?.body?.items?.item;
+    if (!item) throw new Error("KASI 응답 없음");
+    return {
+      year: parseInt(item.solYear),
+      month: parseInt(item.solMonth),
+      day: parseInt(item.solDay),
+    };
+  } catch (e) {
+    console.warn("[KASI] lunarToSolar 실패, lunar-javascript 폴백:", e.message);
+    return null;
+  }
+}
+
+// 양력 → 음력 변환 (KASI 공식 API)
+async function solarToLunar(year, month, day) {
+  try {
+    const params = new URLSearchParams({
+      serviceKey: KASI_KEY,
+      solYear: String(year),
+      solMonth: String(month).padStart(2, "0"),
+      solDay: String(day).padStart(2, "0"),
+      _type: "json"
+    });
+    const url = `${KASI_BASE}/getLunCalInfo?${params}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const item = data?.response?.body?.items?.item;
+    if (!item) throw new Error("KASI 응답 없음");
+    return {
+      year: parseInt(item.lunYear),
+      month: parseInt(item.lunMonth),
+      day: parseInt(item.lunDay),
+      isLeap: item.lunLeapmonth === "윤",
+      ganji: item.lunIljin || "",       // 일진(간지)
+      monthGanzi: item.lunSecha || "",  // 세차
+    };
+  } catch (e) {
+    console.warn("[KASI] solarToLunar 실패, lunar-javascript 폴백:", e.message);
+    return null;
+  }
+}
+
+let calculateOhaeng, findWeakOhaeng, getEightChar;
+try {
+  const me = require("../src/matching-engine.js");
+  calculateOhaeng = me.calculateOhaeng;
+  findWeakOhaeng  = me.findWeakOhaeng;
+  getEightChar    = me.getEightChar;
+  if (!calculateOhaeng) throw new Error("calculateOhaeng not exported");
+} catch(loadErr) {
+  console.error("[saju] matching-engine load error:", loadErr.message);
+  // 로드 오류를 전역에 기록, 핸들러에서 체크
+}
+
+// 삼재(三災) 계산 — 띠별 삼재 해(年)
+// 삼재는 12지지 중 4그룹, 각 그룹마다 3년 삼재
+const SAMJAE_MAP = {
+  // 인오술(寅午戌)생 → 申酉戌년
+  인: ["신", "유", "술"], 오: ["신", "유", "술"], 술: ["신", "유", "술"],
+  // 사유축(巳酉丑)생 → 亥子丑년
+  사: ["해", "자", "축"], 유: ["해", "자", "축"], 축: ["해", "자", "축"],
+  // 신자진(申子辰)생 → 寅卯辰년
+  신: ["인", "묘", "진"], 자: ["인", "묘", "진"], 진: ["인", "묘", "진"],
+  // 해묘미(亥卯未)생 → 巳午未년
+  해: ["사", "오", "미"], 묘: ["사", "오", "미"], 미: ["사", "오", "미"],
+};
+
+// 12지지 한국어 → 중국어 변환 및 역방향
+const ZHI_KO = ["자","축","인","묘","진","사","오","미","신","유","술","해"];
+const ZHI_CN = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const zhiKoToCn = (ko) => ZHI_CN[ZHI_KO.indexOf(ko)] || ko;
+const zhiCnToKo = (cn) => ZHI_KO[ZHI_CN.indexOf(cn)] || cn;
+
+// 현재 년도의 지지(地支) 계산
+function getCurrentYearZhi(year) {
+  const zhiIdx = (year - 4) % 12;
+  return ZHI_KO[((zhiIdx % 12) + 12) % 12];
+}
+
+module.exports = async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "POST 요청만 허용됩니다." });
+  }
+
+  try {
+    const { birthInput } = req.body;
+    if (!birthInput || !birthInput.year || !birthInput.month || !birthInput.day) {
+      return res.status(400).json({ error: "생년월일 정보가 필요합니다." });
+    }
+
+    const gender = birthInput.gender || "male"; // "male" | "female"
+    const genderNum = gender === "male" ? 1 : 0;
+
+    // ── KASI 음양력 변환 ──────────────────────────────────────
+    // 음력 입력인 경우 KASI 공식 API로 양력 변환 후 계산
+    let resolvedInput = { ...birthInput };
+    if (birthInput.calendar === "lunar") {
+      const solar = await lunarToSolar(
+        birthInput.year, birthInput.month, birthInput.day,
+        birthInput.isLeapMonth || false
+      );
+      if (solar) {
+        resolvedInput = { ...birthInput, year: solar.year, month: solar.month, day: solar.day, calendar: "solar" };
+        console.log(`[KASI] 음력 ${birthInput.year}-${birthInput.month}-${birthInput.day} → 양력 ${solar.year}-${solar.month}-${solar.day}`);
+      }
+      // KASI 실패 시 lunar-javascript 폴백 (resolvedInput 그대로 유지)
+    }
+    // ────────────────────────────────────────────────────────
+
+    // 오행 분포 (지장간 보정 포함)
+    if (typeof calculateOhaeng !== 'function') {
+      return res.status(500).json({ error: "사주 계산 중 오류가 발생했습니다.", detail: "matching-engine load failed: calculateOhaeng is " + typeof calculateOhaeng });
+    }
+    const { distribution, branches } = calculateOhaeng(resolvedInput);
+    const weak = findWeakOhaeng(distribution, branches);
+
+    // 사주 팔자 + 대운
+    let eightChar = null;
+    let daYun = null;
+
+    try {
+      const bazi = getEightChar(resolvedInput);
+
+      eightChar = {
+        year:    bazi.getYear(),    month:   bazi.getMonth(),
+        day:     bazi.getDay(),     time:    bazi.getTime(),
+        yearWx:  bazi.getYearWuXing(),  monthWx: bazi.getMonthWuXing(),
+        dayWx:   bazi.getDayWuXing(),   timeWx:  bazi.getTimeWuXing(),
+      };
+
+      // 대운 계산 (sect 2 = 三命通会 방식)
+      try {
+        const yun = bazi.getYun(genderNum, 2);
+        const isForward = yun.isForward();
+        const dayList = yun.getDaYun(); // index 0 = 소운(유년기), index 1~ = 실제 대운
+
+        const currentYear = new Date().getFullYear();
+        const approxAge = currentYear - birthInput.year;
+
+        // index 1이 첫 번째 실제 대운
+        const firstDy = dayList[1];
+        const startAge = firstDy ? firstDy.getStartAge() : null;
+
+        daYun = {
+          startAge,
+          direction: isForward ? "순행(順行)" : "역행(逆行)",
+          list: dayList.slice(1, 9).map(dy => {
+            const dyStartAge  = dy.getStartAge();
+            const dyEndAge    = dy.getEndAge();
+            const dyStartYear = dy.getStartYear();
+
+            // 세운(流年) 먼저 계산
+            let liuNian = [];
+            try {
+              liuNian = dy.getLiuNian().map(ln => ({
+                year:      ln.getYear(),
+                age:       ln.getAge(),
+                ganZhi:    ln.getGanZhi(),
+                isCurrent: ln.getYear() === currentYear,
+              }));
+            } catch(_) {}
+
+            // 현재 대운 = 이 대운의 세운 중에 올해가 포함되는지
+            const isCurrent = liuNian.some(ln => ln.isCurrent);
+
+            return {
+              startAge: dyStartAge,
+              endAge:   dyEndAge,
+              startYear: dyStartYear,
+              ganZhi:   dy.getGanZhi(),
+              isCurrent,
+              liuNian,
+            };
+          }),
+        };
+      } catch (e) {
+        console.error("대운 계산 오류:", e.message);
+      }
+
+    } catch (e) {
+      console.error("사주 계산 오류:", e.message);
+    }
+
+    // 삼재 계산
+    let samjae = null;
+    try {
+      // 출생 년도의 지지(地支) 추출 — 년주 지지 사용
+      const yearZhiCn = eightChar?.year ? eightChar.year[1] : null;
+      if (yearZhiCn) {
+        const yearZhiKo = zhiCnToKo(yearZhiCn);
+        const samjaeZhiList = SAMJAE_MAP[yearZhiKo];
+        if (samjaeZhiList) {
+          const currentYear = new Date().getFullYear();
+          const samjaeYears = [];
+          // 현재 및 ±12년 범위에서 삼재 해 찾기 (-6: 직전 삼재 사이클 전체 포착)
+          for (let y = currentYear - 6; y <= currentYear + 14; y++) {
+            const yZhi = getCurrentYearZhi(y);
+            if (samjaeZhiList.includes(yZhi)) {
+              samjaeYears.push({ year: y, zhi: zhiKoToCn(yZhi), zhiKo: yZhi });
+            }
+          }
+          // 연속 3년 묶음으로 그룹화
+          const groups = [];
+          for (let i = 0; i < samjaeYears.length; i += 3) {
+            groups.push(samjaeYears.slice(i, i + 3));
+          }
+          // 지지 → 띠 이름 매핑
+          const ZHI_ANIMAL = {
+            자:'쥐', 축:'소', 인:'호랑이', 묘:'토끼', 진:'용', 사:'뱀',
+            오:'말', 미:'양', 신:'원숭이', 유:'닭', 술:'개', 해:'돼지'
+          };
+          // 같은 삼재 그룹의 띠 이름 (e.g. 인오술 → 호랑이·말·개)
+          const BIRTH_GROUP = {
+            인:['인','오','술'], 오:['인','오','술'], 술:['인','오','술'],
+            사:['사','유','축'], 유:['사','유','축'], 축:['사','유','축'],
+            신:['신','자','진'], 자:['신','자','진'], 진:['신','자','진'],
+            해:['해','묘','미'], 묘:['해','묘','미'], 미:['해','묘','미'],
+          };
+          const groupMembers = BIRTH_GROUP[yearZhiKo] || [];
+          const animalsKo = groupMembers.map(z => ZHI_ANIMAL[z] || z).join('·');
+
+          samjae = {
+            birthZhi: yearZhiCn,
+            birthZhiKo: yearZhiKo,
+            animalsKo,
+            samjaeTarget: samjaeZhiList.map(zhiKoToCn).join("·"),
+            groups,
+          };
+        }
+      }
+    } catch (e) {
+      console.error("삼재 계산 오류:", e.message);
+    }
+
+    return res.status(200).json({
+      success: true,
+      distribution,
+      weak,
+      eightChar,
+      daYun,
+      samjae,
+      notice: "절기(節氣) 기준 만세력 데이터 연동 · 진태양시 보정 포함",
+    });
+
+  } catch (err) {
+    console.error("사주 API 오류:", err);
+    return res.status(500).json({ error: "사주 계산 중 오류가 발생했습니다.", detail: err?.message || String(err) });
+  }
+};

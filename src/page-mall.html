@@ -1,0 +1,142 @@
+<style>
+.jm{font-family:'Noto Sans KR',sans-serif;max-width:960px;margin:0 auto;padding:56px 24px 80px;color:#e2e8f0}
+.jm-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.jm-title{font-size:clamp(26px,4vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.jm-title em{color:#FBBF24;font-style:normal}
+.jm-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+
+/* 카테고리 탭 */
+.jm-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.jm-tab{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:99px;padding:8px 18px;font-size:13px;font-weight:700;color:#94a3b8;cursor:pointer;transition:all .2s;font-family:inherit}
+.jm-tab.active,.jm-tab:hover{background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.4);color:#FBBF24}
+
+/* 상품 그리드 */
+.jm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+.jm-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:18px;overflow:hidden;transition:all .25s;cursor:pointer}
+.jm-card:hover{border-color:rgba(251,191,36,0.35);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.3)}
+.jm-card-img{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,rgba(255,255,255,0.04),rgba(251,191,36,0.05))}
+.jm-card-body{padding:16px}
+.jm-card-cat{font-size:10px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:4px}
+.jm-card-name{font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:4px;line-height:1.4}
+.jm-card-desc{font-size:12px;color:#64748b;line-height:1.6;margin-bottom:12px}
+.jm-card-row{display:flex;align-items:center;justify-content:space-between}
+.jm-card-price{font-size:16px;font-weight:900;color:#FBBF24}
+.jm-card-btn{background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;padding:6px 14px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s}
+.jm-card-btn:hover{background:rgba(251,191,36,0.25)}
+
+/* 배너 */
+.jm-banner{background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(168,85,247,0.06));border:1px solid rgba(251,191,36,0.2);border-radius:18px;padding:28px 32px;margin-bottom:32px;display:flex;align-items:center;gap:24px}
+.jm-banner-icon{font-size:48px;flex-shrink:0}
+.jm-banner-text h3{font-size:18px;font-weight:900;color:#f8fafc;margin:0 0 6px}
+.jm-banner-text p{font-size:13px;color:#64748b;margin:0;line-height:1.7}
+
+/* 모달 */
+.jm-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.jm-modal.show{display:flex}
+.jm-modal-box{background:#0f0e13;border:1px solid rgba(251,191,36,0.25);border-radius:20px;max-width:480px;width:100%;padding:32px;position:relative;max-height:90vh;overflow-y:auto}
+.jm-modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;line-height:1}
+.jm-modal-img{font-size:80px;text-align:center;margin-bottom:16px}
+.jm-modal-cat{font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:6px}
+.jm-modal-name{font-size:22px;font-weight:900;color:#f8fafc;margin-bottom:8px}
+.jm-modal-price{font-size:24px;font-weight:900;color:#FBBF24;margin-bottom:14px}
+.jm-modal-desc{font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:20px}
+.jm-modal-buy{display:block;width:100%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:15px;font-weight:900;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;box-sizing:border-box;transition:all .2s}
+.jm-modal-buy:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(251,191,36,0.4)}
+</style>
+
+<div class="jm">
+  <div class="jm-badge">잼공몰</div>
+  <h1 class="jm-title">🛒 <em>잼공몰</em></h1>
+  <p class="jm-sub">인연과 운을 담은 특별한 상품들을 만나보세요. 사주·인연·기도 맞춤 큐레이션 상품 모음.</p>
+
+  <!-- 배너 -->
+  <div class="jm-banner">
+    <div class="jm-banner-icon">🎁</div>
+    <div class="jm-banner-text">
+      <h3>사주 맞춤 추천 상품</h3>
+      <p>오행·용신을 분석해 나에게 딱 맞는 아이템을 추천합니다.<br>부족한 기운을 채우고 좋은 인연을 끌어당기세요.</p>
+    </div>
+  </div>
+
+  <!-- 카테고리 탭 -->
+  <div class="jm-tabs">
+    <button class="jm-tab active" onclick="filterCat('all',this)">전체</button>
+    <button class="jm-tab" onclick="filterCat('부적',this)">🔮 부적·수호</button>
+    <button class="jm-tab" onclick="filterCat('명상',this)">🧘 명상·향</button>
+    <button class="jm-tab" onclick="filterCat('팔찌',this)">📿 팔찌·주얼리</button>
+    <button class="jm-tab" onclick="filterCat('도서',this)">📖 도서·카드</button>
+    <button class="jm-tab" onclick="filterCat('선물',this)">🎀 선물세트</button>
+  </div>
+
+  <!-- 상품 그리드 -->
+  <div class="jm-grid" id="jm-grid"></div>
+</div>
+
+<!-- 상품 모달 -->
+<div class="jm-modal" id="jm-modal" onclick="closeModal(event)">
+  <div class="jm-modal-box" id="jm-modal-box">
+    <button class="jm-modal-close" onclick="closeModal(null)">✕</button>
+    <div class="jm-modal-img" id="md-img"></div>
+    <div class="jm-modal-cat" id="md-cat"></div>
+    <div class="jm-modal-name" id="md-name"></div>
+    <div class="jm-modal-price" id="md-price"></div>
+    <div class="jm-modal-desc" id="md-desc"></div>
+    <a class="jm-modal-buy" id="md-buy" href="#" target="_blank">🛒 구매하기</a>
+  </div>
+</div>
+
+<script>
+var PRODUCTS=[
+  {id:1,cat:'부적',icon:'🔴',name:'인연부적 — 붉은 실 부적',price:'18,000원',desc:'손으로 쓴 전통 인연부적. 붉은 실에 담은 만남의 기운.',detail:'전통 필사 기법으로 제작한 인연 부적입니다. 붉은 실에 담긴 기운이 좋은 인연을 끌어당깁니다.\n\n• 크기: 6×9cm\n• 소재: 한지·붉은 실\n• 보관: 지갑 또는 핸드백 안쪽',link:'https://smartstore.naver.com/'},
+  {id:2,cat:'부적',icon:'🟡',name:'재물운 황금 부적',price:'22,000원',desc:'금색 한지에 담긴 재물·사업 기운 부적.',detail:'금색 한지에 전통 먹으로 제작한 재물 부적입니다.\n\n• 크기: 7×10cm\n• 금색 한지 사용\n• 재물·사업 기운 강화',link:'https://smartstore.naver.com/'},
+  {id:3,cat:'팔찌',icon:'📿',name:'오행 에너지 팔찌 — 목',price:'35,000원',desc:'목(木) 기운 강화. 초록빛 천연석 팔찌.',detail:'오행 중 목(木) 기운이 부족한 분께 추천합니다. 천연 녹색 마노 원석으로 제작.\n\n• 소재: 천연 녹마노\n• 직경: 8mm 구슬\n• 기운: 성장·창의·시작',link:'https://smartstore.naver.com/'},
+  {id:4,cat:'팔찌',icon:'🔴',name:'오행 에너지 팔찌 — 화',price:'35,000원',desc:'화(火) 기운 강화. 붉은 천연석 팔찌.',detail:'오행 중 화(火) 기운이 부족한 분께 추천합니다. 천연 홍마노 원석으로 제작.\n\n• 소재: 천연 홍마노\n• 기운: 열정·명예·활력',link:'https://smartstore.naver.com/'},
+  {id:5,cat:'팔찌',icon:'⚪',name:'오행 에너지 팔찌 — 금',price:'35,000원',desc:'금(金) 기운 강화. 흰빛 천연석 팔찌.',detail:'오행 중 금(金) 기운이 부족한 분께 추천합니다. 천연 백수정 원석으로 제작.\n\n• 소재: 천연 백수정\n• 기운: 결단·재물·집중',link:'https://smartstore.naver.com/'},
+  {id:6,cat:'명상',icon:'🪷',name:'연꽃 천연 향 세트',price:'28,000원',desc:'사찰 향 블렌딩. 마음을 고요히 하는 연꽃 향.',detail:'국내 사찰에서 사용하는 천연 재료로 블렌딩한 향입니다.\n\n• 구성: 향 30개입 + 향꽂이\n• 성분: 천연 백단향·연꽃 오일\n• 연소시간: 개당 약 25분',link:'https://smartstore.naver.com/'},
+  {id:7,cat:'명상',icon:'🕯️',name:'소원 초 — 금빛 108개',price:'32,000원',desc:'108번뇌를 녹이는 금빛 소원 초 세트.',detail:'108배의 의미를 담은 소원 초 세트. 작은 초에 소원을 담아 밝히세요.\n\n• 수량: 108개\n• 색상: 금빛\n• 크기: 지름 1.5cm',link:'https://smartstore.naver.com/'},
+  {id:8,cat:'도서',icon:'📖',name:'사주 입문 — 내 팔자의 비밀',price:'19,800원',desc:'어렵지 않은 사주 입문서. 오행·십신 쉽게 이해하기.',detail:'사주팔자를 처음 접하는 분도 쉽게 읽을 수 있는 입문서입니다.\n\n• 분량: 320페이지\n• 출판사: 잼공출판\n• 내용: 사주·오행·십신·대운',link:'https://smartstore.naver.com/'},
+  {id:9,cat:'도서',icon:'🃏',name:'인연 타로 카드 — 78장',price:'42,000원',desc:'동양 인연철학을 담은 독자적인 타로 덱.',detail:'서양 타로에 동양 인연철학을 결합한 독특한 타로 카드입니다.\n\n• 구성: 78장 + 가이드북\n• 인쇄: 무광 코팅\n• 크기: 7×12cm',link:'https://smartstore.naver.com/'},
+  {id:10,cat:'선물',icon:'🎁',name:'인연 선물세트 — S',price:'65,000원',desc:'부적·팔찌·향이 담긴 인연 기원 선물세트.',detail:'소중한 분께 드리는 인연 기원 선물세트입니다.\n\n• 구성: 인연부적 + 오행팔찌 + 연꽃향\n• 포장: 고급 한지 박스\n• 리본 포장 가능',link:'https://smartstore.naver.com/'},
+  {id:11,cat:'선물',icon:'🎀',name:'행운 선물세트 — L',price:'98,000원',desc:'재물·건강·인연 기운을 담은 프리미엄 선물세트.',detail:'프리미엄 선물을 원하는 분께 추천합니다.\n\n• 구성: 황금부적 + 오행팔찌 + 향세트 + 소원초\n• 고급 목함 포장\n• 메시지 카드 포함',link:'https://smartstore.naver.com/'},
+  {id:12,cat:'명상',icon:'🧘',name:'명상 쿠션 — 둥근 방석',price:'45,000원',desc:'허리를 편안하게 받쳐주는 명상 전용 둥근 방석.',detail:'명상과 기도 시간을 더 깊게 만들어주는 명상 쿠션입니다.\n\n• 지름: 35cm\n• 소재: 천연 메밀껍질 충전\n• 커버: 면 100%',link:'https://smartstore.naver.com/'},
+];
+
+var current='all';
+function filterCat(cat,btn){
+  current=cat;
+  document.querySelectorAll('.jm-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  render();
+}
+function render(){
+  var list=current==='all'?PRODUCTS:PRODUCTS.filter(function(p){return p.cat===current;});
+  var html='';
+  list.forEach(function(p){
+    html+='<div class="jm-card" onclick="openModal('+p.id+')">';
+    html+='<div class="jm-card-img">'+p.icon+'</div>';
+    html+='<div class="jm-card-body">';
+    html+='<div class="jm-card-cat">'+p.cat+'</div>';
+    html+='<div class="jm-card-name">'+p.name+'</div>';
+    html+='<div class="jm-card-desc">'+p.desc+'</div>';
+    html+='<div class="jm-card-row"><span class="jm-card-price">'+p.price+'</span><button class="jm-card-btn">자세히</button></div>';
+    html+='</div></div>';
+  });
+  document.getElementById('jm-grid').innerHTML=html;
+}
+function openModal(id){
+  var p=PRODUCTS.find(function(x){return x.id===id;});
+  if(!p)return;
+  document.getElementById('md-img').textContent=p.icon;
+  document.getElementById('md-cat').textContent=p.cat;
+  document.getElementById('md-name').textContent=p.name;
+  document.getElementById('md-price').textContent=p.price;
+  document.getElementById('md-desc').innerHTML=p.detail.replace(/\n/g,'<br>');
+  document.getElementById('md-buy').href=p.link;
+  document.getElementById('jm-modal').classList.add('show');
+}
+function closeModal(e){
+  if(!e||e.target===document.getElementById('jm-modal'))
+    document.getElementById('jm-modal').classList.remove('show');
+}
+render();
+</script>

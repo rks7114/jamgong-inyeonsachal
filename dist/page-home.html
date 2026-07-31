@@ -1,0 +1,808 @@
+<meta charset="UTF-8">
+<meta name="description" content="전국 17,497곳의 사찰 중 나의 인연 사찰을 AI가 찾아드립니다. 생년월일 기반 사찰 추천, 사주팔자·궁합·꿈해몽 서비스. 잼공인연사찰">
+<meta name="keywords" content="인연사찰,사찰추천,사주팔자,궁합,꿈해몽,택일,기도도량,불교,잼공인연사찰">
+<meta property="og:title" content="잼공인연사찰 - 나의 인연 사찰 찾기">
+<meta property="og:description" content="AI가 생년월일·오행을 분석해 전국 17,497곳 중 나의 인연 사찰을 찾아드립니다.">
+<meta property="og:url" content="https://jamgong.kr/">
+<meta property="og:image" content="https://jamgong.kr/og-image.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"잼공인연사찰","url":"https://jamgong.kr","description":"AI 기반 인연사찰 매칭 서비스. 사주팔자·오행 분석으로 나의 인연 사찰을 찾아드립니다.","publisher":{"@type":"Organization","name":"잼공(JAMGONG)","url":"https://jamgong.com","address":{"@type":"PostalAddress","streetAddress":"공항대로 39길","addressLocality":"강서구","addressRegion":"서울시","addressCountry":"KR"}}}</script>
+<style>
+.hs{font-family:'Noto Sans KR',sans-serif;max-width:1200px;margin:0 auto;padding:60px 24px;color:#e2e8f0}
+.hs-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.hs-title{font-size:clamp(24px,3vw,40px);font-weight:900;color:#f8fafc;margin:0 0 12px;line-height:1.3}
+.hs-title em{color:#FBBF24;font-style:normal}
+.hs-sub{font-size:15px;color:#64748b;line-height:1.8;max-width:580px;margin:0 0 40px}
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-bottom:80px}
+.svc-card{position:relative;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px 22px;transition:all .25s;text-decoration:none;display:block;color:inherit;overflow:hidden}
+.svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--svc-accent,linear-gradient(90deg,#FBBF24,#f59e0b));border-radius:20px 20px 0 0}
+.svc-card::after{content:'';position:absolute;inset:0;background:var(--svc-glow,rgba(251,191,36,0.04));opacity:0;transition:opacity .25s;border-radius:20px;pointer-events:none}
+.svc-card:hover{border-color:var(--svc-border,rgba(251,191,36,0.45));transform:translateY(-5px);box-shadow:0 16px 48px rgba(0,0,0,0.5)}
+.svc-card:hover::after{opacity:1}
+.svc-icon-wrap{width:52px;height:52px;border-radius:14px;background:var(--svc-icon-bg,rgba(251,191,36,0.1));border:1px solid var(--svc-icon-border,rgba(251,191,36,0.2));display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:26px}
+.svc-name{font-size:17px;font-weight:800;color:#f8fafc;margin-bottom:8px}
+.svc-desc{font-size:13px;color:#64748b;line-height:1.7;margin-bottom:14px}
+.svc-tag{font-size:11px;font-weight:700;color:var(--svc-tag-color,#FBBF24);background:var(--svc-tag-bg,rgba(251,191,36,0.1));border:1px solid var(--svc-tag-border,rgba(251,191,36,0.25));border-radius:8px;padding:3px 10px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border-radius:18px;overflow:hidden;margin-bottom:80px}
+.stat-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);padding:28px 16px;text-align:center}
+.stat-num{font-size:34px;font-weight:900;color:#FBBF24;margin-bottom:4px}
+.stat-label{font-size:12px;color:#64748b}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:80px}
+.how-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:24px;position:relative}
+.how-num{font-size:42px;font-weight:900;color:rgba(251,191,36,0.12);position:absolute;top:10px;right:14px;line-height:1}
+.how-icon{font-size:28px;margin-bottom:12px}
+.how-title{font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:8px}
+.how-text{font-size:13px;color:#64748b;line-height:1.7}
+.prev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:36px}
+.prev-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;transition:all .2s}
+.prev-card:hover{background:rgba(255,255,255,0.07);border-color:rgba(251,191,36,0.3);transform:translateY(-2px)}
+.prev-top{display:flex;align-items:center;gap:10px;padding-left:8px;margin-bottom:10px}
+.prev-icon{font-size:20px;flex-shrink:0}
+.prev-name{font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:2px}
+.prev-region{font-size:11px;color:#64748b}
+.prev-type{font-size:11px;color:#a78bfa;font-weight:600;margin-bottom:6px}
+.prev-desc{font-size:12px;color:#94a3b8;line-height:1.6}
+.more-btn{display:inline-block;background:linear-gradient(135deg,rgba(251,191,36,0.15),rgba(168,85,247,0.1));border:1.5px solid rgba(251,191,36,0.4);color:#FBBF24;font-size:14px;font-weight:700;padding:13px 32px;border-radius:50px;text-decoration:none;transition:all .2s}
+.more-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(251,191,36,0.2)}
+.cta-box{text-align:center;padding:60px 20px;background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(168,85,247,0.06));border:1px solid rgba(251,191,36,0.2);border-radius:24px;margin-top:20px}
+.cta-box h3{font-size:28px;font-weight:900;color:#FBBF24;margin:0 0 12px}
+.cta-box p{color:#94a3b8;font-size:15px;margin:0 0 28px}
+.cta-btn{display:inline-block;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:16px;font-weight:900;padding:16px 44px;border-radius:50px;text-decoration:none;transition:all .2s}
+.cta-btn:hover{transform:scale(1.05);box-shadow:0 8px 32px rgba(251,191,36,0.4)}
+.sec{margin-bottom:70px}
+.sec-head{margin-bottom:32px}
+</style>
+<style>
+.hero-wrap{position:relative;width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:visible;margin-bottom:0}
+.hero-bg-img{position:fixed;top:0;left:0;width:100vw;height:100vh;background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Naksansa07.jpg/1280px-Naksansa07.jpg');background-size:cover;background-position:center top;z-index:-2;pointer-events:none}
+.hero-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(to bottom,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0.55) 60%,rgba(0,0,0,0.85) 100%);z-index:-1;pointer-events:none}
+.hero-inner{position:relative;z-index:2;text-align:center;max-width:720px;padding:0 24px;margin-top:-60px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(251,191,36,0.2);border:1.5px solid rgba(251,191,36,0.7);color:#FBBF24;font-size:13px;font-weight:800;letter-spacing:.12em;padding:8px 22px;border-radius:24px;margin-bottom:22px;box-shadow:0 0 18px rgba(251,191,36,0.2);text-shadow:0 1px 6px rgba(0,0,0,0.5)}
+.hero-title{font-size:clamp(36px,6vw,72px);font-weight:900;color:#ffffff;line-height:1.15;margin:0 0 18px;word-break:keep-all;text-shadow:0 2px 20px rgba(0,0,0,0.5)}
+.hero-sub{font-size:16px;color:rgba(255,255,255,0.75);line-height:1.9;margin:0 auto 36px;max-width:500px;word-break:keep-all}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero-btn-main{background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:15px;font-weight:900;padding:16px 38px;border-radius:50px;text-decoration:none;transition:all .2s;box-shadow:0 4px 24px rgba(251,191,36,0.4)}
+.hero-btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(251,191,36,0.55)}
+.hero-btn-sub{background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.35);color:#ffffff;font-size:15px;font-weight:700;padding:16px 38px;border-radius:50px;text-decoration:none;transition:all .2s;backdrop-filter:blur(4px)}
+.hero-btn-sub:hover{background:rgba(255,255,255,0.2);transform:translateY(-2px)}
+.hero-scroll{position:relative;z-index:2;margin-top:48px;display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:.2em}
+.hero-scroll-arrow{width:20px;height:20px;border-right:2px solid rgba(255,255,255,0.3);border-bottom:2px solid rgba(255,255,255,0.3);transform:rotate(45deg);animation:scrolldown 1.6s ease-in-out infinite}
+@keyframes scrolldown{0%,100%{opacity:.3;transform:rotate(45deg) translateY(0)}50%{opacity:.9;transform:rotate(45deg) translateY(5px)}}
+/* 히어로 파티클 */
+#hero-particles{position:absolute;inset:0;z-index:1;pointer-events:none}
+/* 히어로 타이포모션 */
+.hero-typo{display:flex;flex-wrap:wrap;justify-content:center;gap:0;margin:0 auto 10px}
+.hchar{display:inline-block;font-size:clamp(15px,2vw,20px);font-weight:700;color:rgba(251,191,36,0.9);letter-spacing:.02em;text-shadow:0 2px 12px rgba(0,0,0,0.5);opacity:0;transform:translateY(14px);transition:opacity .3s ease,transform .3s ease}
+.hchar.hvis{opacity:1;transform:none}
+/* 히어로 뱃지 fade */
+.hero-badge{opacity:0;animation:heroBadge .7s .1s ease forwards}
+@keyframes heroBadge{to{opacity:1}}
+.hero-title{opacity:0;animation:heroBadge .8s .5s ease forwards}
+.hero-sub{opacity:0;animation:heroBadge .7s 2s ease forwards}
+.hero-btns{opacity:0;animation:heroBadge .6s 2.3s ease forwards}
+.hero-scroll{opacity:0;animation:heroBadge .5s 2.7s ease forwards}
+/* 절기 바 */
+.hero-jukgi{position:relative;z-index:2;width:100%;max-width:900px;margin-top:auto;padding:0 24px 0}
+.hero-jukgi-inner{display:flex;align-items:center;gap:20px;background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 24px;backdrop-filter:blur(8px)}
+.jukgi-icon{width:42px;height:42px;background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.jukgi-badge{font-size:10px;font-weight:800;color:#FBBF24;letter-spacing:.12em;margin-bottom:2px}
+.jukgi-name{font-size:18px;font-weight:900;color:#f8fafc}
+.jukgi-desc{font-size:13px;color:#94a3b8;line-height:1.6;flex:1}
+.jukgi-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;font-size:12px;font-weight:700;padding:9px 18px;border-radius:10px;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all .2s}
+.jukgi-btn:hover{background:rgba(255,255,255,0.14)}
+</style>
+
+<!-- 히어로 섹션 -->
+<div class="hero-wrap" style="min-height:100vh;padding-bottom:32px;gap:0">
+  <div class="hero-bg-img"></div>
+  <div class="hero-overlay"></div>
+  <canvas id="hero-particles"></canvas>
+  <canvas id="hero-lanterns" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none"></canvas>
+  <div class="hero-inner" style="padding-top:120px">
+    <div class="hero-badge">🏯 전국 17,497곳 사찰 데이터 기반</div>
+    <h1 class="hero-title">잼공 인연사찰</h1>
+    <div class="hero-typo" id="hero-typo"></div>
+    <p class="hero-sub">사주 오행과 전통 신앙 요소를 참고해<br>기도 목적에 맞는 인연사찰과 기도도량을 안내합니다</p>
+    <div class="hero-btns">
+      <a class="hero-btn-main" href="/manse" onclick="jamgongTransition(event,'/manse')">🔍 인연사찰 찾기</a>
+      <a class="hero-btn-sub" href="/sacred">🙏 전국 기도도량 보기</a>
+    </div>
+    <div class="hero-scroll" style="margin-top:56px">
+      <span>SCROLL</span>
+      <div class="hero-scroll-arrow"></div>
+    </div>
+  </div>
+  <!-- 절기 바 -->
+  <div class="hero-jukgi" style="margin-top:40px">
+    <div class="hero-jukgi-inner">
+      <div class="jukgi-icon">☀️</div>
+      <div>
+        <div class="jukgi-badge">오늘의 절기 · 여름</div>
+        <div class="jukgi-name">대서</div>
+      </div>
+      <div class="jukgi-desc">7월 22~23일 | 일년 중 가장 더운 시기. 불가에서는 이때 청량한 수행으로 열기를 다스립니다.</div>
+      <a class="jukgi-btn" href="/calendar">📅 이 절기의 사찰 보기</a>
+    </div>
+  </div>
+</div>
+
+<!-- 페이지 트랜지션 오버레이 -->
+<div id="jg-transition" style="position:fixed;inset:0;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;background:#050010;opacity:0;transition:opacity .35s ease">
+  <canvas id="jg-tr-bg" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+  <div style="position:relative;z-index:2;text-align:center">
+    <div style="font-size:10px;font-weight:800;letter-spacing:.22em;color:#FBBF24;margin-bottom:16px;opacity:0;animation:none" id="jg-tr-tag">✨ JAMGONG AFFINITY COMPATIBILITY ENGINE</div>
+    <div style="font-size:clamp(20px,3.5vw,36px);font-weight:900;color:#fff;line-height:1.4;margin-bottom:8px" id="jg-tr-line1"></div>
+    <div style="font-size:clamp(18px,3vw,30px);font-weight:900;line-height:1.4" id="jg-tr-line2"></div>
+    <div style="width:48px;height:2px;background:linear-gradient(90deg,#FBBF24,#f472b6);margin:20px auto 0;border-radius:2px;animation:jgPulse 1s ease infinite" id="jg-tr-bar"></div>
+  </div>
+</div>
+<style>
+@keyframes jgPulse{0%,100%{opacity:.4;transform:scaleX(.6)}50%{opacity:1;transform:scaleX(1)}}
+.jg-tchar{display:inline-block;opacity:0;transform:translateY(16px);transition:opacity .3s ease,transform .3s ease;font-family:'Noto Sans KR',sans-serif}
+.jg-tchar.gld{background:linear-gradient(90deg,#FBBF24,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.jg-tchar.vis{opacity:1;transform:none}
+</style>
+
+<script>
+(function(){
+  // 히어로 파티클
+  const c=document.getElementById('hero-particles');
+  if(!c)return;
+  const x=c.getContext('2d');
+  function resize(){c.width=c.offsetWidth||window.innerWidth;c.height=c.offsetHeight||window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  const pts=[];
+  for(let i=0;i<55;i++)pts.push({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.2+.3,op:Math.random()*.4+.08,col:Math.random()>.6?'#FBBF24':Math.random()>.5?'#c084fc':'rgba(255,255,255,.8)'});
+  function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    pts.forEach((a,i)=>{
+      pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<70){x.beginPath();x.strokeStyle=`rgba(255,255,255,${.025*(1-d/70)})`;x.lineWidth=.5;x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}});
+      x.beginPath();x.arc(a.x,a.y,a.r,0,Math.PI*2);x.fillStyle=a.col;x.globalAlpha=a.op;x.fill();x.globalAlpha=1;
+      a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>c.width)a.vx*=-1;if(a.y<0||a.y>c.height)a.vy*=-1;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+  // ── 연등 애니메이션 ──
+  (function(){
+    const lc=document.getElementById('hero-lanterns');
+    if(!lc)return;
+    const lx=lc.getContext('2d');
+    function lresize(){lc.width=lc.offsetWidth||window.innerWidth;lc.height=lc.offsetHeight||window.innerHeight;}
+    lresize();window.addEventListener('resize',lresize);
+
+    const COLORS=[
+      {body:'#e8380d',glow:'rgba(232,56,13,0.55)',shade:'#8b1a00'},   // 빨강
+      {body:'#f5a623',glow:'rgba(245,166,35,0.55)',shade:'#b06600'},   // 주황
+      {body:'#f7e04a',glow:'rgba(247,224,74,0.5)',shade:'#9a8000'},    // 노랑
+      {body:'#e03880',glow:'rgba(224,56,128,0.5)',shade:'#880040'},    // 분홍
+      {body:'#c060f0',glow:'rgba(192,96,240,0.45)',shade:'#6000a0'},   // 보라
+    ];
+
+    function mkLantern(i){
+      const col=COLORS[i%COLORS.length];
+      const w=lc.width;
+      const h=lc.height;
+      return {
+        x:Math.random()*w,
+        y:h+80+Math.random()*200,
+        ry:Math.random()*Math.PI*2,   // sway phase
+        vx:(Math.random()-.5)*0.22,
+        vy:-(0.28+Math.random()*0.32),
+        sw:1.4+Math.random()*0.9,     // sway width
+        sp:0.008+Math.random()*0.006, // sway speed
+        bw:18+Math.random()*14,       // body half-width
+        bh:24+Math.random()*18,       // body half-height
+        op:0.72+Math.random()*0.22,
+        col:col,
+        rot:(Math.random()-.5)*0.18,
+        pulse:Math.random()*Math.PI*2,
+      };
+    }
+
+    const COUNT=22;
+    const lanterns=[];
+    for(let i=0;i<COUNT;i++){
+      const l=mkLantern(i);
+      // scatter initial Y so they don't all start from bottom at once
+      l.y=lc.height*(0.2+Math.random()*1.3);
+      lanterns.push(l);
+    }
+
+    function drawLantern(l,t){
+      const col=l.col;
+      const px=Math.sin(l.ry)*l.sw;  // horizontal sway
+      const glow=Math.sin(l.pulse+t*0.0015)*0.12+0.88; // pulsing glow
+      const bw=l.bw, bh=l.bh;
+
+      lx.save();
+      lx.translate(l.x+px, l.y);
+      lx.rotate(l.rot+Math.sin(l.ry)*0.06);
+      lx.globalAlpha=l.op;
+
+      // glow halo
+      const g=lx.createRadialGradient(0,0,bh*0.3,0,0,bh*2.2);
+      g.addColorStop(0,col.glow.replace(')',`,${0.55*glow})`).replace('rgba','rgba'));
+      g.addColorStop(1,'rgba(0,0,0,0)');
+      lx.beginPath();
+      lx.ellipse(0,0,bw*2.2,bh*2.2,0,0,Math.PI*2);
+      lx.fillStyle=g;
+      lx.fill();
+
+      // string top
+      lx.beginPath();
+      lx.moveTo(0,-bh-2);
+      lx.lineTo(0,-bh-22);
+      lx.strokeStyle='rgba(255,255,255,0.35)';
+      lx.lineWidth=1;
+      lx.stroke();
+
+      // body gradient
+      const bg=lx.createRadialGradient(-bw*0.3,-bh*0.25,0,0,0,Math.max(bw,bh)*1.1);
+      bg.addColorStop(0,'rgba(255,255,200,0.9)');
+      bg.addColorStop(0.35,col.body);
+      bg.addColorStop(1,col.shade);
+      lx.beginPath();
+      lx.ellipse(0,0,bw,bh,0,0,Math.PI*2);
+      lx.fillStyle=bg;
+      lx.fill();
+
+      // ribs
+      lx.globalAlpha=l.op*0.25;
+      for(let r=-3;r<=3;r++){
+        const ry=r*(bh/3.5);
+        const rx=Math.sqrt(Math.max(0,1-(ry*ry)/(bh*bh)))*bw;
+        lx.beginPath();
+        lx.ellipse(0,ry,rx,1.2,0,0,Math.PI*2);
+        lx.fillStyle='rgba(0,0,0,0.4)';
+        lx.fill();
+      }
+      lx.globalAlpha=l.op;
+
+      // inner glow (candle)
+      const ig=lx.createRadialGradient(0,bh*0.1,0,0,bh*0.1,bh*0.7);
+      ig.addColorStop(0,`rgba(255,250,200,${0.45*glow})`);
+      ig.addColorStop(1,'rgba(255,200,50,0)');
+      lx.beginPath();
+      lx.ellipse(0,0,bw*0.75,bh*0.75,0,0,Math.PI*2);
+      lx.fillStyle=ig;
+      lx.fill();
+
+      // top cap
+      lx.beginPath();
+      lx.ellipse(0,-bh+2,bw*0.55,bh*0.18,0,0,Math.PI*2);
+      lx.fillStyle='rgba(255,255,200,0.55)';
+      lx.fill();
+
+      // bottom tassel
+      lx.beginPath();
+      lx.moveTo(0,bh);
+      lx.lineTo(-3,bh+12);
+      lx.moveTo(0,bh);
+      lx.lineTo(0,bh+16);
+      lx.moveTo(0,bh);
+      lx.lineTo(3,bh+12);
+      lx.strokeStyle=col.body;
+      lx.lineWidth=1.5;
+      lx.globalAlpha=l.op*0.8;
+      lx.stroke();
+
+      lx.restore();
+    }
+
+    let lt=0;
+    function ldraw(t){
+      lx.clearRect(0,0,lc.width,lc.height);
+      const dt=t-lt; lt=t;
+      lanterns.forEach(l=>{
+        l.ry+=l.sp*dt*0.016;
+        l.x+=l.vx;
+        l.y+=l.vy;
+        l.pulse+=0.012;
+        if(l.y<-120){
+          const nl=mkLantern(Math.floor(Math.random()*5));
+          Object.assign(l,nl);
+        }
+        if(l.x<-60)l.x=lc.width+60;
+        if(l.x>lc.width+60)l.x=-60;
+        drawLantern(l,t);
+      });
+      requestAnimationFrame(ldraw);
+    }
+    requestAnimationFrame(ldraw);
+  })();
+
+  // 타이포모션
+  const text='하늘이 새긴 당신의 운명 — AI가 인연을 찾아드립니다';
+  const el=document.getElementById('hero-typo');
+  if(el){
+    text.split('').forEach((ch,i)=>{
+      const s=document.createElement('span');
+      s.className='hchar';
+      s.textContent=ch===' '?' ':ch;
+      el.appendChild(s);
+      setTimeout(()=>s.classList.add('hvis'),700+i*45);
+    });
+  }
+})();
+
+// =============================================
+// 잼공 페이지 트랜지션 (JACE 풀스크린 애니메이션)
+// =============================================
+function jamgongTransition(e, url) {
+  e.preventDefault();
+  var ov = document.getElementById('jg-transition');
+  var trBg = document.getElementById('jg-tr-bg');
+  var tag = document.getElementById('jg-tr-tag');
+  var line1 = document.getElementById('jg-tr-line1');
+  var line2 = document.getElementById('jg-tr-line2');
+
+  // 초기화
+  ov.style.display = 'flex';
+  line1.innerHTML = '';
+  line2.innerHTML = '';
+  tag.style.opacity = '0';
+  tag.style.transform = 'translateY(10px)';
+  tag.style.transition = 'opacity .5s ease, transform .5s ease';
+
+  // 페이드인
+  setTimeout(function() { ov.style.opacity = '1'; }, 10);
+
+  // 배경 파티클 시작
+  (function() {
+    var w = window.innerWidth, h = window.innerHeight;
+    trBg.width = w; trBg.height = h;
+    var ctx = trBg.getContext('2d');
+    var pts = [];
+    for (var i = 0; i < 90; i++) {
+      pts.push({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
+        r: Math.random() * 1.8 + .4,
+        op: Math.random() * .6 + .1,
+        col: Math.random() > .65 ? '#FBBF24' : Math.random() > .5 ? '#c084fc' : '#60a5fa'
+      });
+    }
+    var raf;
+    function drawTr() {
+      ctx.clearRect(0, 0, w, h);
+      // 중앙 오라
+      var g = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.min(w,h)*0.45);
+      g.addColorStop(0, 'rgba(168,85,247,0.18)');
+      g.addColorStop(.5, 'rgba(251,191,36,0.06)');
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      // 스캔라인
+      var scanY = ((Date.now() / 12) % (h + 40)) - 20;
+      var sg = ctx.createLinearGradient(0, scanY - 1, 0, scanY + 1);
+      sg.addColorStop(0, 'transparent');
+      sg.addColorStop(.5, 'rgba(251,191,36,0.25)');
+      sg.addColorStop(1, 'transparent');
+      ctx.fillStyle = sg; ctx.fillRect(0, scanY - 1, w, 2);
+      // 파티클 + 연결선
+      pts.forEach(function(a, i) {
+        pts.slice(i + 1).forEach(function(b) {
+          var d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < 90) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255,255,255,' + (.04 * (1 - d / 90)) + ')';
+            ctx.lineWidth = .6;
+            ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+        });
+        ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+        ctx.fillStyle = a.col; ctx.globalAlpha = a.op; ctx.fill(); ctx.globalAlpha = 1;
+        a.x += a.vx; a.y += a.vy;
+        if (a.x < 0 || a.x > w) a.vx *= -1;
+        if (a.y < 0 || a.y > h) a.vy *= -1;
+      });
+      raf = requestAnimationFrame(drawTr);
+    }
+    drawTr();
+    setTimeout(function() { cancelAnimationFrame(raf); }, 2600);
+  })();
+
+  // 태그 페이드인
+  setTimeout(function() {
+    tag.style.opacity = '1';
+    tag.style.transform = 'none';
+  }, 200);
+
+  // 타이포모션 line1: 하늘이 새긴 당신의 운명
+  var t1 = '하늘이 새긴 당신의 운명';
+  t1.split('').forEach(function(ch, i) {
+    var sp = document.createElement('span');
+    sp.className = 'jg-tchar';
+    sp.style.fontSize = 'clamp(20px,3.5vw,38px)';
+    sp.style.fontWeight = '900';
+    sp.style.color = '#f8fafc';
+    sp.textContent = ch === ' ' ? ' ' : ch;
+    line1.appendChild(sp);
+    setTimeout(function() { sp.classList.add('vis'); }, 450 + i * 60);
+  });
+
+  // 타이포모션 line2: AI가 인연을 찾아드립니다 (골드 그라디언트)
+  var t2 = 'AI가 인연을 찾아드립니다';
+  t2.split('').forEach(function(ch, i) {
+    var sp = document.createElement('span');
+    sp.className = 'jg-tchar gld';
+    sp.style.fontSize = 'clamp(18px,3vw,32px)';
+    sp.style.fontWeight = '900';
+    sp.textContent = ch === ' ' ? ' ' : ch;
+    line2.appendChild(sp);
+    setTimeout(function() { sp.classList.add('vis'); }, 900 + i * 55);
+  });
+
+  // 이동
+  setTimeout(function() {
+    ov.style.opacity = '0';
+    setTimeout(function() { window.location.href = url; }, 380);
+  }, 2300);
+}
+</script>
+
+<div class="hs">
+
+  <!-- 잼공 궁합 엔진 섹션 -->
+  <div class="sec">
+    <div style="background:linear-gradient(135deg,rgba(251,191,36,0.07) 0%,rgba(168,85,247,0.07) 100%);border:1px solid rgba(251,191,36,0.22);border-radius:24px;padding:36px 32px;margin-bottom:0;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 10% 50%,rgba(251,191,36,0.09) 0%,transparent 60%);pointer-events:none"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px">
+        <div style="flex:1;min-width:260px">
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+            <span style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);color:#FBBF24;font-size:10px;font-weight:800;letter-spacing:.15em;padding:4px 12px;border-radius:20px">✨ 잼공 궁합 엔진</span>
+            <span style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.35);color:#c084fc;font-size:10px;font-weight:800;letter-spacing:.1em;padding:4px 12px;border-radius:20px">📋 특허 출원 중</span>
+          </div>
+          <div style="font-size:clamp(20px,2.5vw,28px);font-weight:900;color:#f8fafc;margin-bottom:10px;line-height:1.4;font-family:'Noto Sans KR',sans-serif">잼공 궁합 엔진</div>
+          <p style="font-size:14px;color:#94a3b8;line-height:1.85;margin:0 0 20px;font-family:'Noto Sans KR',sans-serif">기존 사찰궁합을 기반으로 나와 인연이 맞는<br><strong style="color:#e2e8f0">사찰 · 기도도량 · 상품</strong>을 연결합니다.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <a href="/manse" onclick="jamgongTransition(event,'/manse')" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:13px;font-weight:900;padding:13px 24px;border-radius:12px;text-decoration:none;font-family:'Noto Sans KR',sans-serif;transition:all .2s">🔮 내 인연사찰 확인하기</a>
+            <a href="/mall" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;font-size:13px;font-weight:700;padding:13px 22px;border-radius:12px;text-decoration:none;font-family:'Noto Sans KR',sans-serif">🛒 상품 궁합 보기</a>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:200px">
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(251,191,36,0.2);border-radius:14px;padding:14px 18px">
+            <div style="font-size:10px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:6px">STEP 1</div>
+            <div style="font-size:13px;font-weight:700;color:#f8fafc;font-family:'Noto Sans KR',sans-serif">생년월일 입력 → 오행 분석</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(168,85,247,0.2);border-radius:14px;padding:14px 18px">
+            <div style="font-size:10px;font-weight:800;color:#c084fc;letter-spacing:.1em;margin-bottom:6px">STEP 2</div>
+            <div style="font-size:13px;font-weight:700;color:#f8fafc;font-family:'Noto Sans KR',sans-serif">잼공 궁합 엔진 계산</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(34,197,94,0.2);border-radius:14px;padding:14px 18px">
+            <div style="font-size:10px;font-weight:800;color:#4ade80;letter-spacing:.1em;margin-bottom:6px">STEP 3</div>
+            <div style="font-size:13px;font-weight:700;color:#f8fafc;font-family:'Noto Sans KR',sans-serif">인연 순위 + 추천 근거 제공</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 서비스 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">SERVICES</div>
+      <div class="hs-title">나를 위한 <em>불교 맞춤 서비스</em></div>
+      <p class="hs-sub">인연사찰을 찾고, 그 안에서 나에게 필요한 기도도량까지 안내합니다.</p>
+    </div>
+    <div class="svc-grid">
+
+      <!-- 인연사찰 찾기 — 금빛 -->
+      <a class="svc-card" href="/manse" style="--svc-accent:linear-gradient(90deg,#FBBF24,#f59e0b);--svc-glow:rgba(251,191,36,0.06);--svc-border:rgba(251,191,36,0.5);--svc-icon-bg:rgba(251,191,36,0.12);--svc-icon-border:rgba(251,191,36,0.25);--svc-tag-color:#FBBF24;--svc-tag-bg:rgba(251,191,36,0.1);--svc-tag-border:rgba(251,191,36,0.25)">
+        <div class="svc-icon-wrap">🔮</div>
+        <div class="svc-name">인연사찰 찾기</div>
+        <div class="svc-desc">오행 분석으로 인연사찰을 추천하고, 그 안의 기도도량·추천 기도까지 안내합니다.</div>
+        <span class="svc-tag">사주 기반 매칭</span>
+      </a>
+
+      <!-- 사주팔자 — 보라 -->
+      <a class="svc-card" href="/manse" style="--svc-accent:linear-gradient(90deg,#a78bfa,#7c3aed);--svc-glow:rgba(167,139,250,0.06);--svc-border:rgba(167,139,250,0.5);--svc-icon-bg:rgba(167,139,250,0.12);--svc-icon-border:rgba(167,139,250,0.25);--svc-tag-color:#a78bfa;--svc-tag-bg:rgba(167,139,250,0.1);--svc-tag-border:rgba(167,139,250,0.25)">
+        <div class="svc-icon-wrap">🌟</div>
+        <div class="svc-name">사주팔자 분석</div>
+        <div class="svc-desc">오행·격국·용신·대운을 분석해 현재 운세와 기도 목적을 상세히 안내합니다.</div>
+        <span class="svc-tag">AI 사주 해석</span>
+      </a>
+
+      <!-- 궁합 — 핑크 -->
+      <a class="svc-card" href="/compatibility" style="--svc-accent:linear-gradient(90deg,#f472b6,#db2777);--svc-glow:rgba(244,114,182,0.06);--svc-border:rgba(244,114,182,0.5);--svc-icon-bg:rgba(244,114,182,0.12);--svc-icon-border:rgba(244,114,182,0.25);--svc-tag-color:#f472b6;--svc-tag-bg:rgba(244,114,182,0.1);--svc-tag-border:rgba(244,114,182,0.25)">
+        <div class="svc-icon-wrap">💑</div>
+        <div class="svc-name">두 사람 궁합</div>
+        <div class="svc-desc">연인·동업·친구·가족 등 두 사람의 사주 합충형을 분석해 궁합을 봅니다.</div>
+        <span class="svc-tag">합충형 분석</span>
+      </a>
+
+      <!-- 택일 — 하늘 -->
+      <a class="svc-card" href="/taekil" style="--svc-accent:linear-gradient(90deg,#38bdf8,#0284c7);--svc-glow:rgba(56,189,248,0.06);--svc-border:rgba(56,189,248,0.5);--svc-icon-bg:rgba(56,189,248,0.12);--svc-icon-border:rgba(56,189,248,0.25);--svc-tag-color:#38bdf8;--svc-tag-bg:rgba(56,189,248,0.1);--svc-tag-border:rgba(56,189,248,0.25)">
+        <div class="svc-icon-wrap">📅</div>
+        <div class="svc-name">택일</div>
+        <div class="svc-desc">결혼·개업·이사·수술 등 중요한 날의 좋은 날짜를 불교 역법으로 선택합니다.</div>
+        <span class="svc-tag">길일 선택</span>
+      </a>
+
+      <!-- 기도도량 — 에메랄드 -->
+      <a class="svc-card" href="/sacred" style="--svc-accent:linear-gradient(90deg,#34d399,#059669);--svc-glow:rgba(52,211,153,0.06);--svc-border:rgba(52,211,153,0.5);--svc-icon-bg:rgba(52,211,153,0.12);--svc-icon-border:rgba(52,211,153,0.25);--svc-tag-color:#34d399;--svc-tag-bg:rgba(52,211,153,0.1);--svc-tag-border:rgba(52,211,153,0.25)">
+        <div class="svc-icon-wrap">⭐</div>
+        <div class="svc-name">전국 기도도량</div>
+        <div class="svc-desc">검증된 불교 기도도량 465곳 — 관음·약사·미륵·지장·나한·적멸보궁·독성 성지.</div>
+        <span class="svc-tag">465곳 기도도량</span>
+      </a>
+
+      <!-- 꿈해몽 — 인디고 -->
+      <a class="svc-card" href="/dream" style="--svc-accent:linear-gradient(90deg,#818cf8,#4f46e5);--svc-glow:rgba(129,140,248,0.06);--svc-border:rgba(129,140,248,0.5);--svc-icon-bg:rgba(129,140,248,0.12);--svc-icon-border:rgba(129,140,248,0.25);--svc-tag-color:#818cf8;--svc-tag-bg:rgba(129,140,248,0.1);--svc-tag-border:rgba(129,140,248,0.25)">
+        <div class="svc-icon-wrap">🌙</div>
+        <div class="svc-name">꿈해몽</div>
+        <div class="svc-desc">꿈의 상징과 의미를 해석하고 관련 사찰과 기도 방법을 안내합니다.</div>
+        <span class="svc-tag">AI 꿈해몽</span>
+      </a>
+
+      <!-- 순례코스 — 오렌지 -->
+      <a class="svc-card" href="/sacred" style="--svc-accent:linear-gradient(90deg,#fb923c,#ea580c);--svc-glow:rgba(251,146,60,0.06);--svc-border:rgba(251,146,60,0.5);--svc-icon-bg:rgba(251,146,60,0.12);--svc-icon-border:rgba(251,146,60,0.25);--svc-tag-color:#fb923c;--svc-tag-bg:rgba(251,146,60,0.1);--svc-tag-border:rgba(251,146,60,0.25)">
+        <div class="svc-icon-wrap">🗺️</div>
+        <div class="svc-name">인연사찰 순례 코스</div>
+        <div class="svc-desc">관음기도 3사·적멸보궁·지장기도 순례 등 당일·1박2일 코스를 지역별로 안내합니다.</div>
+        <span class="svc-tag">순례 코스</span>
+      </a>
+
+      <!-- 가족 인연사찰 — 옐로우그린 -->
+      <a class="svc-card" href="/manse" style="--svc-accent:linear-gradient(90deg,#a3e635,#65a30d);--svc-glow:rgba(163,230,53,0.06);--svc-border:rgba(163,230,53,0.45);--svc-icon-bg:rgba(163,230,53,0.1);--svc-icon-border:rgba(163,230,53,0.22);--svc-tag-color:#a3e635;--svc-tag-bg:rgba(163,230,53,0.1);--svc-tag-border:rgba(163,230,53,0.22)">
+        <div class="svc-icon-wrap">👨‍👩‍👧‍👦</div>
+        <div class="svc-name">가족·부부 인연사찰</div>
+        <div class="svc-desc">부부·부모·자녀·연인이 함께 참배하면 좋은 인연사찰을 안내합니다. 궁합과 연결됩니다.</div>
+        <span class="svc-tag">가족 맞춤 추천</span>
+      </a>
+
+      <!-- 기도문 — 앰버 -->
+      <a class="svc-card" href="/prayer" style="--svc-accent:linear-gradient(90deg,#fcd34d,#d97706);--svc-glow:rgba(252,211,77,0.06);--svc-border:rgba(252,211,77,0.45);--svc-icon-bg:rgba(252,211,77,0.1);--svc-icon-border:rgba(252,211,77,0.22);--svc-tag-color:#fcd34d;--svc-tag-bg:rgba(252,211,77,0.1);--svc-tag-border:rgba(252,211,77,0.22)">
+        <div class="svc-icon-wrap">🪔</div>
+        <div class="svc-name">기도문·발원문</div>
+        <div class="svc-desc">관음·지장·약사·재물·건강·합격·가족화합 기도문을 안내합니다. 기본 기도문 무료 제공.</div>
+        <span class="svc-tag">기도문 안내</span>
+      </a>
+
+      <!-- 사찰예절 — 틸 -->
+      <a class="svc-card" href="/etiquette" style="--svc-accent:linear-gradient(90deg,#2dd4bf,#0d9488);--svc-glow:rgba(45,212,191,0.06);--svc-border:rgba(45,212,191,0.45);--svc-icon-bg:rgba(45,212,191,0.1);--svc-icon-border:rgba(45,212,191,0.22);--svc-tag-color:#2dd4bf;--svc-tag-bg:rgba(45,212,191,0.1);--svc-tag-border:rgba(45,212,191,0.22)">
+        <div class="svc-icon-wrap">🏯</div>
+        <div class="svc-name">사찰예절</div>
+        <div class="svc-desc">법당 출입·절하는 방법·향초 예절·스님 인사법 등 처음 방문자도 바로 따라할 수 있는 안내.</div>
+        <span class="svc-tag">방문 가이드</span>
+      </a>
+
+      <!-- 불교의례 — 로즈 -->
+      <a class="svc-card" href="/ritual" style="--svc-accent:linear-gradient(90deg,#fb7185,#be123c);--svc-glow:rgba(251,113,133,0.06);--svc-border:rgba(251,113,133,0.45);--svc-icon-bg:rgba(251,113,133,0.1);--svc-icon-border:rgba(251,113,133,0.22);--svc-tag-color:#fb7185;--svc-tag-bg:rgba(251,113,133,0.1);--svc-tag-border:rgba(251,113,133,0.22)">
+        <div class="svc-icon-wrap">🕯️</div>
+        <div class="svc-name">불교의례 안내</div>
+        <div class="svc-desc">초하루·보름·49재·천도재·백중·연등회·방생·수계·기도 입재·회향까지 주요 의례를 안내합니다.</div>
+        <span class="svc-tag">의례 가이드</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- 통계 -->
+  <div class="stats-row" style="margin-bottom:80px">
+    <div class="stat-item"><div class="stat-num">17,497</div><div class="stat-label">전국 사찰 데이터</div></div>
+    <div class="stat-item"><div class="stat-num">465</div><div class="stat-label">기도도량 수록</div></div>
+    <div class="stat-item"><div class="stat-num">13</div><div class="stat-label">기도 유형</div></div>
+    <div class="stat-item"><div class="stat-num">AI</div><div class="stat-label">사주 분석 엔진</div></div>
+  </div>
+
+  <!-- 3단계 추천 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">3-TYPE RECOMMENDATION</div>
+      <div class="hs-title">한 곳이 아닌 <em>3가지 인연사찰</em>을 안내합니다</div>
+      <p class="hs-sub">거리·일정·오늘의 기운까지 고려해 나에게 맞는 사찰을 세 가지 방식으로 추천합니다.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:20px">
+      <div style="background:rgba(251,191,36,0.06);border:1.5px solid rgba(251,191,36,0.25);border-radius:18px;padding:26px">
+        <div style="font-size:28px;margin-bottom:12px">🔮</div>
+        <div style="font-size:13px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:8px">제1 인연사찰</div>
+        <div style="font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:8px">오행과 가장 잘 맞는 사찰</div>
+        <div style="font-size:13px;color:#64748b;line-height:1.7">사주 오행·격국·용신을 분석해 신앙적으로 가장 잘 맞는 인연사찰을 추천합니다.</div>
+      </div>
+      <div style="background:rgba(34,197,94,0.06);border:1.5px solid rgba(34,197,94,0.25);border-radius:18px;padding:26px">
+        <div style="font-size:28px;margin-bottom:12px">📍</div>
+        <div style="font-size:13px;font-weight:800;color:#4ade80;letter-spacing:.1em;margin-bottom:8px">가까운 인연사찰</div>
+        <div style="font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:8px">지금 방문하기 편한 사찰</div>
+        <div style="font-size:13px;color:#64748b;line-height:1.7">현재 위치와 이동 거리를 고려해 당일 방문 가능한 인연사찰을 안내합니다.</div>
+      </div>
+      <div style="background:rgba(168,85,247,0.06);border:1.5px solid rgba(168,85,247,0.25);border-radius:18px;padding:26px">
+        <div style="font-size:28px;margin-bottom:12px">🌙</div>
+        <div style="font-size:13px;font-weight:800;color:#c4b5fd;letter-spacing:.1em;margin-bottom:8px">오늘의 인연사찰</div>
+        <div style="font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:8px">당일 운세와 기도 목적에 맞는 사찰</div>
+        <div style="font-size:13px;color:#64748b;line-height:1.7">오늘의 기운과 법요일을 반영해 지금 이 순간 기도하기 좋은 도량을 제안합니다.</div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px 22px;font-size:13px;color:#64748b;line-height:1.8">
+      ✦ 추천 결과에는 <strong style="color:#FBBF24">AI 분석 참고 지수</strong>를 함께 표시합니다. 수치는 참고용이며 과학적 정확도를 보장하지 않습니다. 각 사찰은 오랫동안 기도도량으로 전승되어 온 곳입니다.
+    </div>
+  </div>
+
+  <!-- 인연사찰 추천 이유 시각화 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">WHY THIS TEMPLE</div>
+      <div class="hs-title">왜 <em>이 사찰인가요?</em></div>
+      <p class="hs-sub">사찰 추천 이유를 6가지 분석 요소로 시각화해 보여드립니다.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:600px">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px">
+        <div style="font-size:11px;color:#475569;font-weight:700;margin-bottom:6px">분석 요소</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:2.1">부족한 기운<br>추천 환경<br>추천 신앙<br>인연사찰<br>내부 기도도량<br>추천 기도</div>
+      </div>
+      <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.2);border-radius:12px;padding:16px">
+        <div style="font-size:11px;color:#FBBF24;font-weight:700;margin-bottom:6px">예시 결과</div>
+        <div style="font-size:13px;color:#e2e8f0;line-height:2.1">수(水)<br>바다·계곡<br>관음 신앙<br>낙산사<br>홍련암<br>인연·가족평안</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 사용방법 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">HOW TO USE</div>
+      <div class="hs-title">이렇게 <em>사용하세요</em></div>
+    </div>
+    <div class="how-grid">
+      <div class="how-item"><div class="how-num">01</div><div class="how-icon">📝</div><div class="how-title">생년월일시 입력</div><div class="how-text">양력 또는 음력으로 생년월일과 태어난 시간을 입력합니다.</div></div>
+      <div class="how-item"><div class="how-num">02</div><div class="how-icon">🎯</div><div class="how-title">기도 목적 선택</div><div class="how-text">건강·합격·인연·재복·가정평안·출산·취업·천도 등 지금 가장 필요한 기도를 선택합니다.</div></div>
+      <div class="how-item"><div class="how-num">03</div><div class="how-icon">🔮</div><div class="how-title">AI 오행 분석</div><div class="how-text">사주 오행과 기도 목적을 결합해 제1 인연사찰·가까운 사찰·오늘의 사찰을 추천합니다.</div></div>
+      <div class="how-item"><div class="how-num">04</div><div class="how-icon">🕌</div><div class="how-title">기도도량 안내</div><div class="how-text">인연사찰 안의 실제 기도도량·전각을 안내합니다. 어디서 어떤 기도를 드릴지까지 알려드립니다.</div></div>
+      <div class="how-item"><div class="how-num">05</div><div class="how-icon">🗺️</div><div class="how-title">방문·순례</div><div class="how-text">길찾기·방문 난이도·순례 코스까지 안내합니다. 인연사찰 카드로 저장하고 공유할 수 있습니다.</div></div>
+    </div>
+  </div>
+
+  <!-- 기도도량 미리보기 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">SACRED SITES</div>
+      <div class="hs-title">전국 <em>주요 기도도량</em></div>
+      <p class="hs-sub">오랜 세월 간절한 발원이 이어져 온 전국 465곳의 기도도량 가운데 주요 성지를 소개합니다.</p>
+    </div>
+    <div class="prev-grid">
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #3b82f6"><span class="prev-icon">🌊</span><div><div class="prev-name">가평 현등사</div><div class="prev-region">경기 가평 운악산</div></div></div><div class="prev-type">관음 기도</div><div class="prev-desc">운악산 관음 성지. 경기 소금강이라 불리는 운악산 기암괴석과 어우러진 청정 사찰.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #22c55e"><span class="prev-icon">🌿</span><div><div class="prev-name">합천 해인사</div><div class="prev-region">경남 합천 가야산</div></div></div><div class="prev-type">소원성취 기도</div><div class="prev-desc">팔만대장경을 보존한 법보사찰. 가야산 깊은 숲속 천년 고찰로 소원성취 기도처로 유명.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #ef4444"><span class="prev-icon">🔥</span><div><div class="prev-name">양산 통도사</div><div class="prev-region">경남 양산 영축산</div></div></div><div class="prev-type">관음·소원성취</div><div class="prev-desc">불보사찰. 부처님 진신사리를 봉안한 금강계단이 있어 기도 영험이 높기로 유명.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #22c55e"><span class="prev-icon">🌿</span><div><div class="prev-name">순천 선암사</div><div class="prev-region">전남 순천 조계산</div></div></div><div class="prev-type">관음 기도</div><div class="prev-desc">천년의 아름다움. 유네스코 세계문화유산 조계산 선암사, 원통전 관음 기도처.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #3b82f6"><span class="prev-icon">🌊</span><div><div class="prev-name">강릉 낙산사</div><div class="prev-region">강원 강릉 낙산</div></div></div><div class="prev-type">약사 기도</div><div class="prev-desc">낙산사 경내 약사전. 동해 바다 기운과 함께 건강 기도. 의상대사 창건 동해 관음 성지.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #f59e0b"><span class="prev-icon">🍂</span><div><div class="prev-name">구례 화엄사</div><div class="prev-region">전남 구례 지리산</div></div></div><div class="prev-type">소원성취 기도</div><div class="prev-desc">지리산 대찰. 각황전과 4사자3층석탑 등 국보급 문화재를 보유한 화엄 도량.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #a78bfa"><span class="prev-icon">💜</span><div><div class="prev-name">서울 조계사</div><div class="prev-region">서울 종로</div></div></div><div class="prev-type">관음 기도</div><div class="prev-desc">대한불교조계종 총본산. 서울 도심 속 기도도량으로 연중 법회와 기도가 끊이지 않는 곳.</div></div>
+      <div class="prev-card"><div class="prev-top" style="border-left:3px solid #22c55e"><span class="prev-icon">🌿</span><div><div class="prev-name">영주 부석사</div><div class="prev-region">경북 영주 소백산</div></div></div><div class="prev-type">소원성취 기도</div><div class="prev-desc">무량수전·선묘낭자 전설 깃든 유네스코 세계문화유산. 의상대사 창건 화엄 도량.</div></div>
+    </div>
+    <div style="text-align:center">
+      <a class="more-btn" href="/sacred">⭐ 전체 465곳 기도도량 보기 →</a>
+    </div>
+  </div>
+
+  <!-- 이용 후기 -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="hs-badge">REVIEWS</div>
+      <div class="hs-title"><em>이용자 후기</em></div>
+      <p class="hs-sub">실제 이용자들의 생생한 경험을 들어보세요.</p>
+    </div>
+    <style>
+    .rv-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:22px 22px 18px;display:flex;flex-direction:column;gap:0;transition:all .2s}
+    .rv-card:hover{background:rgba(255,255,255,0.055);border-color:rgba(251,191,36,0.25);transform:translateY(-3px)}
+    .rv-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .rv-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;flex-shrink:0}
+    .rv-meta{flex:1;min-width:0}
+    .rv-name{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:2px}
+    .rv-date{font-size:11px;color:#475569}
+    .rv-stars{color:#FBBF24;font-size:13px;letter-spacing:1px}
+    .rv-svc{font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;align-self:flex-start}
+    .rv-body{font-size:13.5px;color:#cbd5e1;line-height:1.85;flex:1}
+    </style>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px">
+      <div class="rv-card">
+        <div class="rv-top">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">김</div>
+          <div class="rv-meta">
+            <div class="rv-name">김○○ · 50대 · 사업가</div>
+            <div class="rv-date">2026.06.14</div>
+          </div>
+          <div class="rv-svc" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3)">인연사찰</div>
+        </div>
+        <div class="rv-stars">★★★★★</div>
+        <div style="height:10px"></div>
+        <div class="rv-body">"사주 오행을 분석해서 사찰을 추천해준다는 게 신기했어요. 추천받은 해인사에서 기도하고 나서 오랫동안 고민하던 사업 결정을 내렸습니다."</div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-top">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#38bdf8,#0369a1)">이</div>
+          <div class="rv-meta">
+            <div class="rv-name">이○○ · 30대 · 직장인</div>
+            <div class="rv-date">2026.05.29</div>
+          </div>
+          <div class="rv-svc" style="background:rgba(251,191,36,0.13);color:#FBBF24;border:1px solid rgba(251,191,36,0.3)">택일</div>
+        </div>
+        <div class="rv-stars">★★★★★</div>
+        <div style="height:10px"></div>
+        <div class="rv-body">"택일 서비스로 이사 날짜를 잡았는데 새 집에서 생활이 정말 순조로워졌어요. 생년월일 넣는 것만으로 이렇게 자세히 나올 줄 몰랐습니다."</div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-top">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#f472b6,#be185d)">박</div>
+          <div class="rv-meta">
+            <div class="rv-name">박○○ · 20대 · 연인과 함께</div>
+            <div class="rv-date">2026.05.11</div>
+          </div>
+          <div class="rv-svc" style="background:rgba(244,114,182,0.13);color:#f472b6;border:1px solid rgba(244,114,182,0.3)">궁합</div>
+        </div>
+        <div class="rv-stars">★★★★☆</div>
+        <div style="height:10px"></div>
+        <div class="rv-body">"궁합을 봤는데 두 사람 모두 화(火) 기운이 강해서 수기(水氣) 강한 해안 사찰을 추천받았어요. 함께 다녀왔는데 사이가 더 좋아진 것 같아요."</div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-top">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#fb923c,#c2410c)">최</div>
+          <div class="rv-meta">
+            <div class="rv-name">최○○ · 40대 · 주부</div>
+            <div class="rv-date">2026.04.22</div>
+          </div>
+          <div class="rv-svc" style="background:rgba(251,146,60,0.13);color:#fb923c;border:1px solid rgba(251,146,60,0.3)">꿈해몽</div>
+        </div>
+        <div class="rv-stars">★★★★★</div>
+        <div style="height:10px"></div>
+        <div class="rv-body">"꿈해몽이 정말 맞아떨어졌어요. 물에 빠지는 꿈이 재물운 꿈이라고 해석해줬고, 추천받은 사찰에서 기도 후 좋은 일이 생겼습니다."</div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-top">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#4ade80,#15803d)">정</div>
+          <div class="rv-meta">
+            <div class="rv-name">정○○ · 30대 · 회사원</div>
+            <div class="rv-date">2026.04.08</div>
+          </div>
+          <div class="rv-svc" style="background:rgba(74,222,128,0.12);color:#4ade80;border:1px solid rgba(74,222,128,0.3)">사주팔자</div>
+        </div>
+        <div class="rv-stars">★★★★★</div>
+        <div style="height:10px"></div>
+        <div class="rv-body">"사주팔자 분석이 정말 자세하게 나와서 놀랐어요. 오행 분포부터 대운까지 한눈에 볼 수 있어서 좋았습니다. 부모님께도 추천했어요."</div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-top">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#67e8f9,#0e7490)">한</div>
+          <div class="rv-meta">
+            <div class="rv-name">한○○ · 60대 · 은퇴 후 여행 중</div>
+            <div class="rv-date">2026.03.17</div>
+          </div>
+          <div class="rv-svc" style="background:rgba(103,232,249,0.12);color:#67e8f9;border:1px solid rgba(103,232,249,0.3)">기도도량</div>
+        </div>
+        <div class="rv-stars">★★★★★</div>
+        <div style="height:10px"></div>
+        <div class="rv-body">"전국 기도도량 465곳이 한 곳에 정리되어 있어 편리해요. 지역 필터에 네이버 지도 연동까지, 처음 가는 사찰도 쉽게 찾았습니다."</div>
+      </div>
+    </div>
+    <div style="text-align:center;padding-top:4px">
+      <div style="font-size:12px;color:#475569">평균 ★ 4.9 · 누적 이용자 12,400명+</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <h3>🔮 나와 인연이 닿는 사찰을 찾아보세요</h3>
+    <p>인연사찰을 찾고, 그 안에서 드릴 기도와 방문할 날까지 안내합니다.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="cta-btn" href="/manse">나의 인연사찰 찾기</a>
+      <a style="display:inline-block;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.2);color:#e2e8f0;font-size:15px;font-weight:700;padding:16px 32px;border-radius:50px;text-decoration:none" href="/sacred">전국 기도도량 465곳</a>
+    </div>
+    <div style="margin-top:24px;display:flex;justify-content:center;flex-wrap:wrap;gap:10px">
+      <a href="/prayer" style="display:inline-flex;align-items:center;gap:6px;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);color:#fb923c;font-size:13px;font-weight:700;padding:9px 18px;border-radius:50px;text-decoration:none;transition:all .18s">🙏 기도문·발원문</a>
+      <a href="/etiquette" style="display:inline-flex;align-items:center;gap:6px;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);color:#fb923c;font-size:13px;font-weight:700;padding:9px 18px;border-radius:50px;text-decoration:none;transition:all .18s">🏯 사찰예절 안내</a>
+      <a href="/ritual" style="display:inline-flex;align-items:center;gap:6px;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);color:#fb923c;font-size:13px;font-weight:700;padding:9px 18px;border-radius:50px;text-decoration:none;transition:all .18s">🪔 불교의례 안내</a>
+    </div>
+    <div style="margin-top:16px;font-size:12px;color:#475569">전국 사찰 17,497곳 · 기도도량 465곳 데이터 · 전 서비스 무료</div>
+  </div>
+
+</div>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

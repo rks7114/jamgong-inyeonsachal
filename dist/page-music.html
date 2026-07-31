@@ -1,0 +1,465 @@
+<meta charset="UTF-8">
+<style>
+.mu{font-family:'Noto Sans KR',sans-serif;max-width:960px;margin:0 auto;padding:56px 24px 120px;color:#e2e8f0}
+.mu-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.mu-title{font-size:clamp(24px,3.5vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.mu-title em{color:#FBBF24;font-style:normal}
+.mu-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+.mu-notice{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:16px;padding:20px 24px;margin-bottom:36px;display:flex;gap:16px;align-items:center}
+.mu-notice-icon{font-size:32px;flex-shrink:0}
+.mu-notice p{font-size:13px;color:#94a3b8;margin:0;line-height:1.8}
+.mu-notice strong{color:#FBBF24}
+.mu-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.mu-tab{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:99px;padding:8px 18px;font-size:13px;font-weight:700;color:#94a3b8;cursor:pointer;transition:all .2s;font-family:inherit}
+.mu-tab.active,.mu-tab:hover{background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.4);color:#FBBF24}
+.mu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.mu-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:18px;overflow:hidden;transition:all .22s}
+.mu-card:hover{border-color:rgba(251,191,36,0.3);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,0.4)}
+.mu-card.playing{border-color:rgba(251,191,36,0.6);box-shadow:0 0 20px rgba(251,191,36,0.15)}
+.mu-card-thumb{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,rgba(15,10,30,0.9),rgba(30,20,60,0.7));display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;cursor:pointer}
+.mu-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);opacity:0;transition:opacity .2s}
+.mu-card-thumb:hover .mu-play-btn{opacity:1}
+.mu-play-icon{width:52px;height:52px;background:rgba(251,191,36,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+.mu-card-body{padding:16px}
+.mu-card-cat{font-size:10px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:4px}
+.mu-card-name{font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:4px;line-height:1.4}
+.mu-card-desc{font-size:12px;color:#64748b;line-height:1.6;margin-bottom:12px}
+.mu-card-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.mu-card-duration{font-size:11px;color:#475569;flex-shrink:0}
+.mu-card-actions{display:flex;align-items:center;gap:6px}
+.mu-card-play{background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:12px;font-weight:700;padding:6px 14px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s}
+.mu-card-play:hover{background:rgba(251,191,36,0.25)}
+.mu-like-btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;font-size:12px;font-weight:700;padding:6px 10px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:4px}
+.mu-like-btn:hover{border-color:rgba(239,68,68,0.4);color:#f87171}
+.mu-like-btn.liked{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.4);color:#f87171}
+.mu-play-cnt{font-size:10px;color:#334155}
+/* 플레이어 */
+.mu-player{position:fixed;bottom:0;left:0;right:0;background:rgba(10,8,20,0.97);border-top:1px solid rgba(251,191,36,0.25);padding:12px 24px;display:none;align-items:center;gap:14px;z-index:200;backdrop-filter:blur(16px)}
+.mu-player.show{display:flex}
+.mu-player-icon{font-size:26px;flex-shrink:0}
+.mu-player-info{flex:1;min-width:0}
+.mu-player-name{font-size:13px;font-weight:800;color:#f8fafc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mu-player-cat{font-size:11px;color:#FBBF24}
+.mu-player-audio{flex:1;max-width:380px}
+.mu-player-audio audio{width:100%;height:36px}
+/* 타이머 버튼 */
+.mu-timer-btn{background:rgba(110,231,183,0.1);border:1px solid rgba(110,231,183,0.3);color:#6ee7b7;font-size:12px;font-weight:700;padding:7px 14px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .2s}
+.mu-timer-btn:hover{background:rgba(110,231,183,0.2)}
+.mu-timer-btn.running{background:rgba(110,231,183,0.18);border-color:#6ee7b7;animation:pulse .8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+.mu-player-close{background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;padding:4px;flex-shrink:0}
+/* 타이머 팝업 */
+.mu-timer-popup{position:fixed;bottom:80px;right:24px;background:rgba(10,8,20,0.97);border:1px solid rgba(110,231,183,0.35);border-radius:18px;padding:20px;z-index:300;display:none;min-width:200px;backdrop-filter:blur(16px)}
+.mu-timer-popup.show{display:block}
+.mu-timer-title{font-size:11px;font-weight:800;color:#6ee7b7;letter-spacing:.12em;margin-bottom:12px;font-family:'Noto Sans KR',sans-serif}
+.mu-timer-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.mu-timer-opt{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px;font-size:13px;font-weight:800;color:#94a3b8;cursor:pointer;text-align:center;font-family:inherit;transition:all .18s}
+.mu-timer-opt:hover,.mu-timer-opt.sel{background:rgba(110,231,183,0.12);border-color:rgba(110,231,183,0.4);color:#6ee7b7}
+.mu-timer-display{text-align:center;font-size:32px;font-weight:900;color:#f8fafc;letter-spacing:.05em;margin:10px 0;font-family:monospace}
+.mu-timer-stop{width:100%;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#f87171;font-size:13px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit}
+/* 찜한 목록 탭 */
+.mu-tab.liked-tab{border-color:rgba(239,68,68,0.25)}
+.mu-tab.liked-tab.active,.mu-tab.liked-tab:hover{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.45);color:#f87171}
+/* 오늘의 재일 배너 */
+.mu-today{border-radius:16px;padding:16px 22px;margin-bottom:24px;display:flex;align-items:center;gap:16px;border:1px solid}
+.mu-today.gwan{background:rgba(6,182,212,0.07);border-color:rgba(6,182,212,0.3)}
+.mu-today.jijang{background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.3)}
+.mu-today.boreum{background:rgba(251,191,36,0.07);border-color:rgba(251,191,36,0.3)}
+.mu-today.choharu{background:rgba(59,130,246,0.07);border-color:rgba(59,130,246,0.3)}
+.mu-today.normal{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.1)}
+.mu-today-icon{font-size:36px;flex-shrink:0}
+.mu-today-label{font-size:10px;font-weight:800;letter-spacing:.12em;margin-bottom:4px}
+.gwan .mu-today-label{color:#67e8f9}
+.jijang .mu-today-label{color:#c4b5fd}
+.boreum .mu-today-label{color:#FBBF24}
+.choharu .mu-today-label{color:#93c5fd}
+.normal .mu-today-label{color:#64748b}
+.mu-today-msg{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:4px}
+.mu-today-sub{font-size:12px;color:#64748b;line-height:1.6}
+.mu-today-btn{margin-left:auto;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#94a3b8;font-size:12px;font-weight:700;padding:7px 14px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s}
+.mu-today-btn:hover{border-color:rgba(251,191,36,0.4);color:#FBBF24}
+/* 108배 모드 */
+.mu-108-btn{background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);color:#fdba74;font-size:12px;font-weight:700;padding:7px 14px;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .2s}
+.mu-108-btn:hover{background:rgba(251,146,60,0.2)}
+.mu-108-btn.active{background:rgba(251,146,60,0.2);border-color:#fdba74;animation:pulse .8s ease-in-out infinite}
+.mu-108-popup{position:fixed;bottom:80px;left:24px;background:rgba(10,8,20,0.97);border:1px solid rgba(251,146,60,0.35);border-radius:20px;padding:24px;z-index:300;display:none;width:260px;backdrop-filter:blur(16px)}
+.mu-108-popup.show{display:block}
+.mu-108-title{font-size:11px;font-weight:800;color:#fdba74;letter-spacing:.12em;margin-bottom:14px;font-family:'Noto Sans KR',sans-serif}
+.mu-108-counter{text-align:center;font-size:60px;font-weight:900;color:#f8fafc;line-height:1;margin:10px 0;font-family:monospace;text-shadow:0 0 20px rgba(251,146,60,0.4)}
+.mu-108-target{text-align:center;font-size:12px;color:#64748b;margin-bottom:14px}
+.mu-108-progress{width:100%;height:6px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.mu-108-bar{height:100%;background:linear-gradient(to right,#f97316,#fbbf24);border-radius:4px;transition:width .3s}
+.mu-108-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mu-108-bow{background:linear-gradient(135deg,rgba(251,146,60,0.2),rgba(251,191,36,0.1));border:1px solid rgba(251,146,60,0.4);color:#fdba74;font-size:18px;padding:14px;border-radius:12px;cursor:pointer;font-family:inherit;font-weight:800;width:100%;transition:all .15s;grid-column:1/-1}
+.mu-108-bow:active{transform:scale(0.95)}
+.mu-108-reset{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#64748b;font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit}
+.mu-108-close{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit}
+/* 기도도량 연결 섹션 */
+.mu-sec-label{font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.15em;margin:56px 0 18px;font-family:'Noto Sans KR',sans-serif}
+.mu-connect-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:40px}
+.mu-connect-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;transition:all .2s;text-decoration:none;display:block}
+.mu-connect-card:hover{background:rgba(255,255,255,0.06);border-color:rgba(251,191,36,0.35);transform:translateY(-2px)}
+.mu-connect-cat{font-size:10px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:6px}
+.mu-connect-name{font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:6px}
+.mu-connect-list{font-size:12px;color:#64748b;line-height:1.8}
+</style>
+<!-- 페이지 배너 -->
+<div style="position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1400&q=90&auto=format&fit=crop" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Bulguksa_in_Gyeongju%2C_Korea.jpg/1280px-Bulguksa_in_Gyeongju%2C_Korea.jpg'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,15,15,0.6) 0%,rgba(0,0,0,0.75) 100%)"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">BUDDHIST MUSIC · 찬불가</div>
+    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:#ffffff;margin:0 0 10px;text-shadow:0 2px 20px rgba(0,0,0,0.7);font-family:'Noto Sans KR',sans-serif;line-height:1.2">불교 음악</h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif">AI로 창작된 찬불가와 명상 음악으로 마음을 고요히 합니다</p>
+  </div>
+</div>
+<div class="mu">
+  <div class="mu-badge">찬불가·명상 음악</div>
+  <h1 class="mu-title">🎵 <em>찬불가</em> & 명상 음악</h1>
+  <p class="mu-sub">마음을 고요히 하는 찬불가, 독경, 명상 음악을 모았습니다. 기도와 수행에 함께 하세요.</p>
+
+  <!-- 유튜브 배너 -->
+  <div style="background:linear-gradient(135deg,rgba(255,0,0,0.08),rgba(200,0,0,0.04));border:1px solid rgba(255,80,80,0.25);border-radius:18px;padding:24px 28px;margin-bottom:24px;display:flex;align-items:center;gap:20px">
+    <div style="font-size:44px;flex-shrink:0">▶️</div>
+    <div style="flex:1">
+      <div style="font-size:11px;font-weight:800;color:rgba(255,80,80,0.8);letter-spacing:.15em;margin-bottom:6px">YOUTUBE</div>
+      <div style="font-size:17px;font-weight:900;color:#f8fafc;margin-bottom:6px">잼공스토리</div>
+      <div style="font-size:13px;color:#94a3b8;line-height:1.7;margin-bottom:14px">마음을 위한 이야기 — 불교의 지혜와 통찰을 탐구하는 여정.<br>고요한 사유, 깊은 성찰, 일상의 깨달음을 함께 나눕니다.</div>
+      <a href="https://www.youtube.com/@JG-k9e" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,0,0,0.15);border:1px solid rgba(255,80,80,0.4);color:#ff6b6b;font-size:13px;font-weight:800;padding:9px 20px;border-radius:12px;text-decoration:none">▶ 잼공스토리 구독하기</a>
+    </div>
+  </div>
+  <div class="mu-notice">
+    <div class="mu-notice-icon">🎙️</div>
+    <p>잼공인연사찰만의 <strong>AI 찬불가</strong>를 Suno AI로 제작 중입니다.<br>
+    음원 완성 후 이 페이지에서 바로 들으실 수 있습니다. 유튜브 <strong>잼공스토리</strong>에서 미리 감상하세요.</p>
+  </div>
+
+  <!-- 오늘의 재일 배너 -->
+  <div class="mu-today" id="mu-today-banner" style="display:none">
+    <div class="mu-today-icon" id="mu-today-icon">🪔</div>
+    <div style="flex:1">
+      <div class="mu-today-label" id="mu-today-label">오늘의 재일</div>
+      <div class="mu-today-msg" id="mu-today-msg"></div>
+      <div class="mu-today-sub" id="mu-today-sub"></div>
+    </div>
+    <button type="button" class="mu-today-btn" id="mu-today-btn" onclick="filterFromBanner()">추천곡 보기</button>
+  </div>
+
+  <!-- 탭 -->
+  <div class="mu-tabs">
+    <button type="button" class="mu-tab active" onclick="filterMu('all',this)">전체</button>
+    <button type="button" class="mu-tab" onclick="filterMu('찬불가',this)">🙏 찬불가</button>
+    <button type="button" class="mu-tab" onclick="filterMu('독경',this)">📿 독경·진언</button>
+    <button type="button" class="mu-tab" onclick="filterMu('명상',this)">🧘 명상 음악</button>
+    <button type="button" class="mu-tab" onclick="filterMu('범패',this)">🎵 범패</button>
+    <button type="button" class="mu-tab liked-tab" onclick="filterMu('liked',this)">♥ 찜한 목록</button>
+  </div>
+  <div class="mu-grid" id="mu-grid"></div>
+
+  <!-- 카테고리별 기도도량 연결 -->
+  <div class="mu-sec-label">🕌 음악 목적별 추천 기도도량</div>
+  <div class="mu-connect-grid">
+    <a class="mu-connect-card" href="/sacred">
+      <div class="mu-connect-cat">🌊 찬불가 — 관음 기도</div>
+      <div class="mu-connect-name">관음 성지 도량</div>
+      <div class="mu-connect-list">낙산사 홍련암<br>남해 보리암<br>강화 보문사<br>여수 향일암</div>
+    </a>
+    <a class="mu-connect-card" href="/sacred">
+      <div class="mu-connect-cat">🕯️ 독경 — 조상·천도 기도</div>
+      <div class="mu-connect-name">지장 도량</div>
+      <div class="mu-connect-list">서울 봉은사<br>직지사 명부전<br>고창 선운사<br>법주사</div>
+    </a>
+    <a class="mu-connect-card" href="/sacred">
+      <div class="mu-connect-cat">🧘 명상 — 수행·정진</div>
+      <div class="mu-connect-name">산사 선방 도량</div>
+      <div class="mu-connect-list">해인사<br>통도사<br>오대산 월정사<br>지리산 쌍계사</div>
+    </a>
+    <a class="mu-connect-card" href="/sacred">
+      <div class="mu-connect-cat">💊 약사 기도 — 건강 회복</div>
+      <div class="mu-connect-name">약사 도량</div>
+      <div class="mu-connect-list">팔공산 파계사<br>진주 청곡사<br>동화사 약사전<br>진관사</div>
+    </a>
+    <a class="mu-connect-card" href="/manse">
+      <div class="mu-connect-cat">⭐ 나의 인연사찰 찾기</div>
+      <div class="mu-connect-name">사주로 찾는 기도도량</div>
+      <div class="mu-connect-list">생년월일시 입력<br>오행 분석<br>개인 기도 목적 매칭<br>전국 465곳 추천</div>
+    </a>
+    <a class="mu-connect-card" href="/prayer">
+      <div class="mu-connect-cat">🙏 음악과 함께하는 기도문</div>
+      <div class="mu-connect-name">기도문·발원문 보기</div>
+      <div class="mu-connect-list">관음 기도문<br>약사여래 기도문<br>재물·합격 발원문<br>가족화합 발원문</div>
+    </a>
+  </div>
+</div>
+
+<!-- 108배 팝업 -->
+<div class="mu-108-popup" id="mu-108-popup">
+  <div class="mu-108-title">🙇 108배 카운터</div>
+  <div class="mu-108-counter" id="mu-108-count">0</div>
+  <div class="mu-108-target">/ 108배</div>
+  <div class="mu-108-progress"><div class="mu-108-bar" id="mu-108-bar" style="width:0%"></div></div>
+  <div class="mu-108-actions">
+    <button type="button" class="mu-108-bow" onclick="addBow()">🙏 절하기</button>
+    <button type="button" class="mu-108-reset" onclick="resetBow()">초기화</button>
+    <button type="button" class="mu-108-close" onclick="close108()">닫기</button>
+  </div>
+</div>
+
+<!-- 플레이어 -->
+<div class="mu-player" id="mu-player">
+  <div class="mu-player-icon" id="mu-p-icon">🎵</div>
+  <div class="mu-player-info">
+    <div class="mu-player-name" id="mu-p-name">재생 중...</div>
+    <div class="mu-player-cat" id="mu-p-cat"></div>
+  </div>
+  <div class="mu-player-audio">
+    <audio id="mu-audio" controls onended="onAudioEnd()">
+      <source src="" type="audio/mpeg">
+    </audio>
+  </div>
+  <button type="button" class="mu-108-btn" id="mu-108-btn" onclick="toggle108()">🙇 108배</button>
+  <button type="button" class="mu-timer-btn" id="mu-timer-btn" onclick="toggleTimerPopup()">⏱ 타이머</button>
+  <button type="button" class="mu-player-close" onclick="closePlayer()">✕</button>
+</div>
+
+<!-- 타이머 팝업 -->
+<div class="mu-timer-popup" id="mu-timer-popup">
+  <div class="mu-timer-title">⏱ 명상 타이머</div>
+  <div class="mu-timer-display" id="mu-timer-display">--:--</div>
+  <div class="mu-timer-opts">
+    <button type="button" class="mu-timer-opt" onclick="setTimer(5)">5분</button>
+    <button type="button" class="mu-timer-opt" onclick="setTimer(10)">10분</button>
+    <button type="button" class="mu-timer-opt" onclick="setTimer(30)">30분</button>
+    <button type="button" class="mu-timer-opt" onclick="setTimer(60)">60분</button>
+  </div>
+  <button type="button" class="mu-timer-stop" onclick="stopTimer()">⏹ 타이머 종료</button>
+</div>
+
+<script src="https://jamgong-inyeonsachal.vercel.app/music-data.js"></script>
+<script>
+var cur='all';
+var curPlayIdx=-1;
+var timerSec=0, timerInterval=null;
+var bowCount=parseInt(localStorage.getItem('mu_bow_count')||'0');
+var todayBannerCat=null;
+
+/* ── 좋아요 ── */
+function getLike(name){return localStorage.getItem('mu_like_'+name)==='1';}
+function toggleLike(name,el){
+  var liked=getLike(name);
+  localStorage.setItem('mu_like_'+name,liked?'0':'1');
+  el.classList.toggle('liked',!liked);
+  el.querySelector('.mu-like-cnt').textContent=!liked?'♥':'♡';
+}
+
+/* ── 재생횟수 ── */
+function getPlayCnt(name){return parseInt(localStorage.getItem('mu_play_'+name)||'0');}
+function incPlayCnt(name){
+  var n=getPlayCnt(name)+1;
+  localStorage.setItem('mu_play_'+name,n);
+  return n;
+}
+
+/* ── 오늘의 재일 배너 ── */
+function getTodayJaeil(){
+  var d=new Date().getDate();
+  if(d<=2)  return{icon:'🌙',label:'초하루 법회',msg:'새달의 안녕을 발원하는 날입니다.',sub:'찬불가를 들으며 기도하세요.',cat:'찬불가',color:'choharu'};
+  if(d>=14&&d<=16) return{icon:'🌕',label:'보름 법회',msg:'달이 가장 밝은 날, 조상 천도 기도를 드리기 좋습니다.',sub:'독경·진언을 들으며 마음을 모으세요.',cat:'독경',color:'boreum'};
+  if(d>=17&&d<=19) return{icon:'🌊',label:'관음재일 · 지장재일',msg:'관세음보살과 지장보살을 기리는 날입니다.',sub:'찬불가와 함께 인연·천도 기도를 드리세요.',cat:'찬불가',color:'gwan'};
+  if(d>=23&&d<=25) return{icon:'🌊',label:'관음재일',msg:'관세음보살을 기리는 날입니다.',sub:'인연·건강 기도를 드리기 가장 좋은 날입니다.',cat:'찬불가',color:'gwan'};
+  return{icon:'🪔',label:'오늘도 기도하는 하루',msg:'매일 찬불가와 함께 마음을 고요히 합니다.',sub:'명상 음악으로 하루를 시작해보세요.',cat:null,color:'normal'};
+}
+function initTodayBanner(){
+  var j=getTodayJaeil();
+  todayBannerCat=j.cat;
+  var el=document.getElementById('mu-today-banner');
+  el.className='mu-today '+j.color;
+  el.style.display='flex';
+  document.getElementById('mu-today-icon').textContent=j.icon;
+  document.getElementById('mu-today-label').textContent=j.label;
+  document.getElementById('mu-today-msg').textContent=j.msg;
+  document.getElementById('mu-today-sub').textContent=j.sub;
+  if(!j.cat) document.getElementById('mu-today-btn').style.display='none';
+}
+function filterFromBanner(){
+  if(!todayBannerCat) return;
+  var btn=document.querySelector('.mu-tab.liked-tab');
+  document.querySelectorAll('.mu-tab').forEach(function(t){t.classList.remove('active');});
+  // 해당 카테고리 탭 찾아 활성화
+  document.querySelectorAll('.mu-tab').forEach(function(t){
+    if(t.textContent.indexOf(todayBannerCat)>-1){t.classList.add('active');}
+  });
+  cur=todayBannerCat;
+  render();
+}
+
+/* ── 탭 필터 ── */
+function filterMu(cat,btn){
+  cur=cat;
+  document.querySelectorAll('.mu-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  render();
+}
+
+/* ── 렌더링 ── */
+function render(){
+  var list;
+  if(cur==='liked'&&list.length===0){
+    document.getElementById('mu-grid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#475569;font-size:14px">♡ 좋아요를 누른 곡이 없습니다.<br><span style="font-size:12px;color:#334155">곡 카드의 ♡ 버튼을 눌러 찜해보세요.</span></div>';
+    return;
+  }
+  var html='';
+  list.forEach(function(m,i){
+    var realIdx=MUSICS.indexOf(m);
+    var liked=getLike(m.name);
+    var plays=getPlayCnt(m.name);
+    var isPlaying=(realIdx===curPlayIdx);
+    html+='<div class="mu-card'+(isPlaying?' playing':'')+'\" id="mu-card-'+realIdx+'">';
+    /* 썸네일 */
+    html+='<div class="mu-card-thumb" onclick="'+(m.coming?'alert(\'곧 공개됩니다!\')':m.src?'playAudio('+realIdx+')':m.yt?'window.open(\''+m.yt+'\',\'_blank\')':'alert(\'준비 중입니다.\')')+'">';
+    html+=m.icon;
+    if(!m.coming){
+      html+='<div class="mu-play-btn"><div class="mu-play-icon">'+(isPlaying?'⏸':'▶')+'</div></div>';
+    } else {
+      html+='<div style="position:absolute;bottom:8px;right:10px;font-size:10px;color:#FBBF24;font-weight:800;background:rgba(0,0,0,.5);padding:2px 7px;border-radius:6px">제작 중</div>';
+    }
+    if(plays>0)html+='<div style="position:absolute;top:8px;left:10px;font-size:10px;color:rgba(255,255,255,0.6);background:rgba(0,0,0,.5);padding:2px 7px;border-radius:6px">▶ '+plays+'</div>';
+    html+='</div>';
+    /* 카드 바디 */
+    html+='<div class="mu-card-body">';
+    html+='<div class="mu-card-cat">'+m.cat+'</div>';
+    html+='<div class="mu-card-name">'+m.name+'</div>';
+    html+='<div class="mu-card-desc">'+m.desc+'</div>';
+    html+='<div class="mu-card-row"><span class="mu-card-duration">⏱ '+m.dur+'</span>';
+    html+='<div class="mu-card-actions">';
+    /* 좋아요 버튼 */
+    html+='<button type="button" class="mu-like-btn'+(liked?' liked':'')+'\" onclick="toggleLike(\''+m.name.replace(/'/g,"\\'")+'\\',this)">';
+    html+='<span class="mu-like-cnt">'+(liked?'♥':'♡')+'</span></button>';
+    /* 재생 버튼 */
+    if(m.coming)html+='<span style="font-size:11px;color:#FBBF24;font-weight:700">준비 중</span>';
+    else if(m.yt)html+='<button type="button" class="mu-card-play" onclick="window.open(\''+m.yt+'\',\'_blank\')">▶ 듣기</button>';
+    else if(m.src)html+='<button type="button" class="mu-card-play" onclick="playAudio('+realIdx+')">'+(isPlaying?'⏸ 재생 중':'▶ 재생')+'</button>';
+    else html+='<span style="font-size:11px;color:#475569">업로드 예정</span>';
+    html+='</div></div></div></div>';
+  });
+  document.getElementById('mu-grid').innerHTML=html;
+}
+
+/* ── 오디오 재생 ── */
+function playAudio(i){
+  var m=MUSICS[i];
+  if(!m.src)return;
+  var audio=document.getElementById('mu-audio');
+  if(curPlayIdx===i){
+    if(audio.paused){audio.play();}else{audio.pause();}
+    render();return;
+  }
+  curPlayIdx=i;
+  audio.src=m.src;
+  audio.play();
+  incPlayCnt(m.name);
+  document.getElementById('mu-p-icon').textContent=m.icon;
+  document.getElementById('mu-p-name').textContent=m.name;
+  document.getElementById('mu-p-cat').textContent=m.cat;
+  document.getElementById('mu-player').classList.add('show');
+  render();
+}
+function onAudioEnd(){
+  curPlayIdx=-1;
+  stopTimer();
+  render();
+}
+function closePlayer(){
+  document.getElementById('mu-audio').pause();
+  document.getElementById('mu-player').classList.remove('show');
+  document.getElementById('mu-timer-popup').classList.remove('show');
+  curPlayIdx=-1;
+  stopTimer();
+  render();
+}
+
+/* ── 타이머 ── */
+function toggleTimerPopup(){
+  document.getElementById('mu-timer-popup').classList.toggle('show');
+}
+function setTimer(min){
+  stopTimer();
+  timerSec=min*60;
+  document.querySelectorAll('.mu-timer-opt').forEach(function(el){el.classList.remove('sel');});
+  event.target.classList.add('sel');
+  document.getElementById('mu-timer-btn').classList.add('running');
+  updateTimerDisplay();
+  timerInterval=setInterval(function(){
+    timerSec--;
+    updateTimerDisplay();
+    if(timerSec<=0){
+      stopTimer();
+      document.getElementById('mu-audio').pause();
+      curPlayIdx=-1;
+      render();
+      alert('⏱ 명상 타이머가 종료되었습니다.\n수고하셨습니다. 🙏');
+    }
+  },1000);
+}
+function updateTimerDisplay(){
+  var m=Math.floor(timerSec/60);
+  var s=timerSec%60;
+  document.getElementById('mu-timer-display').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+function stopTimer(){
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+  timerSec=0;
+  document.getElementById('mu-timer-display').textContent='--:--';
+  document.getElementById('mu-timer-btn').classList.remove('running');
+  document.querySelectorAll('.mu-timer-opt').forEach(function(el){el.classList.remove('sel');});
+  document.getElementById('mu-timer-popup').classList.remove('show');
+}
+
+/* ── 108배 카운터 ── */
+function toggle108(){
+  var p=document.getElementById('mu-108-popup');
+  p.classList.toggle('show');
+  document.getElementById('mu-108-btn').classList.toggle('active',p.classList.contains('show'));
+}
+function close108(){
+  document.getElementById('mu-108-popup').classList.remove('show');
+  document.getElementById('mu-108-btn').classList.remove('active');
+}
+function addBow(){
+  if(bowCount>=108){
+    setTimeout(function(){alert('🙏 이미 108배를 완성하셨습니다!\n초기화 버튼을 눌러 다시 시작하세요.');},0);
+    return;
+  }
+  bowCount++;
+  localStorage.setItem('mu_bow_count',bowCount);
+  updateBowDisplay();
+  if(bowCount===108){
+    setTimeout(function(){alert('🎉 108배 완성!\n모든 번뇌가 사라지기를 발원합니다. 🙏');},300);
+  }
+}
+function resetBow(){
+  bowCount=0;
+  localStorage.setItem('mu_bow_count',0);
+  updateBowDisplay();
+}
+function updateBowDisplay(){
+  var el=document.getElementById('mu-108-count');
+  var bar=document.getElementById('mu-108-bar');
+  if(el) el.textContent=bowCount;
+  if(bar) bar.style.width=Math.min(bowCount/108*100,100)+'%';
+}
+
+render();
+initTodayBanner();
+updateBowDisplay();
+</script>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

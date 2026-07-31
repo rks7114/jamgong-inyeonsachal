@@ -1,0 +1,653 @@
+<meta charset="UTF-8">
+<meta name="description" content="꿈해몽 AI 무료 분석. 용꿈·돼지꿈·조상꿈·태몽 등 꿈의 상징과 의미를 불교적 관점으로 해석하고 기도 방법을 안내합니다. 잼공인연사찰">
+<meta name="keywords" content="꿈해몽,꿈풀이,용꿈,돼지꿈,태몽,꿈해석,불교꿈해몽,잼공">
+<meta property="og:title" content="꿈해몽 AI 분석 - 잼공인연사찰">
+<meta property="og:description" content="AI가 꿈의 상징과 메시지를 분석하고 기도 방법을 안내합니다.">
+<meta property="og:url" content="https://jamgong.kr/dream">
+<meta property="og:image" content="https://jamgong.kr/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"꿈해몽 AI 분석","url":"https://jamgong.kr/dream","description":"AI 기반 꿈해몽 분석 서비스. 꿈의 상징과 의미를 불교적 관점으로 해석합니다.","isPartOf":{"@type":"WebSite","name":"잼공인연사찰","url":"https://jamgong.kr"}}</script>
+<style>
+.df{font-family:'Noto Sans KR',sans-serif;max-width:1000px;margin:0 auto;padding:48px 24px 80px;color:#e2e8f0}
+.df-badge{display:inline-block;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.35);color:#c4b5fd;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.df-title{font-size:clamp(26px,4vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.df-title em{color:#c4b5fd;font-style:normal}
+.df-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+
+/* ── AI 입력 박스 (업그레이드) ── */
+.df-input-box{position:relative;border-radius:24px;overflow:hidden;padding:1.5px;background:linear-gradient(135deg,rgba(167,139,250,.7) 0%,rgba(109,40,217,.5) 40%,rgba(192,132,252,.6) 100%);box-shadow:0 0 50px rgba(167,139,250,.12),0 0 100px rgba(109,40,217,.07);margin-bottom:40px}
+.df-input-inner{background:linear-gradient(160deg,rgba(8,4,24,.97) 0%,rgba(16,8,45,.95) 100%);border-radius:22.5px;padding:32px 30px 28px;position:relative}
+.df-input-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 15% 0%,rgba(167,139,250,.12) 0%,transparent 55%),radial-gradient(ellipse at 85% 100%,rgba(109,40,217,.1) 0%,transparent 50%);pointer-events:none;border-radius:22.5px}
+.df-label-wrap{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.df-label-dot{width:10px;height:10px;border-radius:50%;background:#a78bfa;box-shadow:0 0 8px rgba(167,139,250,.6);flex-shrink:0;animation:dfDotPulse 2.5s infinite}
+@keyframes dfDotPulse{0%,100%{box-shadow:0 0 8px rgba(167,139,250,.5)}50%{box-shadow:0 0 16px rgba(167,139,250,.9),0 0 30px rgba(167,139,250,.4)}}
+.df-label{font-size:18px;font-weight:900;color:#f8fafc;letter-spacing:.02em;display:block;margin:0}
+.df-label span{color:#c4b5fd}
+.df-textarea-wrap{position:relative;margin-bottom:16px}
+.df-textarea{background:rgba(255,255,255,.04);border:2px solid rgba(167,139,250,.25);border-radius:16px;padding:20px;color:#f8fafc;font-size:15px;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;resize:vertical;min-height:140px;line-height:1.8;transition:border-color .25s,box-shadow .25s}
+.df-textarea::placeholder{color:#475569;font-size:14px}
+.df-textarea:focus{outline:none;border-color:rgba(167,139,250,.65);box-shadow:0 0 0 4px rgba(167,139,250,.08),0 0 20px rgba(167,139,250,.1)}
+.df-textarea-hint{position:absolute;bottom:12px;right:14px;font-size:10px;color:#475569;font-weight:600;pointer-events:none}
+.df-chips-label{font-size:10px;font-weight:800;color:#64748b;letter-spacing:.12em;margin-bottom:8px}
+.df-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.df-chip{background:rgba(167,139,250,.08);border:1.5px solid rgba(167,139,250,.22);color:#c4b5fd;font-size:12px;font-weight:700;padding:8px 16px;border-radius:50px;cursor:pointer;transition:all .18s;font-family:'Noto Sans KR',sans-serif}
+.df-chip:hover{background:rgba(167,139,250,.2);border-color:rgba(167,139,250,.55);box-shadow:0 0 10px rgba(167,139,250,.15);transform:translateY(-1px)}
+.df-btn{width:100%;background:linear-gradient(135deg,#6d28d9 0%,#7c3aed 40%,#a78bfa 100%);color:#fff;font-size:16px;font-weight:900;padding:18px;border-radius:16px;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .25s;letter-spacing:.04em;position:relative;overflow:hidden}
+.df-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(-100%);transition:transform .5s}
+.df-btn:hover{transform:translateY(-2px);box-shadow:0 10px 35px rgba(109,40,217,.45),0 4px 14px rgba(167,139,250,.3)}
+.df-btn:hover::before{transform:translateX(120%)}
+.df-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.df-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,92,246,0.4)}
+.df-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.df-ai-result{margin-top:18px;display:none;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:14px;padding:20px}
+.df-loading{text-align:center;padding:20px;color:#c4b5fd;font-size:14px}
+
+/* ── 오늘의 꿈 (업그레이드) ── */
+.df-today{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+@media(max-width:600px){.df-today{grid-template-columns:1fr}}
+.df-today-card{border-radius:20px;padding:24px;position:relative;overflow:hidden;transition:all .25s}
+.df-today-card::before{content:'';position:absolute;inset:0;border-radius:20px;padding:1px;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.df-today-good{background:linear-gradient(135deg,rgba(251,191,36,0.1),rgba(251,191,36,0.04),rgba(168,85,247,0.05));border:1px solid rgba(251,191,36,0.3)}
+.df-today-good::before{background:linear-gradient(135deg,rgba(251,191,36,.5),rgba(168,85,247,.3))}
+.df-today-bad{background:linear-gradient(135deg,rgba(100,116,139,0.12),rgba(100,116,139,0.04));border:1px solid rgba(100,116,139,0.25)}
+.df-today-bad::before{background:linear-gradient(135deg,rgba(148,163,184,.4),rgba(71,85,105,.2))}
+.df-today-card:hover{transform:translateY(-3px)}
+.df-today-good:hover{box-shadow:0 12px 32px rgba(251,191,36,.15)}
+.df-today-bad:hover{box-shadow:0 12px 32px rgba(0,0,0,.3)}
+/* 배경 광원 */
+.df-today-good::after{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(251,191,36,.15) 0%,transparent 70%);pointer-events:none}
+.df-today-bad::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:radial-gradient(circle,rgba(100,116,139,.1) 0%,transparent 70%);pointer-events:none}
+.df-today-label{font-size:10px;font-weight:800;letter-spacing:.15em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.df-today-name{font-size:20px;font-weight:900;color:#f8fafc;margin-bottom:8px;line-height:1.3}
+.df-today-desc{font-size:12.5px;color:#94a3b8;line-height:1.8}
+/* shine 스윕 */
+@keyframes dfShine{from{transform:translateX(-100%)}to{transform:translateX(220%)}};
+.df-today-card .df-shine{position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);animation:dfShine .8s ease forwards;pointer-events:none}
+
+/* ── 카테고리 탭 (업그레이드) ── */
+.df-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.df-tab{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);color:#64748b;font-size:12px;font-weight:800;padding:8px 18px;border-radius:22px;cursor:pointer;transition:all .18s;letter-spacing:.02em}
+.df-tab.active{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(124,58,237,.15));border-color:rgba(167,139,250,.5);color:#c4b5fd;box-shadow:0 0 16px rgba(167,139,250,.2)}
+.df-tab:hover:not(.active){border-color:rgba(167,139,250,.3);color:#c4b5fd;background:rgba(167,139,250,.06)}
+
+/* ── 검색창 (업그레이드) ── */
+.df-search-wrap{position:relative;margin-bottom:24px}
+.df-search{width:100%;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:14px;padding:13px 18px 13px 46px;color:#f8fafc;font-size:14px;font-weight:500;font-family:'Noto Sans KR',sans-serif;box-sizing:border-box;transition:border-color .2s}
+.df-search:focus{outline:none;border-color:rgba(167,139,250,.5);background:rgba(167,139,250,.04);box-shadow:0 0 0 3px rgba(167,139,250,.08)}
+.df-search::placeholder{color:#334155}
+.df-search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#475569;font-size:16px;pointer-events:none}
+
+/* ── 꿈 카드 (전면 업그레이드) ── */
+.df-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+@keyframes dfCardIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.df-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:18px;
+  padding:20px 20px 18px;
+  transition:all .22s;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  animation:dfCardIn .45s ease both;
+}
+/* 상단 컬러 액센트 바 */
+.df-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(167,139,250,.6),rgba(251,191,36,.3));opacity:0;transition:opacity .22s}
+/* shine 레이어 */
+.df-card::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);transform:translateX(-100%);transition:transform .5s ease;pointer-events:none}
+.df-card:hover{
+  border-color:rgba(167,139,250,.35);
+  transform:translateY(-4px);
+  background:rgba(167,139,250,.05);
+  box-shadow:0 8px 28px rgba(124,58,237,.12);
+}
+.df-card:hover::before{opacity:1}
+.df-card:hover::after{transform:translateX(120%)}
+
+/* 길몽 카드 */
+.df-card-good{border-color:rgba(251,191,36,.15)}
+.df-card-good::before{background:linear-gradient(90deg,rgba(251,191,36,.7),rgba(168,85,247,.3))!important;opacity:1!important}
+.df-card-good:hover{border-color:rgba(251,191,36,.4)!important;box-shadow:0 8px 28px rgba(251,191,36,.12)!important}
+
+/* 흉몽 카드 */
+.df-card-bad{border-color:rgba(100,116,139,.15)}
+.df-card-bad::before{background:linear-gradient(90deg,rgba(100,116,139,.5),rgba(71,85,105,.3))!important;opacity:1!important}
+
+/* 태그 */
+.df-card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.df-tag{font-size:9px;font-weight:900;padding:3px 9px;border-radius:12px;letter-spacing:.04em}
+.df-tag-good{background:rgba(251,191,36,.14);color:#FBBF24;border:1px solid rgba(251,191,36,.3)}
+.df-tag-bad{background:rgba(100,116,139,.12);color:#94a3b8;border:1px solid rgba(100,116,139,.25)}
+.df-tag-info{background:rgba(167,139,250,.12);color:#c4b5fd;border:1px solid rgba(167,139,250,.28)}
+.df-tag-temple{background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.25)}
+
+/* 카드 이름 */
+.df-card-name{font-size:16px;font-weight:900;color:#f8fafc;margin-bottom:7px;line-height:1.3}
+.df-card-good .df-card-name{color:#fff}
+/* 설명 */
+.df-card-desc{font-size:12.5px;color:#64748b;line-height:1.78}
+.df-card:hover .df-card-desc{color:#94a3b8}
+
+/* 카드 하단 더보기 화살표 */
+.df-card-arrow{position:absolute;bottom:16px;right:16px;font-size:14px;color:rgba(167,139,250,.3);transition:all .2s;opacity:0;transform:translateX(-4px)}
+.df-card:hover .df-card-arrow{opacity:1;transform:none;color:rgba(167,139,250,.7)}
+
+.df-hidden{display:none}
+</style>
+<!-- 꿈해몽 배너 (영상 + 캔버스 오버레이) -->
+<style>
+#dream-banner{position:relative;width:100%;height:400px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#04010f}
+#dream-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+#dream-banner-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;animation:dreamZoom 18s ease-in-out infinite alternate}
+@keyframes dreamZoom{0%{transform:scale(1.06)}100%{transform:scale(1.12) translateY(-12px)}}
+#dream-banner-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(5,0,25,0.45) 0%,rgba(20,5,55,0.4) 40%,rgba(0,0,0,0.75) 100%);z-index:1}
+#dream-fx{position:absolute;inset:0;z-index:2;pointer-events:none;width:100%;height:100%}
+.dream-text{position:relative;z-index:3;text-align:center;padding:0 24px;max-width:720px}
+#dream-banner::after{content:'';position:absolute;bottom:0;left:0;right:0;height:130px;background:linear-gradient(to top,var(--page-bg,#080612) 0%,transparent 100%);z-index:4;pointer-events:none}
+@keyframes dreamFadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.dream-text .db-badge{animation:dreamFadeUp .7s .3s ease both;opacity:0}
+.dream-text h1{animation:dreamFadeUp .7s .6s ease both;opacity:0}
+.dream-text p{animation:dreamFadeUp .7s .9s ease both;opacity:0}
+</style>
+
+<div id="dream-banner">
+  <!-- 영상 배경 (Readdy.ai에서 영상 URL 입력) -->
+  <video id="dream-video" autoplay muted loop playsinline
+    poster="/dream-banner.jpg"
+    onerror="this.style.display='none'">
+    <source src="꿈해몽영상2.mp4" type="video/mp4">
+  </video>
+  <!-- 이미지 fallback (영상 없을 때) -->
+  <img id="dream-banner-img"
+    src="/dream-banner.jpg"
+    onerror="this.style.display='none'"
+    alt="꿈해몽 배너" style="display:none" id="dream-banner-img2">
+  <div id="dream-banner-overlay"></div>
+  <!-- 꽃잎·별 캔버스 오버레이 -->
+  <canvas id="dream-fx"></canvas>
+  <div class="dream-text">
+    <div class="db-badge" style="display:inline-block;background:rgba(255,255,255,0.08);border:1px solid rgba(196,181,253,0.6);color:#c4b5fd;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">DREAM INTERPRETATION · 꿈해몽</div>
+    <h1 style="font-size:clamp(32px,5vw,60px);font-weight:900;color:#ffffff;margin:0 0 12px;text-shadow:0 2px 30px rgba(139,92,246,0.7),0 0 60px rgba(196,181,253,0.4);font-family:'Noto Sans KR',sans-serif;line-height:1.15">꿈해몽</h1>
+    <p style="font-size:14px;color:rgba(220,210,255,0.85);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif;text-shadow:0 1px 12px rgba(0,0,0,0.9)">AI가 꿈의 상징과 메시지를 분석하고 기도 방법을 안내합니다</p>
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', function(){
+// 영상/이미지 fallback 처리
+(function(){
+  var vid=document.getElementById('dream-video');
+  var img=document.getElementById('dream-banner-img2')||document.getElementById('dream-banner-img');
+  if(vid){
+    // 영상 소스가 없거나 로드 실패 시 이미지 표시
+    if(!vid.querySelector('source')&&!vid.src){
+      vid.style.display='none';
+      if(img)img.style.display='block';
+    }
+    vid.addEventListener('error',function(){
+      vid.style.display='none';
+      if(img)img.style.display='block';
+    });
+  }
+})();
+(function(){
+  var c=document.getElementById('dream-fx');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  var W,H;
+  function resize(){
+    var b=document.getElementById('dream-banner');
+    W=c.width=b?b.offsetWidth:window.innerWidth;
+    H=c.height=b?b.offsetHeight:400;
+  }
+  resize();
+  window.addEventListener('resize',function(){resize();init();});
+
+  // ── 파티클 데이터 ──
+  var stars=[],petals=[],lanterns=[],mists=[];
+
+  function init(){
+    stars=[];petals=[];lanterns=[];mists=[];
+    // 별
+    for(var i=0;i<120;i++){
+      stars.push({x:Math.random()*W,y:Math.random()*H*0.75,
+        r:Math.random()*1.6+0.2,op:Math.random()*0.8+0.2,
+        sp:Math.random()*0.025+0.005,ph:Math.random()*Math.PI*2});
+    }
+    // 꽃잎
+    for(var j=0;j<45;j++){
+      petals.push({x:Math.random()*W,y:Math.random()*H-H,
+        sz:Math.random()*9+4,vx:(Math.random()-.5)*0.8,vy:Math.random()*0.85+0.2,
+        rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*0.05,
+        op:Math.random()*0.7+0.2,
+        col:Math.random()>.5?[255,185,220]:[255,225,245]});
+    }
+    // 공중 등불
+    for(var k=0;k<6;k++){
+      lanterns.push({x:W*(0.1+k*0.15),y:H*0.55+Math.random()*40,
+        r:Math.random()*3+2,col:Math.random()>.5?[251,191,36]:[255,140,100],
+        sp:Math.random()*0.01+0.003,ph:Math.random()*Math.PI*2,drift:0});
+    }
+    // 안개
+    for(var m=0;m<5;m++){
+      mists.push({x:Math.random()*W,y:H*0.6+Math.random()*H*0.25,
+        w:W*(0.3+Math.random()*0.4),h:30+Math.random()*40,
+        op:0.04+Math.random()*0.06,sp:Math.random()*0.004+0.001,ph:Math.random()*Math.PI*2});
+    }
+  }
+  init();
+
+  // ── 사찰 실루엣 ──
+  function drawTemple(){
+    var bx=W*0.5, by=H*0.82, sc=Math.min(W/800,1);
+    ctx.save();ctx.translate(bx,by);ctx.scale(sc,sc);
+    ctx.fillStyle='rgba(5,0,20,0.85)';
+    // 본당
+    ctx.beginPath();ctx.rect(-120,0,240,-90);ctx.fill();
+    // 지붕
+    ctx.beginPath();ctx.moveTo(-145,-90);ctx.lineTo(0,-145);ctx.lineTo(145,-90);ctx.closePath();ctx.fill();
+    // 처마 끝 곡선
+    ctx.strokeStyle='rgba(251,191,36,0.25)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(-145,-90);ctx.quadraticCurveTo(-160,-100,-150,-90);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(145,-90);ctx.quadraticCurveTo(160,-100,150,-90);ctx.stroke();
+    // 좌우 탑
+    ctx.fillStyle='rgba(5,0,20,0.75)';
+    ctx.beginPath();ctx.rect(-220,0,55,-65);ctx.fill();
+    ctx.beginPath();ctx.moveTo(-220,-65);ctx.lineTo(-192.5,-95);ctx.lineTo(-165,-65);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.rect(165,0,55,-65);ctx.fill();
+    ctx.beginPath();ctx.moveTo(165,-65);ctx.lineTo(192.5,-95);ctx.lineTo(220,-65);ctx.closePath();ctx.fill();
+    // 기단
+    ctx.fillStyle='rgba(5,0,20,0.9)';
+    ctx.beginPath();ctx.rect(-240,0,480,18);ctx.fill();
+    // 창호 빛
+    ctx.fillStyle='rgba(251,191,36,0.12)';
+    ctx.beginPath();ctx.rect(-30,-75,20,35);ctx.fill();
+    ctx.beginPath();ctx.rect(10,-75,20,35);ctx.fill();
+    ctx.restore();
+  }
+
+  var t=0,moonR=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    t+=0.016;
+
+    // ── 하늘 그라디언트 ──
+    var sky=ctx.createLinearGradient(0,0,0,H);
+    sky.addColorStop(0,'#010008');
+    sky.addColorStop(0.4,'#0a0320');
+    sky.addColorStop(0.75,'#1a0535');
+    sky.addColorStop(1,'#0d0120');
+    ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+
+    // ── 달 (서서히 등장) ──
+    moonR=Math.min(moonR+0.18,46);
+    var mx=W*0.78,my=H*0.22;
+    // 달 오라
+    var moonAura=ctx.createRadialGradient(mx,my,moonR*0.5,mx,my,moonR*4.5);
+    moonAura.addColorStop(0,'rgba(200,215,255,0.18)');
+    moonAura.addColorStop(0.4,'rgba(160,180,255,0.07)');
+    moonAura.addColorStop(1,'rgba(100,120,255,0)');
+    ctx.beginPath();ctx.arc(mx,my,moonR*4.5,0,Math.PI*2);
+    ctx.fillStyle=moonAura;ctx.fill();
+    // 달 본체
+    var moonGrad=ctx.createRadialGradient(mx-moonR*0.25,my-moonR*0.2,moonR*0.1,mx,my,moonR);
+    moonGrad.addColorStop(0,'rgba(240,245,255,0.97)');
+    moonGrad.addColorStop(0.5,'rgba(210,225,255,0.92)');
+    moonGrad.addColorStop(1,'rgba(170,190,255,0.7)');
+    ctx.beginPath();ctx.arc(mx,my,moonR,0,Math.PI*2);
+    ctx.fillStyle=moonGrad;
+    ctx.shadowColor='rgba(190,210,255,0.8)';ctx.shadowBlur=28;
+    ctx.fill();ctx.shadowBlur=0;
+    // 달 무늬
+    ctx.globalAlpha=0.08;ctx.fillStyle='#8090c0';
+    ctx.beginPath();ctx.arc(mx+moonR*0.25,my-moonR*0.15,moonR*0.28,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(mx-moonR*0.3,my+moonR*0.2,moonR*0.18,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+
+    // ── 별 ──
+    stars.forEach(function(s){
+      var pulse=0.3+0.7*Math.abs(Math.sin(t*s.sp*50+s.ph));
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,'+(pulse*s.op)+')';ctx.fill();
+      if(s.r>1.2){
+        ctx.save();ctx.globalAlpha=pulse*s.op*0.45;ctx.strokeStyle='rgba(255,255,255,0.7)';ctx.lineWidth=0.4;
+        for(var d=0;d<4;d++){var a=d*Math.PI/2;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x+Math.cos(a)*s.r*6,s.y+Math.sin(a)*s.r*6);ctx.stroke();}
+        ctx.restore();
+      }
+    });
+
+    // ── 보라색 성운 ──
+    var neb=ctx.createRadialGradient(W*0.25,H*0.3,0,W*0.25,H*0.3,W*0.35);
+    neb.addColorStop(0,'rgba(88,28,200,0.09)');neb.addColorStop(1,'rgba(88,28,200,0)');
+    ctx.fillStyle=neb;ctx.fillRect(0,0,W,H);
+    var neb2=ctx.createRadialGradient(W*0.6,H*0.15,0,W*0.6,H*0.15,W*0.28);
+    neb2.addColorStop(0,'rgba(139,92,246,0.07)');neb2.addColorStop(1,'rgba(139,92,246,0)');
+    ctx.fillStyle=neb2;ctx.fillRect(0,0,W,H);
+
+    // ── 안개 ──
+    mists.forEach(function(m){
+      var pulse=m.op*(0.7+0.3*Math.sin(t*m.sp*60+m.ph));
+      var mg=ctx.createRadialGradient(m.x,m.y,0,m.x,m.y,m.w*0.5);
+      mg.addColorStop(0,'rgba(140,100,200,'+pulse+')');mg.addColorStop(1,'rgba(140,100,200,0)');
+      ctx.save();ctx.scale(1,m.h/m.w);ctx.beginPath();ctx.arc(m.x,m.y*m.w/m.h,m.w*0.5,0,Math.PI*2);
+      ctx.fillStyle=mg;ctx.fill();ctx.restore();
+      m.x+=Math.sin(t*m.sp*40+m.ph)*0.3;
+    });
+
+    // ── 사찰 실루엣 ──
+    drawTemple();
+
+    // ── 등불 ──
+    lanterns.forEach(function(l){
+      l.drift+=0.016;
+      var lx=l.x+Math.sin(l.drift*l.sp*40+l.ph)*8;
+      var ly=l.y+Math.sin(l.drift*l.sp*30)*4;
+      var lg=ctx.createRadialGradient(lx,ly,0,lx,ly,l.r*5);
+      lg.addColorStop(0,'rgba('+l.col+',0.55)');lg.addColorStop(1,'rgba('+l.col+',0)');
+      ctx.beginPath();ctx.arc(lx,ly,l.r*5,0,Math.PI*2);ctx.fillStyle=lg;ctx.fill();
+      ctx.beginPath();ctx.arc(lx,ly,l.r,0,Math.PI*2);
+      ctx.fillStyle='rgba('+l.col+',0.9)';
+      ctx.shadowColor='rgba('+l.col+',0.8)';ctx.shadowBlur=12;ctx.fill();ctx.shadowBlur=0;
+    });
+
+    // ── 꽃잎 ──
+    petals.forEach(function(p){
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      var fo=p.op*(0.4+0.6*Math.abs(Math.sin(t*1.2+p.x*0.01)));
+      ctx.globalAlpha=fo;
+      ctx.fillStyle='rgba('+p.col+','+fo+')';
+      ctx.beginPath();ctx.ellipse(0,0,p.sz,p.sz*0.44,0,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=fo*0.45;ctx.fillStyle='rgba(255,255,255,0.9)';
+      ctx.beginPath();ctx.ellipse(-p.sz*0.2,-p.sz*0.1,p.sz*0.32,p.sz*0.16,0.4,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+      p.x+=p.vx+Math.sin(t*0.8+p.y*0.015)*0.35;p.y+=p.vy;p.rot+=p.rv;
+      if(p.y>H+20){p.y=-20;p.x=Math.random()*W;}
+      if(p.x<-20)p.x=W+20;if(p.x>W+20)p.x=-20;
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+});</script>
+
+<div class="df">
+  <div class="df-badge">꿈해몽</div>
+  <h1 class="df-title">🌙 꿈에서 온 <em>메시지</em></h1>
+  <p class="df-sub">꿈 속 상징의 의미를 찾아보세요. 길몽, 흉몽, 사찰 관련, 동물 꿈까지 해설합니다.</p>
+
+  <!-- 신비 메인 배너 -->
+  <div style="background:linear-gradient(135deg,rgba(10,5,30,0.97),rgba(25,10,55,0.92));border:1px solid rgba(167,139,250,0.2);border-radius:24px;padding:40px 32px;margin-bottom:20px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 20% 50%,rgba(124,58,237,0.18) 0%,transparent 55%),radial-gradient(ellipse at 80% 10%,rgba(196,181,253,0.08) 0%,transparent 50%);pointer-events:none"></div>
+    <div style="position:relative;z-index:1">
+      <div style="font-size:11px;font-weight:800;color:rgba(196,181,253,0.7);letter-spacing:.25em;margin-bottom:16px">✦ 꿈해몽 (夢解夢) ✦</div>
+      <div style="font-size:clamp(18px,2.8vw,28px);font-weight:900;color:#f8fafc;line-height:1.55;margin-bottom:16px">
+        꿈은 무의식이 전하는<br>
+        <span style="color:#c4b5fd">하늘의 메시지</span>
+      </div>
+      <div style="font-size:14px;color:#94a3b8;line-height:2;margin-bottom:28px;max-width:620px">
+        불교 전통에서 꿈은 단순한 수면 중 현상이 아닌 <strong style="color:#e2e8f0">전생의 업(業)</strong>과 <strong style="color:#c4b5fd">현재의 기운</strong>이 교차하는 공간입니다.<br>
+        수천 가지 꿈 상징 데이터베이스와 <strong style="color:#FBBF24">AI 심층 해석</strong>으로 당신의 꿈이 전하는 진짜 의미를 풀어드립니다.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <span style="background:rgba(196,181,253,0.1);border:1px solid rgba(196,181,253,0.4);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#c4b5fd">🤖 AI 심층 해석</span>
+        <span style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.35);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#FBBF24">☸️ 불교 꿈 상징</span>
+        <span style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#6ee7b7">✨ 길흉 판별</span>
+        <span style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#93c5fd">🏯 사찰 기도 연동</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 꿈해몽이란? -->
+  <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:28px;margin-bottom:20px">
+    <div style="font-size:11px;font-weight:800;color:#c4b5fd;letter-spacing:.15em;margin-bottom:14px">📖 꿈해몽이란?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🌙 꿈의 세 가지 층위</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">불교에서는 꿈을 상(想)·업(業)·천(天) 세 가지로 분류합니다. 특히 반복되는 꿈이나 선명한 꿈은 업의 흐름을 담고 있다고 봅니다.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🐉 길몽과 흉몽</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">용·물·불·돼지는 대표적 길몽 상징입니다. 그러나 같은 상징도 꿈의 맥락과 감정에 따라 해석이 달라질 수 있어 AI 종합 해석이 중요합니다.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🙏 흉몽 후 기도</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">흉몽을 꿨다면 가까운 사찰에서 조왕기도나 소재불공을 올리면 나쁜 기운을 소멸시킬 수 있습니다. 인연 사찰을 찾아보세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI 해몽 입력 -->
+  <div class="df-input-box">
+    <div class="df-input-inner">
+      <div class="df-input-glow"></div>
+      <div class="df-label-wrap">
+        <span class="df-label-dot"></span>
+        <label class="df-label">내 꿈을 <span>입력</span>해보세요</label>
+      </div>
+      <div class="df-textarea-wrap">
+        <textarea class="df-textarea" id="df-dream" placeholder="예) 큰 뱀이 집 안으로 들어오는 꿈을 꿨어요. 황금빛이었고 집 안으로 스르르 들어왔어요..."></textarea>
+        <div class="df-textarea-hint">자세히 쓸수록 정확해요</div>
+      </div>
+      <div class="df-chips-label">✦ 빠른 선택</div>
+      <div class="df-chips">
+        <span class="df-chip" onclick="setDream('용이 하늘로 올라가는 꿈')">🐉 용꿈</span>
+        <span class="df-chip" onclick="setDream('돼지가 집 안으로 들어오는 꿈')">🐷 돼지꿈</span>
+        <span class="df-chip" onclick="setDream('죽은 조상이 나타나 말을 거는 꿈')">👴 조상꿈</span>
+        <span class="df-chip" onclick="setDream('이가 빠지는 꿈')">😬 이빠지는꿈</span>
+        <span class="df-chip" onclick="setDream('불이 크게 타오르는 꿈')">🔥 불꿈</span>
+        <span class="df-chip" onclick="setDream('맑은 물에 빠지거나 물이 넘치는 꿈')">🌊 물꿈</span>
+      </div>
+      <button type="button" class="df-btn" id="df-submit" onclick="doDream()">🌙 꿈해몽 하기</button>
+      <div class="df-ai-result" id="df-ai-result"></div>
+    </div><!-- /df-input-inner -->
+  </div><!-- /df-input-box -->
+
+  <!-- 오늘의 길몽 & 흉몽 -->
+  <div style="font-size:12px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:12px" id="df-today-label"></div>
+  <div class="df-today">
+    <div class="df-today-card df-today-good">
+      <div class="df-today-label" style="color:#FBBF24">☆ 길몽 · 오늘의 추천</div>
+      <div class="df-today-name" id="dt-good-name">황금 용꿈</div>
+      <div class="df-today-desc" id="dt-good-desc">황금빛 용이 하늘로 오르는 꿈. 승진·합격·사업 성공의 강력한 길조. 재물운과 명예운이 함께 상승합니다.</div>
+    </div>
+    <div class="df-today-card df-today-bad">
+      <div class="df-today-label" style="color:#94a3b8">△ 흉몽 · 오늘의 경계</div>
+      <div class="df-today-name" id="dt-bad-name">옷이 찢어지는꿈</div>
+      <div class="df-today-desc" id="dt-bad-desc">명예·체면 손상의 암시. 중요한 발표나 계약 전날 꾸면 특히 주의. 신중한 언행이 필요합니다.</div>
+    </div>
+  </div>
+
+  <!-- 카테고리 탭 -->
+  <div class="df-tabs">
+    <span class="df-tab active" onclick="filterDream('all',this)">☆ 길몽</span>
+    <span class="df-tab" onclick="filterDream('태몽',this)">🍼 태몽</span>
+    <span class="df-tab" onclick="filterDream('흉몽',this)">△ 흉몽</span>
+    <span class="df-tab" onclick="filterDream('사찰',this)">🏯 사찰관련</span>
+    <span class="df-tab" onclick="filterDream('동물',this)">🐾 동물</span>
+    <span class="df-tab" onclick="filterDream('자연',this)">🌿 자연·날씨</span>
+    <span class="df-tab" onclick="filterDream('숫자',this)"># 숫자·색깔</span>
+  </div>
+
+  <!-- 검색 -->
+  <div class="df-search-wrap">
+    <span class="df-search-icon">🔍</span>
+    <input class="df-search" id="df-search" placeholder="전체 카테고리에서 꿈 검색..." oninput="searchDream()">
+  </div>
+
+  <!-- 꿈 카드 목록 -->
+  <div class="df-grid" id="df-grid"></div>
+</div>
+
+<script>
+var DREAMS=[
+  {name:'용꿈',tags:['길몽','재물·행운','동물'],desc:'대길몽. 승진·합격·재물운 상승. 용이 하늘로 올라가면 더욱 좋음. 용이 여의주를 물고 있으면 최고의 길몽.'},
+  {name:'돼지꿈',tags:['길몽','재물·행운','동물'],desc:'대길몽. 재물운, 복권 당첨, 사업 번창. 돼지가 집에 들어오면 최고. 살찐 돼지는 큰 재물.'},
+  {name:'금빛물고기꿈',tags:['길몽','재물·행운','동물'],desc:'길몽. 재물 획득, 사업 성공, 예상치 못한 수입. 황금 덩어리를 만지면 횡재수.'},
+  {name:'불고기꿈',tags:['길몽','재물·행운','동물'],desc:'길몽. 재물운, 임신, 아이디어 풍부. 큰 물고기일수록 좋고, 물고기가 뛰어오르면 더욱 길함.'},
+  {name:'보석·구슬꿈',tags:['길몽','재물·행운'],desc:'길몽. 귀한 인연, 재물운, 명예 상승. 빛나는 구슬은 소중한 만남 암시.'},
+  {name:'태양꿈',tags:['길몽','재물·행운','자연'],desc:'길몽. 건강, 성공, 지도자 기운. 태양이 밝게 빛나면 더욱 좋고, 떠오르는 태양은 새로운 시작.'},
+  {name:'황금꿈',tags:['길몽','재물·행운'],desc:'대길몽. 재물 복이 넘침. 황금을 줍거나 가득 쌓인 황금을 보면 큰 횡재.'},
+  {name:'꽃꿈',tags:['길몽','자연'],desc:'길몽. 기쁜 소식, 인기 상승, 아름다운 인연. 활짝 핀 꽃일수록 좋음.'},
+  {name:'비가 내리는꿈',tags:['길몽','자연'],desc:'재물운·풍요의 상징. 봄비처럼 촉촉이 내리면 좋은 소식, 폭우는 재물이 쏟아지는 징조.'},
+  {name:'새 꿈',tags:['길몽','동물'],desc:'길몽. 좋은 소식, 귀인 등장. 흰 새·학·봉황은 특히 길한 꿈.'},
+  {name:'호랑이꿈',tags:['길몽','동물'],desc:'대길몽. 강한 기운, 성공, 권위 상징. 호랑이를 잡거나 타면 크게 출세.'},
+  {name:'아기꿈',tags:['길몽','태몽'],desc:'태몽 혹은 새로운 시작. 귀여운 아기는 기쁨·풍요를 상징. 임산부가 꾸면 태몽.'},
+  {name:'임신꿈',tags:['태몽','길몽'],desc:'태몽의 대표 꿈. 새로운 생명, 창의적 아이디어, 새 프로젝트 시작의 암시.'},
+  {name:'뱀꿈 (태몽)',tags:['태몽','동물'],desc:'태몽으로 길함. 큰 뱀·황금뱀은 귀한 자녀. 남아 태몽으로 자주 나타남.'},
+  {name:'용꿈 (태몽)',tags:['태몽','동물'],desc:'최고의 태몽. 장차 큰 인물이 될 자녀. 황금용·백룡은 특히 길한 태몽.'},
+  {name:'이빠지는꿈',tags:['흉몽'],desc:'가족·지인 중 건강 이상 또는 이별의 암시. 앞니가 빠지면 가까운 사람, 어금니는 본인 문제.'},
+  {name:'추락꿈',tags:['흉몽'],desc:'불안·스트레스의 반영. 중요한 시험·발표 전 자주 꾸는 꿈. 실패 두려움의 표현.'},
+  {name:'옷이 찢어지는꿈',tags:['흉몽'],desc:'명예·체면 손상의 암시. 신중한 언행 필요. 중요한 자리 전날 꾸면 주의.'},
+  {name:'죽는꿈',tags:['흉몽'],desc:'흉몽이지만 역설적으로 재물운 상승 암시도 있음. 자신이 죽으면 오히려 길몽. 타인이 죽으면 그 사람 건강 주의.'},
+  {name:'화재꿈',tags:['흉몽','자연'],desc:'큰 화재는 손실·갈등의 암시. 단, 작은 불은 열정·새 시작을 뜻하기도 함. 불을 끄는 꿈은 흉.'},
+  {name:'뱀꿈',tags:['흉몽','동물'],desc:'황금뱀은 길몽, 검은 뱀·독사는 흉몽. 뱀에 물리면 재물 손실 또는 소송 주의.'},
+  {name:'절에서 기도하는꿈',tags:['사찰','길몽'],desc:'소원 성취, 마음의 안정. 큰 법당에서 기도하면 원하는 바 이루어짐.'},
+  {name:'부처님 꿈',tags:['사찰','길몽'],desc:'대길몽. 큰 복이 찾아올 징조. 부처님이 미소 짓는 꿈은 최고의 길몽.'},
+  {name:'스님과 대화하는꿈',tags:['사찰','길몽'],desc:'귀인 등장, 좋은 조언을 얻을 기회. 스님이 뭔가를 건네주면 더욱 길함.'},
+  {name:'종소리 듣는꿈',tags:['사찰','길몽'],desc:'기쁜 소식, 경사 암시. 맑은 종소리일수록 좋은 소식이 가까이 있음.'},
+  {name:'바다꿈',tags:['자연','길몽'],desc:'넓고 잔잔한 바다는 대인관계 확장·성공. 폭풍우 치는 바다는 갈등·위기 암시.'},
+  {name:'산 꿈',tags:['자연','길몽'],desc:'큰 산을 오르는 꿈은 성공의 길조. 높은 산 정상에 서면 큰 성취.'},
+  {name:'숫자 1·7 꿈',tags:['숫자'],desc:'1은 새 시작·리더십, 7은 행운·완성. 선명하게 보이면 로또 번호로 참고하는 분들도 있음.'},
+  {name:'흰색 꿈',tags:['숫자','자연'],desc:'순수, 새 시작, 정화를 상징. 흰 동물·흰 꽃은 특히 길함.'},
+  {name:'돈·지폐꿈',tags:['길몽','재물·행운'],desc:'지폐를 줍거나 받는 꿈은 재물운 상승. 단, 잃어버리면 반대. 큰 지폐일수록 더 큰 재물.'},
+];
+
+var currentFilter='all';
+
+function renderCards(list){
+  var grid=document.getElementById('df-grid');
+  if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#475569">검색 결과가 없습니다.</div>';return;}
+  grid.innerHTML=list.map(function(d,i){
+    var isGood=d.tags.includes('길몽');
+    var isBad=d.tags.includes('흉몽');
+    var cardCls='df-card'+(isGood?' df-card-good':isBad?' df-card-bad':'');
+    var tags=d.tags.map(function(t){
+      var cls=t==='흉몽'?'df-tag-bad':t==='태몽'||t==='사찰'?'df-tag-info':'df-tag-good';
+      return '<span class="df-tag '+cls+'">'+t+'</span>';
+    }).join('');
+    return '<div class="'+cardCls+'" style="animation-delay:'+(i*0.04)+'s">'
+      +'<div class="df-card-tags">'+tags+'</div>'
+      +'<div class="df-card-name">'+d.name+'</div>'
+      +'<div class="df-card-desc">'+d.desc+'</div>'
+      +'<div class="df-card-arrow">›</div>'
+      +'</div>';
+  }).join('');
+}
+
+function filterDream(cat,el){
+  currentFilter=cat;
+  document.querySelectorAll('.df-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('df-search').value='';
+  var list=cat==='all'?DREAMS.filter(function(d){return d.tags.includes('길몽');}):DREAMS.filter(function(d){return d.tags.some(function(t){return t.includes(cat);});});
+  renderCards(list);
+}
+
+function searchDream(){
+  var q=document.getElementById('df-search').value.trim().toLowerCase();
+  if(!q){filterDream(currentFilter,document.querySelector('.df-tab.active'));return;}
+  var list=DREAMS.filter(function(d){return d.name.toLowerCase().includes(q)||d.desc.toLowerCase().includes(q)||d.tags.some(function(t){return t.includes(q);});});
+  renderCards(list);
+}
+
+function setDream(txt){document.getElementById('df-dream').value=txt;}
+
+async function doDream(){
+  var dream=document.getElementById('df-dream').value.trim();
+  if(!dream){alert('꿈 내용을 입력해주세요.');return;}
+  var btn=document.getElementById('df-submit');
+  var res=document.getElementById('df-ai-result');
+  btn.disabled=true;res.style.display='block';
+  res.innerHTML='<div class="df-loading">🌙 꿈 분석 중...</div>';
+  try{
+    var r=await fetch('https://jamgong-inyeonsachal.vercel.app/api/dream',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({dream:dream})
+    });
+    var d=await r.json();
+    var text=String(d.result||d.interpretation||d.text||'결과를 불러올 수 없습니다.');
+
+    /* 길몽/흉몽 판별 */
+    var goodKw=['길몽','행운','복','재물','성공','합격','좋은','길조','소원','기쁨','승진','임신','풍요','사랑','만남'];
+    var badKw=['흉몽','나쁜','불길','주의','조심','위험','걱정','슬픔','실패','손실','이별','사고','병'];
+    var goodScore=goodKw.filter(function(k){return text.includes(k);}).length;
+    var badScore=badKw.filter(function(k){return text.includes(k);}).length;
+    var dreamType=goodScore>badScore?'길몽':badScore>goodScore?'흉몽':'평몽';
+    var typeColor=dreamType==='길몽'?'#FBBF24':dreamType==='흉몽'?'#f87171':'#94a3b8';
+    var typeBg=dreamType==='길몽'?'rgba(251,191,36,0.1)':dreamType==='흉몽'?'rgba(248,113,113,0.1)':'rgba(148,163,184,0.1)';
+    var typeBorder=dreamType==='길몽'?'rgba(251,191,36,0.3)':dreamType==='흉몽'?'rgba(248,113,113,0.3)':'rgba(148,163,184,0.25)';
+    var typeIcon=dreamType==='길몽'?'✨':dreamType==='흉몽'?'⚠️':'🌙';
+
+    /* 텍스트 단락 분리 */
+    var paras=text.split(/\n\n+/);
+    var summary=paras[0]||text;
+    var body=paras.slice(1).join('\n\n')||'';
+
+    /* 꿈 키워드 → 사찰 추천 */
+    var DREAM_TEMPLES={
+      재물:{name:'봉은사',loc:'서울 강남',reason:'도심 재물기도의 명소. 관세음보살 전각에서 재물 발원.',icon:'💰'},
+      소원:{name:'낙산사',loc:'강원 양양',reason:'동해 관음 도량. 간절한 소원 성취 기도처.',icon:'🙏'},
+      건강:{name:'법주사',loc:'충북 보은',reason:'약사여래 도량. 건강과 치유의 기도처.',icon:'💊'},
+      합격:{name:'문수사',loc:'인천 강화',reason:'문수보살 지혜 도량. 합격·시험 기도로 유명.',icon:'📚'},
+      사랑:{name:'선운사',loc:'전북 고창',reason:'동백꽃 관음 도량. 인연과 사랑의 기도처.',icon:'💕'},
+      default:{name:'조계사',loc:'서울 종로',reason:'대한불교 총본산. 발원과 기도의 중심 도량.',icon:'🏯'}
+    };
+    var templeKey='default';
+    if(text.match(/재물|돈|사업|부자|황금|금/)) templeKey='재물';
+    else if(text.match(/소원|기원|발원|간절/)) templeKey='소원';
+    else if(text.match(/건강|병|치료|약|아픔/)) templeKey='건강';
+    else if(text.match(/합격|시험|공부|취업|입학/)) templeKey='합격';
+    else if(text.match(/사랑|연인|인연|결혼|만남/)) templeKey='사랑';
+    var rt=DREAM_TEMPLES[templeKey];
+
+    var html='';
+    html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">';
+    html+='<span style="font-size:13px;font-weight:800;color:#c4b5fd">🌙 AI 해몽 결과</span>';
+    html+='<span style="font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px;background:'+typeBg+';border:1px solid '+typeBorder+';color:'+typeColor+'">'+typeIcon+' '+dreamType+'</span>';
+    html+='</div>';
+    html+='<div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:14px;padding:18px;margin-bottom:14px">';
+    html+='<div style="font-size:11px;font-weight:800;color:#a78bfa;letter-spacing:.1em;margin-bottom:10px">📝 핵심 해석</div>';
+    html+='<div style="font-size:14px;color:#e2e8f0;line-height:1.9">'+summary.replace(/\n/g,'<br>')+'</div>';
+    html+='</div>';
+    if(body){
+      html+='<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px;margin-bottom:14px">';
+      html+='<div style="font-size:11px;font-weight:800;color:#64748b;letter-spacing:.1em;margin-bottom:10px">🔍 상세 해석</div>';
+      html+='<div style="font-size:13.5px;color:#94a3b8;line-height:2">'+body.replace(/\n/g,'<br>')+'</div>';
+      html+='</div>';
+    }
+    html+='<div style="background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.15);border-radius:14px;padding:18px">';
+    html+='<div style="font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:12px">🏯 꿈 기도 추천 사찰</div>';
+    html+='<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">';
+    html+='<div style="font-size:28px">'+rt.icon+'</div>';
+    html+='<div style="flex:1;min-width:160px">';
+    html+='<div style="font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:3px">'+rt.name+'</div>';
+    html+='<div style="font-size:11px;color:#FBBF24;margin-bottom:5px">📍 '+rt.loc+'</div>';
+    html+='<div style="font-size:12px;color:#64748b;line-height:1.6">'+rt.reason+'</div>';
+    html+='</div>';
+    html+='<div style="display:flex;flex-direction:column;gap:6px">';
+    html+='<a href="page-temple-detail.html?name='+encodeURIComponent(rt.name)+'" style="font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.3);color:#a78bfa;text-decoration:none;text-align:center">상세 보기 →</a>';
+    html+='<a href="https://map.naver.com/v5/search/'+encodeURIComponent(rt.name+' '+rt.loc)+'" target="_blank" style="font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);color:#6ee7b7;text-decoration:none;text-align:center">🗺️ 지도</a>';
+    html+='</div></div></div>';
+
+    res.innerHTML=html;
+  }catch(e){res.innerHTML='<div style="color:#ef4444;font-size:13px">연결 오류: '+e.message+'</div>';}
+  btn.disabled=false;
+}
+
+/* 오늘 날짜 표시 */
+var today=new Date();
+document.getElementById('df-today-label').textContent='오늘의 길몽 & 흉몽 · '+today.getFullYear()+'년 '+(today.getMonth()+1)+'월 '+today.getDate()+'일';
+
+/* 초기 렌더링 — 길몽 */
+renderCards(DREAMS.filter(function(d){return d.tags.includes('길몽');}));
+</script>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

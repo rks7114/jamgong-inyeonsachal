@@ -1,0 +1,247 @@
+<style>
+.df{font-family:'Noto Sans KR',sans-serif;max-width:1000px;margin:0 auto;padding:48px 24px 80px;color:#e2e8f0}
+.df-badge{display:inline-block;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.35);color:#c4b5fd;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.df-title{font-size:clamp(26px,4vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.df-title em{color:#c4b5fd;font-style:normal}
+.df-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+
+/* AI 입력 박스 */
+.df-input-box{background:rgba(255,255,255,0.03);border:1px solid rgba(167,139,250,0.2);border-radius:20px;padding:28px;margin-bottom:40px}
+.df-label{font-size:12px;font-weight:700;color:#94a3b8;margin-bottom:8px;display:block}
+.df-textarea{background:rgba(255,255,255,0.05);border:1.5px solid rgba(167,139,250,0.25);border-radius:14px;padding:16px;color:#f8fafc;font-size:14px;font-family:inherit;width:100%;box-sizing:border-box;resize:vertical;min-height:100px;line-height:1.7}
+.df-textarea:focus{outline:none;border-color:rgba(167,139,250,0.6)}
+.df-chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.df-chip{background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);color:#c4b5fd;font-size:12px;font-weight:600;padding:5px 13px;border-radius:20px;cursor:pointer;transition:background .15s}
+.df-chip:hover{background:rgba(167,139,250,0.22)}
+.df-btn{width:100%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;font-size:15px;font-weight:900;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;margin-top:10px;transition:all .2s}
+.df-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,92,246,0.4)}
+.df-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.df-ai-result{margin-top:18px;display:none;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:14px;padding:20px}
+.df-loading{text-align:center;padding:20px;color:#c4b5fd;font-size:14px}
+
+/* 오늘의 꿈 */
+.df-today{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:36px}
+@media(max-width:600px){.df-today{grid-template-columns:1fr}}
+.df-today-card{border-radius:16px;padding:20px;position:relative;overflow:hidden}
+.df-today-good{background:linear-gradient(135deg,rgba(251,191,36,0.1),rgba(251,191,36,0.04));border:1px solid rgba(251,191,36,0.25)}
+.df-today-bad{background:linear-gradient(135deg,rgba(148,163,184,0.1),rgba(148,163,184,0.04));border:1px solid rgba(148,163,184,0.2)}
+.df-today-label{font-size:10px;font-weight:800;letter-spacing:.1em;margin-bottom:6px}
+.df-today-name{font-size:18px;font-weight:900;color:#f8fafc;margin-bottom:6px}
+.df-today-desc{font-size:12px;color:#94a3b8;line-height:1.7}
+
+/* 카테고리 탭 */
+.df-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.df-tab{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;font-size:12px;font-weight:700;padding:7px 16px;border-radius:20px;cursor:pointer;transition:all .15s}
+.df-tab.active{background:rgba(167,139,250,0.15);border-color:rgba(167,139,250,0.4);color:#c4b5fd}
+.df-tab:hover{border-color:rgba(167,139,250,0.3);color:#c4b5fd}
+
+/* 검색 */
+.df-search-wrap{position:relative;margin-bottom:24px}
+.df-search{width:100%;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px 12px 42px;color:#f8fafc;font-size:14px;font-family:inherit;box-sizing:border-box}
+.df-search:focus{outline:none;border-color:rgba(167,139,250,0.4)}
+.df-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#475569;font-size:15px;pointer-events:none}
+
+/* 꿈 카드 그리드 */
+.df-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.df-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px;transition:all .2s;cursor:pointer}
+.df-card:hover{border-color:rgba(167,139,250,0.3);transform:translateY(-2px);background:rgba(167,139,250,0.04)}
+.df-card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.df-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.df-tag-good{background:rgba(251,191,36,0.12);color:#FBBF24;border:1px solid rgba(251,191,36,0.2)}
+.df-tag-bad{background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2)}
+.df-tag-info{background:rgba(167,139,250,0.1);color:#c4b5fd;border:1px solid rgba(167,139,250,0.2)}
+.df-card-name{font-size:16px;font-weight:800;color:#f8fafc;margin-bottom:6px}
+.df-card-desc{font-size:12.5px;color:#94a3b8;line-height:1.7}
+.df-hidden{display:none}
+</style>
+
+<div class="df">
+  <div class="df-badge">꿈해몽</div>
+  <h1 class="df-title">🌙 꿈에서 온 <em>메시지</em></h1>
+  <p class="df-sub">꿈 속 상징의 의미를 찾아보세요. 길몽, 흉몽, 사찰 관련, 동물 꿈까지 해설합니다.</p>
+
+  <!-- 신비 메인 배너 -->
+  <div style="background:linear-gradient(135deg,rgba(10,5,30,0.97),rgba(25,10,55,0.92));border:1px solid rgba(167,139,250,0.2);border-radius:24px;padding:40px 32px;margin-bottom:20px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 20% 50%,rgba(124,58,237,0.18) 0%,transparent 55%),radial-gradient(ellipse at 80% 10%,rgba(196,181,253,0.08) 0%,transparent 50%);pointer-events:none"></div>
+    <div style="position:relative;z-index:1">
+      <div style="font-size:11px;font-weight:800;color:rgba(196,181,253,0.7);letter-spacing:.25em;margin-bottom:16px">✦ 꿈해몽 (夢解夢) ✦</div>
+      <div style="font-size:clamp(18px,2.8vw,28px);font-weight:900;color:#f8fafc;line-height:1.55;margin-bottom:16px">
+        꿈은 무의식이 전하는<br>
+        <span style="color:#c4b5fd">하늘의 메시지</span>
+      </div>
+      <div style="font-size:14px;color:#94a3b8;line-height:2;margin-bottom:28px;max-width:620px">
+        불교 전통에서 꿈은 단순한 수면 중 현상이 아닌 <strong style="color:#e2e8f0">전생의 업(業)</strong>과 <strong style="color:#c4b5fd">현재의 기운</strong>이 교차하는 공간입니다.<br>
+        수천 가지 꿈 상징 데이터베이스와 <strong style="color:#FBBF24">AI 심층 해석</strong>으로 당신의 꿈이 전하는 진짜 의미를 풀어드립니다.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <span style="background:rgba(196,181,253,0.1);border:1px solid rgba(196,181,253,0.4);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#c4b5fd">🤖 AI 심층 해석</span>
+        <span style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.35);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#FBBF24">☸️ 불교 꿈 상징</span>
+        <span style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#6ee7b7">✨ 길흉 판별</span>
+        <span style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#93c5fd">🏯 사찰 기도 연동</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 꿈해몽이란? -->
+  <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:28px;margin-bottom:20px">
+    <div style="font-size:11px;font-weight:800;color:#c4b5fd;letter-spacing:.15em;margin-bottom:14px">📖 꿈해몽이란?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🌙 꿈의 세 가지 층위</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">불교에서는 꿈을 상(想)·업(業)·천(天) 세 가지로 분류합니다. 특히 반복되는 꿈이나 선명한 꿈은 업의 흐름을 담고 있다고 봅니다.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🐉 길몽과 흉몽</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">용·물·불·돼지는 대표적 길몽 상징입니다. 그러나 같은 상징도 꿈의 맥락과 감정에 따라 해석이 달라질 수 있어 AI 종합 해석이 중요합니다.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🙏 흉몽 후 기도</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">흉몽을 꿨다면 가까운 사찰에서 조왕기도나 소재불공을 올리면 나쁜 기운을 소멸시킬 수 있습니다. 인연 사찰을 찾아보세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI 해몽 입력 -->
+  <div class="df-input-box">
+    <label class="df-label">내 꿈을 입력해보세요</label>
+    <textarea class="df-textarea" id="df-dream" placeholder="예) 큰 뱀이 집 안으로 들어오는 꿈을 꿨어요. 황금빛이었고..."></textarea>
+    <div class="df-chips">
+      <span class="df-chip" onclick="setDream('용이 하늘로 올라가는 꿈')">🐉 용꿈</span>
+      <span class="df-chip" onclick="setDream('돼지가 집 안으로 들어오는 꿈')">🐷 돼지꿈</span>
+      <span class="df-chip" onclick="setDream('죽은 조상이 나타나 말을 거는 꿈')">👴 조상꿈</span>
+      <span class="df-chip" onclick="setDream('이가 빠지는 꿈')">😬 이빠지는꿈</span>
+      <span class="df-chip" onclick="setDream('불이 크게 타오르는 꿈')">🔥 불꿈</span>
+      <span class="df-chip" onclick="setDream('맑은 물에 빠지거나 물이 넘치는 꿈')">🌊 물꿈</span>
+    </div>
+    <button class="df-btn" id="df-submit" onclick="doDream()">🌙 꿈해몽 하기</button>
+    <div class="df-ai-result" id="df-ai-result"></div>
+  </div>
+
+  <!-- 오늘의 길몽 & 흉몽 -->
+  <div style="font-size:12px;font-weight:800;color:#FBBF24;letter-spacing:.1em;margin-bottom:12px" id="df-today-label"></div>
+  <div class="df-today">
+    <div class="df-today-card df-today-good">
+      <div class="df-today-label" style="color:#FBBF24">☆ 길몽 · 오늘의 추천</div>
+      <div class="df-today-name" id="dt-good-name">황금 용꿈</div>
+      <div class="df-today-desc" id="dt-good-desc">황금빛 용이 하늘로 오르는 꿈. 승진·합격·사업 성공의 강력한 길조. 재물운과 명예운이 함께 상승합니다.</div>
+    </div>
+    <div class="df-today-card df-today-bad">
+      <div class="df-today-label" style="color:#94a3b8">△ 흉몽 · 오늘의 경계</div>
+      <div class="df-today-name" id="dt-bad-name">옷이 찢어지는꿈</div>
+      <div class="df-today-desc" id="dt-bad-desc">명예·체면 손상의 암시. 중요한 발표나 계약 전날 꾸면 특히 주의. 신중한 언행이 필요합니다.</div>
+    </div>
+  </div>
+
+  <!-- 카테고리 탭 -->
+  <div class="df-tabs">
+    <span class="df-tab active" onclick="filterDream('all',this)">☆ 길몽</span>
+    <span class="df-tab" onclick="filterDream('태몽',this)">🍼 태몽</span>
+    <span class="df-tab" onclick="filterDream('흉몽',this)">△ 흉몽</span>
+    <span class="df-tab" onclick="filterDream('사찰',this)">🏯 사찰관련</span>
+    <span class="df-tab" onclick="filterDream('동물',this)">🐾 동물</span>
+    <span class="df-tab" onclick="filterDream('자연',this)">🌿 자연·날씨</span>
+    <span class="df-tab" onclick="filterDream('숫자',this)"># 숫자·색깔</span>
+  </div>
+
+  <!-- 검색 -->
+  <div class="df-search-wrap">
+    <span class="df-search-icon">🔍</span>
+    <input class="df-search" id="df-search" placeholder="전체 카테고리에서 꿈 검색..." oninput="searchDream()">
+  </div>
+
+  <!-- 꿈 카드 목록 -->
+  <div class="df-grid" id="df-grid"></div>
+</div>
+
+<script>
+var DREAMS=[
+  {name:'용꿈',tags:['길몽','재물·행운','동물'],desc:'대길몽. 승진·합격·재물운 상승. 용이 하늘로 올라가면 더욱 좋음. 용이 여의주를 물고 있으면 최고의 길몽.'},
+  {name:'돼지꿈',tags:['길몽','재물·행운','동물'],desc:'대길몽. 재물운, 복권 당첨, 사업 번창. 돼지가 집에 들어오면 최고. 살찐 돼지는 큰 재물.'},
+  {name:'금빛물고기꿈',tags:['길몽','재물·행운','동물'],desc:'길몽. 재물 획득, 사업 성공, 예상치 못한 수입. 황금 덩어리를 만지면 횡재수.'},
+  {name:'불고기꿈',tags:['길몽','재물·행운','동물'],desc:'길몽. 재물운, 임신, 아이디어 풍부. 큰 물고기일수록 좋고, 물고기가 뛰어오르면 더욱 길함.'},
+  {name:'보석·구슬꿈',tags:['길몽','재물·행운'],desc:'길몽. 귀한 인연, 재물운, 명예 상승. 빛나는 구슬은 소중한 만남 암시.'},
+  {name:'태양꿈',tags:['길몽','재물·행운','자연'],desc:'길몽. 건강, 성공, 지도자 기운. 태양이 밝게 빛나면 더욱 좋고, 떠오르는 태양은 새로운 시작.'},
+  {name:'황금꿈',tags:['길몽','재물·행운'],desc:'대길몽. 재물 복이 넘침. 황금을 줍거나 가득 쌓인 황금을 보면 큰 횡재.'},
+  {name:'꽃꿈',tags:['길몽','자연'],desc:'길몽. 기쁜 소식, 인기 상승, 아름다운 인연. 활짝 핀 꽃일수록 좋음.'},
+  {name:'비가 내리는꿈',tags:['길몽','자연'],desc:'재물운·풍요의 상징. 봄비처럼 촉촉이 내리면 좋은 소식, 폭우는 재물이 쏟아지는 징조.'},
+  {name:'새 꿈',tags:['길몽','동물'],desc:'길몽. 좋은 소식, 귀인 등장. 흰 새·학·봉황은 특히 길한 꿈.'},
+  {name:'호랑이꿈',tags:['길몽','동물'],desc:'대길몽. 강한 기운, 성공, 권위 상징. 호랑이를 잡거나 타면 크게 출세.'},
+  {name:'아기꿈',tags:['길몽','태몽'],desc:'태몽 혹은 새로운 시작. 귀여운 아기는 기쁨·풍요를 상징. 임산부가 꾸면 태몽.'},
+  {name:'임신꿈',tags:['태몽','길몽'],desc:'태몽의 대표 꿈. 새로운 생명, 창의적 아이디어, 새 프로젝트 시작의 암시.'},
+  {name:'뱀꿈 (태몽)',tags:['태몽','동물'],desc:'태몽으로 길함. 큰 뱀·황금뱀은 귀한 자녀. 남아 태몽으로 자주 나타남.'},
+  {name:'용꿈 (태몽)',tags:['태몽','동물'],desc:'최고의 태몽. 장차 큰 인물이 될 자녀. 황금용·백룡은 특히 길한 태몽.'},
+  {name:'이빠지는꿈',tags:['흉몽'],desc:'가족·지인 중 건강 이상 또는 이별의 암시. 앞니가 빠지면 가까운 사람, 어금니는 본인 문제.'},
+  {name:'추락꿈',tags:['흉몽'],desc:'불안·스트레스의 반영. 중요한 시험·발표 전 자주 꾸는 꿈. 실패 두려움의 표현.'},
+  {name:'옷이 찢어지는꿈',tags:['흉몽'],desc:'명예·체면 손상의 암시. 신중한 언행 필요. 중요한 자리 전날 꾸면 주의.'},
+  {name:'죽는꿈',tags:['흉몽'],desc:'흉몽이지만 역설적으로 재물운 상승 암시도 있음. 자신이 죽으면 오히려 길몽. 타인이 죽으면 그 사람 건강 주의.'},
+  {name:'화재꿈',tags:['흉몽','자연'],desc:'큰 화재는 손실·갈등의 암시. 단, 작은 불은 열정·새 시작을 뜻하기도 함. 불을 끄는 꿈은 흉.'},
+  {name:'뱀꿈',tags:['흉몽','동물'],desc:'황금뱀은 길몽, 검은 뱀·독사는 흉몽. 뱀에 물리면 재물 손실 또는 소송 주의.'},
+  {name:'절에서 기도하는꿈',tags:['사찰','길몽'],desc:'소원 성취, 마음의 안정. 큰 법당에서 기도하면 원하는 바 이루어짐.'},
+  {name:'부처님 꿈',tags:['사찰','길몽'],desc:'대길몽. 큰 복이 찾아올 징조. 부처님이 미소 짓는 꿈은 최고의 길몽.'},
+  {name:'스님과 대화하는꿈',tags:['사찰','길몽'],desc:'귀인 등장, 좋은 조언을 얻을 기회. 스님이 뭔가를 건네주면 더욱 길함.'},
+  {name:'종소리 듣는꿈',tags:['사찰','길몽'],desc:'기쁜 소식, 경사 암시. 맑은 종소리일수록 좋은 소식이 가까이 있음.'},
+  {name:'바다꿈',tags:['자연','길몽'],desc:'넓고 잔잔한 바다는 대인관계 확장·성공. 폭풍우 치는 바다는 갈등·위기 암시.'},
+  {name:'산 꿈',tags:['자연','길몽'],desc:'큰 산을 오르는 꿈은 성공의 길조. 높은 산 정상에 서면 큰 성취.'},
+  {name:'숫자 1·7 꿈',tags:['숫자'],desc:'1은 새 시작·리더십, 7은 행운·완성. 선명하게 보이면 로또 번호로 참고하는 분들도 있음.'},
+  {name:'흰색 꿈',tags:['숫자','자연'],desc:'순수, 새 시작, 정화를 상징. 흰 동물·흰 꽃은 특히 길함.'},
+  {name:'돈·지폐꿈',tags:['길몽','재물·행운'],desc:'지폐를 줍거나 받는 꿈은 재물운 상승. 단, 잃어버리면 반대. 큰 지폐일수록 더 큰 재물.'},
+];
+
+var currentFilter='all';
+
+function renderCards(list){
+  var grid=document.getElementById('df-grid');
+  if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#475569">검색 결과가 없습니다.</div>';return;}
+  grid.innerHTML=list.map(function(d){
+    var tags=d.tags.map(function(t){
+      var cls=t==='흉몽'?'df-tag-bad':t==='태몽'||t==='사찰'?'df-tag-info':'df-tag-good';
+      return '<span class="df-tag '+cls+'">'+t+'</span>';
+    }).join('');
+    return '<div class="df-card"><div class="df-card-tags">'+tags+'</div><div class="df-card-name">'+d.name+'</div><div class="df-card-desc">'+d.desc+'</div></div>';
+  }).join('');
+}
+
+function filterDream(cat,el){
+  currentFilter=cat;
+  document.querySelectorAll('.df-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('df-search').value='';
+  var list=cat==='all'?DREAMS.filter(function(d){return d.tags.includes('길몽');}):DREAMS.filter(function(d){return d.tags.some(function(t){return t.includes(cat);});});
+  renderCards(list);
+}
+
+function searchDream(){
+  var q=document.getElementById('df-search').value.trim().toLowerCase();
+  if(!q){filterDream(currentFilter,document.querySelector('.df-tab.active'));return;}
+  var list=DREAMS.filter(function(d){return d.name.toLowerCase().includes(q)||d.desc.toLowerCase().includes(q)||d.tags.some(function(t){return t.includes(q);});});
+  renderCards(list);
+}
+
+function setDream(txt){document.getElementById('df-dream').value=txt;}
+
+async function doDream(){
+  var dream=document.getElementById('df-dream').value.trim();
+  if(!dream){alert('꿈 내용을 입력해주세요.');return;}
+  var btn=document.getElementById('df-submit');
+  var res=document.getElementById('df-ai-result');
+  btn.disabled=true;res.style.display='block';
+  res.innerHTML='<div class="df-loading">🌙 꿈 분석 중...</div>';
+  try{
+    var r=await fetch('https://jamgong-inyeonsachal.vercel.app/api/dream',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({dream:dream})
+    });
+    var d=await r.json();
+    var text=d.result||d.interpretation||d.text||JSON.stringify(d);
+    res.innerHTML='<div style="font-size:13px;color:#c4b5fd;font-weight:700;margin-bottom:10px">🌙 AI 해몽 결과</div><div style="font-size:13.5px;color:#cbd5e1;line-height:2">'+String(text).replace(/\n/g,'<br>')+'</div>';
+  }catch(e){res.innerHTML='<div style="color:#ef4444;font-size:13px">연결 오류: '+e.message+'</div>';}
+  btn.disabled=false;
+}
+
+/* 오늘 날짜 표시 */
+var today=new Date();
+document.getElementById('df-today-label').textContent='오늘의 길몽 & 흉몽 · '+today.getFullYear()+'년 '+(today.getMonth()+1)+'월 '+today.getDate()+'일';
+
+/* 초기 렌더링 — 길몽 */
+renderCards(DREAMS.filter(function(d){return d.tags.includes('길몽');}));
+</script>

@@ -1,0 +1,380 @@
+<meta charset="UTF-8">
+<style>
+.gl{font-family:'Noto Sans KR','Segoe UI',sans-serif;max-width:1000px;margin:0 auto;padding:60px 24px 100px;color:#e2e8f0}
+/* ── hero ── */
+.gl-hero{text-align:center;padding:0 0 56px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:56px}
+.gl-hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.18em;padding:6px 18px;border-radius:30px;margin-bottom:22px}
+.gl-hero-title{font-size:clamp(30px,5vw,56px);font-weight:900;color:#f8fafc;line-height:1.2;margin:0 0 16px}
+.gl-hero-title em{color:#FBBF24;font-style:normal}
+.gl-hero-sub{font-size:16px;color:#64748b;line-height:1.9;max-width:640px;margin:0 auto 32px}
+.gl-hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.gl-hero-tag{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:6px 16px;font-size:12px;color:#94a3b8}
+/* ── section label ── */
+.gl-sec-label{font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.18em;margin:0 0 18px}
+/* ── service cards ── */
+.gl-services{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:56px}
+.gl-svc{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:22px 18px;transition:all .2s;cursor:default}
+.gl-svc:hover{border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.04);transform:translateY(-2px)}
+.gl-svc-icon{font-size:32px;margin-bottom:12px}
+.gl-svc-name{font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:6px}
+.gl-svc-desc{font-size:12px;color:#64748b;line-height:1.7}
+.gl-svc-badge{display:inline-block;margin-top:10px;font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:.05em}
+.gl-svc-badge.free{background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.25)}
+.gl-svc-badge.ai{background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25)}
+/* ── intro strip ── */
+.gl-intro{background:linear-gradient(135deg,rgba(251,191,36,0.07) 0%,rgba(139,92,246,0.07) 100%);border:1px solid rgba(251,191,36,0.2);border-radius:20px;padding:32px 36px;margin-bottom:56px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media(max-width:600px){.gl-intro{grid-template-columns:1fr}}
+.gl-intro-heading{font-size:20px;font-weight:900;color:#f8fafc;margin:0 0 12px;line-height:1.4}
+.gl-intro-heading em{color:#FBBF24;font-style:normal}
+.gl-intro-body{font-size:13px;color:#94a3b8;line-height:1.9}
+.gl-intro-stat{display:flex;flex-direction:column;justify-content:center;gap:16px}
+.gl-stat-item{display:flex;align-items:center;gap:14px}
+.gl-stat-num{font-size:32px;font-weight:900;color:#FBBF24;line-height:1}
+.gl-stat-desc{font-size:12px;color:#64748b;line-height:1.5}
+/* ── etiquette ── */
+.gl-etiq{margin-bottom:56px}
+.gl-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.gl-step{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;position:relative;overflow:hidden}
+.gl-step::before{content:attr(data-n);position:absolute;top:8px;right:12px;font-size:40px;font-weight:900;color:rgba(251,191,36,0.08);line-height:1}
+.gl-step-icon{font-size:24px;margin-bottom:8px}
+.gl-step-title{font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:5px}
+.gl-step-desc{font-size:11px;color:#64748b;line-height:1.7}
+/* ── do/dont ── */
+.gl-dodont{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:56px}
+@media(max-width:560px){.gl-dodont{grid-template-columns:1fr}}
+.gl-do{background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.2);border-radius:16px;padding:20px}
+.gl-dont{background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:16px;padding:20px}
+.gl-do-title{font-size:11px;font-weight:800;color:#4ade80;letter-spacing:.1em;margin-bottom:12px}
+.gl-dont-title{font-size:11px;font-weight:800;color:#f87171;letter-spacing:.1em;margin-bottom:12px}
+.gl-dd-item{font-size:13px;color:#94a3b8;line-height:2;display:flex;gap:8px}
+.gl-dd-item::before{content:'✓';color:#4ade80;flex-shrink:0}
+.gl-dont-item::before{content:'✗';color:#f87171;flex-shrink:0}
+/* ── jaeil calendar ── */
+.gl-cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:56px}
+.gl-cal-card{border-radius:16px;padding:20px;border:1px solid transparent}
+.gl-cal-card.blue{background:rgba(59,130,246,0.07);border-color:rgba(59,130,246,0.2)}
+.gl-cal-card.gold{background:rgba(251,191,36,0.07);border-color:rgba(251,191,36,0.2)}
+.gl-cal-card.purple{background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.2)}
+.gl-cal-card.teal{background:rgba(20,184,166,0.07);border-color:rgba(20,184,166,0.2)}
+.gl-cal-icon{font-size:28px;margin-bottom:10px}
+.gl-cal-name{font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:4px}
+.gl-cal-date{font-size:12px;font-weight:700;color:#94a3b8;margin-bottom:8px}
+.gl-cal-desc{font-size:12px;color:#64748b;line-height:1.7}
+/* ── tip box ── */
+.gl-tip{background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:12px;padding:16px 20px;margin:16px 0;font-size:13px;color:#94a3b8;line-height:1.8}
+.gl-tip strong{color:#FBBF24}
+/* ── prayer guide ── */
+.gl-prayer{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:56px}
+.gl-prayer-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px}
+.gl-prayer-icon{font-size:26px;margin-bottom:10px}
+.gl-prayer-name{font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:6px}
+.gl-prayer-desc{font-size:12px;color:#64748b;line-height:1.7}
+/* ── access ── */
+.gl-access{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:28px 32px;margin-bottom:40px}
+.gl-access-title{font-size:16px;font-weight:800;color:#f8fafc;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.gl-access-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:540px){.gl-access-grid{grid-template-columns:1fr}}
+.gl-access-item{font-size:13px;color:#94a3b8;line-height:1.8;display:flex;gap:10px}
+.gl-access-item span{font-size:18px;flex-shrink:0}
+/* ── cta ── */
+.gl-cta{text-align:center;padding:40px 24px;background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(139,92,246,0.08));border:1px solid rgba(251,191,36,0.15);border-radius:20px}
+.gl-cta-title{font-size:22px;font-weight:900;color:#f8fafc;margin:0 0 10px}
+.gl-cta-sub{font-size:14px;color:#64748b;margin:0 0 24px;line-height:1.7}
+.gl-cta-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.gl-cta-btn{padding:12px 26px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;transition:all .2s;cursor:pointer;border:none;font-family:inherit}
+.gl-cta-btn.primary{background:#FBBF24;color:#000}
+.gl-cta-btn.primary:hover{background:#f59e0b;transform:translateY(-2px)}
+.gl-cta-btn.secondary{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#e2e8f0}
+.gl-cta-btn.secondary:hover{border-color:rgba(251,191,36,0.4);color:#FBBF24}
+/* ── divider ── */
+.gl-divider{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:48px 0}
+</style>
+
+<!-- ── HERO BANNER ── -->
+<div style="position:relative;width:100%;height:320px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Naksansa07.jpg/1280px-Naksansa07.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.45) 0%,rgba(0,0,0,0.82) 100%)"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.22em;padding:5px 18px;border-radius:30px;margin-bottom:18px;font-family:'Noto Sans KR',sans-serif">🌐 ENGLISH GUIDE · 영문 안내</div>
+    <h1 style="font-size:clamp(26px,4.5vw,50px);font-weight:900;color:#ffffff;margin:0 0 12px;text-shadow:0 2px 20px rgba(0,0,0,0.7);font-family:'Noto Sans KR',sans-serif;line-height:1.2">Discover Korean <span style="color:#fbbf24">Buddhism</span></h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;line-height:1.8;font-family:'Noto Sans KR',sans-serif">Your gateway to authentic Korean Buddhist temples, prayers, and spiritual guidance</p>
+  </div>
+</div>
+
+<div class="gl">
+
+  <!-- ── INTRO STRIP ── -->
+  <div class="gl-intro">
+    <div>
+      <div class="gl-intro-heading">Welcome to <em>Jamgong Inyeonsachal</em></div>
+      <div class="gl-intro-body">
+        <strong style="color:#e2e8f0">잼공인연사찰</strong> (Jamgong Inyeonsachal) is Korea's premier digital platform connecting people with Buddhist temples through karmic bonds — <em style="color:#FBBF24">inyeon (인연)</em>, the deep Buddhist concept of meaningful connection.<br><br>
+        Whether you seek spiritual guidance, wish to find a temple suited to your needs, or want to explore Buddhist chants and prayers, we are your trusted companion on this journey.
+      </div>
+    </div>
+    <div class="gl-intro-stat">
+      <div class="gl-stat-item">
+        <div class="gl-stat-num">300+</div>
+        <div class="gl-stat-desc">Korean Buddhist temples<br>searchable by region & style</div>
+      </div>
+      <div class="gl-stat-item">
+        <div class="gl-stat-num">60+</div>
+        <div class="gl-stat-desc">Buddhist chants & sutras<br>available to listen</div>
+      </div>
+      <div class="gl-stat-item">
+        <div class="gl-stat-num">7</div>
+        <div class="gl-stat-desc">Spiritual services including<br>saju, dream interpretation & more</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SERVICES ── -->
+  <div class="gl-sec-label">🛕 OUR SERVICES</div>
+  <div class="gl-services">
+    <div class="gl-svc">
+      <div class="gl-svc-icon">🏯</div>
+      <div class="gl-svc-name">Temple Finder</div>
+      <div class="gl-svc-desc">Browse 300+ temples across Korea. Filter by region, sect (조계종, 천태종), or specialty prayer.</div>
+      <div class="gl-svc-badge free">FREE</div>
+    </div>
+    <div class="gl-svc">
+      <div class="gl-svc-icon">🔮</div>
+      <div class="gl-svc-name">Saju Destiny Reading</div>
+      <div class="gl-svc-desc">Korean Four Pillars of Destiny (사주팔자) — AI-powered insight into your life path, year fortune, and compatibility.</div>
+      <div class="gl-svc-badge ai">AI</div>
+    </div>
+    <div class="gl-svc">
+      <div class="gl-svc-icon">💑</div>
+      <div class="gl-svc-name">Compatibility (궁합)</div>
+      <div class="gl-svc-desc">Discover your karmic bond with a partner through traditional Korean compatibility analysis.</div>
+      <div class="gl-svc-badge ai">AI</div>
+    </div>
+    <div class="gl-svc">
+      <div class="gl-svc-icon">🎵</div>
+      <div class="gl-svc-name">Buddhist Chants</div>
+      <div class="gl-svc-desc">Listen to authentic chants (찬불가), sutras, and meditation music. Bookmark your favorites.</div>
+      <div class="gl-svc-badge free">FREE</div>
+    </div>
+    <div class="gl-svc">
+      <div class="gl-svc-icon">📿</div>
+      <div class="gl-svc-name">Sacred Sutras</div>
+      <div class="gl-svc-desc">Full texts of Heart Sutra (반야심경), Great Compassion Dharani, and key Buddhist prayers in Korean.</div>
+      <div class="gl-svc-badge free">FREE</div>
+    </div>
+    <div class="gl-svc">
+      <div class="gl-svc-icon">🌙</div>
+      <div class="gl-svc-name">Dream Interpretation</div>
+      <div class="gl-svc-desc">Traditional Korean Buddhist dream analysis — understand the spiritual messages in your dreams.</div>
+      <div class="gl-svc-badge ai">AI</div>
+    </div>
+    <div class="gl-svc">
+      <div class="gl-svc-icon">📅</div>
+      <div class="gl-svc-name">Auspicious Dates</div>
+      <div class="gl-svc-desc">Find the most propitious dates for weddings, ceremonies, and important decisions (택일).</div>
+      <div class="gl-svc-badge ai">AI</div>
+    </div>
+    <div class="gl-svc">
+      <div class="gl-svc-icon">🙏</div>
+      <div class="gl-svc-name">108 Bows Counter</div>
+      <div class="gl-svc-desc">Practice the traditional 108 prostrations meditation. Track your progress with our digital counter.</div>
+      <div class="gl-svc-badge free">FREE</div>
+    </div>
+  </div>
+
+  <hr class="gl-divider">
+
+  <!-- ── TEMPLE ETIQUETTE ── -->
+  <div class="gl-etiq">
+    <div class="gl-sec-label">🚪 TEMPLE ETIQUETTE FOR VISITORS</div>
+    <div class="gl-steps">
+      <div class="gl-step" data-n="1">
+        <div class="gl-step-icon">👟</div>
+        <div class="gl-step-title">Remove Shoes</div>
+        <div class="gl-step-desc">Always remove shoes before entering the main hall (법당). Place them neatly at the entrance or in the shoe rack.</div>
+      </div>
+      <div class="gl-step" data-n="2">
+        <div class="gl-step-icon">🚶</div>
+        <div class="gl-step-title">Use Side Doors</div>
+        <div class="gl-step-desc">Enter through the side doors — never the center door, which is reserved for the Buddha.</div>
+      </div>
+      <div class="gl-step" data-n="3">
+        <div class="gl-step-icon">🙇</div>
+        <div class="gl-step-title">Three Prostrations</div>
+        <div class="gl-step-desc">Upon entering, bow three times toward the Buddha statue (삼배). Each bow honors the Three Jewels: Buddha, Dharma, Sangha.</div>
+      </div>
+      <div class="gl-step" data-n="4">
+        <div class="gl-step-icon">🤫</div>
+        <div class="gl-step-title">Speak Quietly</div>
+        <div class="gl-step-desc">Maintain a quiet, respectful atmosphere. If reciting sutras, use a soft voice. No phone calls inside the hall.</div>
+      </div>
+      <div class="gl-step" data-n="5">
+        <div class="gl-step-icon">🪔</div>
+        <div class="gl-step-title">Incense Offering</div>
+        <div class="gl-step-desc">Light 1 or 3 sticks of incense. Extinguish by fanning, never blowing. Place upright in the center of the censer.</div>
+      </div>
+      <div class="gl-step" data-n="6">
+        <div class="gl-step-icon">🚶‍♂️</div>
+        <div class="gl-step-title">Exit Respectfully</div>
+        <div class="gl-step-desc">Bow once more (반배, half-bow) facing the Buddha before leaving. Step backward rather than turning your back.</div>
+      </div>
+    </div>
+
+    <div class="gl-tip"><strong>💡 Half-bow (반배):</strong> In situations where a full prostration isn't possible — passing monks, entering/exiting — bow at 90 degrees with hands clasped. This is always appropriate and welcomed.</div>
+  </div>
+
+  <!-- ── DO / DON'T ── -->
+  <div class="gl-sec-label">✅ DO'S & DON'TS AT KOREAN TEMPLES</div>
+  <div class="gl-dodont">
+    <div class="gl-do">
+      <div class="gl-do-title">✅ PLEASE DO</div>
+      <div class="gl-dd-item">Dress modestly — cover shoulders and knees</div>
+      <div class="gl-dd-item">Greet monks with a bow and clasped hands (합장)</div>
+      <div class="gl-dd-item">Speak in low, calm tones throughout the temple</div>
+      <div class="gl-dd-item">Follow the posted schedule for services</div>
+      <div class="gl-dd-item">Ask permission before photographing</div>
+      <div class="gl-dd-item">Participate in temple meals (공양) if invited</div>
+    </div>
+    <div class="gl-dont">
+      <div class="gl-dont-title">❌ PLEASE DON'T</div>
+      <div class="gl-dd-item gl-dont-item">Shake hands with monks — bow instead</div>
+      <div class="gl-dd-item gl-dont-item">Wear revealing or flashy clothing</div>
+      <div class="gl-dd-item gl-dont-item">Bring meat or fish as offerings</div>
+      <div class="gl-dd-item gl-dont-item">Point the soles of your feet toward the Buddha</div>
+      <div class="gl-dd-item gl-dont-item">Walk in front of people who are praying</div>
+      <div class="gl-dd-item gl-dont-item">Touch or move any ritual objects</div>
+    </div>
+  </div>
+
+  <hr class="gl-divider">
+
+  <!-- ── JAEIL CALENDAR ── -->
+  <div class="gl-sec-label">🗓️ BUDDHIST HOLY DAYS (재일, Jaeil)</div>
+  <div class="gl-tip" style="margin-bottom:20px"><strong>재일 (Jaeil)</strong> are designated holy days in the Korean Buddhist lunar calendar — the most auspicious times for prayer, offering, and merit-making.</div>
+  <div class="gl-cal">
+    <div class="gl-cal-card blue">
+      <div class="gl-cal-icon">🌙</div>
+      <div class="gl-cal-name">Choharu (초하루)</div>
+      <div class="gl-cal-date">1st day of each lunar month</div>
+      <div class="gl-cal-desc">New moon ceremony. Pray for blessings and fresh beginnings in the new month. Special dharma services held at most temples.</div>
+    </div>
+    <div class="gl-cal-card gold">
+      <div class="gl-cal-icon">🌕</div>
+      <div class="gl-cal-name">Boreum (보름)</div>
+      <div class="gl-cal-date">15th day of each lunar month</div>
+      <div class="gl-cal-desc">Full moon ceremony. Ideal for ancestral memorial rites (천도재) and prayers for family wellbeing. The brightest night for offering.</div>
+    </div>
+    <div class="gl-cal-card teal">
+      <div class="gl-cal-icon">🌊</div>
+      <div class="gl-cal-name">Gwan-eum Jaeil (관음재일)</div>
+      <div class="gl-cal-date">18th & 24th of each lunar month</div>
+      <div class="gl-cal-desc">Day of Avalokiteśvara (Guanyin). Pray for compassion, healing, and karmic connection. The most beloved Bodhisattva in Korea.</div>
+    </div>
+    <div class="gl-cal-card purple">
+      <div class="gl-cal-icon">🕯️</div>
+      <div class="gl-cal-name">Jijang Jaeil (지장재일)</div>
+      <div class="gl-cal-date">18th of each lunar month</div>
+      <div class="gl-cal-desc">Day of Kṣitigarbha Bodhisattva. Pray for deceased ancestors and relief from suffering in the lower realms.</div>
+    </div>
+  </div>
+
+  <hr class="gl-divider">
+
+  <!-- ── PRAYER GUIDE ── -->
+  <div class="gl-sec-label">🙏 BEGINNER'S PRAYER GUIDE</div>
+  <div class="gl-prayer">
+    <div class="gl-prayer-card">
+      <div class="gl-prayer-icon">📿</div>
+      <div class="gl-prayer-name">Heart Sutra (반야심경)</div>
+      <div class="gl-prayer-desc">The most widely recited sutra in Korean Buddhism. 260 characters revealing the nature of emptiness and wisdom. Chanted daily at dawn and dusk services.</div>
+    </div>
+    <div class="gl-prayer-card">
+      <div class="gl-prayer-icon">🌸</div>
+      <div class="gl-prayer-name">Namu Amitabha (나무아미타불)</div>
+      <div class="gl-prayer-desc">"I take refuge in Amitabha Buddha." Recite this mantra continuously to accumulate merit and purify the mind. Six syllables, infinite merit.</div>
+    </div>
+    <div class="gl-prayer-card">
+      <div class="gl-prayer-icon">🌊</div>
+      <div class="gl-prayer-name">Om Mani Padme Hum (옴마니반메훔)</div>
+      <div class="gl-prayer-desc">The mantra of Avalokiteśvara. Said to embody all the teachings of the Buddha. Widely used in Korean Buddhist practice for compassion and healing.</div>
+    </div>
+    <div class="gl-prayer-card">
+      <div class="gl-prayer-icon">🔔</div>
+      <div class="gl-prayer-name">Great Compassion Dharani (대비주)</div>
+      <div class="gl-prayer-desc">The 84-line dharani of Thousand-Armed Avalokiteśvara. Recited for purification, protection, and fulfillment of sincere wishes.</div>
+    </div>
+  </div>
+
+  <hr class="gl-divider">
+
+  <!-- ── HOW TO VISIT ── -->
+  <div class="gl-sec-label">🗺️ VISITING A KOREAN TEMPLE</div>
+  <div class="gl-access">
+    <div class="gl-access-title">🚌 Getting There & Practical Tips</div>
+    <div class="gl-access-grid">
+      <div class="gl-access-item"><span>🕐</span><div>Most temples open daily from <strong>5:00 AM – 6:00 PM</strong>. Dawn (새벽) and evening (저녁) services are the most spiritually vibrant times to visit.</div></div>
+      <div class="gl-access-item"><span>👘</span><div>Many temples offer <strong>temple stay (템플스테이)</strong> programs — overnight retreats with meditation, chanting, and traditional monastic meals (공양).</div></div>
+      <div class="gl-access-item"><span>💴</span><div>Entry is usually <strong>free or a small fee (1,000–3,000 KRW)</strong>. Donations are welcomed. Candles, incense, and flowers can be purchased at temple shops.</div></div>
+      <div class="gl-access-item"><span>🌐</span><div>Use our <strong>Temple Finder</strong> service to locate temples near you by region, prayer specialty, or sect — with directions and photos.</div></div>
+    </div>
+    <div class="gl-tip" style="margin-top:18px"><strong>Temple Stay (템플스테이):</strong> Korea's temple stay program is internationally recognized. Participate in early morning practice, tea ceremony, 108 bows, and silent meals for a transformative cultural experience. Book via <strong>templestay.com</strong>.</div>
+  </div>
+
+  <!-- ── KEY TERMS ── -->
+  <div class="gl-sec-label">📖 ESSENTIAL KOREAN BUDDHIST TERMS</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:56px">
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+      <div style="font-size:14px;font-weight:800;color:#FBBF24;margin-bottom:4px">합장 (Hapjang)</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.6">Clasped hands greeting — the universal Buddhist salutation of respect</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+      <div style="font-size:14px;font-weight:800;color:#FBBF24;margin-bottom:4px">공양 (Gongyang)</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.6">Offering or temple meal — a mindful, vegetarian communal meal</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+      <div style="font-size:14px;font-weight:800;color:#FBBF24;margin-bottom:4px">법당 (Beopdang)</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.6">The main dharma hall housing the Buddha statue — the sacred center of the temple</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+      <div style="font-size:14px;font-weight:800;color:#FBBF24;margin-bottom:4px">스님 (Seunim)</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.6">Respectful term for a Buddhist monk or nun in Korean</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+      <div style="font-size:14px;font-weight:800;color:#FBBF24;margin-bottom:4px">인연 (Inyeon)</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.6">Karmic connection — the Buddhist concept of meaningful bonds between people</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+      <div style="font-size:14px;font-weight:800;color:#FBBF24;margin-bottom:4px">발원 (Barwon)</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.6">A sincere vow or prayer of aspiration made before the Buddha</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+      <div style="font-size:14px;font-weight:800;color:#FBBF24;margin-bottom:4px">사찰 (Sachal)</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.6">Buddhist temple — the physical and spiritual home of Korean Buddhist practice</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+      <div style="font-size:14px;font-weight:800;color:#FBBF24;margin-bottom:4px">108배 (108 Bae)</div>
+      <div style="font-size:12px;color:#64748b;line-height:1.6">108 prostrations — a full-body meditation practice to eliminate the 108 afflictions</div>
+    </div>
+  </div>
+
+  <!-- ── CTA ── -->
+  <div class="gl-cta">
+    <div class="gl-cta-title">Begin Your Spiritual Journey 🙏</div>
+    <div class="gl-cta-sub">Find your temple, explore sacred chants, and discover the wisdom of Korean Buddhism</div>
+    <div class="gl-cta-btns">
+      <a class="gl-cta-btn primary" href="javascript:void(0)" onclick="window.parent && window.parent.postMessage({page:'temple'},'*')">🏯 Find a Temple</a>
+      <a class="gl-cta-btn secondary" href="javascript:void(0)" onclick="window.parent && window.parent.postMessage({page:'music'},'*')">🎵 Listen to Chants</a>
+      <a class="gl-cta-btn secondary" href="javascript:void(0)" onclick="window.parent && window.parent.postMessage({page:'sutra'},'*')">📿 Read Sutras</a>
+    </div>
+  </div>
+
+</div>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

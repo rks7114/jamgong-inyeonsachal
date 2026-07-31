@@ -1,0 +1,171 @@
+<style>
+.dc{font-family:'Noto Sans KR',sans-serif;max-width:1000px;margin:0 auto;padding:56px 24px 80px;color:#e2e8f0}
+.dc-badge{display:inline-block;background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);color:#34d399;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.dc-title{font-size:clamp(24px,3.5vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.dc-title em{color:#34d399;font-style:normal}
+.dc-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 28px}
+.dc-search-wrap{display:flex;gap:10px;margin-bottom:20px}
+.dc-search{flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:13px 18px;color:#f8fafc;font-size:15px;font-family:inherit}
+.dc-search:focus{outline:none;border-color:rgba(52,211,153,0.4)}
+.dc-alpha{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px}
+.dc-a-btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit;transition:all .15s}
+.dc-a-btn.active,.dc-a-btn:hover{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.3);color:#34d399}
+.dc-count{font-size:12px;color:#475569;margin-bottom:16px}
+.dc-list{display:flex;flex-direction:column;gap:8px}
+.dc-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px 20px;display:grid;grid-template-columns:1fr 3fr;gap:16px;align-items:start;transition:all .15s}
+.dc-item:hover{border-color:rgba(52,211,153,0.25);background:rgba(52,211,153,0.03)}
+.dc-term{font-size:15px;font-weight:800;color:#f8fafc}
+.dc-hanja{font-size:11px;color:#FBBF24;margin-top:3px}
+.dc-def{font-size:13px;color:#94a3b8;line-height:1.7}
+.dc-cat{display:inline-block;font-size:10px;font-weight:700;color:#34d399;background:rgba(52,211,153,0.1);border-radius:6px;padding:1px 7px;margin-top:4px}
+.dc-empty{text-align:center;padding:40px;color:#475569;font-size:14px}
+</style>
+
+<div class="dc">
+  <div class="dc-badge">불교 용어 사전</div>
+  <h1 class="dc-title">📖 <em>불교 용어</em> 사전</h1>
+  <p class="dc-sub">스님·절·기도·예불 등 불교 생활에서 자주 쓰이는 용어 120개를 쉽게 설명합니다.</p>
+
+  <div class="dc-search-wrap">
+    <input class="dc-search" id="dc-search" placeholder="🔍 용어 검색..." oninput="search()" />
+  </div>
+  <div class="dc-alpha" id="dc-alpha"></div>
+  <div class="dc-count" id="dc-count"></div>
+  <div class="dc-list" id="dc-list"></div>
+</div>
+
+<script>
+var DICT=[
+  {t:'가람',h:'伽藍',d:'절(사찰)을 뜻하는 말. 승가라마(僧伽藍摩)의 줄임말로 스님들이 사는 곳.',c:'사찰'},
+  {t:'가사',h:'袈裟',d:'스님이 입는 법복. 부처님의 복장을 상징하며 왼쪽 어깨를 덮는 형태.',c:'수행'},
+  {t:'공양',h:'供養',d:'부처님·스님·삼보에 음식·꽃·향·촛불 등을 올리는 행위. 또는 식사를 뜻하기도 함.',c:'기도'},
+  {t:'공양간',h:'供養間',d:'절에서 공양을 준비하는 부엌. \'주방\'에 해당하는 사찰 용어.',c:'사찰'},
+  {t:'관세음보살',h:'觀世音菩薩',d:'중생의 소리를 듣고 구제하는 보살. 자비의 상징. \'관음\'이라고도 함.',c:'부처·보살'},
+  {t:'극락',h:'極樂',d:'아미타불이 계신 서방 정토. 고통 없이 행복한 세계. 극락왕생을 기원하며 기도.',c:'교리'},
+  {t:'기도',h:'祈禱',d:'부처님이나 보살에게 소원을 발원하고 정성을 드리는 행위.',c:'기도'},
+  {t:'나무아미타불',h:'南無阿彌陀佛',d:'\'아미타불에게 귀의합니다\'라는 뜻의 염불. 가장 널리 쓰이는 기도 문구.',c:'기도'},
+  {t:'나한',h:'羅漢',d:'부처님의 제자 중 최고 경지에 이른 성인. 나한전에 모시며 소원 기도처로 유명.',c:'부처·보살'},
+  {t:'대웅전',h:'大雄殿',d:'석가모니 부처님을 모신 법당. 사찰의 중심 건물.',c:'사찰'},
+  {t:'대적광전',h:'大寂光殿',d:'비로자나불을 모신 법당. 화엄 도량의 중심 건물.',c:'사찰'},
+  {t:'도량',h:'道場',d:'수행하고 기도하는 장소. 절 전체나 특정 기도 공간을 일컬음.',c:'사찰'},
+  {t:'독경',h:'讀經',d:'경전을 소리 내어 읽는 것. 정해진 운율에 맞춰 읽는 것을 \'독송\'이라 함.',c:'수행'},
+  {t:'동안거',h:'冬安居',d:'음력 10월 15일부터 이듬해 1월 15일까지 스님들의 겨울 수행 기간.',c:'수행'},
+  {t:'등공양',h:'燈供養',d:'연등·촛불을 부처님께 올리는 공양. 어둠을 밝히는 지혜를 상징.',c:'기도'},
+  {t:'마애불',h:'磨崖佛',d:'자연 바위나 절벽에 새긴 불상. 전국 명산에 많이 있으며 기도처로 유명.',c:'사찰'},
+  {t:'만다라',h:'曼陀羅',d:'부처님의 세계를 도형이나 그림으로 표현한 것. 명상과 기도에 사용.',c:'교리'},
+  {t:'목탁',h:'木鐸',d:'나무로 만든 불교 타악기. 법회·독경 시 박자를 맞추는 데 사용.',c:'사찰'},
+  {t:'무량수전',h:'無量壽殿',d:'아미타불을 모신 법당. \'무량수\'는 아미타불의 또 다른 이름.',c:'사찰'},
+  {t:'미륵불',h:'彌勒佛',d:'현재 도솔천에 계시며 미래에 이 세상에 오실 미래불. 법주사·금산사가 대표 성지.',c:'부처·보살'},
+  {t:'발우',h:'鉢盂',d:'스님들이 공양할 때 사용하는 그릇. 발우공양은 음식 한 톨도 남기지 않는 수행.',c:'수행'},
+  {t:'방생',h:'放生',d:'물고기·새 등 생명을 자연에 놓아주는 불교 의식. 살생에 대한 참회와 공덕 쌓기.',c:'기도'},
+  {t:'법당',h:'法堂',d:'부처님을 모시고 법회와 기도를 드리는 건물.',c:'사찰'},
+  {t:'법보',h:'法寶',d:'삼보(불·법·승) 중 하나. 부처님의 가르침(경전). 법보사찰은 경전 보존 사찰.',c:'교리'},
+  {t:'법요일',h:'法曜日',d:'불교에서 특별한 의미가 있는 날. 4대 재일과 매월 재일 등.',c:'기도'},
+  {t:'법회',h:'法會',d:'스님이 법문하고 신도들이 함께 기도하는 모임. 초하루·보름 법회가 대표적.',c:'기도'},
+  {t:'보살',h:'菩薩',d:'깨달음을 향해 수행하며 중생을 구제하는 존재. 관음·지장·문수·보현·미륵보살이 대표.',c:'부처·보살'},
+  {t:'보시',h:'布施',d:'재물·지식·위안 등을 베풀고 나누는 행위. 불교 육바라밀 중 첫 번째.',c:'교리'},
+  {t:'보우기도',h:'保佑祈禱',d:'부처님이나 보살의 가피(加被)를 바라는 기도. 수험·사업·건강 등 목적별로 드림.',c:'기도'},
+  {t:'부도',h:'浮屠',d:'입적하신 스님의 사리를 모신 탑. 사찰 외곽에 위치하며 부도밭이라 불림.',c:'사찰'},
+  {t:'불보',h:'佛寶',d:'삼보 중 하나. 부처님. 불보사찰은 부처님 사리를 모신 사찰.',c:'교리'},
+  {t:'비로자나불',h:'毘盧遮那佛',d:'우주의 본체인 법신불. 화엄 사상의 중심 부처님. 대적광전에 모심.',c:'부처·보살'},
+  {t:'사리',h:'舍利',d:'스님이나 부처님이 입적한 후 화장했을 때 나오는 결정체. 진신사리는 부처님의 사리.',c:'사찰'},
+  {t:'사물',h:'四物',d:'사찰의 네 가지 악기 — 범종·법고·목어·운판. 새벽과 저녁 예불 시 타주.',c:'사찰'},
+  {t:'삼배',h:'三拜',d:'부처님께 세 번 절하는 예법. 오체투지 형태로 이마·두 팔꿈치·두 무릎을 땅에 댐.',c:'기도'},
+  {t:'삼보',h:'三寶',d:'불교의 세 가지 보물 — 불(佛·부처님)·법(法·가르침)·승(僧·스님).',c:'교리'},
+  {t:'삼재',h:'三災',d:'특정 띠에 닥치는 3년간의 액운. 입재·중재·말재로 나뉘며 사주명리학과 함께 봄.',c:'사주'},
+  {t:'상좌',h:'上座',d:'먼저 출가한 선배 스님. 사찰에서 선배를 부르는 호칭.',c:'수행'},
+  {t:'새벽 예불',h:'曉鐘禮佛',d:'매일 새벽 3시경에 올리는 예불. 도량석에서 시작해 법당 예불로 이어짐.',c:'기도'},
+  {t:'석탑',h:'石塔',d:'돌로 만든 탑. 부처님의 사리를 모시거나 공덕 기원으로 세움.',c:'사찰'},
+  {t:'선방',h:'禪房',d:'참선 수행을 하는 공간. 안거 기간에 스님들이 용맹정진하는 곳.',c:'수행'},
+  {t:'소원',h:'所願',d:'이루고 싶은 바람. 불교에서는 소원을 \'발원(發願)\'이라 하며 보살 앞에 발원문을 읽음.',c:'기도'},
+  {t:'수륙재',h:'水陸齋',d:'물과 육지의 고혼(외로운 영혼)을 천도하는 의식. 대규모 천도재.',c:'기도'},
+  {t:'수미단',h:'須彌壇',d:'법당 안 부처님을 모신 단(壇). 須彌는 세계의 중심 산.',c:'사찰'},
+  {t:'승보',h:'僧寶',d:'삼보 중 하나. 스님(승가). 승보사찰은 많은 고승을 배출한 사찰.',c:'교리'},
+  {t:'신중단',h:'神衆壇',d:'법당 한쪽에 위치한 호법신중(護法神衆)을 모신 단. 기도 수호 신장.',c:'사찰'},
+  {t:'아미타불',h:'阿彌陀佛',d:'서방 극락정토의 부처님. 무량광(無量光)·무량수(無量壽)로도 불림. 극락왕생 기도.',c:'부처·보살'},
+  {t:'안거',h:'安居',d:'스님들이 일정 기간 한 곳에 머물며 수행하는 제도. 하안거·동안거.',c:'수행'},
+  {t:'약사여래',h:'藥師如來',d:'동방 유리광 세계의 부처님. 모든 질병을 치유하는 부처님. 약사재일(음력 8일) 기도.',c:'부처·보살'},
+  {t:'염불',h:'念佛',d:'부처님 이름을 외우며 기도하는 수행. \'나무아미타불\' \'관세음보살\' 등.',c:'기도'},
+  {t:'염주',h:'念珠',d:'기도할 때 사용하는 구슬꿰미. 108개가 기본이며 108번뇌 소멸을 상징.',c:'기도'},
+  {t:'오행',h:'五行',d:'목(木)·화(火)·토(土)·금(金)·수(水) 다섯 기운. 사주명리학의 핵심 개념.',c:'사주'},
+  {t:'오체투지',h:'五體投地',d:'이마·두 손·두 무릎이 모두 땅에 닿는 절. 가장 정성된 예경 방법.',c:'기도'},
+  {t:'우란분절',h:'盂蘭盆節',d:'음력 7월 15일. 조상 천도 기도를 드리는 날. \'백중\'이라고도 불림.',c:'기도'},
+  {t:'원통전',h:'圓通殿',d:'관세음보살을 모신 법당. 관음전이라고도 함. 전국 사찰에 가장 많은 법당.',c:'사찰'},
+  {t:'육자진언',h:'六字眞言',d:'\'옴 마니 반메 훔\' — 6글자로 된 관세음보살 진언. 가장 많이 독송되는 진언.',c:'기도'},
+  {t:'인과응보',h:'因果應報',d:'원인이 있으면 반드시 결과가 따른다는 불교 이치. 선인선과(善因善果).',c:'교리'},
+  {t:'자비',h:'慈悲',d:'자(慈)는 사랑, 비(悲)는 연민. 불교에서 중생을 아끼고 고통을 없애주려는 마음.',c:'교리'},
+  {t:'재일',h:'齋日',d:'특별한 기도를 드리는 날. 관음재일(24일)·지장재일(18일)·약사재일(8일) 등.',c:'기도'},
+  {t:'적멸보궁',h:'寂滅寶宮',d:'부처님 진신사리를 봉안한 법당. 불상 없이 사리탑만 있으며 기도 영험이 높음.',c:'사찰'},
+  {t:'정토',h:'淨土',d:'청정한 부처님의 세계. 아미타불의 서방 극락정토가 대표적.',c:'교리'},
+  {t:'진언',h:'眞言',d:'산스크리트어로 된 부처님·보살의 말씀. 신비로운 힘이 있다고 믿어 독송함.',c:'기도'},
+  {t:'참선',h:'參禪',d:'마음을 고요히 하고 본성을 탐구하는 불교 명상 수행.',c:'수행'},
+  {t:'참회',h:'懺悔',d:'과거의 잘못을 뉘우치고 다시 짓지 않겠다고 서원하는 것.',c:'기도'},
+  {t:'천도재',h:'薦度齋',d:'돌아가신 분의 영혼이 좋은 곳에 태어나도록 기도하는 의식.',c:'기도'},
+  {t:'천수경',h:'千手經',d:'관세음보살의 천 개의 손과 눈을 찬탄한 경전. 한국 불교에서 가장 많이 독송.',c:'기도'},
+  {t:'초하루 법회',h:'初一 法會',d:'음력 1일(초하루)에 행하는 월 정기 법회. 한 달의 소원을 발원.',c:'기도'},
+  {t:'칠성각',h:'七星閣',d:'북두칠성을 신격화한 칠성여래를 모신 건물. 장수·복록 기도처.',c:'사찰'},
+  {t:'탑',h:'塔',d:'부처님 사리나 경전을 봉안하기 위해 세운 건축물. 삼층탑·오층탑이 일반적.',c:'사찰'},
+  {t:'팔자',h:'八字',d:'사람이 태어난 년·월·일·시를 간지(干支)로 나타낸 여덟 글자. 사주팔자.',c:'사주'},
+  {t:'하안거',h:'夏安居',d:'음력 4월 15일부터 7월 15일까지 스님들의 여름 수행 기간.',c:'수행'},
+  {t:'향공양',h:'香供養',d:'향을 부처님께 올리는 공양. 향의 연기가 기도를 하늘에 전한다고 믿음.',c:'기도'},
+  {t:'호법신중',h:'護法神衆',d:'불법과 수행자를 수호하는 신장들. 신중탱화에 104위를 그린다.',c:'사찰'},
+  {t:'화두',h:'話頭',d:'참선 수행에서 의식을 집중시키기 위한 문답. \'이 뭣고?\' 등.',c:'수행'},
+  {t:'화엄',h:'華嚴',d:'화엄경에 기반한 불교 사상. 모든 것이 연결되어 있다는 상즉상입(相卽相入) 세계관.',c:'교리'},
+  {t:'회향',h:'回向',d:'기도와 수행의 공덕을 다른 사람이나 영가에게 돌리는 것. 기도 마무리 단계.',c:'기도'},
+  {t:'108배',h:'百八拜',d:'108번뇌를 소멸하기 위해 108번 절하는 수행. 건강에도 좋아 현대인에게 인기.',c:'수행'},
+  {t:'49재',h:'四十九齋',d:'사람이 죽은 후 49일간 7일마다 드리는 천도 법회. 49일 안에 다음 세상에 태어남.',c:'기도'},
+];
+
+var filtered=DICT;
+
+function buildAlpha(){
+  var initials=['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ','1~9'];
+  var html='<button class="dc-a-btn active" onclick="alpha(\'all\',this)">전체</button>';
+  initials.forEach(function(a){html+='<button class="dc-a-btn" onclick="alpha(\''+a+'\',this)">'+a+'</button>';});
+  document.getElementById('dc-alpha').innerHTML=html;
+}
+
+function getInitial(ch){
+  var code=ch.charCodeAt(0)-0xAC00;
+  if(code<0||code>11171)return ch;
+  var INIT=['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+  return INIT[Math.floor(code/588)];
+}
+
+function alpha(a,btn){
+  document.querySelectorAll('.dc-a-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('dc-search').value='';
+  if(a==='all'){filtered=DICT;}
+  else if(a==='1~9'){filtered=DICT.filter(function(d){return /^[0-9]/.test(d.t);});}
+  else{filtered=DICT.filter(function(d){return getInitial(d.t[0])===a;});}
+  render();
+}
+
+function search(){
+  var q=document.getElementById('dc-search').value.trim().toLowerCase();
+  document.querySelectorAll('.dc-a-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelector('.dc-a-btn').classList.add('active');
+  if(!q){filtered=DICT;}
+  else{filtered=DICT.filter(function(d){return d.t.includes(q)||d.d.toLowerCase().includes(q)||d.c.includes(q);});}
+  render();
+}
+
+function render(){
+  document.getElementById('dc-count').textContent='총 '+filtered.length+'개 용어';
+  if(!filtered.length){document.getElementById('dc-list').innerHTML='<div class="dc-empty">검색 결과가 없습니다.</div>';return;}
+  var sorted=filtered.slice().sort(function(a,b){return a.t.localeCompare(b.t,'ko');});
+  var html='';
+  sorted.forEach(function(d){
+    html+='<div class="dc-item">';
+    html+='<div><div class="dc-term">'+d.t+'</div><div class="dc-hanja">'+d.h+'</div><span class="dc-cat">'+d.c+'</span></div>';
+    html+='<div class="dc-def">'+d.d+'</div>';
+    html+='</div>';
+  });
+  document.getElementById('dc-list').innerHTML=html;
+}
+
+buildAlpha();
+filtered=DICT;
+render();
+</script>

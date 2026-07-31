@@ -1,0 +1,383 @@
+<meta charset="UTF-8">
+<style>
+.tf{font-family:'Noto Sans KR',sans-serif;max-width:1060px;margin:0 auto;padding:60px 24px;color:#e2e8f0}
+.tf-badge{display:inline-block;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.35);color:#7dd3fc;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.tf-title{font-size:clamp(24px,3vw,38px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.tf-title em{color:#7dd3fc;font-style:normal}
+.tf-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+.tf-box{background:rgba(255,255,255,0.03);border:1px solid rgba(59,130,246,0.2);border-radius:20px;padding:28px;margin-bottom:24px}
+.tf-label{font-size:12px;font-weight:700;color:#94a3b8;display:block;margin-bottom:6px}
+.tf-select{background:rgba(255,255,255,0.06);border:1.5px solid rgba(59,130,246,0.25);border-radius:12px;padding:11px 14px;color:#f8fafc;font-size:14px;font-family:inherit;width:100%;box-sizing:border-box}
+.tf-btn{width:100%;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;font-size:16px;font-weight:900;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:4px}
+.tf-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(59,130,246,0.35)}
+.tf-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.tf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.tf-card{background:rgba(255,255,255,0.04);border:1px solid rgba(59,130,246,0.2);border-radius:14px;padding:20px;transition:all .2s}
+.tf-card:hover{border-color:rgba(59,130,246,0.45);transform:translateY(-2px)}
+.tf-name{font-size:16px;font-weight:800;color:#7dd3fc;margin-bottom:4px}
+.tf-addr{font-size:12px;color:#64748b;margin-bottom:10px}
+.tf-desc{font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:12px}
+.tf-map{display:inline-block;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;font-size:12px;font-weight:700;padding:6px 14px;border-radius:10px;text-decoration:none}
+.tf-loading{text-align:center;padding:40px;color:#7dd3fc;font-size:14px}
+.tf-err{color:#ef4444;font-size:13px;padding:16px;background:rgba(239,68,68,0.1);border-radius:12px}
+.stat-bar{height:8px;border-radius:4px;background:linear-gradient(90deg,#3b82f6,#7dd3fc);margin-top:4px}
+.famous-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;transition:all .2s}
+.famous-card:hover{border-color:rgba(125,211,252,0.3);background:rgba(125,211,252,0.04)}
+</style>
+<!-- 페이지 배너 -->
+<div style="position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Bulguksa_in_Gyeongju%2C_Korea.jpg/1280px-Bulguksa_in_Gyeongju%2C_Korea.jpg" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Bulguksa_in_Gyeongju%2C_Korea.jpg/1280px-Bulguksa_in_Gyeongju%2C_Korea.jpg'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,15,10,0.6) 0%,rgba(0,0,0,0.75) 100%)"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">TEMPLE SEARCH · 사찰 찾기</div>
+    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:#ffffff;margin:0 0 10px;text-shadow:0 2px 20px rgba(0,0,0,0.7);font-family:'Noto Sans KR',sans-serif;line-height:1.2">전국 사찰 찾기</h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif">전국 17,497개 사찰 데이터로 나에게 맞는 사찰을 검색합니다</p>
+  </div>
+</div>
+
+<div class="tf">
+  <div class="tf-badge">사찰검색</div>
+  <div class="tf-title">🏯 전국 <em>17,497곳</em> 사찰 데이터</div>
+  <p class="tf-sub">문화재청 공식 데이터 + 카카오 현장 수집으로 구축한 전국 최대 사찰 DB에서 지역·목적별로 검색하세요.</p>
+
+  <!-- 메인 배너 -->
+  <div style="background:linear-gradient(135deg,rgba(5,10,30,0.97),rgba(10,20,50,0.92));border:1px solid rgba(59,130,246,0.25);border-radius:24px;padding:40px 32px;margin-bottom:24px;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 15% 50%,rgba(59,130,246,0.15) 0%,transparent 55%),radial-gradient(ellipse at 85% 20%,rgba(125,211,252,0.08) 0%,transparent 50%);pointer-events:none"></div>
+    <div style="position:relative;z-index:1">
+      <div style="font-size:11px;font-weight:800;color:rgba(125,211,252,0.7);letter-spacing:.25em;margin-bottom:16px">✦ 전국 사찰 DB ✦</div>
+      <div style="font-size:clamp(18px,2.5vw,28px);font-weight:900;color:#f8fafc;line-height:1.5;margin-bottom:16px">
+        대한민국 <span style="color:#7dd3fc">17,497개 사찰</span>을<br>한 곳에서 검색하세요
+      </div>
+      <div style="font-size:14px;color:#94a3b8;line-height:2;margin-bottom:28px;max-width:640px">
+        문화재청 공식 데이터와 카카오 현장 수집을 결합한 <strong style="color:#e2e8f0">국내 최대 사찰 데이터베이스</strong>입니다.<br>
+        지역·기도 목적별 검색은 물론, 생년월일을 입력하면 <strong style="color:#FBBF24">사주 기반 AI 맞춤 추천</strong>도 받을 수 있습니다.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <span style="background:rgba(125,211,252,0.1);border:1px solid rgba(125,211,252,0.4);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#7dd3fc">🏯 전국 17,497개 사찰</span>
+        <span style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#6ee7b7">📍 17개 광역시·도 전체</span>
+        <span style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#c4b5fd">🙏 9가지 기도 목적 분류</span>
+        <span style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#fbbf24">🤖 사주 AI 맞춤 추천</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 지역별 분포 -->
+  <div class="tf-box" style="margin-bottom:24px">
+    <div style="font-size:11px;font-weight:800;color:#7dd3fc;letter-spacing:.15em;margin-bottom:20px">📊 지역별 사찰 분포 현황</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🏔 경북</span><span style="color:#7dd3fc">2,900개</span></div>
+        <div class="stat-bar" style="width:100%"></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🌊 경남</span><span style="color:#7dd3fc">2,866개</span></div>
+        <div class="stat-bar" style="width:99%"></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🏙 경기·인천</span><span style="color:#7dd3fc">2,723개</span></div>
+        <div class="stat-bar" style="width:94%"></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🌸 충남·대전</span><span style="color:#7dd3fc">1,632개</span></div>
+        <div class="stat-bar" style="width:56%"></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🌿 충북</span><span style="color:#7dd3fc">1,122개</span></div>
+        <div class="stat-bar" style="width:39%"></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🌺 전남·광주</span><span style="color:#7dd3fc">1,769개</span></div>
+        <div class="stat-bar" style="width:61%"></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🍃 전북</span><span style="color:#7dd3fc">906개</span></div>
+        <div class="stat-bar" style="width:31%"></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🏔 강원</span><span style="color:#7dd3fc">1,046개</span></div>
+        <div class="stat-bar" style="width:36%"></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🌆 서울</span><span style="color:#7dd3fc">703개</span></div>
+        <div class="stat-bar" style="width:24%"></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#e2e8f0;font-weight:700"><span>🌴 제주</span><span style="color:#7dd3fc">183개</span></div>
+        <div class="stat-bar" style="width:6%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 검색 폼 -->
+  <div class="tf-box">
+    <div style="font-size:13px;font-weight:800;color:#f8fafc;margin-bottom:18px">🔍 사찰 검색</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div><label class="tf-label">기도 목적</label>
+        <select class="tf-select" id="tf-purpose">
+          <option value="재물운">💰 재물운 · 사업운</option>
+          <option value="건강운">💊 건강운 · 치유</option>
+          <option value="학업운">📚 학업운 · 합격</option>
+          <option value="인연운">💕 인연운 · 결혼</option>
+          <option value="가정운">🏠 가정운 · 화합</option>
+          <option value="수험합격">✏️ 수험합격 · 취업</option>
+          <option value="출산기도">👶 출산기도 · 자녀</option>
+          <option value="사업운">🤝 사업운 · 대인관계</option>
+          <option value="액막이">🔮 액막이 · 운수대통</option>
+        </select>
+      </div>
+      <div><label class="tf-label">지역</label>
+        <select class="tf-select" id="tf-region">
+          <option value="">전체 지역</option>
+          <option value="서울">서울 (703개)</option>
+          <option value="경기">경기·인천 (2,723개)</option>
+          <option value="강원">강원 (1,046개)</option>
+          <option value="충남">충남·대전·세종 (1,632개)</option>
+          <option value="충북">충북 (1,122개)</option>
+          <option value="전남">전남·광주 (1,769개)</option>
+          <option value="전북">전북 (906개)</option>
+          <option value="경남">경남·부산·울산 (4,109개)</option>
+          <option value="경북">경북·대구 (3,403개)</option>
+          <option value="제주">제주 (183개)</option>
+        </select>
+      </div>
+    </div>
+    <!-- 달력 기준 + 성별 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div>
+        <label class="tf-label">달력 기준</label>
+        <div style="display:flex;gap:8px">
+          <button type="button" id="tf-sol-btn" onclick="tfCal('solar',this)" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(251,191,36,.5);background:rgba(251,191,36,.12);color:#FBBF24;font-weight:800;font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">☀️ 양력</button>
+          <button type="button" id="tf-lun-btn" onclick="tfCal('lunar',this)" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#64748b;font-weight:700;font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🌙 음력</button>
+        </div>
+        <input type="hidden" id="tf-cal" value="solar">
+      </div>
+      <div>
+        <label class="tf-label">성별</label>
+        <div style="display:flex;gap:8px">
+          <button type="button" id="tf-male-btn" onclick="tfGender('male',this)" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(251,191,36,.5);background:rgba(251,191,36,.12);color:#FBBF24;font-weight:800;font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">👨 남자</button>
+          <button type="button" id="tf-female-btn" onclick="tfGender('female',this)" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#64748b;font-weight:700;font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">👩 여자</button>
+        </div>
+        <input type="hidden" id="tf-gender" value="male">
+      </div>
+    </div>
+
+    <!-- 생년월일 -->
+    <div style="margin-bottom:14px">
+      <label class="tf-label">생년월일 <span style="color:#475569;font-weight:400">(선택 — 입력 시 사주 기반 맞춤 추천)</span></label>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
+        <select class="tf-select" id="tf-year"><option value="">년 (선택)</option></select>
+        <select class="tf-select" id="tf-month"><option value="">월</option></select>
+        <select class="tf-select" id="tf-day"><option value="">일</option></select>
+      </div>
+    </div>
+
+    <!-- 태어난 시간 -->
+    <div style="margin-bottom:16px">
+      <label class="tf-label">태어난 시간 <span style="color:#475569;font-weight:400">(선택사항)</span></label>
+      <select class="tf-select" id="tf-hour" style="background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23FBBF24%22><path d=%22M7 10l5 5 5-5z%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;background-size:20px;appearance:none;-webkit-appearance:none">
+        <option value="">모름 (전체)</option>
+        <option value="23">자시 (子) 23~01시</option>
+        <option value="1">축시 (丑) 01~03시</option>
+        <option value="3">인시 (寅) 03~05시</option>
+        <option value="5">묘시 (卯) 05~07시</option>
+        <option value="7">진시 (辰) 07~09시</option>
+        <option value="9">사시 (巳) 09~11시</option>
+        <option value="11">오시 (午) 11~13시</option>
+        <option value="13">미시 (未) 13~15시</option>
+        <option value="15">신시 (申) 15~17시</option>
+        <option value="17">유시 (酉) 17~19시</option>
+        <option value="19">술시 (戌) 19~21시</option>
+        <option value="21">해시 (亥) 21~23시</option>
+      </select>
+    </div>
+    <button type="button" class="tf-btn" id="tf-submit" onclick="doTemples()">🏯 사찰 검색하기</button>
+  </div>
+  <div id="tf-result"></div>
+
+  <!-- 기도 목적별 상세 안내 -->
+  <div class="tf-box" style="margin-top:8px">
+    <div style="font-size:11px;font-weight:800;color:#7dd3fc;letter-spacing:.15em;margin-bottom:20px">🙏 기도 목적별 상세 안내</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+      <div style="padding:16px;background:rgba(59,130,246,0.05);border-radius:14px;border:1px solid rgba(59,130,246,0.15)">
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🎓 합격·학업·취업 기도</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8"><strong style="color:#7dd3fc">문수보살</strong>은 지혜와 학문의 보살입니다. 시험·면접·자격증을 앞두고 있다면 문수보살을 모신 사찰에서 기도하세요. 대표 사찰: 오대산 상원사, 강원 월정사.</div>
+      </div>
+      <div style="padding:16px;background:rgba(52,211,153,0.05);border-radius:14px;border:1px solid rgba(52,211,153,0.15)">
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">💊 건강·치유 기도</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8"><strong style="color:#6ee7b7">약사여래</strong>는 중생의 질병을 치유하는 부처님입니다. 건강 회복·수술 전후·만성 질환으로 힘드실 때 약사여래를 모신 사찰을 찾으세요. 대표 사찰: 진주 약사암, 서울 약사사.</div>
+      </div>
+      <div style="padding:16px;background:rgba(167,139,250,0.05);border-radius:14px;border:1px solid rgba(167,139,250,0.15)">
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">💕 인연·결혼 기도</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8"><strong style="color:#c4b5fd">관세음보살</strong>은 자비와 인연의 보살입니다. 좋은 인연을 맺고 싶거나 결혼을 앞두고 있다면 관음전을 모신 사찰에서 기도하세요. 대표 사찰: 낙산사, 보문사.</div>
+      </div>
+      <div style="padding:16px;background:rgba(251,191,36,0.05);border-radius:14px;border:1px solid rgba(251,191,36,0.15)">
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">💰 재물·사업 기도</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8"><strong style="color:#fbbf24">칠성여래·용왕</strong>은 재물과 사업의 신입니다. 사업 번창·재물운 상승을 원한다면 칠성각·용왕당이 있는 사찰을 찾으세요. 대표 사찰: 삼각산 도선사, 관악산 연주암.</div>
+      </div>
+      <div style="padding:16px;background:rgba(34,197,94,0.05);border-radius:14px;border:1px solid rgba(34,197,94,0.15)">
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">👶 출산·자녀 기도</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8"><strong style="color:#4ade80">지장보살·삼신할머니</strong>에게 출산과 자녀의 건강을 빕니다. 임신 중이거나 자녀를 원하시는 분들은 지장전·산신각을 모신 사찰에서 기도하세요.</div>
+      </div>
+      <div style="padding:16px;background:rgba(239,68,68,0.05);border-radius:14px;border:1px solid rgba(239,68,68,0.15)">
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🔮 액막이·운수대통 기도</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8"><strong style="color:#fca5a5">산신·독성</strong>에게 액을 물리치고 복을 기원합니다. 삼재·살풀이·신수 기도는 산신각이 있는 사찰에서 드리세요. 정월 초에 특히 많이 찾습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 대표 명찰 소개 -->
+  <div class="tf-box" style="margin-top:8px">
+    <div style="font-size:11px;font-weight:800;color:#7dd3fc;letter-spacing:.15em;margin-bottom:20px">⭐ 대한민국 대표 명찰</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px">
+      <div class="famous-card">
+        <div style="font-size:15px;font-weight:800;color:#fbbf24;margin-bottom:4px">🏯 통도사 — 불보사찰</div>
+        <div style="font-size:12px;color:#7dd3fc;margin-bottom:8px">경남 양산 | 한국 3대 사찰</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.7">646년 자장율사가 창건. 부처님의 진신사리와 가사·발우를 모신 불보종찰. 대웅전에 불상 없이 사리탑을 바라보는 독특한 구조로 유명합니다.</div>
+      </div>
+      <div class="famous-card">
+        <div style="font-size:15px;font-weight:800;color:#fbbf24;margin-bottom:4px">📚 해인사 — 법보사찰</div>
+        <div style="font-size:12px;color:#7dd3fc;margin-bottom:8px">경남 합천 | 팔만대장경 보존</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.7">802년 순응·이정 스님 창건. 고려 팔만대장경(국보 32호)을 보존한 법보종찰. 가야산 깊은 곳에 자리한 천년 고찰로 세계문화유산에 등재됐습니다.</div>
+      </div>
+      <div class="famous-card">
+        <div style="font-size:15px;font-weight:800;color:#fbbf24;margin-bottom:4px">🧘 송광사 — 승보사찰</div>
+        <div style="font-size:12px;color:#7dd3fc;margin-bottom:8px">전남 순천 | 16국사 배출</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.7">고려 보조국사 지눌이 중창. 16명의 국사를 배출한 승보종찰. 조계종의 정신적 발상지이며, 템플스테이로도 유명합니다.</div>
+      </div>
+      <div class="famous-card">
+        <div style="font-size:15px;font-weight:800;color:#c4b5fd;margin-bottom:4px">🌅 불국사</div>
+        <div style="font-size:12px;color:#7dd3fc;margin-bottom:8px">경북 경주 | 유네스코 세계유산</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.7">528년 창건, 751년 김대성이 중창. 다보탑·석가탑·청운교·백운교 등 신라 불교 예술의 정수. 석굴암과 함께 세계문화유산으로 지정됐습니다.</div>
+      </div>
+      <div class="famous-card">
+        <div style="font-size:15px;font-weight:800;color:#c4b5fd;margin-bottom:4px">🌊 낙산사</div>
+        <div style="font-size:12px;color:#7dd3fc;margin-bottom:8px">강원 양양 | 관음성지</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.7">671년 의상대사 창건. 동해 바다를 바라보는 관세음보살 성지. 홍련암·해수관음상이 유명하며 인연기도 성지로 많은 이들이 찾습니다.</div>
+      </div>
+      <div class="famous-card">
+        <div style="font-size:15px;font-weight:800;color:#c4b5fd;margin-bottom:4px">🏔 월정사</div>
+        <div style="font-size:12px;color:#7dd3fc;margin-bottom:8px">강원 평창 | 오대산 성지</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.7">643년 자장율사 창건. 오대산 전나무 숲길로 유명한 천년 고찰. 문수보살 성지로 학업·합격 기도처로 이름 높습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 삼보사찰 안내 -->
+  <div style="background:linear-gradient(135deg,rgba(251,191,36,0.05),rgba(125,211,252,0.05));border:1px solid rgba(251,191,36,0.2);border-radius:20px;padding:28px;margin-top:8px">
+    <div style="font-size:11px;font-weight:800;color:#fbbf24;letter-spacing:.15em;margin-bottom:16px">☸️ 한국 불교 삼보사찰</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+      <div style="text-align:center;padding:16px;background:rgba(251,191,36,0.06);border-radius:14px">
+        <div style="font-size:24px;margin-bottom:8px">🏯</div>
+        <div style="font-size:15px;font-weight:800;color:#fbbf24;margin-bottom:4px">불보종찰</div>
+        <div style="font-size:18px;font-weight:900;color:#f8fafc;margin-bottom:6px">통도사</div>
+        <div style="font-size:12px;color:#94a3b8">부처님의 진신사리를 모신 사찰. 불(佛)의 법통을 잇는 종찰.</div>
+      </div>
+      <div style="text-align:center;padding:16px;background:rgba(125,211,252,0.06);border-radius:14px">
+        <div style="font-size:24px;margin-bottom:8px">📚</div>
+        <div style="font-size:15px;font-weight:800;color:#7dd3fc;margin-bottom:4px">법보종찰</div>
+        <div style="font-size:18px;font-weight:900;color:#f8fafc;margin-bottom:6px">해인사</div>
+        <div style="font-size:12px;color:#94a3b8">팔만대장경을 보존한 사찰. 부처님의 가르침(法)을 잇는 종찰.</div>
+      </div>
+      <div style="text-align:center;padding:16px;background:rgba(52,211,153,0.06);border-radius:14px">
+        <div style="font-size:24px;margin-bottom:8px">🧘</div>
+        <div style="font-size:15px;font-weight:800;color:#6ee7b7;margin-bottom:4px">승보종찰</div>
+        <div style="font-size:18px;font-weight:900;color:#f8fafc;margin-bottom:6px">송광사</div>
+        <div style="font-size:12px;color:#94a3b8">16국사를 배출한 사찰. 수행 공동체(僧)의 전통을 잇는 종찰.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var cy=new Date().getFullYear();
+  var yEl=document.getElementById('tf-year');
+  for(var y=cy;y>=1920;y--){var o=document.createElement('option');o.value=y;o.text=y+'년';yEl.appendChild(o);}
+  var mEl=document.getElementById('tf-month');
+  for(var m=1;m<=12;m++){var o=document.createElement('option');o.value=String(m).padStart(2,'0');o.text=m+'월';mEl.appendChild(o);}
+  function fillDays(){
+    var y2=parseInt(yEl.value)||2000,mo=parseInt(mEl.value)||1;
+    var max=new Date(y2,mo,0).getDate();
+    var dEl=document.getElementById('tf-day'),cur=dEl.value;
+    dEl.innerHTML='<option value="">일</option>';
+    for(var d=1;d<=max;d++){var o=document.createElement('option');o.value=String(d).padStart(2,'0');o.text=d+'일';if(o.value===cur)o.selected=true;dEl.appendChild(o);}
+  }
+  mEl.addEventListener('change',fillDays);yEl.addEventListener('change',fillDays);fillDays();
+})();
+
+function tfCal(v,el){
+  document.getElementById('tf-cal').value=v;
+  var btns=[document.getElementById('tf-sol-btn'),document.getElementById('tf-lun-btn')];
+  btns.forEach(function(b){b.style.borderColor='rgba(255,255,255,.1)';b.style.background='rgba(255,255,255,.03)';b.style.color='#64748b'});
+  el.style.borderColor='rgba(251,191,36,.5)';el.style.background='rgba(251,191,36,.12)';el.style.color='#FBBF24';
+}
+function tfGender(v,el){
+  document.getElementById('tf-gender').value=v;
+  var btns=[document.getElementById('tf-male-btn'),document.getElementById('tf-female-btn')];
+  btns.forEach(function(b){b.style.borderColor='rgba(255,255,255,.1)';b.style.background='rgba(255,255,255,.03)';b.style.color='#64748b'});
+  el.style.borderColor='rgba(251,191,36,.5)';el.style.background='rgba(251,191,36,.12)';el.style.color='#FBBF24';
+}
+async function doTemples(){
+  var btn=document.getElementById('tf-submit');
+  var res=document.getElementById('tf-result');
+  btn.disabled=true;
+  res.innerHTML='<div style="text-align:center;padding:40px;color:#7dd3fc;font-size:14px">🏯 사찰 검색 중...</div>';
+  var purpose=document.getElementById('tf-purpose').value;
+  var region=document.getElementById('tf-region').value;
+  var y=document.getElementById('tf-year').value;
+  var m=document.getElementById('tf-month').value;
+  var d=document.getElementById('tf-day').value;
+  var birth=(y&&m&&d)?y+'-'+m+'-'+d:'';
+  try{
+    var gender=document.getElementById('tf-gender').value;
+  var calendar=document.getElementById('tf-cal').value;
+  var hour=document.getElementById('tf-hour').value;
+  var body={purpose:purpose,userLat:37.5665,userLng:126.9780,region:region};
+  if(birth){body.birthInput={date:birth,gender:gender,calendar:calendar};if(hour)body.birthInput.hour=parseInt(hour);}
+    var r=await fetch('https://jamgong-inyeonsachal.vercel.app/api/match',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+    });
+    var data=await r.json();
+    var results=data.results||[];
+    if(!results.length){
+      res.innerHTML='<div style="color:#ef4444;font-size:13px;padding:16px;background:rgba(239,68,68,0.1);border-radius:12px">검색 결과가 없습니다. 다른 지역이나 목적으로 다시 시도해보세요.</div>';
+      btn.disabled=false;return;
+    }
+    var html='<div style="font-size:12px;color:#64748b;margin-bottom:14px">검색 결과 '+results.length+'개</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">';
+    results.slice(0,12).forEach(function(item){
+      var t=item.temple||{};
+      var naverUrl=(t.lng&&t.lat)
+        ?'https://map.naver.com/p/entry/coords/'+t.lng+','+t.lat
+        :'https://map.naver.com/v5/search/'+encodeURIComponent((t.name||'')+' '+(t.address||''));
+      var googleUrl=(t.lat&&t.lng)
+        ?'https://www.google.com/maps/search/?api=1&query='+t.lat+','+t.lng
+        :'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((t.name||'')+' '+(t.address||t.sido||''));
+      html+='<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(59,130,246,0.2);border-radius:14px;padding:20px;transition:all .2s">';
+      html+='<div style="font-size:16px;font-weight:800;color:#7dd3fc;margin-bottom:4px">'+(t.name||'')+'</div>';
+      html+='<div style="font-size:12px;color:#64748b;margin-bottom:10px">📍 '+(t.address||t.sido||'')+'</div>';
+      if(item.reason)html+='<div style="font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:12px">'+item.reason+'</div>';
+      html+='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px">';
+      html+='<a style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;font-size:12px;font-weight:700;padding:6px 12px;border-radius:10px;text-decoration:none" href="'+naverUrl+'" target="_blank">🗺️ 네이버</a>';
+      html+='<a style="background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);color:#7ba7f5;font-size:12px;font-weight:700;padding:6px 12px;border-radius:10px;text-decoration:none" href="'+googleUrl+'" target="_blank">📍 구글</a>';
+      html+='</div>';
+      if(t.name)html+='<a style="display:block;text-align:center;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);color:#FBBF24;font-size:12px;font-weight:700;padding:8px;border-radius:10px;text-decoration:none" href="page-temple-detail.html?name='+encodeURIComponent(t.name)+'">🏯 상세페이지 보기 →</a>';
+      html+='</div>';
+    });
+    html+='</div>';
+    res.innerHTML=html;
+  }catch(e){
+    res.innerHTML='<div style="color:#ef4444;font-size:13px;padding:16px;background:rgba(239,68,68,0.1);border-radius:12px">연결 오류: '+e.message+'</div>';
+  }
+  btn.disabled=false;
+}
+</script>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>

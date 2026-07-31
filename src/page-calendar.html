@@ -1,0 +1,159 @@
+<style>
+.cal{font-family:'Noto Sans KR',sans-serif;max-width:1000px;margin:0 auto;padding:56px 24px 80px;color:#e2e8f0}
+.cal-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.cal-title{font-size:clamp(24px,3.5vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.cal-title em{color:#FBBF24;font-style:normal}
+.cal-sub{font-size:14px;color:#64748b;line-height:1.8;margin:0 0 36px}
+
+/* 올해의 4대 재일 배너 */
+.cal-4big{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-bottom:50px}
+.cal-big-item{background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(168,85,247,0.05));border:1px solid rgba(251,191,36,0.25);border-radius:18px;padding:22px;text-align:center}
+.cal-big-icon{font-size:36px;margin-bottom:10px}
+.cal-big-name{font-size:15px;font-weight:800;color:#f8fafc;margin-bottom:4px}
+.cal-big-lunar{font-size:12px;color:#FBBF24;margin-bottom:4px}
+.cal-big-solar{font-size:11px;color:#64748b}
+.cal-big-desc{font-size:11px;color:#94a3b8;margin-top:8px;line-height:1.6}
+
+/* 월별 법요일 */
+.cal-sec{font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.15em;margin:36px 0 16px}
+.cal-month-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:36px}
+.cal-month{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden}
+.cal-month-head{background:rgba(251,191,36,0.08);border-bottom:1px solid rgba(255,255,255,0.06);padding:12px 16px;font-size:14px;font-weight:800;color:#FBBF24}
+.cal-month-body{padding:12px 16px}
+.cal-event{display:flex;align-items:start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.cal-event:last-child{border-bottom:none}
+.cal-event-date{font-size:11px;font-weight:800;color:#FBBF24;min-width:54px;padding-top:2px}
+.cal-event-name{font-size:13px;font-weight:700;color:#f8fafc;margin-bottom:2px}
+.cal-event-desc{font-size:11px;color:#64748b;line-height:1.5}
+
+/* 매월 재일 */
+.cal-monthly{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:50px}
+.cal-m-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px}
+.cal-m-day{font-size:22px;font-weight:900;color:#FBBF24;margin-bottom:4px}
+.cal-m-name{font-size:13px;font-weight:700;color:#f8fafc;margin-bottom:4px}
+.cal-m-pray{font-size:11px;color:#64748b;line-height:1.5}
+
+/* 절기 기도 */
+.cal-jeol{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.cal-j-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:18px}
+.cal-j-name{font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:4px}
+.cal-j-date{font-size:11px;color:#FBBF24;margin-bottom:6px}
+.cal-j-pray{font-size:12px;color:#64748b;line-height:1.6}
+</style>
+
+<div class="cal">
+  <div class="cal-badge">불교 법요일</div>
+  <h1 class="cal-title">🗓️ <em>불교 법요일</em> 캘린더</h1>
+  <p class="cal-sub">4대 재일부터 매월 기도일, 절기별 기도 안내까지 — 한 곳에서 확인하세요.</p>
+
+  <!-- 4대 재일 -->
+  <div class="cal-sec">📿 4대 재일 (2026년 기준)</div>
+  <div class="cal-4big">
+    <div class="cal-big-item">
+      <div class="cal-big-icon">🌸</div>
+      <div class="cal-big-name">부처님 오신 날</div>
+      <div class="cal-big-lunar">음력 4월 8일</div>
+      <div class="cal-big-solar">2026년 5월 24일 (일)</div>
+      <div class="cal-big-desc">석가모니 부처님의 탄신일. 연등행사, 방생법회, 사찰 대법회 등 전국적으로 봉축 행사 진행.</div>
+    </div>
+    <div class="cal-big-item">
+      <div class="cal-big-icon">❄️</div>
+      <div class="cal-big-name">성도재일</div>
+      <div class="cal-big-lunar">음력 12월 8일</div>
+      <div class="cal-big-solar">2027년 1월 26일 (화)</div>
+      <div class="cal-big-desc">부처님이 보리수 아래서 깨달음을 이루신 날. 철야 정진·용맹정진 기도가 행해진다.</div>
+    </div>
+    <div class="cal-big-item">
+      <div class="cal-big-icon">🌿</div>
+      <div class="cal-big-name">출가재일</div>
+      <div class="cal-big-lunar">음력 2월 8일</div>
+      <div class="cal-big-solar">2026년 3월 27일 (금)</div>
+      <div class="cal-big-desc">태자 시절 부처님이 출가하신 날. 출가 수행의 의미를 되새기며 마음 비움 기도를 한다.</div>
+    </div>
+    <div class="cal-big-item">
+      <div class="cal-big-icon">🕯️</div>
+      <div class="cal-big-name">열반재일</div>
+      <div class="cal-big-lunar">음력 2월 15일</div>
+      <div class="cal-big-solar">2026년 4월 3일 (금)</div>
+      <div class="cal-big-desc">부처님께서 열반에 드신 날. 열반의 의미를 되새기고 무상(無常)의 진리를 성찰하는 날.</div>
+    </div>
+  </div>
+
+  <!-- 월별 주요 법요일 -->
+  <div class="cal-sec">📅 월별 주요 법요일 (2026년)</div>
+  <div class="cal-month-grid">
+    <div class="cal-month">
+      <div class="cal-month-head">🌱 1월 · 2월</div>
+      <div class="cal-month-body">
+        <div class="cal-event"><div class="cal-event-date">1월 1일</div><div><div class="cal-event-name">신정 새해 기도</div><div class="cal-event-desc">새해 소원성취 기도·108배 정진</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 1월 1일</div><div><div class="cal-event-name">설날 법회</div><div class="cal-event-desc">세배·조상 천도 기도, 전국 사찰 특별 법회</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 2월 8일</div><div><div class="cal-event-name">출가재일</div><div class="cal-event-desc">부처님 출가 기념 수행 정진</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 2월 15일</div><div><div class="cal-event-name">열반재일</div><div class="cal-event-desc">열반 기념 추모 법회·정진</div></div></div>
+      </div>
+    </div>
+    <div class="cal-month">
+      <div class="cal-month-head">🌸 3월 · 4월</div>
+      <div class="cal-month-body">
+        <div class="cal-event"><div class="cal-event-date">음 3월 15일</div><div><div class="cal-event-name">삼월 대보름</div><div class="cal-event-desc">달맞이 기도, 오곡밥 공양</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 4월 4일</div><div><div class="cal-event-name">문수보살 탄신일</div><div class="cal-event-desc">지혜 기도·학업성취 발원</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 4월 8일</div><div><div class="cal-event-name">부처님 오신 날</div><div class="cal-event-desc">봉축 대법회·연등축제·방생</div></div></div>
+      </div>
+    </div>
+    <div class="cal-month">
+      <div class="cal-month-head">☀️ 5월 · 6월</div>
+      <div class="cal-month-body">
+        <div class="cal-event"><div class="cal-event-date">음 5월 5일</div><div><div class="cal-event-name">단오 기도</div><div class="cal-event-desc">단오 액막이·건강 기도</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 6월 19일</div><div><div class="cal-event-name">관세음보살 성도일</div><div class="cal-event-desc">관음 기도·천수경 독경 정진</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 6월 15일</div><div><div class="cal-event-name">하안거 결제</div><div class="cal-event-desc">스님들의 여름 안거 시작</div></div></div>
+      </div>
+    </div>
+    <div class="cal-month">
+      <div class="cal-month-head">🍂 7월 · 8월</div>
+      <div class="cal-month-body">
+        <div class="cal-event"><div class="cal-event-date">음 7월 15일</div><div><div class="cal-event-name">우란분절(백중)</div><div class="cal-event-desc">조상 천도 기도·49재 특별 법회</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 7월 24일</div><div><div class="cal-event-name">관세음보살 성탄일</div><div class="cal-event-desc">관음 기도·소원성취 발원</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 7월 30일</div><div><div class="cal-event-name">지장보살 탄신일</div><div class="cal-event-desc">지장 기도·조상천도·지장경 독경</div></div></div>
+      </div>
+    </div>
+    <div class="cal-month">
+      <div class="cal-month-head">🍁 9월 · 10월</div>
+      <div class="cal-month-body">
+        <div class="cal-event"><div class="cal-event-date">음 8월 15일</div><div><div class="cal-event-name">추석 법회</div><div class="cal-event-desc">조상 천도·추수감사 공양</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 9월 9일</div><div><div class="cal-event-name">관세음보살 출가일</div><div class="cal-event-desc">관음 기도·출가 정신 발원</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 9월 15일</div><div><div class="cal-event-name">동안거 결제</div><div class="cal-event-desc">스님들의 겨울 안거 시작</div></div></div>
+      </div>
+    </div>
+    <div class="cal-month">
+      <div class="cal-month-head">❄️ 11월 · 12월</div>
+      <div class="cal-month-body">
+        <div class="cal-event"><div class="cal-event-date">음 11월 17일</div><div><div class="cal-event-name">아미타불 탄신일</div><div class="cal-event-desc">극락왕생·정토 기도</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">12월 31일</div><div><div class="cal-event-name">제야의 종 타종</div><div class="cal-event-desc">보신각·전국 사찰 제야 108타종</div></div></div>
+        <div class="cal-event"><div class="cal-event-date">음 12월 8일</div><div><div class="cal-event-name">성도재일</div><div class="cal-event-desc">용맹정진·철야 기도</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 매월 재일 -->
+  <div class="cal-sec">🌕 매월 재일 (음력 기준)</div>
+  <div class="cal-monthly">
+    <div class="cal-m-item"><div class="cal-m-day">1일</div><div class="cal-m-name">초하루 법회</div><div class="cal-m-pray">아미타불 염불·공양물 올리기. 새 달 소원 발원.</div></div>
+    <div class="cal-m-item"><div class="cal-m-day">8일</div><div class="cal-m-name">약사재일</div><div class="cal-m-pray">약사여래 기도. 건강·치유 발원. 약사경 독경.</div></div>
+    <div class="cal-m-item"><div class="cal-m-day">14일</div><div class="cal-m-name">미타재일 전날</div><div class="cal-m-pray">극락왕생 발원·아미타경 독경 준비.</div></div>
+    <div class="cal-m-item"><div class="cal-m-day">15일</div><div class="cal-m-name">보름 법회·미타재일</div><div class="cal-m-pray">아미타불 기도·달빛 기도. 가장 기도 기운이 강한 날.</div></div>
+    <div class="cal-m-item"><div class="cal-m-day">18일</div><div class="cal-m-name">지장재일</div><div class="cal-m-pray">지장보살 기도. 조상 천도·죄업 소멸 발원.</div></div>
+    <div class="cal-m-item"><div class="cal-m-day">23일</div><div class="cal-m-name">대세지보살 재일</div><div class="cal-m-pray">대세지보살 기도. 지혜·용기 발원.</div></div>
+    <div class="cal-m-item"><div class="cal-m-day">24일</div><div class="cal-m-name">관음재일</div><div class="cal-m-pray">관세음보살 기도. 천수경 독경·소원성취 발원. 가장 많이 찾는 기도일.</div></div>
+    <div class="cal-m-item"><div class="cal-m-day">30일</div><div class="cal-m-name">그믐 법회</div><div class="cal-m-pray">한 달 마무리 기도·참회 발원. 다음 달 복 기원.</div></div>
+  </div>
+
+  <!-- 절기별 기도 -->
+  <div class="cal-sec">🌿 절기별 기도 안내 (24절기)</div>
+  <div class="cal-jeol">
+    <div class="cal-j-item"><div class="cal-j-name">🌱 입춘 (立春)</div><div class="cal-j-date">2월 4일경 — 봄의 시작</div><div class="cal-j-pray">새해 첫 절기. 입춘 기도로 한 해 시작. 사찰 문에 立春大吉 붙이기. 재물·건강 발원.</div></div>
+    <div class="cal-j-item"><div class="cal-j-name">☔ 곡우 (穀雨)</div><div class="cal-j-date">4월 20일경 — 씨앗에 내리는 비</div><div class="cal-j-pray">씨앗·생명 기도일. 농업 풍년 기원. 목(木) 기운이 강한 절기로 목 기운 약한 분께 좋은 기도일.</div></div>
+    <div class="cal-j-item"><div class="cal-j-name">☀️ 하지 (夏至)</div><div class="cal-j-date">6월 21일경 — 일 년 중 낮이 가장 긴 날</div><div class="cal-j-pray">양기(陽氣) 최고조. 화(火) 기운 충만. 열정·명예 기도. 지나친 더위를 막는 수기(水氣) 기도.</div></div>
+    <div class="cal-j-item"><div class="cal-j-name">🌾 추분 (秋分)</div><div class="cal-j-date">9월 23일경 — 낮과 밤의 길이 같음</div><div class="cal-j-pray">균형·조화의 절기. 오행의 균형 기도. 수확감사·결실 발원. 조상 천도에 좋은 날.</div></div>
+    <div class="cal-j-item"><div class="cal-j-name">❄️ 동지 (冬至)</div><div class="cal-j-date">12월 22일경 — 일 년 중 밤이 가장 긴 날</div><div class="cal-j-pray">팥죽 공양. 액막이·건강 기도. 어둠 속 새로운 양기 시작의 날. 내년 운기 발원 기도.</div></div>
+    <div class="cal-j-item"><div class="cal-j-name">🌨️ 대한 (大寒)</div><div class="cal-j-date">1월 20일경 — 가장 추운 절기</div><div class="cal-j-pray">인내·끈기 기도. 수(水) 기운 가장 강함. 지혜·수행 정진에 좋은 시기. 내면 성찰 기도.</div></div>
+  </div>
+</div>

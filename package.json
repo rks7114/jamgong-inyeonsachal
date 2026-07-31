@@ -1,0 +1,17 @@
+{
+  "name": "jamgong-inyeonsachal",
+  "version": "0.1.1",
+  "private": true,
+  "description": "잼공인연사찰 - 생년월일시 기반 오행 사찰 매칭 서비스",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lunar-javascript": "^1.7.7"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}

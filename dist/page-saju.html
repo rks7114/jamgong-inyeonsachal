@@ -1,0 +1,399 @@
+<meta charset="UTF-8">
+<style>
+.sj{font-family:'Noto Sans KR',sans-serif;max-width:900px;margin:0 auto;padding:56px 24px 80px;color:#e2e8f0}
+.sj-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.sj-title{font-size:clamp(26px,4vw,42px);font-weight:900;color:#f8fafc;margin:0 0 10px}
+.sj-title em{color:#FBBF24;font-style:normal}
+.sj-sub{font-size:14px;color:#94a3b8;line-height:1.8;margin:0 0 36px}
+.sj-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:32px}
+.sj-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.sj-label{font-size:12px;font-weight:700;color:#94a3b8}
+.sj-select{background:rgba(15,12,4,0.9);border:1.5px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;color:#f8fafc;font-size:14px;font-family:inherit;width:100%;box-sizing:border-box}
+.sj-btn{width:100%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:16px;font-weight:900;padding:17px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;margin-top:8px;transition:all .2s}
+.sj-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(251,191,36,0.4)}
+.sj-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.sj-result{margin-top:32px;display:none}
+.sj-loading{text-align:center;padding:40px;color:#FBBF24;font-size:15px}
+.sj-err{color:#ef4444;font-size:13px;padding:16px;background:rgba(239,68,68,0.08);border-radius:12px}
+
+/* 섹션 타이틀 */
+.sj-sec{font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.15em;margin:24px 0 10px}
+
+/* 팔자 표 */
+.sj-bazi{background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.15);border-radius:16px;overflow:hidden;margin-bottom:4px}
+.sj-bazi table{width:100%;border-collapse:collapse}
+.sj-bazi th{font-size:11px;color:#64748b;font-weight:700;text-align:center;padding:10px 6px;border-bottom:1px solid rgba(255,255,255,0.06);letter-spacing:.05em}
+.sj-bazi td{text-align:center;padding:16px 6px;font-weight:900;line-height:1.3}
+.sj-gan{font-size:28px;color:#FBBF24}
+.sj-ji{font-size:24px;color:#94a3b8}
+.sj-wx{font-size:11px;color:#475569;padding:6px 0!important;border-top:1px solid rgba(255,255,255,0.04)}
+.sj-today{font-size:10px;font-weight:700;background:rgba(251,191,36,0.15);color:#FBBF24;padding:2px 6px;border-radius:6px;display:inline-block;margin-top:2px}
+
+/* 오행 */
+.sj-oh{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:4px}
+.sj-oh-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 6px;text-align:center}
+.sj-oh-name{font-size:14px;font-weight:900;margin-bottom:8px}
+.sj-oh-bg{height:6px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;margin-bottom:5px}
+.sj-oh-fill{height:100%;border-radius:99px;transition:width 1s ease;width:0%}
+.sj-oh-pct{font-size:11px;color:#64748b}
+
+/* 대운 */
+.sj-dayun{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:4px}
+.sj-dy-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 8px;text-align:center;transition:border-color .2s}
+.sj-dy-current{border-color:rgba(251,191,36,0.5)!important;background:rgba(251,191,36,0.06)}
+.sj-dy-gz{font-size:18px;font-weight:900;color:#f8fafc;margin-bottom:4px}
+.sj-dy-age{font-size:10px;color:#64748b}
+.sj-dy-year{font-size:10px;color:#475569}
+
+/* 삼재 */
+.sj-samjae{background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.2);border-radius:14px;padding:18px}
+.sj-samjae-ok{background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.2)}
+</style>
+<!-- 페이지 배너 -->
+<div style="position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1400&q=90&auto=format&fit=crop" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Haeinsa_Janggyeong_Panjeon.jpg/1280px-Haeinsa_Janggyeong_Panjeon.jpg'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(30,0,60,0.55) 0%,rgba(0,0,0,0.75) 100%)"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">SAJU ANALYSIS · 사주팔자</div>
+    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:#ffffff;margin:0 0 10px;text-shadow:0 2px 20px rgba(0,0,0,0.7);font-family:'Noto Sans KR',sans-serif;line-height:1.2">사주팔자 분석</h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif">생년월일시로 사주 팔자를 뽑고 오행·용신·대운을 상세히 분석합니다</p>
+  </div>
+</div>
+
+<div class="sj">
+  <div class="sj-badge">사주팔자</div>
+  <h1 class="sj-title">🔮 <em>사주팔자</em> 분석</h1>
+  <p class="sj-sub">생년월일시를 입력하면 사주 팔자(四柱八字)·오행·대운·삼재를 분석합니다.</p>
+
+  <!-- 신비 메인 배너 -->
+  <div style="background:linear-gradient(135deg,rgba(15,8,40,0.97),rgba(30,15,60,0.92));border:1px solid rgba(251,191,36,0.25);border-radius:24px;padding:40px 32px;margin-bottom:20px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 15% 50%,rgba(168,85,247,0.15) 0%,transparent 55%),radial-gradient(ellipse at 85% 20%,rgba(251,191,36,0.1) 0%,transparent 50%);pointer-events:none"></div>
+    <div style="position:relative;z-index:1">
+      <div style="font-size:11px;font-weight:800;color:rgba(251,191,36,0.65);letter-spacing:.25em;margin-bottom:16px">✦ 사주팔자 (四柱八字) ✦</div>
+      <div style="font-size:clamp(18px,2.8vw,28px);font-weight:900;color:#f8fafc;line-height:1.55;margin-bottom:16px">
+        태어난 순간, 하늘과 땅이 기록한<br>
+        <span style="color:#FBBF24">당신만의 우주 설계도</span>
+      </div>
+      <div style="font-size:14px;color:#94a3b8;line-height:2;margin-bottom:28px;max-width:620px">
+        사주팔자란 태어난 <strong style="color:#e2e8f0">연·월·일·시</strong>의 네 기둥(四柱)에 담긴 여덟 글자(八字)입니다.<br>
+        수천 년 동양 철학의 정수 <strong style="color:#c4b5fd">만세력 200년 데이터</strong>와 최신 <strong style="color:#FBBF24">AI 분석 엔진</strong>이<br>
+        결합하여 오행의 균형, 대운의 흐름, 삼재의 위협까지 단 한 번에 해석합니다.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <span style="background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#FBBF24">📅 만세력 200년</span>
+        <span style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.35);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#c4b5fd">🤖 AI 정밀 해석</span>
+        <span style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#6ee7b7">🏯 인연사찰 연동</span>
+        <span style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.3);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700;color:#93c5fd">☯️ 양력·음력 자동변환</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 사주란 무엇인가 -->
+  <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:28px 28px;margin-bottom:20px">
+    <div style="font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:.15em;margin-bottom:14px">📖 사주팔자란?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🌿 오행(五行)의 비밀</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">木(목)·火(화)·土(토)·金(금)·水(수) — 우주의 다섯 가지 기운이 당신 안에 어떻게 배분되어 있는지를 밝혀냅니다. 부족한 기운을 알면 어떤 사찰에서 기도해야 할지도 알 수 있습니다.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🌊 대운(大運)의 흐름</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">10년마다 찾아오는 대운(大運)은 인생의 큰 흐름을 좌우합니다. 현재 어느 대운에 있는지, 언제 전환점이 오는지를 정확히 알고 준비하세요.</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:8px">🔥 삼재(三災) 주의</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.8">3년간 찾아오는 삼재는 재물·건강·인간관계에 장애가 생기는 시기입니다. 삼재 여부를 확인하고 사찰 기도로 미리 대비하세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 기능 카드 -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:32px">
+    <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:24px;margin-bottom:8px">📋</div>
+      <div style="font-size:12px;font-weight:800;color:#f8fafc;margin-bottom:4px">사주 팔자표</div>
+      <div style="font-size:11px;color:#64748b;line-height:1.5">천간·지지 8자<br>완전 표시</div>
+    </div>
+    <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:24px;margin-bottom:8px">⚡</div>
+      <div style="font-size:12px;font-weight:800;color:#f8fafc;margin-bottom:4px">오행 분포</div>
+      <div style="font-size:11px;color:#64748b;line-height:1.5">목화토금수<br>균형 게이지</div>
+    </div>
+    <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:24px;margin-bottom:8px">🌊</div>
+      <div style="font-size:12px;font-weight:800;color:#f8fafc;margin-bottom:4px">대운 8주기</div>
+      <div style="font-size:11px;color:#64748b;line-height:1.5">10년 단위<br>운세 흐름</div>
+    </div>
+    <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:24px;margin-bottom:8px">🔥</div>
+      <div style="font-size:12px;font-weight:800;color:#f8fafc;margin-bottom:4px">삼재 확인</div>
+      <div style="font-size:11px;color:#64748b;line-height:1.5">올해 삼재<br>즉시 판단</div>
+    </div>
+    <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.18);border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:24px;margin-bottom:8px">🏯</div>
+      <div style="font-size:12px;font-weight:800;color:#f8fafc;margin-bottom:4px">사찰 연동</div>
+      <div style="font-size:11px;color:#64748b;line-height:1.5">오행 기반<br>인연사찰 추천</div>
+    </div>
+  </div>
+
+  <div class="sj-box">
+    <div class="sj-group"><label class="sj-label">양력 / 음력</label>
+      <select class="sj-select" id="sj-cal"><option value="solar">양력</option><option value="lunar">음력</option></select>
+    </div>
+    <div class="sj-group"><label class="sj-label">생년월일</label>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
+        <select class="sj-select" id="sj-year"><option value="">년</option></select>
+        <select class="sj-select" id="sj-month"><option value="">월</option></select>
+        <select class="sj-select" id="sj-day"><option value="">일</option></select>
+      </div>
+    </div>
+    <div class="sj-group"><label class="sj-label">태어난 시간</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select class="sj-select" id="sj-hour" onchange="sjSijin()" style="flex:1">
+          <option value="">시간 모름</option>
+          <option value="0">0시 (밤 12시)</option><option value="1">1시</option><option value="2">2시</option>
+          <option value="3">3시</option><option value="4">4시</option><option value="5">5시</option>
+          <option value="6">6시</option><option value="7">7시</option><option value="8">8시</option>
+          <option value="9">9시</option><option value="10">10시</option><option value="11">11시</option>
+          <option value="12">12시 (낮 12시)</option><option value="13">13시</option><option value="14">14시</option>
+          <option value="15">15시</option><option value="16">16시</option><option value="17">17시</option>
+          <option value="18">18시</option><option value="19">19시</option><option value="20">20시</option>
+          <option value="21">21시</option><option value="22">22시</option><option value="23">23시</option>
+        </select>
+        <span id="sj-sijin" style="font-size:11px;color:#FBBF24;white-space:nowrap;min-width:36px"></span>
+      </div>
+    </div>
+    <div class="sj-group"><label class="sj-label">성별</label>
+      <select class="sj-select" id="sj-gender">
+        <option value="male">남성</option><option value="female">여성</option>
+      </select>
+    </div>
+    <button type="button" class="sj-btn" id="sj-submit" onclick="doSaju()">🔮 사주팔자 분석하기</button>
+    <div class="sj-result" id="sj-result"></div>
+  </div>
+</div>
+
+<script>
+var SIJIN=['자시','자시','축시','축시','인시','인시','묘시','묘시','진시','진시','사시','사시','오시','오시','미시','미시','신시','신시','유시','유시','술시','술시','해시','해시'];
+var OH_COLORS={목:'#34d399',화:'#f87171',토:'#FBBF24',금:'#94a3b8',수:'#7dd3fc'};
+var OH_HAN={목:'木',화:'火',토:'土',금:'金',수:'水'};
+var OH_TEMPLES={
+  목:[{icon:'🌲',name:'선운사',loc:'전북 고창',desc:'동백꽃 숲 속 천년 고찰. 목(木) 기운이 충만한 관음 도량.'},
+      {icon:'🌿',name:'내소사',loc:'전북 부안',desc:'전나무 숲길이 아름다운 사찰. 목 기운 보충에 최적.'},
+      {icon:'🍃',name:'월정사',loc:'강원 평창',desc:'오대산 전나무 숲 속 천년 고찰. 문수보살 도량.'}],
+  화:[{icon:'☀️',name:'통도사',loc:'경남 양산',desc:'불보종찰 영축산 통도사. 화(火) 기운 왕성한 남향 도량.'},
+      {icon:'🔥',name:'화엄사',loc:'전남 구례',desc:'지리산 화엄사. 비로자나불의 광명이 가득한 화 도량.'},
+      {icon:'🌅',name:'쌍계사',loc:'경남 하동',desc:'지리산 화개동천. 뜨거운 기도 기운을 품은 명찰.'}],
+  토:[{icon:'🏔',name:'법주사',loc:'충북 보은',desc:'속리산 법주사. 토(土) 기운의 중심, 지장보살 도량.'},
+      {icon:'🌾',name:'마곡사',loc:'충남 공주',desc:'충청의 명찰. 토 기운으로 안정과 중용을 찾는 사찰.'},
+      {icon:'🏯',name:'봉은사',loc:'서울 강남',desc:'도심 속 천년 고찰. 토 기운으로 안정을 찾는 도량.'}],
+  금:[{icon:'✨',name:'부석사',loc:'경북 영주',desc:'태백산 부석사. 금(金) 기운의 명찰. 아미타불 도량.'},
+      {icon:'💎',name:'금산사',loc:'전북 김제',desc:'미륵보살을 모신 금산사. 금 기운으로 결단력을 높이는 사찰.'},
+      {icon:'🌕',name:'선암사',loc:'전남 순천',desc:'조계산 선암사. 금 기운을 보충하는 천년 전통 고찰.'}],
+  수:[{icon:'🌊',name:'낙산사',loc:'강원 양양',desc:'동해 바다 절벽의 관음 도량. 수(水) 기운 충만한 해안 사찰.'},
+      {icon:'💧',name:'보리암',loc:'경남 남해',desc:'남해 금산 보리암. 수 기운의 소원 성취 기도 명소.'},
+      {icon:'🌙',name:'전등사',loc:'인천 강화',desc:'강화도 전등사. 수 기운을 품은 고려 시대 천년 고찰.'}]
+};
+
+function sjSijin(){
+  var h=document.getElementById('sj-hour').value;
+  document.getElementById('sj-sijin').textContent=h!==''?SIJIN[parseInt(h)]:'';
+}
+
+(function(){
+  var cy=new Date().getFullYear();
+  var yEl=document.getElementById('sj-year');
+  for(var y=cy;y>=1826;y--){var o=document.createElement('option');o.value=y;o.text=y+'년';yEl.appendChild(o);}
+  var mEl=document.getElementById('sj-month');
+  for(var m=1;m<=12;m++){var o=document.createElement('option');o.value=m;o.text=m+'월';mEl.appendChild(o);}
+  function fillDays(){
+    var y2=parseInt(yEl.value)||2000,mo=parseInt(mEl.value)||1;
+    var max=new Date(y2,mo,0).getDate();
+    var dEl=document.getElementById('sj-day'),cur=dEl.value;
+    dEl.innerHTML='<option value="">일</option>';
+    for(var d=1;d<=max;d++){var o=document.createElement('option');o.value=d;o.text=d+'일';if(String(o.value)===String(cur))o.selected=true;dEl.appendChild(o);}
+  }
+  mEl.addEventListener('change',fillDays);yEl.addEventListener('change',fillDays);fillDays();
+  // localStorage 복원
+  var sv=JSON.parse(localStorage.getItem('sj-form')||'{}');
+  if(sv.year)yEl.value=sv.year;
+  if(sv.month)mEl.value=sv.month;
+  fillDays();
+  if(sv.day){var dEl2=document.getElementById('sj-day');if(dEl2)dEl2.value=sv.day;}
+  if(sv.gender){var gEl=document.getElementById('sj-gender');if(gEl)gEl.value=sv.gender;}
+  if(sv.cal){var cEl=document.getElementById('sj-cal');if(cEl)cEl.value=sv.cal;}
+  if(sv.hour){var hEl=document.getElementById('sj-hour');if(hEl){hEl.value=sv.hour;sjSijin();}}
+  // 변경 시 저장
+  function sjSave(){var f={};f.year=document.getElementById('sj-year').value;f.month=document.getElementById('sj-month').value;f.day=document.getElementById('sj-day').value;f.gender=document.getElementById('sj-gender').value;f.cal=document.getElementById('sj-cal').value;f.hour=document.getElementById('sj-hour').value;localStorage.setItem('sj-form',JSON.stringify(f));}
+  ['sj-year','sj-month','sj-day','sj-gender','sj-cal','sj-hour'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',sjSave);});
+})();
+
+async function doSaju(){
+  var y=parseInt(document.getElementById('sj-year').value);
+  var m=parseInt(document.getElementById('sj-month').value);
+  var d=parseInt(document.getElementById('sj-day').value);
+  if(!y||!m||!d){alert('생년월일을 모두 선택해주세요.');return;}
+  var h=document.getElementById('sj-hour').value;
+  var gender=document.getElementById('sj-gender').value;
+  var btn=document.getElementById('sj-submit'),res=document.getElementById('sj-result');
+  btn.disabled=true;res.style.display='block';
+  res.innerHTML='<div class="sj-loading">🔮 사주 팔자 계산 중...</div>';
+  try{
+    var birthInput={year:y,month:m,day:d,gender:gender,calendar:document.getElementById('sj-cal').value};
+    if(h!=='')birthInput.hour=parseInt(h);
+    var r=await fetch('https://jamgong-inyeonsachal.vercel.app/api/saju',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({birthInput:birthInput})
+    });
+    var data=await r.json();
+    if(!data.success){res.innerHTML='<div class="sj-err">'+(data.error||'오류 발생')+'</div>';btn.disabled=false;return;}
+
+    var html='';
+
+    /* ─── 1. 사주 팔자 표 ─── */
+    var ec=data.eightChar;
+    if(ec){
+      html+='<div class="sj-sec">📋 사주 팔자 (四柱八字)</div>';
+      html+='<div class="sj-bazi"><table>';
+      html+='<thead><tr><th>시주(時柱)</th><th>일주(日柱)</th><th>월주(月柱)</th><th>년주(年柱)</th></tr></thead>';
+      html+='<tbody>';
+      // 천간
+      html+='<tr>';
+      [ec.time,ec.day,ec.month,ec.year].forEach(function(gz){
+        var g=gz?gz[0]:'—';
+        html+='<td class="sj-gan">'+g+'</td>';
+      });
+      html+='</tr>';
+      // 지지
+      html+='<tr>';
+      [ec.time,ec.day,ec.month,ec.year].forEach(function(gz){
+        var j=gz?gz[1]:'—';
+        html+='<td class="sj-ji">'+j+'</td>';
+      });
+      html+='</tr>';
+      // 오행
+      html+='<tr>';
+      [ec.timeWx,ec.dayWx,ec.monthWx,ec.yearWx].forEach(function(wx){
+        html+='<td class="sj-wx">'+(wx||'')+'</td>';
+      });
+      html+='</tr>';
+      html+='</tbody></table></div>';
+      html+='<p style="font-size:11px;color:#334155;margin:6px 0 0;text-align:right">절기 기준 만세력 · 진태양시 보정 포함</p>';
+    }
+
+    /* ─── 2. 오행 분포 ─── */
+    var dist=data.distribution;
+    if(dist){
+      var total=Object.values(dist).reduce(function(a,b){return a+(b||0);},0)||1;
+      html+='<div class="sj-sec">🌿 오행 분포</div>';
+      html+='<div class="sj-oh">';
+      ['목','화','토','금','수'].forEach(function(k){
+        var v=dist[k]||0,pct=Math.round(v/total*100);
+        html+='<div class="sj-oh-item">';
+        html+='<div class="sj-oh-name" style="color:'+OH_COLORS[k]+'">'+k+'</div>';
+        html+='<div class="sj-oh-bg"><div class="sj-oh-fill" style="background:'+OH_COLORS[k]+'" data-w="'+pct+'"></div></div>';
+        html+='<div class="sj-oh-pct">'+pct+'%</div>';
+        html+='</div>';
+      });
+      html+='</div>';
+      if(data.weak&&data.weak.length){
+        html+='<p style="font-size:12px;color:#64748b;margin:6px 0 0">💡 용신(用神) 후보: <strong style="color:#FBBF24">'+data.weak.join(' · ')+'</strong></p>';
+      }
+    }
+
+    /* ─── 3. 대운 ─── */
+    var dy=data.daYun;
+    if(dy&&dy.list&&dy.list.length){
+      html+='<div class="sj-sec">🔄 대운 (大運) · '+dy.direction+'</div>';
+      html+='<div class="sj-dayun">';
+      dy.list.forEach(function(d2){
+        var cur=d2.isCurrent;
+        html+='<div class="sj-dy-item'+(cur?' sj-dy-current':'')+'">'+
+          '<div class="sj-dy-gz">'+(d2.ganZhi||'')+'</div>'+
+          '<div class="sj-dy-age">'+d2.startAge+'~'+d2.endAge+'세</div>'+
+          '<div class="sj-dy-year">'+(d2.startYear||'')+'년~</div>'+
+          (cur?'<div class="sj-today">▶ 현재</div>':'')+
+          '</div>';
+      });
+      html+='</div>';
+    }
+
+    /* ─── 4. 삼재 ─── */
+    var sj=data.samjae;
+    if(sj&&sj.groups){
+      var curYear=new Date().getFullYear();
+      var inSamjae=sj.groups.some(function(g){return g.some(function(y2){return y2.year===curYear;});});
+      html+='<div class="sj-sec">⚠️ 삼재 (三災)</div>';
+      html+='<div class="sj-samjae'+(inSamjae?'':' sj-samjae-ok')+'">';
+      if(inSamjae){
+        html+='<div style="font-size:14px;font-weight:800;color:#f87171;margin-bottom:8px">⚠️ 현재 삼재 기간</div>';
+      } else {
+        html+='<div style="font-size:14px;font-weight:800;color:#34d399;margin-bottom:8px">✅ 현재 삼재 아님</div>';
+      }
+      html+='<div style="font-size:12px;color:#94a3b8;line-height:1.8">';
+      html+='출생 띠 그룹: <strong style="color:#f8fafc">'+sj.animalsKo+'띠</strong><br>';
+      sj.groups.slice(0,2).forEach(function(g){
+        if(!g.length)return;
+        var years=g.map(function(x){return x.year+'('+x.zhiKo+'년)';}).join(' · ');
+        var isCur=g.some(function(x){return x.year===curYear;});
+        html+='삼재 기간: <span style="color:'+(isCur?'#f87171':'#64748b')+'">'+years+'</span><br>';
+      });
+      html+='</div></div>';
+    }
+
+    /* ─── 5. 인연사찰 추천 ─── */
+    var weakEl=data.weak&&data.weak.length?data.weak[0]:null;
+    if(!weakEl&&dist){
+      var minK='목',minV=999;
+      ['목','화','토','금','수'].forEach(function(k){var v=dist[k]||0;if(v<minV){minV=v;minK=k;}});
+      weakEl=minK;
+    }
+    if(weakEl&&OH_TEMPLES[weakEl]){
+      html+='<div class="sj-sec">🏯 인연사찰 추천 — '+weakEl+'('+OH_HAN[weakEl]+') 기운 보충</div>';
+      html+='<div style="background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.15);border-radius:16px;padding:20px">';
+      html+='<p style="font-size:12px;color:#94a3b8;margin:0 0 16px;line-height:1.7">부족한 <strong style="color:'+OH_COLORS[weakEl]+'">'+weakEl+'('+OH_HAN[weakEl]+')</strong> 기운을 채워줄 인연사찰 3곳입니다. 직접 방문하여 기도하시면 부족한 기운이 보충됩니다.</p>';
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px">';
+      OH_TEMPLES[weakEl].forEach(function(t){
+        var detailUrl='page-temple-detail.html?name='+encodeURIComponent(t.name);
+        var googleUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(t.name+' '+t.loc);
+        var naverUrl='https://map.naver.com/v5/search/'+encodeURIComponent(t.name+' '+t.loc);
+        html+='<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;display:flex;flex-direction:column">';
+        html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">';
+        html+='<div style="font-size:28px">'+t.icon+'</div>';
+        html+='<a href="'+detailUrl+'" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;text-decoration:none;white-space:nowrap">상세 보기 →</a>';
+        html+='</div>';
+        html+='<div style="font-size:14px;font-weight:800;color:#f8fafc;margin-bottom:4px">'+t.name+'</div>';
+        html+='<div style="font-size:11px;color:#FBBF24;margin-bottom:6px">📍 '+t.loc+'</div>';
+        html+='<div style="font-size:12px;color:#64748b;line-height:1.6;margin-bottom:10px">'+t.desc+'</div>';
+        html+='<div style="display:flex;gap:6px;margin-top:auto">';
+        html+='<a href="'+naverUrl+'" target="_blank" style="flex:1;text-align:center;font-size:10px;font-weight:700;padding:5px 0;border-radius:8px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:#6ee7b7;text-decoration:none">🗺️ 네이버</a>';
+        html+='<a href="'+googleUrl+'" target="_blank" style="flex:1;text-align:center;font-size:10px;font-weight:700;padding:5px 0;border-radius:8px;background:rgba(66,133,244,0.1);border:1px solid rgba(66,133,244,0.25);color:#7ba7f5;text-decoration:none">📍 구글</a>';
+        html+='</div>';
+        html+='</div>';
+      });
+      html+='</div>';
+      html+='<div style="margin-top:16px;text-align:center"><a href="page-manse.html" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:13px;font-weight:900;padding:12px 24px;border-radius:12px;text-decoration:none;transition:all .2s">🔮 내 인연사찰 정확히 찾기 →</a></div>';
+      html+='</div>';
+    }
+
+    if(!html)html='<div class="sj-err">결과를 불러오지 못했습니다.</div>';
+    res.innerHTML=html;
+
+    setTimeout(function(){
+      document.querySelectorAll('.sj-oh-fill').forEach(function(b){b.style.width=b.dataset.w+'%';});
+    },100);
+
+  }catch(e){res.innerHTML='<div class="sj-err">연결 오류: '+e.message+'</div>';}
+  btn.disabled=false;
+}
+</script>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>
