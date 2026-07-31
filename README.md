@@ -84,8 +84,15 @@ npm install && npm run dev     # 로컬 테스트
 ```bash
 python ebook/build_epub.py     # → ebook/dist/소문을끄고데이터를켜다.epub
 python ebook/build_html.py     # → ebook/dist/*.html (브라우저로 바로 읽는 단일 파일)
+python ebook/build_txt.py      # → ebook/dist/*.txt (카톡·메일로 그대로 보내는 평문)
 python ebook/render_cover.py   # → ebook/dist/cover.png (SVG 대체 표지)
+python ebook/verify.py         # 원고 자동 검사 23항목
 ```
+
+`verify.py`는 정독 검수에서 실제로 나왔던 오류를 다시 잡습니다. 장 번호와 상호참조,
+핵심 수치의 장간 일치, **관계행렬 25칸과 최종 점수가 참조 구현과 같은지**,
+사찰 DB 실측값과 본문 표기가 맞는지, 그리고 **구현하지 않은 기능을 구현했다고 적지
+않았는지**까지 검사합니다. 마지막 항목은 이번 검수에서 가장 많이 나온 문제입니다.
 
 외부 의존성(pandoc·calibre) 없이 표준 라이브러리만으로 EPUB 3을 생성합니다.
 표지는 `ebook/cover.jpg`(또는 `.png`)를 쓰고, 없으면 코드로 그린 SVG로 돌아갑니다.
