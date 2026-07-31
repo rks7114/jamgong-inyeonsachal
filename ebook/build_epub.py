@@ -21,6 +21,10 @@ import struct
 import zipfile
 from pathlib import Path
 
+from strip_service import strip_service
+
+NO_CTA = False
+
 ROOT = Path(__file__).resolve().parent.parent
 CHAPTERS = ROOT / "ebook" / "chapters"
 APPENDIX = ROOT / "ebook" / "appendix"
@@ -553,6 +557,8 @@ img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
 
     for idx, path in enumerate(sources, 1):
         md = path.read_text(encoding="utf-8")
+        if NO_CTA:
+            md = strip_service(md)
         title = first_heading(md, path.stem)
         fid = f"doc{idx:02d}"
         docs.append((fid, f"{fid}.xhtml", title, md_to_xhtml(md, title)))
@@ -636,7 +642,10 @@ img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
 def main() -> None:
     ap = argparse.ArgumentParser(description="마크다운 원고 → EPUB 3 변환")
     ap.add_argument("--out", default=str(ROOT / "ebook" / "dist" / "소문을끄고데이터를켜다.epub"))
+    ap.add_argument("--no-cta", action="store_true",
+                    help="서비스 연결부(CTA·서비스에서 바로) 제거 — 해외판용")
     args = ap.parse_args()
+    globals()["NO_CTA"] = args.no_cta
     build(Path(args.out))
 
 

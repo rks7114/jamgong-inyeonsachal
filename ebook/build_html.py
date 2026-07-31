@@ -21,6 +21,10 @@ import re
 import sys
 from pathlib import Path
 
+from strip_service import strip_service
+
+NO_CTA = False
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_epub import (  # noqa: E402
     AUTHOR, CHAPTERS, APPENDIX, CSS, LANG, PUBLISHER, SUBTITLE, TITLE,
@@ -82,6 +86,8 @@ def build(out: Path) -> None:
     toc, body = [], []
     for i, path in enumerate(sources, 1):
         md = path.read_text(encoding="utf-8")
+        if NO_CTA:
+            md = strip_service(md)
         title = first_heading(md, path.stem)
         anchor = slugify(i)
         toc.append(f'<li><a href="#{anchor}">{html.escape(title)}</a></li>')
@@ -122,7 +128,11 @@ def main() -> None:
     ap.add_argument("-o", "--out", type=Path,
                     default=Path(__file__).resolve().parent / "dist"
                     / "소문을끄고데이터를켜다.html")
-    build(ap.parse_args().out)
+    ap.add_argument("--no-cta", action="store_true",
+                    help="서비스 연결부(CTA·서비스에서 바로) 제거 — 해외판용")
+    args = ap.parse_args()
+    globals()["NO_CTA"] = args.no_cta
+    build(args.out)
 
 
 if __name__ == "__main__":
