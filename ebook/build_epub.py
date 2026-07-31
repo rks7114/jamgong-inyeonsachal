@@ -225,6 +225,11 @@ def md_to_xhtml(md: str, title: str) -> str:
 
 _MOK, _HWA, _TO, _GEUM, _SU = "#3E8E6E", "#C4453A", "#C79A3E", "#8E969D", "#2C4A6B"
 _EMBER = "#D9612C"
+# 표지 전용 — 채도를 낮춰 인쇄물의 무게감에 가깝게 잡은 색
+_BRASS = "#B08D3F"   # 금박 대신 놋쇠빛. 가는 선과 소제목에만 쓴다
+_ASH   = "#A9694A"   # 사그라드는 불빛 — '태우고'
+_LIT   = "#63A98C"   # 켜지는 빛 — '켜다'
+_LINE  = "#3A464C"   # 격자 윤곽선
 _CHIP_ROWS = [  # 5x5 관계행렬 모티프 (행마다 한 칸씩 회전하는 구조)
     [(_MOK,1.0),(_MOK,.5),(_HWA,.35),(_GEUM,.3),(_SU,.4)],
     [(_HWA,.35),(_HWA,1.0),(_TO,.5),(_GEUM,.25),(_SU,.3)],
@@ -247,55 +252,74 @@ def cover_svg() -> str:
     W, H = 1200, 1800
     MARGIN = 150
 
-    # 5x5 칩 — 정사각 격자를 하나의 오브제로 좌측 정렬
-    # 칸 크기는 판면 폭에 맞춰 잡는다: 5칸 + 4틈 = 854 (판면 900의 95%)
+    # 5x5 관계행렬 — 칸을 색으로 꽉 채우면 색견본처럼 보인다.
+    # 선으로만 그리고 대각선(比, 자기 자신과의 관계) 다섯 칸만 채운다.
     size, gap, gx0, gy0 = 150, 26, MARGIN, 642
-    chips = []
+    cells = []
     for r, row in enumerate(_CHIP_ROWS):
-        for c, (col, op) in enumerate(row):
+        for c, (col, _) in enumerate(row):
             x = gx0 + c * (size + gap)
             y = gy0 + r * (size + gap)
-            chips.append(f'<rect x="{x}" y="{y}" width="{size}" height="{size}" '
-                         f'rx="5" fill="{col}" opacity="{op:.2f}"/>')
+            if r == c:  # 대각선 — 오행 본색을 앉힌다
+                cells.append(f'<rect x="{x}" y="{y}" width="{size}" height="{size}" '
+                             f'rx="2" fill="{col}" fill-opacity=".82"/>')
+            else:
+                cells.append(f'<rect x="{x}" y="{y}" width="{size}" height="{size}" '
+                             f'rx="2" fill="{col}" fill-opacity=".055" '
+                             f'stroke="{_LINE}" stroke-opacity=".5" stroke-width="1"/>')
     grid_bottom = gy0 + 4 * (size + gap) + size
-
-    grid = []
-    for x in range(0, W + 1, 60):
-        grid.append(f'<line x1="{x}" y1="0" x2="{x}" y2="{H}"/>')
-    for y in range(0, H + 1, 60):
-        grid.append(f'<line x1="0" y1="{y}" x2="{W}" y2="{y}"/>')
 
     return f"""<?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">
   <defs>
-    <radialGradient id="ember" cx="18%" cy="14%" r="52%">
-      <stop offset="0%" stop-color="{_EMBER}" stop-opacity=".55"/>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0C1417"/>
+      <stop offset="55%" stop-color="#101A1E"/>
+      <stop offset="100%" stop-color="#080E11"/>
+    </linearGradient>
+    <radialGradient id="ember" cx="16%" cy="11%" r="46%">
+      <stop offset="0%" stop-color="{_EMBER}" stop-opacity=".30"/>
       <stop offset="100%" stop-color="{_EMBER}" stop-opacity="0"/>
     </radialGradient>
+    <radialGradient id="vignette" cx="50%" cy="46%" r="72%">
+      <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".42"/>
+    </radialGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
   </defs>
-  <rect width="{W}" height="{H}" fill="#0E1518"/>
-  <g stroke="#EDEDEA" stroke-opacity=".05" stroke-width="1">{''.join(grid)}</g>
-  <rect width="{W}" height="{H}" fill="url(#ember)"/>
 
-  <text x="{MARGIN}" y="134" fill="{_EMBER}" font-size="32" letter-spacing="10"
+  <rect width="{W}" height="{H}" fill="url(#paper)"/>
+  <rect width="{W}" height="{H}" fill="url(#ember)"/>
+  <rect width="{W}" height="{H}" filter="url(#grain)" opacity=".05"/>
+  <rect width="{W}" height="{H}" fill="url(#vignette)"/>
+  <rect x="56" y="56" width="{W-112}" height="{H-112}" fill="none"
+        stroke="{_BRASS}" stroke-opacity=".22" stroke-width="1"/>
+
+  <text x="{MARGIN}" y="196" fill="{_BRASS}" font-size="25" letter-spacing="15"
         font-family="sans-serif">JAMGONG INYEONSACHAL</text>
-  <text x="{MARGIN}" y="282" fill="{_EMBER}" font-size="120" font-weight="bold"
-        font-family="sans-serif">부적을 태우고</text>
-  <text x="{MARGIN}" y="422" fill="{_MOK}" font-size="120" font-weight="bold"
-        font-family="sans-serif">데이터를 켜다</text>
-  <line x1="{MARGIN}" y1="492" x2="{W-MARGIN}" y2="492" stroke="#2A383E" stroke-width="2"/>
-  <text x="{MARGIN}" y="550" fill="#94A3A9" font-size="42"
+
+  <text x="{MARGIN}" y="336" fill="{_ASH}" font-size="116" font-weight="bold"
+        font-family="sans-serif" letter-spacing="-2">부적을 태우고</text>
+  <text x="{MARGIN}" y="470" fill="{_LIT}" font-size="116" font-weight="bold"
+        font-family="sans-serif" letter-spacing="-2">데이터를 켜다</text>
+
+  <line x1="{MARGIN}" y1="524" x2="{W-MARGIN}" y2="524"
+        stroke="{_BRASS}" stroke-opacity=".38" stroke-width="1"/>
+  <text x="{MARGIN}" y="576" fill="#A6B0B4" font-size="40"
         font-family="sans-serif">사주 오행으로 찾는 나의 인연 도량</text>
-  <text x="{MARGIN}" y="598" fill="#6B7B82" font-size="31"
+  <text x="{MARGIN}" y="622" fill="#6A767B" font-size="27" letter-spacing="1"
         font-family="sans-serif">생년월일시 오행 분석 · 전국 사찰 매칭</text>
 
-  {''.join(chips)}
+  {''.join(cells)}
 
-  <line x1="{MARGIN}" y1="{grid_bottom + 60}" x2="{MARGIN + 308}" y2="{grid_bottom + 60}"
-        stroke="{_EMBER}" stroke-width="3"/>
-  <text x="{MARGIN}" y="{grid_bottom + 136}" fill="#EDEDEA" font-size="56" font-weight="bold"
+  <line x1="{MARGIN}" y1="{grid_bottom + 62}" x2="{MARGIN + 308}" y2="{grid_bottom + 62}"
+        stroke="{_BRASS}" stroke-opacity=".75" stroke-width="2"/>
+  <text x="{MARGIN}" y="{grid_bottom + 140}" fill="#E8E3D9" font-size="54" font-weight="bold"
         font-family="sans-serif">{AUTHOR}</text>
-  <text x="{MARGIN}" y="{grid_bottom + 194}" fill="#7C8B92" font-size="30"
+  <text x="{MARGIN}" y="{grid_bottom + 196}" fill="#78848A" font-size="28" letter-spacing="1"
         font-family="sans-serif">{PUBLISHER}</text>
 </svg>"""
 

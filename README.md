@@ -31,6 +31,7 @@
 ```bash
 python ebook/build_epub.py     # → ebook/dist/부적을태우고데이터를켜다.epub
 python ebook/render_cover.py   # → ebook/dist/cover.png (1707×2560, 판매 등록용)
+python ebook/build_html.py     # → ebook/dist/*.html (브라우저로 바로 읽는 단일 파일)
 ```
 
 외부 의존성(pandoc·calibre) 없이 표준 라이브러리만으로 EPUB 3을 생성합니다.
