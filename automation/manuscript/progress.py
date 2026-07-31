@@ -110,7 +110,7 @@ def report(rows: list[dict]) -> str:
     bar = "█" * filled + "░" * (bar_len - filled)
 
     lines = [
-        "# 《부적을 태우고 데이터를 켜다》 집필 진척",
+        "# 《소문을 끄고 데이터를 켜다》 집필 진척",
         "",
         f"`{bar}` **{len(done)}/{TOTAL_CHAPTERS}장 완료 ({pct:.1f}%)**",
         "",

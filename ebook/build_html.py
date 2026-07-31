@@ -121,7 +121,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="원고 → 단일 HTML")
     ap.add_argument("-o", "--out", type=Path,
                     default=Path(__file__).resolve().parent / "dist"
-                    / "부적을태우고데이터를켜다.html")
+                    / "소문을끄고데이터를켜다.html")
     build(ap.parse_args().out)
 
 

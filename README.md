@@ -13,7 +13,7 @@
 | 경로 | 내용 |
 |---|---|
 | `src/` · `api/` | 웹 서비스 — 매칭 엔진, 사주 계산, Vercel Serverless API |
-| `ebook/` | 전자책 《부적을 태우고 데이터를 켜다》 원고·부록·EPUB 빌더 |
+| `ebook/` | 전자책 《소문을 끄고 데이터를 켜다》 원고·부록·EPUB 빌더 |
 | `funnel/` | 오행 계산기 · 매칭 엔진 참조 구현 · CTA 자동 삽입기 |
 | `automation/` | 스레드 발행 · Q&A 에이전트 · 일일 회고 · 집필 트래커 |
 | `docs/` | 시스템 개요 |
@@ -73,7 +73,7 @@ npm install && npm run dev     # 로컬 테스트
 
 ## 📖 전자책
 
-**《부적을 태우고 데이터를 켜다》** — 사주 오행으로 찾는 나의 인연 도량
+**《소문을 끄고 데이터를 켜다》** — 사주 오행으로 찾는 나의 인연 도량
 지은이 **제운 박충호** (잼공 연구소)
 
 매칭 원리를 계산 규칙까지 전부 공개한 책입니다.
@@ -82,7 +82,7 @@ npm install && npm run dev     # 로컬 테스트
 - 전 장 CTA 삽입 완료 · 28~30장은 잼공몰 큐레이션 직결
 
 ```bash
-python ebook/build_epub.py     # → ebook/dist/부적을태우고데이터를켜다.epub
+python ebook/build_epub.py     # → ebook/dist/소문을끄고데이터를켜다.epub
 python ebook/build_html.py     # → ebook/dist/*.html (브라우저로 바로 읽는 단일 파일)
 python ebook/render_cover.py   # → ebook/dist/cover.png (SVG 대체 표지)
 ```

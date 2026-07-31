@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CHAPTERS = ROOT / "ebook" / "chapters"
 APPENDIX = ROOT / "ebook" / "appendix"
 
-TITLE = "부적을 태우고 데이터를 켜다"
+TITLE = "소문을 끄고 데이터를 켜다"
 SUBTITLE = "사주 오행으로 찾는 나의 인연 도량"
 AUTHOR = "제운 박충호"
 PUBLISHER = "잼공 연구소"
@@ -498,7 +498,7 @@ img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="마크다운 원고 → EPUB 3 변환")
-    ap.add_argument("--out", default=str(ROOT / "ebook" / "dist" / "부적을태우고데이터를켜다.epub"))
+    ap.add_argument("--out", default=str(ROOT / "ebook" / "dist" / "소문을끄고데이터를켜다.epub"))
     args = ap.parse_args()
     build(Path(args.out))
 
