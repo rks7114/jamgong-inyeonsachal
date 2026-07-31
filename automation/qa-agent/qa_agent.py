@@ -32,9 +32,16 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 KB_PATH = Path(__file__).resolve().parent / "knowledge" / "faq.json"
 LOG_DIR = ROOT / "automation" / "logs"
 
-# 전문가 안내가 필요한 민감 키워드
+# 생명이 걸린 신호 — 전문가 안내와 같은 통에 담으면 안 된다.
+# 의료·법률·재정 문의와 묶어 "전문가와 상의하세요"로 흘려보내던 것을 분리했다.
+CRISIS = [
+    "자살", "죽고싶", "죽고 싶", "죽고싶어", "극단적선택", "극단적 선택",
+    "사라지고싶", "살기싫", "살고싶지않", "자해", "목숨을", "끝내고싶",
+]
+
+# 전문가 안내가 필요한 민감 키워드 (의료·법률·재정)
 SENSITIVE = [
-    "자살", "죽고", "죽고싶", "극단", "우울증", "병원", "암", "진단", "약",
+    "우울증", "병원", "암", "진단", "약",
     "소송", "고소", "이혼소송", "빚", "파산", "투자", "코인", "주식",
 ]
 
@@ -47,17 +54,43 @@ def _tokenize(text: str) -> list[str]:
     return re.findall(r"[가-힣A-Za-z0-9]+", text.lower())
 
 
+def is_crisis(question: str) -> bool:
+    q = question.replace(" ", "")
+    return any(word.replace(" ", "") in q for word in CRISIS)
+
+
 def is_sensitive(question: str) -> bool:
     q = question.replace(" ", "")
     return any(word in q for word in SENSITIVE)
 
 
+# 한국어 조사 — 짧은 키워드를 어절 단위로 판정할 때 붙는 것만 허용한다.
+_PARTICLES = ("", "은", "는", "이", "가", "을", "를", "의", "도", "만", "에", "에서",
+              "으로", "로", "과", "와", "랑", "이랑", "보다", "부터", "까지", "요")
+
+
+def _short_kw_hit(kw: str, tokens: set[str]) -> bool:
+    """
+    한 글자 키워드를 부분 문자열로 보면 엉뚱한 데 걸린다.
+    '향'이 '방향'에, '초'가 '기초'에, '점'이 '관점'에 걸려
+    엉뚱하게 상품 추천 답변이 나가던 사고가 실제로 있었다.
+    어절이 키워드로 '시작'하고 나머지가 조사일 때만 인정한다.
+
+    두 글자 이상은 이 규칙을 적용하지 않는다. '얼마'가 '얼마예요'를
+    놓치는 것처럼, 조사가 아닌 어미가 붙는 경우를 잡지 못하기 때문이다.
+    """
+    return any(t == kw + p for t in tokens for p in _PARTICLES)
+
+
 def score_faq(question: str, entry: dict) -> int:
     """질문과 FAQ 항목의 키워드 겹침 점수."""
     q = question.lower()
+    tokens = set(_tokenize(question))
     score = 0
     for kw in entry.get("keywords", []):
-        if kw.lower() in q:
+        k = kw.lower()
+        hit = _short_kw_hit(k, tokens) if len(k) == 1 else k in q
+        if hit:
             score += 2
     # 질문(q) 텍스트 토큰 겹침도 소폭 반영
     q_tokens = set(_tokenize(question))
@@ -129,6 +162,14 @@ def answer(question: str, kb: dict | None = None) -> dict:
 
     if not question:
         return {"source": "empty", "answer": kb["fallback"]["no_match"], "matched": None}
+
+    # 위기 신호가 먼저다. 오행 이야기로 넘어가지 않고 사람에게 연결한다.
+    if is_crisis(question):
+        return {
+            "source": "safety",
+            "matched": "crisis",
+            "answer": kb["fallback"]["crisis"],
+        }
 
     if is_sensitive(question):
         return {
