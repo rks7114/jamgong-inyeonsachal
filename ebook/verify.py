@@ -387,6 +387,32 @@ def check_service_promises() -> None:
         check("분량 표기 · 실측 대조", not off,
               f"실측 {real:,}자 · 표기 {sorted(off)}")
 
+    # ⑫ 산출물 표지가 원본 표지와 같은가
+    #    render_cover 가 옛 SVG 를 렌더링해 제목이 바뀐 뒤에도 옛 표지가
+    #    나간 적이 있다. 크기로 대조해 그 사고를 다시 막는다.
+    src = ROOT / "ebook" / "cover.jpg"
+    out = ROOT / "ebook" / "dist" / "cover.png"
+    if src.exists() and out.exists():
+        def size(p: Path) -> tuple[int, int] | None:
+            d = p.read_bytes()
+            if d[:8] == b"\x89PNG\r\n\x1a\n":
+                import struct
+                return struct.unpack(">II", d[16:24])
+            i = 2                                    # JPEG SOF 탐색
+            while i < len(d) - 9:
+                if d[i] != 0xFF:
+                    i += 1
+                    continue
+                if d[i + 1] in (0xC0, 0xC1, 0xC2):
+                    import struct
+                    h, w = struct.unpack(">HH", d[i + 5:i + 9])
+                    return w, h
+                i += 2 + int.from_bytes(d[i + 2:i + 4], "big")
+            return None
+        a, b = size(src), size(out)
+        check("표지 · 산출물↔원본 일치", a == b,
+              f"원본 {a} · 산출물 {b} — render_cover 를 다시 돌릴 것")
+
     # ⑤ 외부로 나가는 홍보 문구도 같은 잣대로
     tpl = ROOT / "automation" / "threads" / "templates" / "post_templates.json"
     if tpl.exists():

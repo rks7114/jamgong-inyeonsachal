@@ -22,7 +22,33 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_epub import cover_svg  # noqa: E402
+from build_epub import cover_svg, raster_cover  # noqa: E402
+
+
+def from_raster(out: Path, long_edge: int) -> bool:
+    """ebook/cover.jpg 같은 실제 표지가 있으면 그것을 PNG 로 옮긴다.
+
+    이 갈래가 없으면 코드로 그린 옛 SVG 가 렌더링되어, 제목이 바뀐 뒤에도
+    옛 표지가 나온다. 실제로 그 사고가 한 번 났다.
+    """
+    src = raster_cover()
+    if not src:
+        return False
+    path, _ = src
+    try:
+        from PIL import Image
+    except ImportError:
+        shutil.copyfile(path, out.with_suffix(path.suffix))
+        print(f"[표지] {path.name} 를 그대로 복사 (PIL 없음)")
+        return True
+    im = Image.open(path).convert("RGB")
+    w, h = im.size
+    if max(w, h) != long_edge:
+        r = long_edge / max(w, h)
+        im = im.resize((round(w * r), round(h * r)), Image.LANCZOS)
+    im.save(out, "PNG")
+    print(f"[표지] {path.name} → {out.name}  {im.size[0]}x{im.size[1]}")
+    return True
 
 BASE_W, BASE_H = 1200, 1800  # cover_svg()의 캔버스 규격 (2:3)
 
@@ -98,8 +124,12 @@ def main() -> None:
                     default=Path(__file__).resolve().parent / "dist" / "cover.png")
     ap.add_argument("--long-edge", type=int, default=2560,
                     help="긴 변(세로) 픽셀. 기본 2560")
+    ap.add_argument("--svg", action="store_true",
+                    help="실제 표지를 무시하고 코드로 그린 SVG를 렌더링")
     args = ap.parse_args()
-    render(args.out, args.long_edge)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    if args.svg or not from_raster(args.out, args.long_edge):
+        render(args.out, args.long_edge)
 
 
 if __name__ == "__main__":
