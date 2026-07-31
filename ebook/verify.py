@@ -336,7 +336,8 @@ def check_service_promises() -> None:
     #    과잉을 누르는 g(x)=Kx/(K+x)에 같은 이름을 다시 붙이지 않는다.
     misname = []
     for rel in ("ebook/chapters/19-제19장.md", "funnel/matcher.py",
-                "src/matching-engine.js"):
+                "src/matching-engine.js", "ebook/appendix/부록D-용어사전.md",
+                "ebook/chapters/18-제18장.md"):
         p = ROOT / rel
         if not p.exists():
             continue

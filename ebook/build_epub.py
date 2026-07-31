@@ -24,6 +24,7 @@ from pathlib import Path
 from strip_service import strip_service, keep_service
 
 NO_CTA = False
+PREVIEW = False
 
 ROOT = Path(__file__).resolve().parent.parent
 CHAPTERS = ROOT / "ebook" / "chapters"
@@ -553,6 +554,8 @@ img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
     docs.append(("cover", "cover.xhtml", TITLE, cover_xhtml))
 
     sources = sorted(CHAPTERS.glob("*.md")) + sorted(APPENDIX.glob("*.md"))
+    if PREVIEW:                                  # 미리보기판 — 제1장까지만
+        sources = [p for p in sources if p.name.startswith(("01-", "부록G"))]
     if not sources:
         raise SystemExit("[error] 원고 파일을 찾을 수 없습니다.")
 
@@ -645,8 +648,11 @@ def main() -> None:
     ap.add_argument("--out", default=str(ROOT / "ebook" / "dist" / "소문을끄고데이터를켜다.epub"))
     ap.add_argument("--no-cta", action="store_true",
                     help="서비스 연결부(CTA·서비스에서 바로) 제거 — 해외판용")
+    ap.add_argument("--preview", action="store_true",
+                    help="미리보기판 — 제1장까지만")
     args = ap.parse_args()
     globals()["NO_CTA"] = args.no_cta
+    globals()["PREVIEW"] = args.preview
     build(Path(args.out))
 
 
