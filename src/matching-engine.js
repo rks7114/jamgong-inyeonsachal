@@ -282,6 +282,17 @@ function calculateBearing(lat1, lng1, lat2, lng2) {
   return directions[index];
 }
 
+/** 방위각 원값(0~360°). 오행 프로파일은 여덟 칸으로 뭉개기 전의 각도를 쓴다. */
+function bearingDegrees(lat1, lng1, lat2, lng2) {
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLng = toRad(lng2 - lng1);
+  const y = Math.sin(dLng) * Math.cos(toRad(lat2));
+  const x =
+    Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+    Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLng);
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
 /** 두 좌표 간 거리(km, Haversine) */
 function calculateDistance(lat1, lng1, lat2, lng2) {
   const R = 6371;
@@ -301,6 +312,96 @@ function bearingToOhaeng(bearing) {
     남: "화", 동남: "화", 서: "금", 북서: "금",
   };
   return map[bearing] || "토";
+}
+
+// ── 방향성 관계행렬 · 편차 감쇠 · 비가산 시너지 (특허 ①) ──────────────
+// 전자책 제18~19장에 공개한 계산식. funnel/matcher.py의 참조 구현과 같은 상수를 쓴다.
+// 규칙과 상수를 공개했으므로 독자가 검산하고 반박할 수 있다 — 그것이 이 엔진의 전제다.
+//
+// score = Σ_{M>0} g(x)·M  +  Σ_{M<0} x·M  +  α·√(x_용신 · x_희신)
+//         ──감쇠된 보강──     ─손상(감쇠 없음)─    ───시너지───
+//
+// 상수는 전부 설계 선택이며 자연 상수가 아니다(제19장 5절).
+
+const OH = ["목", "화", "토", "금", "수"];
+const SHENG = { 목: "화", 화: "토", 토: "금", 금: "수", 수: "목" }; // a 生 b
+const KE     = { 목: "토", 토: "수", 수: "화", 화: "금", 금: "목" }; // a 剋 b
+const REL_WEIGHT = { 比: 1.0, 生: 0.6, 洩: -0.3, 耗: -0.1, 剋: -0.8 };
+const K_SAT = 40.0; // 편차 감쇠 기준값
+const ALPHA = 0.15; // 시너지 비중
+
+/** 환경 오행 a가 나의 용신 b에 대해 갖는 관계 (25칸 중 20칸이 비대칭) */
+function relation(a, b) {
+  if (a === b) return "比";
+  if (SHENG[a] === b) return "生"; // a가 b를 생함 — 간접 보강
+  if (SHENG[b] === a) return "洩"; // b가 a를 생함 — 내가 소모됨
+  if (KE[a] === b) return "剋";    // a가 b를 침 — 직접 손상
+  if (KE[b] === a) return "耗";    // b가 a를 침 — 내가 힘을 씀
+  return "比";
+}
+
+/** 편차 감쇠 g(x) = Kx/(K+x). 아무리 커도 K를 넘지 못한다. 손상에는 적용하지 않는다. */
+function damp(x) {
+  return (K_SAT * x) / (K_SAT + x);
+}
+
+/** 희신 = 용신을 생해주는 오행 */
+function huiSin(yongsin) {
+  return OH.find((a) => SHENG[a] === yongsin);
+}
+
+/**
+ * 도량의 오행 프로파일.
+ *
+ * 제23장은 산세·수세·방위 셋으로 좌표를 낸다고 했으나, 현재 DB가 전 사찰에
+ * 대해 갖고 있는 것은 좌표에서 계산한 방위와 기도 목적뿐이다. 없는 것을
+ * 추정으로 메우지 않는다(제22장 4절) — 있는 신호만으로 구성하고,
+ * 산세·수세가 확보된 도량은 그 값이 들어오면 바로 반영되도록 열어 둔다.
+ */
+function templeOhaengProfile(temple, bearingOhaeng, bearingDeg) {
+  const p = { 목: 10, 화: 10, 토: 10, 금: 10, 수: 10 }; // 기준선
+
+  if (bearingDeg != null) {
+    // 방위각을 다섯 칸으로 스냅하면 도량 사이의 차이가 통째로 사라진다.
+    // 실제로 측정된 값은 각도이므로, 사방(수北0°·목東90°·화南180°·금西270°)에
+    // 대한 각거리로 연속 배분한다. 토는 중앙이라 방위 성분이 없어 기준선만 갖는다.
+    const CARD = { 수: 0, 목: 90, 화: 180, 금: 270 };
+    for (const [e, deg] of Object.entries(CARD)) {
+      let d = Math.abs(((bearingDeg - deg + 540) % 360) - 180); // 0~180
+      if (d < 90) p[e] += 34 * Math.cos((d * Math.PI) / 180);   // 90° 넘으면 기여 없음
+    }
+  } else if (bearingOhaeng) {
+    p[bearingOhaeng] += 30;
+  }
+
+  const purposeEl = PURPOSE_OHAENG[temple.mainPurpose];
+  if (purposeEl) p[purposeEl] += 15;
+
+  if (temple.ohaeng) { // 제25장 정밀 프로파일이 확보된 도량은 그 값이 우선
+    for (const e of OH) if (temple.ohaeng[e] != null) p[e] = temple.ohaeng[e];
+  }
+  for (const e of OH) p[e] = Math.round(p[e] * 10) / 10;
+  return p;
+}
+
+/** 제18~19장 점수식. 항목별 내역을 함께 돌려 결과를 역추적할 수 있게 한다. */
+function ohaengFitScore(profile, yongsin) {
+  const hui = huiSin(yongsin);
+  let boost = 0, harm = 0;
+  const parts = [];
+  for (const e of OH) {
+    const x = profile[e] || 0;
+    const rel = relation(e, yongsin);
+    const w = REL_WEIGHT[rel];
+    const contrib = w > 0 ? damp(x) * w : x * w;
+    if (w > 0) boost += contrib; else harm += contrib;
+    parts.push({ 오행: e, 값: x, 관계: rel, 가중치: w, 기여: Math.round(contrib * 100) / 100 });
+  }
+  const synergy = ALPHA * Math.sqrt((profile[yongsin] || 0) * (profile[hui] || 0));
+  return {
+    total: boost + harm + synergy,
+    boost, harm, synergy, yongsin, huisin: hui, parts,
+  };
 }
 
 /**
@@ -327,19 +428,21 @@ function scoreTemple(temple, matchContext) {
     : matchesPersonal ? 24  // 사주 부족오행만 일치
     : 13;                   // 불일치
 
-  // 1-b) 개인 공명 점수 (0~20점) — 사주에서 이 사찰 오행이 부족할수록 강하게 가산
-  const personalNeed = distribution ? Math.max(0, 4 - (distribution[templeOhaeng] || 0)) : 2;
-  const personalResonance = personalNeed * 5; // 0~20점
+  // 1-b) 오행 적합도 — 제18~19장 관계행렬·감쇠·시너지 (이 엔진의 본체)
+  //      용신을 입력으로 받으므로 사람마다 순위가 새로 계산된다. 절대적으로
+  //      좋은 사찰은 없다(제19장 4절).
+  const yongsin = personalOh || purposeOh || "토";
+  const bearingDeg = (userLat != null && userLng != null)
+    ? bearingDegrees(userLat, userLng, temple.lat, temple.lng) : null;
+  const profile = templeOhaengProfile(temple, templeOhaeng, bearingDeg);
+  const fit = ohaengFitScore(profile, yongsin);
+  const ohaengScore = fit.total;
 
-  // 1-c) 생년월일 친연도 (±30점) — 생년월일 변화마다 다른 사찰이 나오도록 폭 확대
-  const birthYear = matchContext.birthYear || 2000;
-  const birthMonth = matchContext.birthMonth || 1;
-  const birthDay = matchContext.birthDay || 1;
-  const templeKey = temple.id
-    ? (parseInt(String(temple.id).replace(/\D/g, "").slice(-3)) || temple.name.length)
-    : temple.name.charCodeAt(0);
-  const affinityRaw = (birthYear * 7 + birthMonth * 31 + birthDay * 17 + templeKey * 11) % 61;
-  const birthAffinity = affinityRaw - 30; // -30 ~ +30점
+  // 1-c) 생년월일 해시 가산점은 제거했다.
+  //      (birthYear*7 + birthMonth*31 + birthDay*17 + templeKey*11) % 61 - 30 이
+  //      전체 점수 폭의 40% 이상을 차지하고 있었다. 결과를 다양해 보이게 하려는
+  //      장치였을 뿐 역학적 근거가 없다. 근거 없는 것은 넣지 않는다(제1장 원칙 ①).
+  //      사람마다 결과가 달라지는 것은 용신이 다르기 때문이지 난수 때문이 아니다.
 
   // 2) 목적 태그 일치도 (30점)
   const purposeTagMap = {
@@ -363,21 +466,28 @@ function scoreTemple(temple, matchContext) {
   const jogyeBonus = JOGYE_TEMPLES.has(temple.name) ? 3 : 0;
   const trustScore = (temple.verified ? 10 : 4) + jogyeBonus;
 
-  // 5) 인연 시너지항 — 잼공감(CLI)·퍼피시너지(CSI)와 동일한 비가산 시너지 수학 코어
-  //    CLI_Final = CLI_linear + β·√(W_A×W_B) 구조를 인연사찰 도메인에 적용.
-  //    방위와 목적이 "동시에" 강하게 맞을 때, 단순 합산이 아니라 기하평균 시너지로 증폭시켜
-  //    "겹으로 맞는 인연"이 단순 합보다 더 강한 인연으로 계산되도록 함.
-  const BETA = 0.35; // 시너지 가중 파라미터 (추후 실사용 데이터로 베이지안 최적화 가능)
-  const synergyBangwiPurpose = Math.sqrt((bangwiScore / 40) * (purposeScore / 30)) * 100;
-  const synergyBonus = BETA * synergyBangwiPurpose * 0.12; // 스케일 보정 (0~약 4.2점 가산)
-
-  const linearScore = bangwiScore + purposeScore + distanceScore + trustScore + personalResonance + birthAffinity;
-  const totalScore = linearScore + synergyBonus;
+  // 5) 합산 — 오행 적합도가 본체이고, 나머지는 보조다.
+  //    시너지는 ohaengFitScore 안에서 α·√(x_용신·x_희신)으로 이미 계산됐다.
+  //    기존의 β=0.35 방위·목적 시너지는 제거했다. 책이 공개한 시너지는
+  //    "용신과 희신이 함께 있을 때"의 것이지 "방위와 목적이 맞을 때"의 것이 아니다.
+  const totalScore = ohaengScore + purposeScore + distanceScore + trustScore;
 
   return {
     temple,
     score: Math.round(totalScore * 10) / 10,
-    detail: { bearing, templeOhaeng, bangwiScore, purposeScore, distanceScore, trustScore, synergyBonus: Math.round(synergyBonus * 10) / 10, distanceKm: Math.round(distance) },
+    detail: {
+      bearing, templeOhaeng,
+      // 결과를 역추적할 수 있도록 항목을 그대로 노출한다(제26장 3절 ⑤).
+      ohaengScore: Math.round(ohaengScore * 10) / 10,
+      용신: fit.yongsin, 희신: fit.huisin,
+      보강: Math.round(fit.boost * 10) / 10,
+      손상: Math.round(fit.harm * 10) / 10,
+      시너지: Math.round(fit.synergy * 10) / 10,
+      내역: fit.parts,
+      프로파일: profile,
+      bangwiScore, purposeScore, distanceScore, trustScore,
+      distanceKm: Math.round(distance),
+    },
   };
 }
 
@@ -506,31 +616,47 @@ function matchTemples(request, templeDB) {
     + distSeed + hourSeed + (PURPOSE_SEED_OFFSETS[request.purpose] || 0)
   );
 
-  // 상위 풀을 점수 기반 가중치로 섞기: 상위권 유지하되 순서를 시드로 다양화
-  function seededShuffle(arr, seed) {
-    const a = arr.map((item, i) => ({ item, order: 0 }));
-    let s = seed;
-    for (let i = 0; i < a.length; i++) {
-      s = (s * 1664525 + 1013904223) >>> 0; // LCG
-      // 점수가 높을수록 앞에 올 확률 높게: 점수 정규화 + 난수 혼합
-      const scoreNorm = (a[i].item.score || 0) / 100;
-      a[i].order = scoreNorm * 0.40 + (s / 0xFFFFFFFF) * 0.60;
+  // 점수 순으로 세우되, 동급 구간 안에서만 시드로 섞는다.
+  //
+  // 이전에는 순서의 60%를 난수가 정했다(scoreNorm*0.40 + rand*0.60). 결과가
+  // 다양해 보이게 하려는 장치였지만, 그러면 "왜 이 도량인가"에 답할 수 없다.
+  // 제26장 3절 ④에서 격차 3점 미만은 사실상 동급이라고 밝혔으므로, 그 폭
+  // 안에서만 섞는다. 동급 아닌 것을 섞지는 않는다.
+  const TIE_BAND = 3.0; // 제26장 3절 ④의 '사실상 동급' 폭
+  function rankWithTieShuffle(arr, seed) {
+    const sorted = [...arr].sort((a, b) => b.score - a.score);
+    const out = [];
+    let s = seed >>> 0;
+    for (let i = 0; i < sorted.length; ) {
+      let j = i;
+      while (j < sorted.length && sorted[i].score - sorted[j].score < TIE_BAND) j++;
+      const group = sorted.slice(i, j);
+      for (let k = group.length - 1; k > 0; k--) { // Fisher-Yates (시드 고정)
+        s = (s * 1664525 + 1013904223) >>> 0;
+        const r = s % (k + 1);
+        [group[k], group[r]] = [group[r], group[k]];
+      }
+      out.push(...group);
+      i = j;
     }
-    return a.sort((x, y) => y.order - x.order).map(o => o.item);
+    return out;
   }
 
-  const shuffled = seededShuffle(primaryPool, baseSeed);
+  const shuffled = rankWithTieShuffle(primaryPool, baseSeed);
 
-  // 중복 제거 + 최소 인연 점수 50점 이상만 선택
-  // 50점 미만은 인연이 너무 약해 추천 대상에서 제외
-  const MIN_SCORE = 50;
+  // 오행 적합도가 음수인 도량은 제외한다.
+  // 고정 임계값(옛 50점)이 아니라 부호로 거른다 — 음수는 "지금 이 사람의
+  // 균형에 보탬이 되지 않는다"는 뜻이지 나쁜 절이라는 뜻이 아니다(제26장 4절).
   const seenNames = new Set();
   const scored = [];
-  for (let i = 0; scored.length < 3 && i < shuffled.length; i++) {
-    const t = shuffled[i];
-    if (t.score >= MIN_SCORE && !seenNames.has(t.temple.name)) {
-      seenNames.add(t.temple.name);
-      scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose, weak.부족오행, purposeOhaeng) });
+  for (let pass = 0; pass < 2 && scored.length < 3; pass++) {
+    for (let i = 0; scored.length < 3 && i < shuffled.length; i++) {
+      const t = shuffled[i];
+      const ok = pass === 0 ? (t.detail?.ohaengScore ?? 0) > 0 : true; // 2차: 조건 완화
+      if (ok && !seenNames.has(t.temple.name)) {
+        seenNames.add(t.temple.name);
+        scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose, weak.부족오행, purposeOhaeng) });
+      }
     }
   }
 
@@ -667,4 +793,7 @@ function matchCoupleTemples(request, templeDB) {
   };
 }
 
-module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, getEightChar };
+module.exports = { matchTemples, matchCoupleTemples, calculateOhaeng, findWeakOhaeng, getEightChar,
+  // 제18~19장 계산식 — 독자가 검산할 수 있도록 내보낸다.
+  relation, damp, huiSin, ohaengFitScore, templeOhaengProfile,
+  REL_WEIGHT, K_SAT, ALPHA };
