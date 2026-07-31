@@ -9,7 +9,7 @@ verify.py가 붙잡고 있다. 값이 정해지면 이 스크립트로 한 번�
 세 곳을 동시에 고친다.
   · 부록G 판권표          — 발행일·정가·ISBN
   · build_epub.py PUB_DATE — EPUB dc:date
-  · content.opf dc:identifier — ISBN이 있으면 임시 UUID를 대체
+  · build_epub.py UID      — ISBN 이 오면 임시 UUID 를 urn:isbn 으로 대체
 
 사용:
     python ebook/set_colophon.py --date 2026-08-15 --price 19900 --isbn 979-11-XXXX-XXX-X
@@ -35,8 +35,12 @@ def show() -> None:
         val = m.group(1) if m else "(항목 없음)"
         mark = "⚠" if val.startswith("TBD") else "✓"
         print(f"  {mark} {key:<12} {val}")
-    m = re.search(r'PUB_DATE = "([^"]+)"', BUILDER.read_text(encoding="utf-8"))
-    print(f"  · EPUB dc:date  {m.group(1) if m else '?'}")
+    b = BUILDER.read_text(encoding="utf-8")
+    for label, pat in (("dc:date", r'PUB_DATE = "([^"]+)"'), ("식별자", r'UID = "([^"]+)"')):
+        m = re.search(pat, b)
+        v = m.group(1) if m else "?"
+        mark = "⚠" if "uuid:" in v else "·"
+        print(f"  {mark} EPUB {label:<8} {v}")
     print()
 
 
@@ -77,6 +81,12 @@ def main() -> None:
 
     if a.isbn:
         s = put(s, "ISBN", a.isbn)
+        # EPUB 식별자도 함께 바꾼다. 유통사는 ISBN 을 식별자로 기대한다.
+        digits = re.sub(r"[^\dXx]", "", a.isbn)
+        b = BUILDER.read_text(encoding="utf-8")
+        BUILDER.write_text(
+            re.sub(r'UID = "[^"]*"', f'UID = "urn:isbn:{digits}"', b, count=1),
+            encoding="utf-8")
 
     COLOPHON.write_text(s, encoding="utf-8")
     show()
