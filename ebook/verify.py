@@ -348,6 +348,20 @@ def check_service_promises() -> None:
                 misname.append(f"{p.name}: {seg.strip()[:70]}")
     check("편차 감쇠 명칭 혼동 없음", not misname, str(misname[:2]))
 
+    # ⑨ 판매 문안이 출원을 등록처럼 적지 않는다
+    #    출원과 등록은 다르다. 심사를 통과하지 않은 것을 통과한 것처럼 적으면
+    #    표시광고법 문제이기 이전에, 제2장에서 해부한 '검증할 수 없는 권위'가 된다.
+    overstate = []
+    for p in sorted((ROOT / "ebook" / "sales-page").glob("*.*")):
+        for i, raw in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+            line = re.sub(r"`[^`]*`", "", raw)   # 백틱 안은 인용된 예시다
+            for pat in (r"특허\s*\d+\s*건(?!\s*출원)", r"특허\s*(기술|받은|등록)",
+                        r"특허를?\s*(보유|취득)"):
+                m = re.search(pat, line)
+                if m and "출원" not in line:
+                    overstate.append(f"{p.name}:{i} {m.group(0)}")
+    check("판매 문안 · 특허 출원 표기", not overstate, str(overstate[:3]))
+
     # ⑤ 외부로 나가는 홍보 문구도 같은 잣대로
     tpl = ROOT / "automation" / "threads" / "templates" / "post_templates.json"
     if tpl.exists():
