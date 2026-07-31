@@ -218,6 +218,66 @@ def md_to_xhtml(md: str, title: str) -> str:
 <body>{body}</body></html>"""
 
 
+# ---------- 표지 이미지 (SVG) ----------
+# EPUB 3은 SVG를 cover-image로 지원한다. 래스터 생성 도구(PIL 등) 없이도
+# 판매 플랫폼 썸네일에 쓸 표지를 만들기 위해 벡터로 그린다.
+# 색은 오행 팔레트를 그대로 쓴다 — 木 청록 / 火 적 / 土 황토 / 金 은백 / 水 감청.
+
+_MOK, _HWA, _TO, _GEUM, _SU = "#3E8E6E", "#C4453A", "#C79A3E", "#8E969D", "#2C4A6B"
+_EMBER = "#D9612C"
+_CHIP_ROWS = [  # 5x5 관계행렬 모티프 (행마다 한 칸씩 회전하는 구조)
+    [(_MOK,1.0),(_MOK,.5),(_HWA,.35),(_GEUM,.3),(_SU,.4)],
+    [(_HWA,.35),(_HWA,1.0),(_TO,.5),(_GEUM,.25),(_SU,.3)],
+    [(_MOK,.3),(_TO,.35),(_TO,1.0),(_GEUM,.5),(_SU,.25)],
+    [(_MOK,.2),(_HWA,.3),(_TO,.3),(_GEUM,1.0),(_SU,.5)],
+    [(_MOK,.5),(_HWA,.2),(_TO,.25),(_GEUM,.35),(_SU,1.0)],
+]
+
+
+def cover_svg() -> str:
+    W, H = 1200, 1800
+    chips = []
+    cx, cy, size, gap = 150, 1180, 148, 18
+    for r, row in enumerate(_CHIP_ROWS):
+        for c, (col, op) in enumerate(row):
+            x = cx + c * (size + gap)
+            y = cy + r * (size + gap)
+            chips.append(f'<rect x="{x}" y="{y}" width="{size}" height="{size}" '
+                         f'rx="6" fill="{col}" opacity="{op:.2f}"/>')
+    grid = []
+    for gx in range(0, W + 1, 60):
+        grid.append(f'<line x1="{gx}" y1="0" x2="{gx}" y2="{H}"/>')
+    for gy in range(0, H + 1, 60):
+        grid.append(f'<line x1="0" y1="{gy}" x2="{W}" y2="{gy}"/>')
+
+    return f"""<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">
+  <defs>
+    <radialGradient id="ember" cx="18%" cy="14%" r="52%">
+      <stop offset="0%" stop-color="{_EMBER}" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="{_EMBER}" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="{W}" height="{H}" fill="#0E1518"/>
+  <g stroke="#EDEDEA" stroke-opacity=".05" stroke-width="1">{''.join(grid)}</g>
+  <rect width="{W}" height="{H}" fill="url(#ember)"/>
+  <text x="150" y="300" fill="{_EMBER}" font-size="34" letter-spacing="10"
+        font-family="sans-serif">JAMGONG INYEONSACHAL</text>
+  <text x="150" y="520" fill="{_EMBER}" font-size="132" font-weight="bold"
+        font-family="sans-serif">부적을 태우고</text>
+  <text x="150" y="680" fill="{_MOK}" font-size="132" font-weight="bold"
+        font-family="sans-serif">데이터를 켜다</text>
+  <line x1="150" y1="780" x2="1050" y2="780" stroke="#2A383E" stroke-width="2"/>
+  <text x="150" y="860" fill="#94A3A9" font-size="44" font-family="sans-serif">사주 오행으로 찾는 나의 인연 도량</text>
+  <text x="150" y="940" fill="#6B7B82" font-size="34" font-family="sans-serif">생년월일시 오행 분석 · 전국 사찰 매칭</text>
+  {''.join(chips)}
+  <text x="150" y="1720" fill="#EDEDEA" font-size="46" font-weight="bold"
+        font-family="sans-serif">{AUTHOR}</text>
+  <text x="1050" y="1720" fill="#6B7B82" font-size="34" text-anchor="end"
+        font-family="sans-serif">{PUBLISHER}</text>
+</svg>"""
+
+
 # ---------- EPUB 조립 ----------
 
 def first_heading(md: str, fallback: str) -> str:
@@ -231,12 +291,15 @@ def first_heading(md: str, fallback: str) -> str:
 def build(out_path: Path) -> None:
     docs = []  # (id, filename, title, xhtml)
 
-    # 표지
-    cover_md = (f"# {TITLE}\n\n## {SUBTITLE}\n\n---\n\n**{AUTHOR}** 지음\n\n"
-                f"잼공인연사찰 공식 가이드\n\n"
-                f"발행 · {PUBLISHER}\n\n"
-                f"웹 서비스 · https://jamgong-inyeonsachal.vercel.app\n")
-    docs.append(("cover", "cover.xhtml", TITLE, md_to_xhtml(cover_md, TITLE)))
+    # 표지 — SVG 이미지를 전면에 배치
+    cover_xhtml = f"""<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{LANG}">
+<head><meta charset="utf-8"/><title>{html.escape(TITLE)}</title>
+<style>body{{margin:0;padding:0;text-align:center}}
+img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
+<body><img src="cover.svg" alt="{html.escape(TITLE)}"/></body></html>"""
+    docs.append(("cover", "cover.xhtml", TITLE, cover_xhtml))
 
     sources = sorted(CHAPTERS.glob("*.md")) + sorted(APPENDIX.glob("*.md"))
     if not sources:
@@ -288,11 +351,13 @@ def build(out_path: Path) -> None:
 <dc:language>{LANG}</dc:language>
 <dc:description>{html.escape(SUBTITLE)}</dc:description>
 <meta property="dcterms:modified">2026-07-31T00:00:00Z</meta>
+<meta name="cover" content="cover-img"/>
 </metadata>
 <manifest>{manifest}
 <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
 <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
 <item id="css" href="style.css" media-type="text/css"/>
+<item id="cover-img" href="cover.svg" media-type="image/svg+xml" properties="cover-image"/>
 </manifest>
 <spine toc="ncx"><itemref idref="nav"/>{spine}</spine>
 </package>"""
@@ -312,6 +377,7 @@ def build(out_path: Path) -> None:
         z.writestr("OEBPS/nav.xhtml", nav, zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/toc.ncx", ncx, zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/style.css", CSS, zipfile.ZIP_DEFLATED)
+        z.writestr("OEBPS/cover.svg", cover_svg(), zipfile.ZIP_DEFLATED)
         for _, fn, _, xhtml in docs:
             z.writestr(f"OEBPS/{fn}", xhtml, zipfile.ZIP_DEFLATED)
 
