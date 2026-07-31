@@ -22,6 +22,7 @@ from pathlib import Path
 from strip_service import strip_service, keep_service
 
 NO_CTA = False
+PREVIEW = False
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_epub import (  # noqa: E402
@@ -151,6 +152,8 @@ def to_text(md: str) -> str:
 
 def build(out: Path) -> None:
     sources = sorted(CHAPTERS.glob("*.md")) + sorted(APPENDIX.glob("*.md"))
+    if PREVIEW:                                  # 미리보기판 — 제1장까지만
+        sources = [p for p in sources if p.name.startswith(("01-", "부록G"))]
     if not sources:
         raise SystemExit("[error] 원고 파일을 찾을 수 없습니다.")
 
@@ -185,8 +188,11 @@ def main() -> None:
                     / "소문을끄고데이터를켜다.txt")
     ap.add_argument("--no-cta", action="store_true",
                     help="서비스 연결부(CTA·서비스에서 바로) 제거 — 해외판용")
+    ap.add_argument("--preview", action="store_true",
+                    help="미리보기판 — 제1장까지만")
     args = ap.parse_args()
     globals()["NO_CTA"] = args.no_cta
+    globals()["PREVIEW"] = args.preview
     build(args.out)
 
 
