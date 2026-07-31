@@ -26,8 +26,8 @@ APPENDIX = ROOT / "ebook" / "appendix"
 
 TITLE = "부적을 태우고 데이터를 켜다"
 SUBTITLE = "사주 오행으로 찾는 나의 인연 도량"
-AUTHOR = "잼공인연사찰 연구소"
-PUBLISHER = "잼공인연사찰"
+AUTHOR = "박충호"
+PUBLISHER = "잼공 연구소"
 LANG = "ko"
 UID = "urn:uuid:jamgong-inyeonsachal-guide-v1"
 
@@ -232,8 +232,9 @@ def build(out_path: Path) -> None:
     docs = []  # (id, filename, title, xhtml)
 
     # 표지
-    cover_md = (f"# {TITLE}\n\n## {SUBTITLE}\n\n---\n\n**{AUTHOR}**\n\n"
+    cover_md = (f"# {TITLE}\n\n## {SUBTITLE}\n\n---\n\n**{AUTHOR}** 지음\n\n"
                 f"잼공인연사찰 공식 가이드\n\n"
+                f"발행 · {PUBLISHER}\n\n"
                 f"웹 서비스 · https://jamgong-inyeonsachal.vercel.app\n")
     docs.append(("cover", "cover.xhtml", TITLE, md_to_xhtml(cover_md, TITLE)))
 
