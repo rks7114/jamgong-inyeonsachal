@@ -24,7 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_epub import (  # noqa: E402
     AUTHOR, CHAPTERS, APPENDIX, CSS, LANG, PUBLISHER, SUBTITLE, TITLE,
-    cover_svg, first_heading, render_blocks,
+    cover_svg, first_heading, raster_cover, render_blocks,
 )
 
 # 화면으로 읽을 때만 필요한 것 — 목차 사이드바, 본문 폭 제한, 다크 모드
@@ -67,9 +67,17 @@ def build(out: Path) -> None:
     if not sources:
         raise SystemExit("[error] 원고 파일을 찾을 수 없습니다.")
 
-    cover_uri = "data:image/svg+xml;base64," + base64.b64encode(
-        cover_svg().encode("utf-8")
-    ).decode("ascii")
+    # EPUB과 같은 규칙 — ebook/cover.png이 있으면 그것을, 없으면 SVG를 심는다
+    art = raster_cover()
+    if art:
+        art_path, mime = art
+        cover_uri = f"data:{mime};base64," + base64.b64encode(
+            art_path.read_bytes()
+        ).decode("ascii")
+    else:
+        cover_uri = "data:image/svg+xml;base64," + base64.b64encode(
+            cover_svg().encode("utf-8")
+        ).decode("ascii")
 
     toc, body = [], []
     for i, path in enumerate(sources, 1):

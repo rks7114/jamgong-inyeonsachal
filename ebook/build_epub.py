@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import html
 import re
+import struct
 import zipfile
 from pathlib import Path
 
@@ -324,6 +325,60 @@ def cover_svg() -> str:
 </svg>"""
 
 
+# ---------- 표지 이미지 (래스터 우선) ----------
+
+COVER_DIR = ROOT / "ebook"
+_RASTER_CANDIDATES = (("cover.png", "image/png"),
+                      ("cover.jpg", "image/jpeg"),
+                      ("cover.jpeg", "image/jpeg"))
+
+
+def raster_cover() -> tuple[Path, str] | None:
+    """
+    ebook/cover.png(또는 .jpg)가 있으면 그것을 표지로 쓴다.
+    없으면 코드로 그린 SVG로 돌아간다. 디자이너가 만든 표지를 넣을 때
+    빌더를 고치지 않아도 되게 하려는 것이다.
+    """
+    for name, mime in _RASTER_CANDIDATES:
+        p = COVER_DIR / name
+        if p.is_file():
+            return p, mime
+    return None
+
+
+def image_size(path: Path) -> tuple[int, int] | None:
+    """PNG/JPEG 크기를 표준 라이브러리만으로 읽는다 (규격 경고용)."""
+    data = path.read_bytes()
+    if data[:8] == b"\x89PNG\r\n\x1a\n" and data[12:16] == b"IHDR":
+        return struct.unpack(">II", data[16:24])
+    if data[:2] == b"\xff\xd8":
+        i = 2
+        while i + 9 < len(data):
+            if data[i] != 0xFF:
+                i += 1
+                continue
+            marker, seglen = data[i + 1], struct.unpack(">H", data[i + 2:i + 4])[0]
+            if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
+                h, w = struct.unpack(">HH", data[i + 5:i + 9])
+                return w, h
+            i += 2 + seglen
+    return None
+
+
+def check_cover(path: Path) -> None:
+    size = image_size(path)
+    if not size:
+        print(f"[warn] {path.name} 크기를 읽지 못했습니다 — 규격 확인을 건너뜁니다.")
+        return
+    w, h = size
+    print(f"[표지] {path.name}  {w}x{h}")
+    if h < 2560:
+        print(f"[warn] 세로 {h}px — 판매 플랫폼 등록은 2560px 이상을 권장합니다.")
+    ratio = h / w if w else 0
+    if not 1.45 <= ratio <= 1.65:
+        print(f"[warn] 비율 1:{ratio:.2f} — 2:3(1:1.5) 안팎을 권장합니다.")
+
+
 # ---------- EPUB 조립 ----------
 
 def first_heading(md: str, fallback: str) -> str:
@@ -337,14 +392,22 @@ def first_heading(md: str, fallback: str) -> str:
 def build(out_path: Path) -> None:
     docs = []  # (id, filename, title, xhtml)
 
-    # 표지 — SVG 이미지를 전면에 배치
+    # 표지 — ebook/cover.png이 있으면 그것을, 없으면 코드로 그린 SVG를 쓴다
+    art = raster_cover()
+    if art:
+        art_path, cover_mime = art
+        cover_name = "cover" + art_path.suffix.lower()
+        check_cover(art_path)
+    else:
+        art_path, cover_name, cover_mime = None, "cover.svg", "image/svg+xml"
+
     cover_xhtml = f"""<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{LANG}">
 <head><meta charset="utf-8"/><title>{html.escape(TITLE)}</title>
 <style>body{{margin:0;padding:0;text-align:center}}
 img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
-<body><img src="cover.svg" alt="{html.escape(TITLE)}"/></body></html>"""
+<body><img src="{cover_name}" alt="{html.escape(TITLE)}"/></body></html>"""
     docs.append(("cover", "cover.xhtml", TITLE, cover_xhtml))
 
     sources = sorted(CHAPTERS.glob("*.md")) + sorted(APPENDIX.glob("*.md"))
@@ -403,7 +466,7 @@ img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
 <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
 <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
 <item id="css" href="style.css" media-type="text/css"/>
-<item id="cover-img" href="cover.svg" media-type="image/svg+xml" properties="cover-image"/>
+<item id="cover-img" href="{cover_name}" media-type="{cover_mime}" properties="cover-image"/>
 </manifest>
 <spine toc="ncx"><itemref idref="nav"/>{spine}</spine>
 </package>"""
@@ -423,7 +486,10 @@ img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
         z.writestr("OEBPS/nav.xhtml", nav, zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/toc.ncx", ncx, zipfile.ZIP_DEFLATED)
         z.writestr("OEBPS/style.css", CSS, zipfile.ZIP_DEFLATED)
-        z.writestr("OEBPS/cover.svg", cover_svg(), zipfile.ZIP_DEFLATED)
+        if art_path:
+            z.write(art_path, f"OEBPS/{cover_name}")
+        else:
+            z.writestr("OEBPS/cover.svg", cover_svg(), zipfile.ZIP_DEFLATED)
         for _, fn, _, xhtml in docs:
             z.writestr(f"OEBPS/{fn}", xhtml, zipfile.ZIP_DEFLATED)
 
