@@ -32,6 +32,7 @@ APPENDIX = ROOT / "ebook" / "appendix"
 TITLE = "소문을 끄고 데이터를 켜다"
 SUBTITLE = "사주 오행으로 찾는 나의 인연 도량"
 AUTHOR = "제운 박충호"
+PUB_DATE = "2026-07-31"   # 발행일 — 실제 출간일로 교체할 것
 PUBLISHER = "잼공 연구소"
 LANG = "ko"
 UID = "urn:uuid:jamgong-inyeonsachal-guide-v1"
@@ -599,6 +600,7 @@ img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
 <dc:title>{html.escape(TITLE)}</dc:title>
 <dc:creator>{html.escape(AUTHOR)}</dc:creator>
 <dc:publisher>{html.escape(PUBLISHER)}</dc:publisher>
+    <dc:date>{PUB_DATE}</dc:date>
 <dc:language>{LANG}</dc:language>
 <dc:description>{html.escape(SUBTITLE)}</dc:description>
 <meta property="dcterms:modified">2026-07-31T00:00:00Z</meta>

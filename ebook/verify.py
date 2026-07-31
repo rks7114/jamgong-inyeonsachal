@@ -362,6 +362,31 @@ def check_service_promises() -> None:
                     overstate.append(f"{p.name}:{i} {m.group(0)}")
     check("판매 문안 · 특허 출원 표기", not overstate, str(overstate[:3]))
 
+    # ⑩ 출간 전 미확정 항목이 남아 있으면 알린다
+    #    ISBN·발행일·정가는 사람이 정하는 값이다. 비워두면 잊고 넘어가므로
+    #    TBD로 박아두고 검사가 붙잡는다. 채우면 이 검사는 저절로 조용해진다.
+    colophon = ROOT / "ebook" / "appendix" / "부록G-저자소개와판권.md"
+    if colophon.exists():
+        pending = re.findall(r"TBD-(\S+)", colophon.read_text(encoding="utf-8"))
+        check("판권 · 출간 전 확정 항목", not pending,
+              f"미확정 {pending} — 출간 전 반드시 채울 것")
+
+    # ⑪ 분량 표기가 실제 빌드와 맞는가
+    #    기준은 HTML 빌더와 같다 — 태그와 공백을 뺀 본문 글자수.
+    #    평문(txt)은 표 테두리와 구분선까지 세므로 기준이 다르다.
+    built = ROOT / "ebook" / "dist" / "소문을끄고데이터를켜다.html"
+    if built.exists():
+        real = len(re.sub(r"<[^>]+>|\s", "", built.read_text(encoding="utf-8")))
+        claims = set()
+        for f in (colophon, ROOT / "README.md",
+                  ROOT / "ebook" / "sales-page" / "판매패키지.md"):
+            if f.exists():
+                claims |= {int(m.replace(",", "")) for m in
+                           re.findall(r"약 ([\d,]{6,})자", f.read_text(encoding="utf-8"))}
+        off = [c for c in claims if abs(c - real) > real * 0.05]
+        check("분량 표기 · 실측 대조", not off,
+              f"실측 {real:,}자 · 표기 {sorted(off)}")
+
     # ⑤ 외부로 나가는 홍보 문구도 같은 잣대로
     tpl = ROOT / "automation" / "threads" / "templates" / "post_templates.json"
     if tpl.exists():
