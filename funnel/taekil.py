@@ -89,7 +89,7 @@ def rank(yongsin: str, start: dt.date, days: int) -> list[dict]:
         s = score(dist, yongsin)
         out.append({
             "date": d, "iljin": gz, "dist": dist,
-            "score": s["score"] if isinstance(s, dict) else s,
+            "score": s["total"],
             "detail": s,
         })
     return out
