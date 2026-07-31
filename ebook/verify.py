@@ -21,6 +21,7 @@ verify.py — 원고 자동 검사
   8. 마크다운 무결성 (표 열 수·CTA 마커·빈 제목)
   9. UTM 태그가 해당 장 번호인가
  10. 구현하지 않은 것을 구현했다고 적지 않았는가
+ 11. 서비스가 책의 약속을 지키는가 (길흉 판정·공포 문구·결과 약속)
 """
 from __future__ import annotations
 
@@ -267,6 +268,43 @@ def check_overclaim() -> None:
     check("엔진 미구현 기능 과장", not forbidden, str(forbidden[:3]))
 
 
+# ── 11. 서비스가 책의 약속을 지키는가
+def check_service_promises() -> None:
+    """책이 '하지 않는다'고 적은 것을 코드가 하고 있지 않은지.
+
+    책의 오류는 읽는 사람이 속는 것이지만, 이쪽은 서비스가 실제로 그렇게
+    답한다. 그래서 따로 검사한다.
+    """
+    targets = [ROOT / "api" / "dream.js", ROOT / "api" / "chatbot.js",
+               ROOT / "src" / "main.js"]
+    src = {p.name: p.read_text(encoding="utf-8") for p in targets if p.exists()}
+
+    # ① 꿈에 길흉을 판정하도록 지시하거나 화면에 그 이름을 걸지 않는다
+    verdict = [n for n, t in src.items()
+               if re.search(r"(길흉\s*판단|길\(吉\)\s*(또는|/)\s*흉)", t)
+               and "판정하지" not in t]
+    check("꿈 길흉 판정 없음", not verdict, str(verdict))
+
+    # ② 상징 사전이 결과를 단정하지 않는다 (돼지=재물 식)
+    dream = src.get("dream.js", "")
+    omen = re.findall(r"meaning:\s*'[^']*(예고|징조|길상|운 상승)[^']*'", dream)
+    check("상징 사전 예고 표현 없음", not omen, f"{len(omen)}건")
+
+    # ③ 공포 문구 — 경고색·경고 아이콘을 신살에 붙이지 않는다
+    fear = []
+    for n, t in src.items():
+        for m in re.finditer(r"[^\n]{0,120}삼재[^\n]{0,120}", t):
+            seg = m.group(0)
+            if "⚠️" in seg or "#ff8080" in seg:
+                fear.append(f"{n}: {seg.strip()[:60]}")
+    check("신살 공포 표시 없음", not fear, str(fear[:2]))
+
+    # ④ 결과를 약속하지 않는다
+    promise = [f"{n}" for n, t in src.items()
+               if re.search(r"소원[^\n]{0,20}반드시 이루어진", t)]
+    check("결과 약속 문구 없음", not promise, str(promise))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="원고 자동 검사")
     ap.add_argument("-q", "--quiet", action="store_true", help="실패만 출력")
@@ -282,6 +320,7 @@ def main() -> None:
     check_db()
     check_markdown(chs)
     check_overclaim()
+    check_service_promises()
 
     if not args.quiet:
         for line in PASSED:

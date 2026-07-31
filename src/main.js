@@ -2634,7 +2634,7 @@ const PILGRIMAGE_SPOTS = [
   { name:'해동 용궁사', region:'부산 기장', ohaeng:'수', icon:'🌊',
     type:'관음 기도', badge:'바다 관음',
     buddha:'관세음보살', hall:'관음전',
-    desc:'파도 위에 떠 있는 듯한 절경의 해안 사찰. 용이 승천한 자리에 지어진 관음 성지로 소원을 빌면 반드시 이루어진다는 전설이 전해집니다.',
+    desc:'파도 위에 떠 있는 듯한 절경의 해안 사찰. 용이 승천한 자리에 지어진 관음 성지로, 예로부터 소원을 빌러 오는 발길이 끊이지 않았다고 전해집니다.',
     pray:'① 108계단 내려가며 108배 발원 → ② 해수관음상 앞 삼배 → ③ 용굴에서 소원지 작성 → ④ 파도 소리에 관세음보살 염불',
     history:'1376년(고려 우왕) 창건. 임진왜란 때 소실 후 재건. 1970년대 현재 위치로 이전 복원.',
     wish:'소원성취·임신·결혼', prayTime:'일출 시간 기도가 가장 영험. 새벽 파도 소리와 함께 관음 기도.',
@@ -7623,8 +7623,8 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
   // ── 삼재 상세 안내 접힌 블록 ──────────────────────────────────────────
   const samjaeDetailHtml = data.samjae ? `
     <details class="samjae-section">
-      <summary style="cursor:pointer;padding:14px 18px;background:rgba(220,50,50,0.08);border:1.5px solid rgba(220,80,80,0.25);border-radius:14px;font-size:14px;font-weight:700;color:rgba(255,200,200,0.8);list-style:none;display:flex;justify-content:space-between;align-items:center;">
-        <span>⚠️ 삼재(三災) — ${data.samjae?.animalsKo || ''}띠 해당</span>
+      <summary style="cursor:pointer;padding:14px 18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:14px;font-size:14px;font-weight:700;color:rgba(255,200,200,0.8);list-style:none;display:flex;justify-content:space-between;align-items:center;">
+        <span>📅 삼재(三災) 표기 — ${data.samjae?.animalsKo || ''}띠 해당 · 추천 계산에는 쓰지 않습니다</span>
         <span style="font-size:11px;color:rgba(255,255,255,0.3);">클릭해서 보기 ▼</span>
       </summary>
       <div class="saju-dist-section" style="margin-top:4px;border-radius:0 0 14px 14px;">
@@ -7681,13 +7681,20 @@ function renderSajuPage(data, birthInput, matchData, explanation) {
     const nowGrp = data.samjae.groups.find(g => g.some(y => Math.abs(y.year - currentYear2) <= 1)) || [];
     const nowY = nowGrp.find(y => Math.abs(y.year - currentYear2) <= 1);
     const step = nowY?.year < currentYear2 ? "들삼재 마무리 단계" : nowY?.year === currentYear2 ? "눌삼재(삼재 중반)" : "날삼재(삼재 마무리)";
-    return `<div style="background:rgba(220,50,50,0.1);border:1.5px solid rgba(220,80,80,0.4);border-radius:14px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;">
-      <span style="font-size:24px;">⚠️</span>
+    // 겁주지 않는다. 삼재는 널리 쓰이는 표기라 함께 보여주되,
+    // 경고색·경고 아이콘을 쓰지 않고 계산에 넣지 않는다는 사실을 함께 밝힌다.
+    // 이름에 '살(殺)'이 붙는 순간 중립적 판단이 어려워진다 — 책 제12장 5절.
+    return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:14px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;">
+      <span style="font-size:20px;opacity:.7;">📅</span>
       <div>
-        <div style="font-size:14px;font-weight:800;color:#ff8080;margin-bottom:4px;">현재 삼재(三災) 기간</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.6;">
+        <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.9);margin-bottom:4px;">삼재(三災) 표기</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;">
           ${nowGrp.map((y,i)=>`<span>${y.year}년(${['들삼재','눌삼재','날삼재'][i]})</span>`).join(' → ')}<br>
-          현재: <strong style="color:#ff8080;">${step}</strong> — 사주 풀이 하단의 삼재 주의사항을 확인하세요.
+          현재 <strong style="color:rgba(255,255,255,0.9);">${step}</strong>에 해당합니다.
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;margin-top:8px;">
+          널리 쓰이는 표기라 함께 적어 둡니다. <strong style="color:rgba(255,255,255,0.72);">다만 저희는 이 값을 사찰 추천 계산에 넣지 않습니다.</strong>
+          근거를 설명할 수 있는 것만 계산에 쓴다는 원칙 때문입니다. 나쁜 일이 예정되어 있다는 뜻이 아닙니다.
         </div>
       </div>
     </div>`;
@@ -10661,7 +10668,10 @@ function renderDreamPage() {
     var sections = [
       { key: '##오행분석##', icon: '☯️', title: '오행 분석' },
       { key: '##핵심상징##', icon: '🔑', title: '핵심 상징' },
-      { key: '##길흉판단##', icon: '⚖️', title: '길흉 판단' },
+      // 길흉을 판정하지 않는다. 꿈은 미래의 통지문이 아니라 지금 마음의 기록이다.
+      // 지난 형식(##길흉판단##)도 남은 응답이 있을 수 있어 함께 받아 되묻기 자리에 넣는다.
+      { key: '##되묻기##',   icon: '💬', title: '되묻기' },
+      { key: '##길흉판단##', icon: '💬', title: '되묻기' },
       { key: '##조언##',     icon: '💡', title: '조언' },
       { key: '##오행처방##', icon: '🌿', title: '오행 처방' },
     ];
