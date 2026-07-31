@@ -87,17 +87,19 @@ section.doc:first-of-type { border-top: 0; margin-top: 0; }
        apt-get install -y fonts-nanum fonts-unfonts-core                */
 @page {
   size: 148mm 210mm;              /* A5 — 전자책 PDF 로 흔한 판형 */
-  margin: 20mm 17mm 23mm;         /* 아래를 넉넉히 — 쪽번호가 앉을 자리 */
+  margin: 27mm 23mm 31mm;         /* 아래를 넉넉히 — 쪽번호가 앉을 자리 */
 }
 @media print {
-  html { font-size: 10.4pt; }
+  html { font-size: 10pt; }
   body { max-width: none; margin: 0; padding: 0;
          font-family: "NanumMyeongjo", "Nanum Myeongjo", "나눔명조",
                       "UnBatang", "Baekmuk Batang", "AppleMyungjo",
                       "Batang", "바탕", serif;
          font-weight: 400;
-         line-height: 1.82; text-align: justify;
-         hyphens: none; color: #111; background: #fff; }
+         line-height: 1.98; text-align: justify;
+         hyphens: none; color: #231f1a; }   /* 순검정은 인쇄물의 색이다 */
+  /* 배경은 칠하지 않는다. 화면용은 PDF 단계에서 종이를 밑에 까는데,
+     여기서 흰색을 칠하면 그 종이를 정확히 판면 크기로 덮어 버린다. */
 
   /* 화면에서는 낱말이 잘리지 않게 keep-all 을 쓰지만, 종이는 반대다.
      좁은 A5 단에서 낱말을 통째로 넘기면 앞줄에 구멍이 뚫린다.
@@ -126,10 +128,16 @@ section.doc:first-of-type { border-top: 0; margin-top: 0; }
                 padding-top: 0; }
   section.doc:first-of-type { break-before: avoid; }
 
-  h1 { font-size: 1.55rem; font-weight: 400; letter-spacing: .01em;
-       line-height: 1.45; text-align: left; border: 0;
-       margin: 0 0 2.4em; padding: 22mm 0 .7em;
-       border-bottom: .6pt solid #222; }
+  /* 장 도비라 — 제목 위에 장식을 놓고 한 뼘 더 내려 앉힌다.
+     넘길 때마다 '새 장이 시작한다'가 눈에 먼저 들어와야 한다. */
+  section.doc > h1:first-child::before {
+    content: "❖"; display: block; text-align: center;
+    font-size: .82rem; letter-spacing: .9em; color: #9a8f7d;
+    margin: 0 0 9mm; font-weight: 400; }
+  h1 { font-size: 1.5rem; font-weight: 400; letter-spacing: .01em;
+       line-height: 1.5; text-align: left; border: 0;
+       margin: 0 0 2.6em; padding: 20mm 0 .7em;
+       border-bottom: .6pt solid #4a423a; }
   h2 { font-size: 1.1rem; font-weight: 700; letter-spacing: .01em;
        margin: 2.4em 0 .9em; border: 0; break-after: avoid;
        text-align: left; }

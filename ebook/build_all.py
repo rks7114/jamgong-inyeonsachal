@@ -66,6 +66,14 @@ def main() -> None:
             ok &= run([str(EB / "build_pdf.py"), *extra,
                        "-o", str(DIST / f"{STEM}{sfx}.pdf")])
 
+    # 한국판만 화면용을 하나 더 굽는다. 종이결과 책등 그늘이 들어간 판본이다.
+    # 태블릿·PC 로 읽는 분에게는 이쪽이 낫고, 뽑아 보는 분에게는 기본판이 낫다.
+    # 369쪽에 잉크를 깔면 잉크값이 배로 들고 흑백 프린터에서는 회색 판이 나온다.
+    if not a.skip_pdf:
+        print("\n── 한국판 화면용 (종이결)")
+        ok &= run([str(EB / "build_pdf.py"), "--paper",
+                   "-o", str(DIST / f"{STEM}-화면용.pdf")])
+
     print("\n── 산출물")
     for p in sorted(DIST.glob(f"{STEM}*")):
         print(f"  {p.stat().st_size:>10,}  {p.name}")

@@ -49,8 +49,11 @@ def find_browser() -> Path:
     )
 
 
+PAPER = False      # 화면용 — 종이결과 책등 그늘을 깐다
 FRONT_MATTER = 2   # 표지 · 속표지 — 쪽번호를 붙이지 않는 앞부분
 PAGE_W_MM, PAGE_H_MM = 148, 210     # A5
+MM = 72.0 / 25.4                    # mm → pt
+RUNNING_HEAD = "JAMGONG INYEONSACHAL"
 
 
 def cover_page(tmp: Path) -> Path | None:
@@ -116,6 +119,26 @@ def finish(path: Path) -> dict[int, int]:
 
     writer = PdfWriter(clone_from=str(path))
 
+    # 화면용이면 종이를 깐다. 쪽마다 그림을 복사하면 369쪽에서 파일이
+    # 수십 MB 로 부푸니, 그림은 **한 벌만** 넣고 쪽마다 그것을 가리킨다.
+    papers = {}
+    if PAPER:
+        from pypdf.generic import NumberObject, StreamObject
+        sys.path.insert(0, str(ROOT / "ebook"))
+        from make_authornote import paper_texture  # noqa: E402
+        for side in ("left", "right"):
+            jpg = paper_texture(side)
+            im = StreamObject()
+            im[NameObject("/Type")] = NameObject("/XObject")
+            im[NameObject("/Subtype")] = NameObject("/Image")
+            im[NameObject("/Width")] = NumberObject(int(PAGE_W_MM / 25.4 * 220))
+            im[NameObject("/Height")] = NumberObject(int(PAGE_H_MM / 25.4 * 220))
+            im[NameObject("/ColorSpace")] = NameObject("/DeviceRGB")
+            im[NameObject("/BitsPerComponent")] = NumberObject(8)
+            im[NameObject("/Filter")] = NameObject("/DCTDecode")
+            im._data = jpg
+            papers[side] = writer._add_object(im)
+
     with tempfile.TemporaryDirectory() as td:
         cov = cover_page(Path(td))
         if cov:
@@ -161,7 +184,18 @@ def finish(path: Path) -> dict[int, int]:
         ref = writer._add_object(st)
 
         # 앞 내용이 그래픽 상태를 되돌려 놓지 않는 경우가 있어 q…Q로 감싼다
-        pre = DecodedStreamObject(); pre.set_data(b"q\n")
+        draw = "q\n"
+        if papers:
+            side = "left" if i % 2 == 0 else "right"
+            xo = res.get("/XObject")
+            if xo is None:
+                xo = DictionaryObject()
+                res[NameObject("/XObject")] = xo
+            else:
+                xo = xo.get_object()
+            xo[NameObject("/JMPaper")] = papers[side]
+            draw = f"q {w:.2f} 0 0 {h:.2f} 0 0 cm /JMPaper Do Q\nq\n"
+        pre = DecodedStreamObject(); pre.set_data(draw.encode("ascii"))
         post = DecodedStreamObject(); post.set_data(b"Q\n")
         cur = page.get(NameObject("/Contents"))
         old = list(cur) if isinstance(cur.get_object(), ArrayObject) else [cur]
@@ -173,6 +207,8 @@ def finish(path: Path) -> dict[int, int]:
     # 쪽수는 이 값으로 채운다.
     titles, found = chapter_titles(), 0
     folios: dict[int, int] = {}
+    chapter_pages: set[int] = set()
+    cursor_start = FRONT_MATTER
     if titles:
         texts = []
         for p in writer.pages:
@@ -188,6 +224,7 @@ def finish(path: Path) -> dict[int, int]:
         for j in range(FRONT_MATTER, min(n, FRONT_MATTER + 6)):
             if sum(1 for k in keys if k and k in texts[j]) >= 5:
                 cursor = j + 1
+        cursor_start = cursor
 
         for idx, t in enumerate(titles, 1):
             key = _norm(t)[:14]
@@ -195,8 +232,34 @@ def finish(path: Path) -> dict[int, int]:
                 if key and key in texts[j]:
                     writer.add_outline_item(t, j)
                     folios[idx] = j - FRONT_MATTER + 1
+                    chapter_pages.add(j)
                     cursor, found = j + 1, found + 1
                     break
+
+    # 머리말 — 쪽 위에 책 이름. 장이 시작하는 쪽과 앞부분(표지·속표지·목차)에는
+    # 넣지 않는다. 도비라에 머리말이 겹치면 답답하고, 관례에도 어긋난다.
+    heads = 0
+    body_from = max(cursor_start, FRONT_MATTER)
+    for i, page in enumerate(writer.pages):
+        if i < body_from or i in chapter_pages:
+            continue
+        box = page.mediabox
+        pw2, ph2 = float(box.width), float(box.height)
+        res = page[NameObject("/Resources")].get_object()
+        fonts = res.get("/Font").get_object()
+        fonts[NameObject("/JMHead")] = font_ref
+        size, track = 7.0, 2.6
+        width = sum(0.722 if c != " " else 0.25 for c in RUNNING_HEAD) * size \
+            + track * (len(RUNNING_HEAD) - 1)
+        ops = (f"q BT /JMHead {size} Tf .55 .50 .43 rg {track} Tc "
+               f"1 0 0 1 {pw2/2 - width/2:.2f} {ph2 - 15*MM:.2f} Tm "
+               f"({RUNNING_HEAD}) Tj ET Q\n"
+               f"q .78 .74 .66 RG .3 w {pw2/2 - 18*MM:.2f} {ph2 - 17.6*MM:.2f} m "
+               f"{pw2/2 + 18*MM:.2f} {ph2 - 17.6*MM:.2f} l S Q\n")
+        st = DecodedStreamObject(); st.set_data(ops.encode("ascii"))
+        page[NameObject("/Contents")] = ArrayObject(
+            [*page[NameObject("/Contents")], writer._add_object(st)])
+        heads += 1
 
     writer.add_metadata({
         "/Title": f"{TITLE} — {SUBTITLE}",
@@ -205,7 +268,8 @@ def finish(path: Path) -> dict[int, int]:
     })
     with open(path, "wb") as f:
         writer.write(f)
-    print(f"  · 쪽번호 {n - FRONT_MATTER}개 · 책갈피 {found}/{len(titles)}")
+    print(f"  · 쪽번호 {n - FRONT_MATTER}개 · 책갈피 {found}/{len(titles)}"
+          f" · 머리말 {heads}쪽")
     return folios
 
 
@@ -286,8 +350,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="HTML → PDF")
     ap.add_argument("--no-cta", action="store_true", help="해외판 (서비스 링크 없음)")
     ap.add_argument("--preview", action="store_true", help="미리보기판")
+    ap.add_argument("--paper", action="store_true",
+                    help="화면용 — 종이결과 책등 그늘을 깐다 (인쇄에는 권하지 않음)")
     ap.add_argument("-o", "--out", type=Path)
     a = ap.parse_args()
+    globals()["PAPER"] = a.paper
 
     stem = "소문을끄고데이터를켜다"
     if a.preview:
