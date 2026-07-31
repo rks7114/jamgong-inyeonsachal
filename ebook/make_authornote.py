@@ -40,6 +40,13 @@ from build_pdf import find_browser  # noqa: E402
 SRC = ROOT / "ebook" / "appendix" / "부록G-저자소개와판권.md"
 RUNNING_HEAD = "JAMGONG INYEONSACHAL"
 
+COLOR = False       # 컬러판 — 표지의 색을 조판에 옮긴다
+# 표지에서 뽑은 색. 새로 고르지 않고 표지에서 가져오는 이유는 하나다.
+# 책은 표지와 속이 같은 얼굴이어야 한다.
+DEEP  = "#123329"   # 표지 바탕의 짙은 초록
+GOLD  = "#B08D3F"   # 표제 금박
+GOLD2 = "#C9A75C"   # 옅은 금 — 괘선·장식
+
 PAGE_W, PAGE_H = 148.0, 210.0          # A5 (mm)
 MM = 72.0 / 25.4                        # mm → pt
 
@@ -103,6 +110,17 @@ hr::after { content: "· · ·"; letter-spacing: .55em; color: #9a8f7d; }
 p, li { orphans: 2; widows: 2; }
 """
 
+COLOR_CSS = f"""
+.opener .orn {{ color: {GOLD}; }}
+.opener h1 {{ color: {DEEP}; }}
+.opener .rule {{ border-top-color: {GOLD}; width: 34mm; }}
+.lead::first-letter {{ color: {GOLD}; }}
+strong {{ color: {DEEP}; }}
+blockquote {{ border-left-color: {GOLD2}; }}
+hr::after {{ color: {GOLD2}; }}
+.sign .n {{ color: {DEEP}; }}
+"""
+
 
 def extract() -> str:
     lines = SRC.read_text(encoding="utf-8").splitlines()
@@ -134,7 +152,7 @@ def build_html(md: str) -> str:
                 + f'<div class="n">{sign_md[-1]}</div></div>')
 
     return f"""<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"/>
-<title>저자 한마디 — {TITLE}</title><style>{CSS}</style></head><body>
+<title>저자 한마디 — {TITLE}</title><style>{CSS}{COLOR_CSS if COLOR else ""}</style></head><body>
 <div class="opener">
   <div class="orn">❖</div>
   <h1>저자 한마디<br/>소문을 끄고, 데이터를 켜다</h1>
@@ -268,10 +286,12 @@ def stamp(pdf: Path) -> int:
             size, track = 7.0, 2.6
             width = sum(0.722 if c != " " else 0.25 for c in RUNNING_HEAD) * size \
                 + track * (len(RUNNING_HEAD) - 1)
-            ops.append(f"q BT /JMHead {size} Tf .55 .50 .43 rg {track} Tc "
+            hd = ".69 .55 .25" if COLOR else ".55 .50 .43"
+            ops.append(f"q BT /JMHead {size} Tf {hd} rg {track} Tc "
                        f"1 0 0 1 {pw/2 - width/2:.2f} {ph - 15*MM:.2f} Tm "
                        f"({RUNNING_HEAD}) Tj ET Q")
-            ops.append(f"q .78 .74 .66 RG .3 w "
+            rl = ".79 .66 .36" if COLOR else ".78 .74 .66"
+            ops.append(f"q {rl} RG .3 w "
                        f"{pw/2 - 18*MM:.2f} {ph - 17.6*MM:.2f} m "
                        f"{pw/2 + 18*MM:.2f} {ph - 17.6*MM:.2f} l S Q")
 
@@ -306,7 +326,10 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="'저자 한마디' 낱장 PDF")
     ap.add_argument("-o", "--out", type=Path,
                     default=ROOT / "ebook" / "dist" / "저자한마디.pdf")
+    ap.add_argument("--color", action="store_true",
+                    help="컬러판 — 표지의 초록·금색을 조판에 옮긴다")
     a = ap.parse_args()
+    globals()["COLOR"] = a.color
     a.out.parent.mkdir(parents=True, exist_ok=True)
 
     html = build_html(extract())
