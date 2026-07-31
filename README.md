@@ -35,7 +35,7 @@ python ebook/build_html.py     # → ebook/dist/*.html (브라우저로 바로 �
 ```
 
 외부 의존성(pandoc·calibre) 없이 표준 라이브러리만으로 EPUB 3을 생성합니다.
-표지는 `ebook/cover.png`가 있으면 그것을 쓰고, 없으면 코드로 그린 SVG로 돌아갑니다.
+표지는 `ebook/cover.jpg`(또는 `.png`)가 있으면 그것을 쓰고, 없으면 코드로 그린 SVG로 돌아갑니다.
 디자이너가 만든 표지를 넣을 때 빌더를 고칠 필요가 없고, 규격(2560px·2:3)은 빌드가 검사해 알려줍니다.
 
 ### 집필 원칙
