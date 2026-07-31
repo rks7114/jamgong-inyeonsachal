@@ -3,7 +3,7 @@
 생년월일시 사주 오행(木火土金水) 분석으로 인연이 닿는 사찰을 추천하는 서비스 —
 그리고 그 원리를 계산 규칙까지 전부 공개한 **전자책**과 **자동화 시스템**.
 
-**웹 서비스** · [jamgong-inyeonsachal.vercel.app](https://jamgong-inyeonsachal.vercel.app)
+**웹 서비스** · [www.jamgong.kr](https://www.jamgong.kr)
 잼공스토리 브랜드 계열, 잼공 오라클과는 독립 운영.
 
 ---

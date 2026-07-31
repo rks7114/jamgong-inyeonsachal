@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CHAPTERS_DIR = ROOT / "ebook" / "chapters"
 PRODUCT_MAP = ROOT / "funnel" / "ohang_product_map.json"
 
-BASE_URL = "https://jamgong-inyeonsachal.vercel.app"
+BASE_URL = "https://www.jamgong.kr"
 
 CTA_START = "<!-- CTA:AUTO-INSERT-START -->"
 CTA_END = "<!-- CTA:AUTO-INSERT-END -->"

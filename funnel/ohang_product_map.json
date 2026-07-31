@@ -2,7 +2,7 @@
   "_meta": {
     "description": "오행(木火土金水) 균형 상태 → 잼공몰 맞춤 기도용품 큐레이션 매핑. 책 속 '오행 균형 및 개운법' 내용을 잼공몰 상품으로 직결하기 위한 근거 테이블.",
     "philosophy": "주술이 아니라 오행 상생/상극 논리에 근거한 매칭. '부족한 오행은 보(補)하고, 과한 오행은 설기(泄)한다'는 원칙.",
-    "base_url": "https://jamgong-inyeonsachal.vercel.app",
+    "base_url": "https://www.jamgong.kr",
     "mall_path": "/mall",
     "utm_template": "?utm_source=ebook&utm_medium=product_cta&utm_campaign=ohang_curation&utm_content={element}",
     "version": "0.1.0",

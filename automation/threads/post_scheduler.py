@@ -75,12 +75,14 @@ def build_post(cfg: dict, category: str) -> str:
     template = random.choice(cat["templates"])
     element = random.choice(list(ELEMENTS))
     cta = cfg["_meta"]["cta_url"]
+    cta_book = cfg["_meta"].get("cta_url_book", cta)
     tags = " ".join(random.sample(cfg["_meta"]["hashtags_pool"], k=3))
 
     text = (
         template.replace("{element}", element)
         .replace("{element_kw}", ELEMENTS[element])
         .replace("{temple_example}", random.choice(TEMPLE_EXAMPLES))
+        .replace("{cta_book}", cta_book)
         .replace("{cta}", cta)
     )
     text = f"{text}\n\n{tags}"

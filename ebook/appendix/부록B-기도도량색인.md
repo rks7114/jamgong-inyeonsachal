@@ -30,7 +30,7 @@
 
 **웹 서비스에서 조회한다.** 이것이 유일하게 정직한 방법이다.
 
-> **jamgong-inyeonsachal.vercel.app**
+> **www.jamgong.kr**
 
 거기서는
 
