@@ -237,9 +237,10 @@ _CHIP_ROWS = [  # 5x5 관계행렬 모티프 (행마다 한 칸씩 회전하는 
 def cover_svg() -> str:
     """
     표지 레이아웃 (1200x1800, 2:3)
-      상단  제호 블록      300 ~  940
-      중단  5x5 관계행렬    962 ~ 1514
-      하단  서지 블록      1590 ~ 1732   ← 저자·발행을 좌측 축에 세로로 묶음
+      상단  제호 블록      134 ~  598
+      중단  5x5 관계행렬    642 ~ 1496   ← 판면 폭(150~1050)을 꽉 채운다
+      하단  서지 블록      1556 ~ 1690   ← 저자·발행을 좌측 축에 세로로 묶음
+      위아래 여백을 100px 안팎으로 맞춰 서지가 밑단에 몰리지 않게 한다.
             구분선 폭(308)을 저자명 폭에 맞춰 블록으로 묶는다
     모든 요소가 x=150 좌측 축을 공유한다.
     """
@@ -247,7 +248,8 @@ def cover_svg() -> str:
     MARGIN = 150
 
     # 5x5 칩 — 정사각 격자를 하나의 오브제로 좌측 정렬
-    size, gap, gx0, gy0 = 100, 13, MARGIN, 962
+    # 칸 크기는 판면 폭에 맞춰 잡는다: 5칸 + 4틈 = 854 (판면 900의 95%)
+    size, gap, gx0, gy0 = 150, 26, MARGIN, 642
     chips = []
     for r, row in enumerate(_CHIP_ROWS):
         for c, (col, op) in enumerate(row):
@@ -275,25 +277,25 @@ def cover_svg() -> str:
   <g stroke="#EDEDEA" stroke-opacity=".05" stroke-width="1">{''.join(grid)}</g>
   <rect width="{W}" height="{H}" fill="url(#ember)"/>
 
-  <text x="{MARGIN}" y="300" fill="{_EMBER}" font-size="34" letter-spacing="10"
+  <text x="{MARGIN}" y="134" fill="{_EMBER}" font-size="32" letter-spacing="10"
         font-family="sans-serif">JAMGONG INYEONSACHAL</text>
-  <text x="{MARGIN}" y="520" fill="{_EMBER}" font-size="132" font-weight="bold"
+  <text x="{MARGIN}" y="282" fill="{_EMBER}" font-size="120" font-weight="bold"
         font-family="sans-serif">부적을 태우고</text>
-  <text x="{MARGIN}" y="680" fill="{_MOK}" font-size="132" font-weight="bold"
+  <text x="{MARGIN}" y="422" fill="{_MOK}" font-size="120" font-weight="bold"
         font-family="sans-serif">데이터를 켜다</text>
-  <line x1="{MARGIN}" y1="780" x2="{W-MARGIN}" y2="780" stroke="#2A383E" stroke-width="2"/>
-  <text x="{MARGIN}" y="862" fill="#94A3A9" font-size="44"
+  <line x1="{MARGIN}" y1="492" x2="{W-MARGIN}" y2="492" stroke="#2A383E" stroke-width="2"/>
+  <text x="{MARGIN}" y="550" fill="#94A3A9" font-size="42"
         font-family="sans-serif">사주 오행으로 찾는 나의 인연 도량</text>
-  <text x="{MARGIN}" y="932" fill="#6B7B82" font-size="34"
+  <text x="{MARGIN}" y="598" fill="#6B7B82" font-size="31"
         font-family="sans-serif">생년월일시 오행 분석 · 전국 사찰 매칭</text>
 
   {''.join(chips)}
 
-  <line x1="{MARGIN}" y1="{grid_bottom + 76}" x2="{MARGIN + 308}" y2="{grid_bottom + 76}"
+  <line x1="{MARGIN}" y1="{grid_bottom + 60}" x2="{MARGIN + 308}" y2="{grid_bottom + 60}"
         stroke="{_EMBER}" stroke-width="3"/>
-  <text x="{MARGIN}" y="{grid_bottom + 154}" fill="#EDEDEA" font-size="56" font-weight="bold"
+  <text x="{MARGIN}" y="{grid_bottom + 136}" fill="#EDEDEA" font-size="56" font-weight="bold"
         font-family="sans-serif">{AUTHOR}</text>
-  <text x="{MARGIN}" y="{grid_bottom + 218}" fill="#7C8B92" font-size="30"
+  <text x="{MARGIN}" y="{grid_bottom + 194}" fill="#7C8B92" font-size="30"
         font-family="sans-serif">{PUBLISHER}</text>
 </svg>"""
 
