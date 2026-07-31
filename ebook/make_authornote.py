@@ -144,59 +144,69 @@ def build_html(md: str) -> str:
 </body></html>"""
 
 
-def paper_texture(gutter: str, dpi: int = 200) -> bytes:
+def paper_texture(gutter: str, dpi: int = 220) -> bytes:
     """종이 한 장을 그린다. JPEG 바이트로 돌려준다.
 
-    진짜 책을 복사하면 세 가지가 같이 딸려 온다.
-      ① 종이의 결   — 고른 색이 아니라 아주 미세한 얼룩이 있다
-      ② 책등 그늘   — 안쪽으로 갈수록 어두워진다. 펼친 책은 평평하지 않다
-      ③ 바깥 그늘   — 책배 쪽 가장자리가 아주 조금 어둡다
-    이 셋이 없으면 아무리 잘 짜도 '화면에 띄운 글'로 보인다.
+    진짜 책을 복사하면 셋이 같이 딸려 온다.
+      ① 종이의 결   고른 색이 아니라 아주 미세한 얼룩이 있다
+      ② 책등 그늘   안쪽으로 갈수록 어두워진다 — 펼친 책은 평평하지 않다
+      ③ 바깥 그늘   책배 쪽 가장자리가 아주 조금 어둡다
+
+    다만 **정도가 전부**다. 결이 굵고 그늘이 진하면 갱지나 복사지가 된다.
+    고급 내지는 결이 거의 안 보이고, 그늘이 넓고 얕게 번진다. 그래서
+
+      · 결은 잔 알갱이(고주파)를 거의 없애고 넓은 얼룩(저주파)만 남긴다
+      · 색은 누런 미색이 아니라 따뜻한 흰색에 가깝다
+      · 책등 그늘은 좁고 진하게가 아니라 **넓고 얕게** 깐다
+      · JPEG 품질을 높여 뭉개짐이 결처럼 보이지 않게 한다
     """
     from PIL import Image, ImageFilter
-    import random
 
     w = int(PAGE_W / 25.4 * dpi)
     h = int(PAGE_H / 25.4 * dpi)
-    base = (250, 246, 237)
+    base = (253, 250, 245)          # 따뜻한 흰색 — 누렇게 가면 싸구려가 된다
 
-    rnd = random.Random(20260811)          # 판마다 같은 종이가 나오도록
-    px = bytearray()
-    for _ in range(w * h):
-        n = rnd.gauss(0, 2.6)
-        px += bytes((max(0, min(255, int(base[0] + n))),
-                     max(0, min(255, int(base[1] + n))),
-                     max(0, min(255, int(base[2] + n * 0.85)))))
-    img = Image.frombytes("RGB", (w, h), bytes(px))
-    img = img.filter(ImageFilter.GaussianBlur(0.6))   # 결이 너무 거칠지 않게
+    # 결 — 저해상도 잡음을 키워 부드러운 얼룩으로 만든다.
+    # 픽셀마다 튀는 잡음은 종이가 아니라 노이즈로 보인다.
+    small = (max(8, w // 22), max(8, h // 22))
+    mottle = (Image.effect_noise(small, 22)
+              .resize((w, h), Image.BICUBIC)
+              .filter(ImageFilter.GaussianBlur(dpi / 90)))
+    grain = Image.effect_noise((w, h), 2.2).filter(
+        ImageFilter.GaussianBlur(0.8))
+    # 둘을 섞어 128을 중심으로 하는 밝기 지도를 만든다
+    micro = Image.blend(mottle, grain, 0.32)
+    micro = micro.point(lambda p: 255 - int((128 - p) * 0.16))   # 진폭을 줄인다
 
-    # 그늘 — 곱하기로 얹는다
-    shade = Image.new("L", (w, h), 255)
-    sp = shade.load()
-    gut_w = int(19 / 25.4 * dpi)            # 책등 그늘 폭 19mm
-    edge_w = int(6 / 25.4 * dpi)            # 책배 그늘 폭 6mm
+    # 그늘 — 세로로 같으므로 한 줄만 만들어 늘린다
+    row = Image.new("L", (w, 1), 255)
+    rp = row.load()
+    gut_w = int(26 / 25.4 * dpi)            # 책등 그늘 26mm — 넓게
+    edge_w = int(11 / 25.4 * dpi)           # 책배 그늘 11mm
     for x in range(w):
         v = 255.0
         d = x if gutter == "left" else (w - 1 - x)
-        if d < gut_w:                        # 안쪽 — 깊고 부드럽게
-            t = 1.0 - d / gut_w
-            v -= 34.0 * (t ** 2.1)
+        if d < gut_w:
+            v -= 15.0 * (1.0 - d / gut_w) ** 2.4      # 얕게
         e = (w - 1 - x) if gutter == "left" else x
-        if e < edge_w:                       # 바깥 — 얕게
-            v -= 9.0 * (1.0 - e / edge_w) ** 1.6
-        for y in range(h):
-            sp[x, y] = int(v)
-    shade = shade.filter(ImageFilter.GaussianBlur(dpi / 60))
+        if e < edge_w:
+            v -= 4.0 * (1.0 - e / edge_w) ** 2.0
+        rp[x, 0] = int(v)
+    shade = row.resize((w, h), Image.BICUBIC) \
+               .filter(ImageFilter.GaussianBlur(dpi / 70))
 
-    # 곱하기 합성 — 종이 결 위에 그늘을 얹는다.
+    # 결과 그늘을 곱해 하나의 밝기 지도로 합친다.
     # composite(a, b, m) = a·m + b·(1−m) 이므로 b를 검정으로 두면 곱하기다.
-    dark = Image.new("L", (w, h), 0)
-    img = Image.merge("RGB", [Image.composite(ch, dark, shade)
-                              for ch in img.split()])
+    dark_l = Image.new("L", (w, h), 0)
+    lum = Image.composite(micro, dark_l, shade)
+
+    flat = Image.new("RGB", (w, h), base)
+    img = Image.merge("RGB", [Image.composite(ch, dark_l, lum)
+                              for ch in flat.split()])
 
     import io
     buf = io.BytesIO()
-    img.save(buf, "JPEG", quality=86, optimize=True)
+    img.save(buf, "JPEG", quality=95, optimize=True, subsampling=0)
     return buf.getvalue()
 
 
