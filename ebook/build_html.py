@@ -21,7 +21,7 @@ import re
 import sys
 from pathlib import Path
 
-from strip_service import strip_service
+from strip_service import strip_service, keep_service
 
 NO_CTA = False
 
@@ -86,8 +86,7 @@ def build(out: Path) -> None:
     toc, body = [], []
     for i, path in enumerate(sources, 1):
         md = path.read_text(encoding="utf-8")
-        if NO_CTA:
-            md = strip_service(md)
+        md = strip_service(md) if NO_CTA else keep_service(md)
         title = first_heading(md, path.stem)
         anchor = slugify(i)
         toc.append(f'<li><a href="#{anchor}">{html.escape(title)}</a></li>')

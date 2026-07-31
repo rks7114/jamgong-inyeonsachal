@@ -19,7 +19,7 @@ import sys
 from html.parser import HTMLParser
 from pathlib import Path
 
-from strip_service import strip_service
+from strip_service import strip_service, keep_service
 
 NO_CTA = False
 
@@ -162,8 +162,7 @@ def build(out: Path) -> None:
     body = []
     for path in sources:
         md = path.read_text(encoding="utf-8")
-        if NO_CTA:
-            md = strip_service(md)
+        md = strip_service(md) if NO_CTA else keep_service(md)
         head.append("  " + first_heading(md, path.stem))
         body.append(to_text(md))
 

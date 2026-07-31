@@ -21,7 +21,7 @@ import struct
 import zipfile
 from pathlib import Path
 
-from strip_service import strip_service
+from strip_service import strip_service, keep_service
 
 NO_CTA = False
 
@@ -557,8 +557,7 @@ img{{max-width:100%;max-height:100vh;object-fit:contain}}</style></head>
 
     for idx, path in enumerate(sources, 1):
         md = path.read_text(encoding="utf-8")
-        if NO_CTA:
-            md = strip_service(md)
+        md = strip_service(md) if NO_CTA else keep_service(md)
         title = first_heading(md, path.stem)
         fid = f"doc{idx:02d}"
         docs.append((fid, f"{fid}.xhtml", title, md_to_xhtml(md, title)))

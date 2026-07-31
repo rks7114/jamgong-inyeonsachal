@@ -16,9 +16,18 @@ strip_service.py — 원고에서 서비스 연결부만 떼어낸다
 실천 상자가 30개 장에 빠짐없이 들어 있고, 서비스 없이 손으로 따라갈 수
 있게 쓰여 있다.
 
-떼는 것
+판 갈래
+  · SERVICE-ONLY  — 서비스가 있는 한국판에만 들어간다
+  · BOOK-ONLY     — 서비스가 없는 판(해외)에만 들어간다
+
+떼는 것 (해외판 = --no-cta)
   · <!-- CTA:AUTO-INSERT-START --> … <!-- CTA:AUTO-INSERT-END -->
   · > 🧭 **서비스에서 바로** … <!-- SITE-NOTE -->
+  · <!-- SERVICE-ONLY-START --> … <!-- SERVICE-ONLY-END -->
+  · <!--SO-->문장<!--/SO-->      ← 문단 안의 한 문장만 뗄 때
+
+떼는 것 (한국판 = 기본)
+  · <!-- BOOK-ONLY-START --> … <!-- BOOK-ONLY-END -->
 
 떼지 않는 것
   · 실천 상자 — 서비스 없이 돌아가는 안내이므로 그대로 둔다
@@ -47,16 +56,32 @@ _SITE_NOTE = re.compile(
     r"\n*^>\s*🧭\s*\*\*서비스에서 바로\*\*.*?<!--\s*SITE-NOTE\s*-->\n*",
     re.S | re.M,
 )
+_SERVICE_ONLY = re.compile(
+    r"\n*<!--\s*SERVICE-ONLY-START\s*-->.*?<!--\s*SERVICE-ONLY-END\s*-->\n*", re.S)
+_SO_INLINE = re.compile(r"<!--\s*SO\s*-->.*?<!--\s*/SO\s*-->", re.S)
+_BOOK_ONLY = re.compile(
+    r"\n*<!--\s*BOOK-ONLY-START\s*-->(.*?)<!--\s*BOOK-ONLY-END\s*-->\n*", re.S)
 
 
 def strip_service(md: str) -> str:
-    """서비스 연결 블록을 떼고, 그 자리에 생긴 구분선 중복을 정리한다."""
+    """해외판 — 서비스 연결부를 떼고 BOOK-ONLY 내용을 살린다."""
     md = _CTA.sub("\n\n", md)
     md = _SITE_NOTE.sub("\n\n", md)
+    md = _SERVICE_ONLY.sub("\n\n", md)
+    md = _SO_INLINE.sub("", md)
+    md = _BOOK_ONLY.sub(lambda m: "\n\n" + m.group(1).strip() + "\n\n", md)
     # 블록이 빠지면서 '---'만 연달아 남는 자리를 정리한다
     md = re.sub(r"\n---\s*\n+---\s*\n", "\n---\n", md)
     md = re.sub(r"\n{3,}", "\n\n", md)
     md = re.sub(r"\n---\s*\n+(\*다음 장 예고)", r"\n---\n\n\1", md)
+    return md.rstrip() + "\n"
+
+
+def keep_service(md: str) -> str:
+    """한국판 — 해외판 전용 문단만 덜어낸다. 나머지는 그대로 둔다."""
+    md = _BOOK_ONLY.sub("\n\n", md)
+    md = re.sub(r"<!--\s*/?SO\s*-->", "", md)
+    md = re.sub(r"\n{3,}", "\n\n", md)
     return md.rstrip() + "\n"
 
 
