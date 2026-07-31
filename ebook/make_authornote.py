@@ -44,7 +44,7 @@ PAGE_W, PAGE_H = 148.0, 210.0          # A5 (mm)
 MM = 72.0 / 25.4                        # mm → pt
 
 CSS = """
-@page { size: 148mm 210mm; margin: 24mm 20mm 26mm; }
+@page { size: 148mm 210mm; margin: 27mm 23mm 31mm; }
 
 html, body {
   -webkit-print-color-adjust: exact; print-color-adjust: exact;
@@ -53,11 +53,11 @@ html, body {
 /* 배경을 칠하지 않는다. 종이는 PDF 단계에서 밑에 깐다 —
    여기서 칠하면 그 단색이 종이결과 책등 그늘을 덮어 버린다. */
 body {
-  color: #1a1714;
+  color: #231f1a;   /* 순검정이 아닌 따뜻한 먹빛 */
   font-family: "NanumMyeongjo", "Nanum Myeongjo", "UnBatang",
                "Batang", serif;
-  font-size: 10.4pt;
-  line-height: 1.85;
+  font-size: 10pt;
+  line-height: 1.98;
   text-align: justify;
   word-break: normal;
   hyphens: none;
@@ -168,26 +168,27 @@ def paper_texture(gutter: str, dpi: int = 220) -> bytes:
 
     # 결 — 저해상도 잡음을 키워 부드러운 얼룩으로 만든다.
     # 픽셀마다 튀는 잡음은 종이가 아니라 노이즈로 보인다.
-    small = (max(8, w // 22), max(8, h // 22))
-    mottle = (Image.effect_noise(small, 22)
+    small = (max(6, w // 40), max(6, h // 40))
+    mottle = (Image.effect_noise(small, 14)
               .resize((w, h), Image.BICUBIC)
-              .filter(ImageFilter.GaussianBlur(dpi / 90)))
-    grain = Image.effect_noise((w, h), 2.2).filter(
-        ImageFilter.GaussianBlur(0.8))
-    # 둘을 섞어 128을 중심으로 하는 밝기 지도를 만든다
-    micro = Image.blend(mottle, grain, 0.32)
-    micro = micro.point(lambda p: 255 - int((128 - p) * 0.16))   # 진폭을 줄인다
+              .filter(ImageFilter.GaussianBlur(dpi / 26)))
+    grain = Image.effect_noise((w, h), 1.6).filter(
+        ImageFilter.GaussianBlur(1.1))
+    # 둘을 섞어 128을 중심으로 하는 밝기 지도를 만든다.
+    # 진폭을 더 줄인다 — 얼룩이 보이면 그것은 고급지가 아니라 헌 종이다.
+    micro = Image.blend(mottle, grain, 0.45)
+    micro = micro.point(lambda p: 255 - int((128 - p) * 0.07))
 
     # 그늘 — 세로로 같으므로 한 줄만 만들어 늘린다
     row = Image.new("L", (w, 1), 255)
     rp = row.load()
-    gut_w = int(26 / 25.4 * dpi)            # 책등 그늘 26mm — 넓게
+    gut_w = int(34 / 25.4 * dpi)            # 책등 그늘 34mm — 아주 넓게
     edge_w = int(11 / 25.4 * dpi)           # 책배 그늘 11mm
     for x in range(w):
         v = 255.0
         d = x if gutter == "left" else (w - 1 - x)
         if d < gut_w:
-            v -= 15.0 * (1.0 - d / gut_w) ** 2.4      # 얕게
+            v -= 19.0 * (1.0 - d / gut_w) ** 2.8      # 넓게 번지되 끝만 살짝
         e = (w - 1 - x) if gutter == "left" else x
         if e < edge_w:
             v -= 4.0 * (1.0 - e / edge_w) ** 2.0
