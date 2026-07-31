@@ -50,8 +50,9 @@ html, body {
   -webkit-print-color-adjust: exact; print-color-adjust: exact;
   margin: 0; padding: 0;
 }
+/* 배경을 칠하지 않는다. 종이는 PDF 단계에서 밑에 깐다 —
+   여기서 칠하면 그 단색이 종이결과 책등 그늘을 덮어 버린다. */
 body {
-  background: #FBF8F1;                 /* 종이색 — 순백은 종이의 색이 아니다 */
   color: #1a1714;
   font-family: "NanumMyeongjo", "Nanum Myeongjo", "UnBatang",
                "Batang", serif;
@@ -143,6 +144,81 @@ def build_html(md: str) -> str:
 </body></html>"""
 
 
+def paper_texture(gutter: str, dpi: int = 200) -> bytes:
+    """종이 한 장을 그린다. JPEG 바이트로 돌려준다.
+
+    진짜 책을 복사하면 세 가지가 같이 딸려 온다.
+      ① 종이의 결   — 고른 색이 아니라 아주 미세한 얼룩이 있다
+      ② 책등 그늘   — 안쪽으로 갈수록 어두워진다. 펼친 책은 평평하지 않다
+      ③ 바깥 그늘   — 책배 쪽 가장자리가 아주 조금 어둡다
+    이 셋이 없으면 아무리 잘 짜도 '화면에 띄운 글'로 보인다.
+    """
+    from PIL import Image, ImageFilter
+    import random
+
+    w = int(PAGE_W / 25.4 * dpi)
+    h = int(PAGE_H / 25.4 * dpi)
+    base = (250, 246, 237)
+
+    rnd = random.Random(20260811)          # 판마다 같은 종이가 나오도록
+    px = bytearray()
+    for _ in range(w * h):
+        n = rnd.gauss(0, 2.6)
+        px += bytes((max(0, min(255, int(base[0] + n))),
+                     max(0, min(255, int(base[1] + n))),
+                     max(0, min(255, int(base[2] + n * 0.85)))))
+    img = Image.frombytes("RGB", (w, h), bytes(px))
+    img = img.filter(ImageFilter.GaussianBlur(0.6))   # 결이 너무 거칠지 않게
+
+    # 그늘 — 곱하기로 얹는다
+    shade = Image.new("L", (w, h), 255)
+    sp = shade.load()
+    gut_w = int(19 / 25.4 * dpi)            # 책등 그늘 폭 19mm
+    edge_w = int(6 / 25.4 * dpi)            # 책배 그늘 폭 6mm
+    for x in range(w):
+        v = 255.0
+        d = x if gutter == "left" else (w - 1 - x)
+        if d < gut_w:                        # 안쪽 — 깊고 부드럽게
+            t = 1.0 - d / gut_w
+            v -= 34.0 * (t ** 2.1)
+        e = (w - 1 - x) if gutter == "left" else x
+        if e < edge_w:                       # 바깥 — 얕게
+            v -= 9.0 * (1.0 - e / edge_w) ** 1.6
+        for y in range(h):
+            sp[x, y] = int(v)
+    shade = shade.filter(ImageFilter.GaussianBlur(dpi / 60))
+
+    # 곱하기 합성 — 종이 결 위에 그늘을 얹는다.
+    # composite(a, b, m) = a·m + b·(1−m) 이므로 b를 검정으로 두면 곱하기다.
+    dark = Image.new("L", (w, h), 0)
+    img = Image.merge("RGB", [Image.composite(ch, dark, shade)
+                              for ch in img.split()])
+
+    import io
+    buf = io.BytesIO()
+    img.save(buf, "JPEG", quality=86, optimize=True)
+    return buf.getvalue()
+
+
+def background_pdf(tmp: Path, gutter: str) -> Path:
+    """종이 한 장짜리 PDF. 본문 밑에 깔린다."""
+    import base64
+    jpg = base64.b64encode(paper_texture(gutter)).decode("ascii")
+    html = tmp / f"paper-{gutter}.html"
+    html.write_text(
+        "<!doctype html><meta charset='utf-8'>"
+        f"<style>@page{{size:{PAGE_W}mm {PAGE_H}mm;margin:0}}"
+        "html,body{margin:0;padding:0}"
+        f"img{{display:block;width:{PAGE_W}mm;height:{PAGE_H}mm}}</style>"
+        f"<img src='data:image/jpeg;base64,{jpg}'>", encoding="utf-8")
+    out = tmp / f"paper-{gutter}.pdf"
+    subprocess.run(
+        [str(find_browser()), "--headless", "--disable-gpu", "--no-sandbox",
+         "--no-pdf-header-footer", f"--print-to-pdf={out}", html.as_uri()],
+        capture_output=True, text=True, timeout=180)
+    return out
+
+
 def stamp(pdf: Path) -> int:
     """머리말과 쪽번호를 찍는다. 종이색도 쪽 전체에 깐다."""
     from pypdf import PdfReader, PdfWriter  # noqa: F401
@@ -192,17 +268,21 @@ def stamp(pdf: Path) -> int:
         st.set_data(("\n".join(ops) + "\n").encode("ascii"))
         ref = w._add_object(st)
 
-        # 종이색은 여기서 깐다. CSS 배경은 판면(본문 상자)까지만 칠해져
-        # 쪽 위아래에 흰 띠가 남는다 — 그러면 종이가 아니라 인쇄물이다.
-        pre = DecodedStreamObject()
-        pre.set_data(
-            f"q .984 .973 .945 rg 0 0 {pw:.2f} {ph:.2f} re f Q\nq\n"
-            .encode("ascii"))
+        pre = DecodedStreamObject(); pre.set_data(b"q\n")
         post = DecodedStreamObject(); post.set_data(b"Q\n")
         cur = page.get(NameObject("/Contents"))
         old = list(cur) if isinstance(cur.get_object(), ArrayObject) else [cur]
         page[NameObject("/Contents")] = ArrayObject(
             [w._add_object(pre), *old, w._add_object(post), ref])
+
+    # 종이를 본문 밑에 깐다. 홀수 쪽은 책등이 왼쪽, 짝수 쪽은 오른쪽이다 —
+    # 펼친 책을 넘길 때 그늘이 좌우로 번갈아 오는 것이 자연스럽다.
+    with tempfile.TemporaryDirectory() as td:
+        papers = {g: PdfReader(str(background_pdf(Path(td), g))).pages[0]
+                  for g in ("left", "right")}
+        for i, page in enumerate(w.pages):
+            page.merge_page(papers["left" if i % 2 == 0 else "right"],
+                            over=False)
 
     w.add_metadata({"/Title": f"저자 한마디 — {TITLE}",
                     "/Author": AUTHOR, "/Subject": SUBTITLE})
