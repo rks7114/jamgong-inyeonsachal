@@ -109,8 +109,13 @@ def check_structure(chs: dict[int, Path]) -> None:
             mism.append(f"제{n}장 예고 '{fore[:24]}' ↔ 실제 '{head[:24]}'")
     check("다음 장 예고 제목", not mism, str(mism))
 
-    old = [p.name for p in docs + [ROOT / "README.md"]
-           if "부적을 태우고" in p.read_text(encoding="utf-8")]
+    # 원고만 보면 놓친다. 옛 제목은 build_epub.py 의 예비 표지(SVG)에
+    # 숨어 있었다 — 표지 이미지가 없을 때만 그려지는 자리라 눈에 띄지 않는다.
+    # 제목을 바꿀 때 정작 제목을 그리는 코드를 안 본 셈이다.
+    scripts = sorted((ROOT / "ebook").glob("*.py"))
+    old = [p.name for p in docs + [ROOT / "README.md"] + scripts
+           if p.name != "verify.py"
+           and "부적을 태우고" in p.read_text(encoding="utf-8")]
     check("옛 제목 잔존 없음", not old, str(old))
 
 

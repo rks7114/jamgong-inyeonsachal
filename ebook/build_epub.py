@@ -446,7 +446,7 @@ def cover_svg() -> str:
         font-family="sans-serif">JAMGONG INYEONSACHAL</text>
 
   <text x="{MARGIN}" y="336" fill="{_ASH}" font-size="116" font-weight="bold"
-        font-family="sans-serif" letter-spacing="-2">부적을 태우고</text>
+        font-family="sans-serif" letter-spacing="-2">소문을 끄고</text>
   <text x="{MARGIN}" y="470" fill="{_LIT}" font-size="116" font-weight="bold"
         font-family="sans-serif" letter-spacing="-2">데이터를 켜다</text>
 
