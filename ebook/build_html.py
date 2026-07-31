@@ -25,6 +25,7 @@ from strip_service import strip_service, keep_service
 
 NO_CTA = False
 PREVIEW = False
+COLOR = False
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_epub import (  # noqa: E402
@@ -208,6 +209,59 @@ section.doc:first-of-type { border-top: 0; margin-top: 0; }
   /* 한 줄만 남기고 넘어가는 것을 막는다 */
   p, li { orphans: 2; widows: 2; }
 }
+/* ── 색 (화면용) ──────────────────────────────────────────────
+   표지에서 가져온 색이다. 새로 고르지 않는 이유는 하나 —
+   책은 표지와 속이 같은 얼굴이어야 한다.
+
+   본문 글자는 먹빛 그대로 둔다. 긴 글에 색을 입히면 읽기가 나빠진다.
+   색은 '여기가 어디인가'를 알려 주는 자리에만 쓴다.
+
+   초록은 표지 바탕색(#123329)을 그대로 쓰지 않고 밝혔다. 바탕색을
+   종이 위에 글자로 얹으면 그냥 검정으로 읽힌다 — 값이 아니라
+   자리를 봐야 한다.                                              */
+@media print {
+  .clr h1 { color: #1C5E49; }
+  .clr h2, .clr h3 { color: #1C5E49; }
+  /* 강조는 초록으로 하되 아주 깊게. 중간 초록으로 두면 볼드가 773군데라
+     쪽마다 링크가 널린 것처럼 보인다. 색은 알아채기 직전까지만 쓴다. */
+  .clr strong { color: #1B3A31; }
+
+  /* 장 도비라 — 마름모를 키워 금빛으로 세우고, 제목 밑은 홑줄이 아니라
+     겹줄로 받친다. 양장본 속표지에서 쓰는 괘선이다. 색만 바꾸는 것과
+     선을 바꾸는 것은 다르다 — 눈에 먼저 들어오는 쪽은 선이다. */
+  .clr section.doc > h1:first-child::before {
+    content: "❖"; color: #A8791F; font-size: .96rem;
+    letter-spacing: 1.1em; margin-bottom: 10mm; }
+  .clr h1 { border-bottom: 3pt double #A8791F; }
+
+  /* 제사(題辭) — 37장이 전부 인용문 한 줄로 열린다. 원래는 본문 인용과
+     같은 모양이라 그냥 인용으로 읽혔다. 왼쪽 괘선을 떼고 가운데로 모아
+     따로 세운다. 두문자(드롭캡)를 쓰지 않은 이유도 이것이다 —
+     장의 첫 글자가 인용문의 글자라 내려 앉힐 자리가 없다. */
+  .clr section.doc > h1 + blockquote {
+    border-left: 0; color: #4A5C52;
+    margin: .2em 8mm 0; padding: 0;
+    font-size: .96em; line-height: 1.78; }
+  /* 가운데로 모으는 글은 어절 중간에서 끊기면 안 된다. 본문은 줄을 꽉
+     채워야 하니 그냥 두지만, 여기는 keep-all 로 어절을 지킨다. */
+  .clr section.doc > h1 + blockquote p {
+    text-align: center; word-break: keep-all; text-wrap: balance; }
+
+  .clr blockquote { border-left-color: #C9A75C; }
+  .clr hr::after { color: #C9A75C; }
+  .clr nav.toc h2 { color: #1C5E49; }
+  .clr nav.toc .d { border-bottom-color: #C7B48A; }
+  .clr .titlepage .t { color: #1C5E49; }
+  .clr .titlepage .s, .clr .titlepage .pub { color: #6B5E44; }
+
+  /* 회색 바탕은 크림색 종이 위에서 차갑게 뜬다. 종이 쪽으로 당긴다. */
+  .clr pre { background: #F4F0E6; border-left-color: #C9A75C; }
+  .clr code { color: #17513E; }
+
+  .clr table { border-top-color: #1C5E49; border-bottom-color: #1C5E49; }
+  .clr th { color: #1C5E49; border-bottom-color: #A8791F; }
+}
+
 /* 화면에는 쪽수도 점선도 뜻이 없다 — 스크롤에는 쪽이 없다. */
 @media screen {
   nav.toc { break-after: auto; }
@@ -266,7 +320,7 @@ def build(out: Path) -> None:
 <meta name="author" content="{html.escape(AUTHOR)}"/>
 <style>{CSS}{EXTRA_CSS}</style>
 </head>
-<body id="top">
+<body id="top" class="{'clr' if COLOR else ''}">
 <img class="cover" src="{cover_uri}" alt="{html.escape(TITLE)} 표지"/>
 <div class="titlepage">
   <div class="t">{html.escape(TITLE)}</div>
@@ -299,9 +353,12 @@ def main() -> None:
                     help="서비스 연결부(CTA·서비스에서 바로) 제거 — 해외판용")
     ap.add_argument("--preview", action="store_true",
                     help="미리보기판 — 제1장까지만")
+    ap.add_argument("--color", action="store_true",
+                    help="화면용 — 표지의 초록·금색을 조판에 얹는다")
     args = ap.parse_args()
     globals()["NO_CTA"] = args.no_cta
     globals()["PREVIEW"] = args.preview
+    globals()["COLOR"] = args.color
     build(args.out)
 
 

@@ -55,6 +55,15 @@ PAGE_W_MM, PAGE_H_MM = 148, 210     # A5
 MM = 72.0 / 25.4                    # mm → pt
 RUNNING_HEAD = "JAMGONG INYEONSACHAL"
 
+# 쪽번호·머리말·괘선의 색. 인쇄용은 먹빛 회색 하나로 간다 — 별색 한 도를
+# 더 쓰면 인쇄비가 붙고, 종이책에서 색 머리말은 오히려 산만하다.
+# 화면용은 잉크값이 없으므로 표지의 초록·금색을 그대로 얹는다.
+INK_MONO = ("0.25 0.25 0.25", ".55 .50 .43", ".78 .74 .66")
+INK_CLR = ("0.11 0.37 0.29",   # #1C5E49 초록 — 쪽번호
+           ".66 .47 .12",      # #A8791F 금  — 머리말
+           ".79 .65 .36")      # #C9A75C 옅은 금 — 괘선
+FOLIO_RGB, HEAD_RGB, RULE_RGB = INK_MONO
+
 
 def cover_page(tmp: Path) -> Path | None:
     """표지만 담은 한 쪽짜리 PDF를 만든다.
@@ -177,7 +186,7 @@ def finish(path: Path) -> dict[int, int]:
             fonts = fonts.get_object()
         fonts[NameObject("/JMFolio")] = font_ref
 
-        ops = (f"q BT /JMFolio {SIZE} Tf 0.25 0.25 0.25 rg "
+        ops = (f"q BT /JMFolio {SIZE} Tf {FOLIO_RGB} rg "
                f"1 0 0 1 {x:.2f} {y:.2f} Tm ({label}) Tj ET Q\n")
         st = DecodedStreamObject()
         st.set_data(ops.encode("ascii"))
@@ -251,10 +260,10 @@ def finish(path: Path) -> dict[int, int]:
         size, track = 7.0, 2.6
         width = sum(0.722 if c != " " else 0.25 for c in RUNNING_HEAD) * size \
             + track * (len(RUNNING_HEAD) - 1)
-        ops = (f"q BT /JMHead {size} Tf .55 .50 .43 rg {track} Tc "
+        ops = (f"q BT /JMHead {size} Tf {HEAD_RGB} rg {track} Tc "
                f"1 0 0 1 {pw2/2 - width/2:.2f} {ph2 - 15*MM:.2f} Tm "
                f"({RUNNING_HEAD}) Tj ET Q\n"
-               f"q .78 .74 .66 RG .3 w {pw2/2 - 18*MM:.2f} {ph2 - 17.6*MM:.2f} m "
+               f"q {RULE_RGB} RG .3 w {pw2/2 - 18*MM:.2f} {ph2 - 17.6*MM:.2f} m "
                f"{pw2/2 + 18*MM:.2f} {ph2 - 17.6*MM:.2f} l S Q\n")
         st = DecodedStreamObject(); st.set_data(ops.encode("ascii"))
         page[NameObject("/Contents")] = ArrayObject(
@@ -355,12 +364,18 @@ def main() -> None:
     ap.add_argument("-o", "--out", type=Path)
     a = ap.parse_args()
     globals()["PAPER"] = a.paper
+    if a.paper:
+        (globals()["FOLIO_RGB"], globals()["HEAD_RGB"],
+         globals()["RULE_RGB"]) = INK_CLR
 
     stem = "소문을끄고데이터를켜다"
     if a.preview:
         src, name = DIST / f"{stem}-미리보기.html", f"{stem}-미리보기.pdf"
     elif a.no_cta:
         src, name = DIST / f"{stem}-해외판.html", f"{stem}-해외판.pdf"
+    elif a.paper:
+        # 화면용은 색을 얹은 HTML에서 굽는다 (build_html.py --color).
+        src, name = DIST / f"{stem}-화면용.html", f"{stem}-화면용.pdf"
     else:
         src, name = DIST / f"{stem}.html", f"{stem}.pdf"
 
