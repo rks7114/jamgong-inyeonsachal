@@ -59,6 +59,18 @@ li { margin: 0.3em 0; }
 a { color: #0a58a0; text-decoration: underline; }
 em { font-style: italic; }
 .chapter-nav { font-size: 0.9em; color: #666; font-style: italic; }
+p.math { text-align: center; margin: 1.4em 0; line-height: 2.1; }
+.math sub { font-size: 0.72em; vertical-align: -0.3em; }
+.math sup { font-size: 0.72em; vertical-align: 0.5em; }
+.frac { display: inline-block; vertical-align: middle; text-align: center;
+        font-size: 0.92em; }
+.frac .num { display: block; padding: 0 0.35em;
+             border-bottom: 1px solid currentColor; }
+.frac .den { display: block; padding: 0 0.35em; }
+.rad { border-top: 1px solid currentColor; padding: 0 0.15em; }
+.ub { display: inline-block; text-align: center; vertical-align: top; }
+.ub .ubl { display: block; font-size: 0.7em; margin-top: 0.2em;
+           padding-top: 0.2em; border-top: 1px solid currentColor; }
 """
 
 
@@ -77,6 +89,120 @@ def inline(text: str) -> str:
     out = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", out)
     out = re.sub(r"(?<![*\w])\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", out)
     return out
+
+
+# ---------- 수식 변환 ----------
+#
+# 원고의 $$…$$ 블록을 읽을 수 있는 XHTML로 바꾼다. LaTeX 전체를 지원할
+# 생각은 없고, 본문에 실제로 쓰인 것(합·분수·근호·아래첨자·언더브레이스)
+# 까지만 다룬다. 모르는 명령은 이름만 남기고 통과시킨다 — 원고가 늘어도
+# 깨진 화면 대신 밋밋한 화면이 나오도록.
+
+_GREEK = {
+    "alpha": "α", "beta": "β", "gamma": "γ", "delta": "δ", "Delta": "Δ",
+    "theta": "θ", "lambda": "λ", "mu": "μ", "sigma": "σ", "Sigma": "Σ",
+    "phi": "φ", "Phi": "Φ", "pi": "π", "omega": "ω",
+}
+_SYMBOL = {
+    "cdot": "·", "times": "×", "div": "÷", "pm": "±", "odot": "⊙",
+    "in": " ∈ ", "notin": " ∉ ", "le": " ≤ ", "ge": " ≥ ", "neq": " ≠ ",
+    "approx": " ≈ ", "to": " → ", "sum": "Σ", "prod": "∏", "top": "T",
+    "infty": "∞", "quad": "&#160;&#160;", "qquad": "&#160;&#160;&#160;&#160;",
+}
+_SPACING = {"!": "", ",": "&#8201;", ";": "&#8201;", " ": " ", "&": " "}
+
+
+def _take_group(s: str, i: int) -> tuple[str, int]:
+    """s[i]가 '{'라는 전제 하에 짝이 맞는 '}'까지 잘라낸다."""
+    depth = 0
+    for j in range(i, len(s)):
+        if s[j] == "{":
+            depth += 1
+        elif s[j] == "}":
+            depth -= 1
+            if depth == 0:
+                return s[i + 1:j], j + 1
+    return s[i + 1:], len(s)
+
+
+def _take_atom(s: str, i: int) -> tuple[str, int]:
+    """첨자 하나가 잡아먹을 만큼만 — 중괄호 묶음, 명령 하나, 글자 하나."""
+    while i < len(s) and s[i] == " ":
+        i += 1
+    if i >= len(s):
+        return "", i
+    if s[i] == "{":
+        raw, j = _take_group(s, i)
+        return _math(raw), j
+    if s[i] == "\\":
+        m = re.match(r"\\[A-Za-z]+", s[i:])
+        if m:
+            return _math(m.group(0)), i + m.end()
+    return html.escape(s[i], quote=False), i + 1
+
+
+def _math(s: str) -> str:
+    out: list[str] = []
+    i, n = 0, len(s)
+    while i < n:
+        c = s[i]
+
+        if c == "\\":
+            m = re.match(r"\\([A-Za-z]+)", s[i:])
+            if not m:                                   # \, \! \{ \} 등
+                nxt = s[i + 1:i + 2]
+                out.append(_SPACING.get(nxt, html.escape(nxt, quote=False)))
+                i += 2
+                continue
+            name, i = m.group(1), i + m.end()
+
+            if name in ("left", "right"):               # 구분자는 그대로
+                while i < n and s[i] == " ":
+                    i += 1
+                if i < n:
+                    if s[i] == "\\":                    # \left\{ 형태
+                        i += 1
+                    if i < n and s[i] != ".":
+                        out.append(html.escape(s[i], quote=False))
+                    i += 1
+            elif name == "text":
+                raw, i = _take_group(s, i) if i < n and s[i] == "{" else ("", i)
+                out.append(html.escape(raw, quote=False))
+            elif name == "frac":
+                a, i = _take_group(s, i)
+                b, i = _take_group(s, i)
+                out.append(f'<span class="frac"><span class="num">{_math(a)}'
+                           f'</span><span class="den">{_math(b)}</span></span>')
+            elif name == "sqrt":
+                a, i = _take_group(s, i)
+                out.append(f'√<span class="rad">{_math(a)}</span>')
+            elif name == "underbrace":
+                a, i = _take_group(s, i)
+                label = ""
+                if i < n and s[i] == "_":               # _{설명} 이 따라온다
+                    label, i = _take_atom(s, i + 1)
+                out.append(f'<span class="ub">{_math(a)}'
+                           f'<span class="ubl">{label}</span></span>')
+            else:
+                out.append(_GREEK.get(name) or _SYMBOL.get(name) or name)
+            continue
+
+        if c in "_^":
+            body, i = _take_atom(s, i + 1)
+            tag = "sub" if c == "_" else "sup"
+            out.append(f"<{tag}>{body}</{tag}>")
+            continue
+
+        out.append(html.escape(c, quote=False))
+        i += 1
+
+    return "".join(out)
+
+
+def render_math(lines: list[str]) -> str:
+    body = _math(" ".join(l.strip() for l in lines if l.strip()))
+    body = re.sub(r"  +", " ", body)          # 기호 좌우 여백이 겹친 것
+    return f'<p class="math">{body}</p>'
 
 
 # ---------- 블록 변환 ----------
@@ -121,6 +247,17 @@ def render_blocks(lines: list[str]) -> str:
                 i += 1
             i += 1
             out.append("<pre><code>" + "\n".join(buf) + "</code></pre>")
+            continue
+
+        # 수식 블록 ($$ … $$)
+        if stripped == "$$":
+            i += 1
+            buf = []
+            while i < n and lines[i].strip() != "$$":
+                buf.append(lines[i])
+                i += 1
+            i += 1
+            out.append(render_math(buf))
             continue
 
         # 수평선
