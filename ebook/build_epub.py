@@ -26,7 +26,7 @@ APPENDIX = ROOT / "ebook" / "appendix"
 
 TITLE = "부적을 태우고 데이터를 켜다"
 SUBTITLE = "사주 오행으로 찾는 나의 인연 도량"
-AUTHOR = "박충호"
+AUTHOR = "제운 박충호"
 PUBLISHER = "잼공 연구소"
 LANG = "ko"
 UID = "urn:uuid:jamgong-inyeonsachal-guide-v1"
