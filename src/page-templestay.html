@@ -1,0 +1,249 @@
+<meta charset="UTF-8">
+<meta name="description" content="전국 템플스테이 안내. 사찰 체험·명상·발우공양·새벽예불로 일상을 쉬어가세요. 잼공인연사찰">
+<meta property="og:title" content="템플스테이 안내 | 잼공인연사찰">
+<meta property="og:url" content="https://jamgong.kr/templestay">
+<meta property="og:image" content="https://jamgong.kr/og-image.png">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>템플스테이 안내 | 잼공인연사찰</title>
+<style>
+.ts{font-family:'Noto Sans KR',sans-serif;max-width:960px;margin:0 auto;padding:24px 16px 80px;color:#e2e8f0}
+.ts-hero{background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(251,191,36,.06));border:1px solid rgba(139,92,246,.25);border-radius:22px;padding:36px 32px;margin-bottom:28px;text-align:center;position:relative;overflow:hidden}
+.ts-hero-icon{font-size:2.8rem;margin-bottom:10px;display:block}
+.ts-hero h1{font-size:1.7rem;font-weight:900;color:#f8fafc;margin:0 0 8px}
+.ts-hero p{font-size:.88rem;color:#64748b;margin:0;line-height:1.6}
+.ts-badge{display:inline-block;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.4);color:#a78bfa;border-radius:20px;padding:4px 14px;font-size:.72rem;font-weight:700;margin-top:12px}
+.ts-sec-title{font-size:1rem;font-weight:900;color:#f8fafc;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px}
+/* 이미지 카드 */
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:32px}
+.ts-card{border-radius:18px;overflow:hidden;position:relative;cursor:pointer;transition:transform .25s cubic-bezier(.22,.68,0,1.2),box-shadow .25s}
+.ts-card:hover{transform:translateY(-5px) scale(1.02);box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.ts-card-img{width:100%;height:200px;object-fit:cover;display:block;background:#1e293b}
+.ts-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.2) 50%,transparent 100%)}
+.ts-card-body{position:absolute;bottom:0;left:0;right:0;padding:16px}
+.ts-card-badges{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.ts-badge-pill{border-radius:20px;padding:3px 10px;font-size:.63rem;font-weight:800}
+.pb-pop{background:rgba(251,191,36,.25);border:1px solid rgba(251,191,36,.5);color:#fcd34d}
+.pb-rec{background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.5);color:#c4b5fd}
+.pb-type{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#f1f5f9}
+.ts-card-name{font-size:1.05rem;font-weight:900;color:#f8fafc;margin-bottom:3px}
+.ts-card-loc{font-size:.72rem;color:#94a3b8;margin-bottom:8px}
+.ts-card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.ts-ctag{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;border-radius:8px;padding:3px 9px;font-size:.62rem;font-weight:600}
+.ts-card-footer{display:flex;align-items:center;justify-content:space-between}
+.ts-duration{font-size:.7rem;color:#94a3b8;display:flex;align-items:center;gap:4px}
+.ts-price{font-size:.85rem;font-weight:900;color:#FBBF24}
+/* 타임라인 */
+.ts-tl{list-style:none;padding:0;margin:0 0 28px}
+.ts-tl li{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.ts-tl li:last-child{border-bottom:none}
+.ts-tl-time{min-width:58px;font-size:.75rem;font-weight:700;color:#FBBF24;padding-top:2px}
+.ts-tl-title{font-size:.85rem;font-weight:700;color:#f8fafc;margin-bottom:2px}
+.ts-tl-desc{font-size:.72rem;color:#64748b;line-height:1.5}
+/* 타입 */
+.ts-type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:28px}
+.ts-type{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:16px;text-align:center}
+.ts-type-icon{font-size:1.6rem;margin-bottom:7px;display:block}
+.ts-type-name{font-size:.82rem;font-weight:800;color:#f8fafc;margin-bottom:3px}
+.ts-type-desc{font-size:.68rem;color:#475569;line-height:1.5}
+/* CTA */
+.ts-cta{background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(251,191,36,.05));border:1px solid rgba(139,92,246,.28);border-radius:18px;padding:26px 24px;text-align:center}
+.ts-cta h3{font-size:1rem;font-weight:900;color:#f8fafc;margin:0 0 6px}
+.ts-cta p{font-size:.78rem;color:#64748b;margin:0 0 16px;line-height:1.6}
+.ts-cta a{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff;border-radius:12px;padding:12px 24px;font-size:.85rem;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(139,92,246,.35);transition:.2s}
+.ts-cta a:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(139,92,246,.45)}
+@media(max-width:600px){.ts-hero{padding:24px 18px}.ts-hero h1{font-size:1.3rem}.ts-grid{grid-template-columns:1fr}}
+</style>
+
+<div class="ts">
+  <div class="ts-hero">
+    <span class="ts-hero-icon">🏯</span>
+    <h1>템플스테이</h1>
+    <p>사찰에서 하룻밤 — 새벽예불·발우공양·명상으로<br>일상의 소음을 내려놓는 시간</p>
+    <span class="ts-badge">전국 200여 사찰 운영</span>
+  </div>
+
+  <div class="ts-sec-title">🌿 프로그램 유형</div>
+  <div class="ts-type-grid">
+    <div class="ts-type"><span class="ts-type-icon">🌙</span><div class="ts-type-name">휴식형</div><div class="ts-type-desc">자유로운 일정으로 사찰의 고요함을 즐기는 힐링 체험</div></div>
+    <div class="ts-type"><span class="ts-type-icon">🧘</span><div class="ts-type-name">체험형</div><div class="ts-type-desc">새벽예불·발우공양·108배·차담 등 불교 문화 직접 체험</div></div>
+    <div class="ts-type"><span class="ts-type-icon">📿</span><div class="ts-type-name">수행형</div><div class="ts-type-desc">참선·간경·사경 등 집중 수행 위주의 심화 프로그램</div></div>
+    <div class="ts-type"><span class="ts-type-icon">👨‍👩‍👧</span><div class="ts-type-name">가족형</div><div class="ts-type-desc">어린이·청소년과 함께하는 가족 맞춤 불교 문화 체험</div></div>
+  </div>
+
+  <div class="ts-sec-title">🏛️ 추천 템플스테이 사찰</div>
+  <div class="ts-grid">
+
+    <a class="ts-card" href="page-templestay-detail.html?id=tongdosa" style="text-decoration:none">
+      <img class="ts-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Tongdosa_temple_gyeongnam.jpg/800px-Tongdosa_temple_gyeongnam.jpg"
+           onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/24701-nature-natural-beauty.jpg/800px-24701-nature-natural-beauty.jpg'"
+           alt="통도사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-pop">인기</span><span class="ts-badge-pill pb-type">수행 템플스테이</span></div>
+        <div class="ts-card-name">통도사</div>
+        <div class="ts-card-loc">📍 경남 양산</div>
+        <div class="ts-card-tags"><span class="ts-ctag">진신사리 참배</span><span class="ts-ctag">108배</span><span class="ts-ctag">발우공양</span><span class="ts-ctag">예불</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 1박 2일</span><span class="ts-price">₩80,000~</span></div>
+      </div>
+    </a>
+
+    <a class="ts-card" href="page-templestay-detail.html?id=haeinsa" style="text-decoration:none">
+      <img class="ts-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Haeinsa_Tripitaka_Koreana_02.jpg/800px-Haeinsa_Tripitaka_Koreana_02.jpg"
+           onerror="this.src='https://images.unsplash.com/photo-1580978543695-df81e21c4bc5?w=800'"
+           alt="해인사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-rec">추천</span><span class="ts-badge-pill pb-type">전통 템플스테이</span></div>
+        <div class="ts-card-name">해인사</div>
+        <div class="ts-card-loc">📍 경남 합천</div>
+        <div class="ts-card-tags"><span class="ts-ctag">팔만대장경</span><span class="ts-ctag">경판 인쇄 체험</span><span class="ts-ctag">산책선</span><span class="ts-ctag">발우공양</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 2박 3일</span><span class="ts-price">₩120,000~</span></div>
+      </div>
+    </a>
+
+    <a class="ts-card" href="page-templestay-detail.html?id=songgwangsa" style="text-decoration:none">
+      <img class="ts-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Songgwangsa_temple_in_Korea.jpg/800px-Songgwangsa_temple_in_Korea.jpg"
+           onerror="this.src='https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=800'"
+           alt="송광사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-pop">인기</span><span class="ts-badge-pill pb-type">자연 템플스테이</span></div>
+        <div class="ts-card-name">송광사</div>
+        <div class="ts-card-loc">📍 전남 순천</div>
+        <div class="ts-card-tags"><span class="ts-ctag">참선</span><span class="ts-ctag">차담</span><span class="ts-ctag">발우공양</span><span class="ts-ctag">108배</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 1박 2일</span><span class="ts-price">₩70,000~</span></div>
+      </div>
+    </a>
+
+    <a class="ts-card" href="page-templestay-detail.html?id=woljeongsa" style="text-decoration:none">
+      <img class="ts-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Woljeongsa_temple.jpg/800px-Woljeongsa_temple.jpg"
+           onerror="this.src='https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=800'"
+           alt="월정사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-rec">추천</span><span class="ts-badge-pill pb-type">힐링 템플스테이</span></div>
+        <div class="ts-card-name">오대산 월정사</div>
+        <div class="ts-card-loc">📍 강원 평창</div>
+        <div class="ts-card-tags"><span class="ts-ctag">전나무숲 산책</span><span class="ts-ctag">명상</span><span class="ts-ctag">새벽예불</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 1박 2일</span><span class="ts-price">₩80,000~</span></div>
+      </div>
+    </a>
+
+    <a class="ts-card" href="page-templestay-detail.html?id=seonamsa" style="text-decoration:none">
+      <img class="ts-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Seonamsa_temple_Suncheon_Korea.jpg/800px-Seonamsa_temple_Suncheon_Korea.jpg"
+           onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800'"
+           alt="선암사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-type">당일 템플스테이</span></div>
+        <div class="ts-card-name">선암사</div>
+        <div class="ts-card-loc">📍 전남 순천</div>
+        <div class="ts-card-tags"><span class="ts-ctag">매화 체험</span><span class="ts-ctag">전통 다도</span><span class="ts-ctag">산사 산책</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 1박 2일</span><span class="ts-price">₩70,000~</span></div>
+      </div>
+    </a>
+
+    <a class="ts-card" href="page-templestay-detail.html?id=hwaeomsa" style="text-decoration:none">
+      <img class="ts-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Hwaeomsa_temple.jpg/800px-Hwaeomsa_temple.jpg"
+           onerror="this.src='https://images.unsplash.com/photo-1519181258491-889d076f5474?w=800'"
+           alt="화엄사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-type">전통 템플스테이</span></div>
+        <div class="ts-card-name">화엄사</div>
+        <div class="ts-card-loc">📍 전남 구례</div>
+        <div class="ts-card-tags"><span class="ts-ctag">지리산 단풍</span><span class="ts-ctag">각황전 예불</span><span class="ts-ctag">발우공양</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 1박 2일</span><span class="ts-price">₩80,000~</span></div>
+      </div>
+    </a>
+
+    <a class="ts-card" href="page-templestay-detail-part2.html?id=daeheungsa" style="text-decoration:none">
+      <img class="ts-card-img" src="" onerror="this.src='https://images.unsplash.com/photo-1504198070170-4ca53bb1c1fa?w=800'" alt="대흥사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-pop">유네스코 세계유산</span></div>
+        <div class="ts-card-name">대흥사</div>
+        <div class="ts-card-loc">📍 전남 해남</div>
+        <div class="ts-card-tags"><span class="ts-ctag">두륜산</span><span class="ts-ctag">서산대사</span><span class="ts-ctag">다도 체험</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 1박 2일</span><span class="ts-price">₩70,000~</span></div>
+      </div>
+    </a>
+
+    <a class="ts-card" href="page-templestay-detail-part2.html?id=sudeoksa" style="text-decoration:none">
+      <img class="ts-card-img" src="" onerror="this.src='https://images.unsplash.com/photo-1504198070170-4ca53bb1c1fa?w=800'" alt="수덕사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-pop">국보 대웅전</span></div>
+        <div class="ts-card-name">수덕사</div>
+        <div class="ts-card-loc">📍 충남 예산</div>
+        <div class="ts-card-tags"><span class="ts-ctag">참선 수행</span><span class="ts-ctag">덕숭산</span><span class="ts-ctag">경허 선맥</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 1박 2일</span><span class="ts-price">₩60,000~</span></div>
+      </div>
+    </a>
+
+    <a class="ts-card" href="page-templestay-detail-part2.html?id=bongeunsa" style="text-decoration:none">
+      <img class="ts-card-img" src="" onerror="this.src='https://images.unsplash.com/photo-1504198070170-4ca53bb1c1fa?w=800'" alt="봉은사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-type">도심 사찰</span></div>
+        <div class="ts-card-name">봉은사</div>
+        <div class="ts-card-loc">📍 서울 강남</div>
+        <div class="ts-card-tags"><span class="ts-ctag">미륵대불</span><span class="ts-ctag">지하철 접근</span><span class="ts-ctag">외국인 환영</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 1박 2일</span><span class="ts-price">₩80,000~</span></div>
+      </div>
+    </a>
+
+    <a class="ts-card" href="page-templestay-detail-part2.html?id=jikjisa" style="text-decoration:none">
+      <img class="ts-card-img" src="" onerror="this.src='https://images.unsplash.com/photo-1504198070170-4ca53bb1c1fa?w=800'" alt="직지사" loading="lazy">
+      <div class="ts-card-overlay"></div>
+      <div class="ts-card-body">
+        <div class="ts-card-badges"><span class="ts-badge-pill pb-type">경북 5대 사찰</span></div>
+        <div class="ts-card-name">직지사</div>
+        <div class="ts-card-loc">📍 경북 김천</div>
+        <div class="ts-card-tags"><span class="ts-ctag">사명대사</span><span class="ts-ctag">황악산</span><span class="ts-ctag">KTX 접근</span></div>
+        <div class="ts-card-footer"><span class="ts-duration">⏱ 1박 2일</span><span class="ts-price">₩65,000~</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="ts-sec-title">⏰ 1박 2일 일정 예시</div>
+  <ul class="ts-tl">
+    <li><span class="ts-tl-time">14:00</span><div><div class="ts-tl-title">입소 및 오리엔테이션</div><div class="ts-tl-desc">사찰 규범 안내, 방 배정, 법복 수령</div></div></li>
+    <li><span class="ts-tl-time">16:00</span><div><div class="ts-tl-title">전통 다도 체험</div><div class="ts-tl-desc">스님과 함께하는 차 한 잔, 대화 나누기</div></div></li>
+    <li><span class="ts-tl-time">17:30</span><div><div class="ts-tl-title">저녁 공양</div><div class="ts-tl-desc">사찰 음식으로 차린 저녁 발우공양 체험</div></div></li>
+    <li><span class="ts-tl-time">19:00</span><div><div class="ts-tl-title">저녁 예불 및 108배</div><div class="ts-tl-desc">대웅전에서 저녁 예불 참례, 108배 정진</div></div></li>
+    <li><span class="ts-tl-time">21:00</span><div><div class="ts-tl-title">자유 명상·경행</div><div class="ts-tl-desc">선방 좌선 또는 야간 걷기 명상</div></div></li>
+    <li><span class="ts-tl-time">04:00</span><div><div class="ts-tl-title">새벽 예불</div><div class="ts-tl-desc">도량석(목탁 소리)과 함께 하루 시작</div></div></li>
+    <li><span class="ts-tl-time">06:00</span><div><div class="ts-tl-title">아침 공양 및 출소</div><div class="ts-tl-desc">아침 발우공양 후 소감 나누기, 출소</div></div></li>
+  </ul>
+
+  <div class="ts-cta">
+    <h3>🙏 지금 바로 예약하세요</h3>
+    <p>한국불교문화사업단 공식 홈페이지에서<br>전국 200여 개 사찰 템플스테이 예약 가능합니다</p>
+    <a href="https://www.templestay.com" target="_blank">🏯 템플스테이 공식 예약 →</a>
+  </div>
+</div>
+
+<script>
+// Wikipedia 이미지 자동 로드
+var WIKI_NAMES={
+  tongdosa:'통도사', haeinsa:'해인사', songgwangsa:'송광사',
+  woljeongsa:'월정사', seonamsa:'선암사', hwaeomsa:'화엄사',
+  daeheungsa:'대흥사', sudeoksa:'수덕사', bongeunsa:'봉은사', jikjisa:'직지사'
+};
+document.querySelectorAll('.ts-card').forEach(function(card){
+  var href=card.getAttribute('href')||'';
+  var m=href.match(/id=(\w+)/);
+  if(!m)return;
+  var wikiName=WIKI_NAMES[m[1]];
+  var img=card.querySelector('.ts-card-img');
+  if(!wikiName||!img)return;
+  fetch('https://ko.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(wikiName))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var src=d.originalimage||d.thumbnail;
+      if(src&&src.source)img.src=src.source.replace(/\/\d+px-/,'/400px-');
+    }).catch(function(){});
+});
+</script>
