@@ -1,0 +1,465 @@
+
+<div class="mu"><div class="mu-badge">찬불가·명상 음악</div><h1 class="mu-title">🎵 <em>찬불가</em> & 명상 음악</h1><p class="mu-sub">마음을 고요히 하는 찬불가, 독경, 명상 음악을 모았습니다. 기도와 수행에 함께 하세요.</p><div class="mu-today" id="mu-today-banner" style="display:none"><div class="mu-today-icon" id="mu-today-icon">🪔</div><div style="flex:1"><div class="mu-today-label" id="mu-today-label">오늘의 재일</div><div class="mu-today-msg" id="mu-today-msg"></div><div class="mu-today-sub" id="mu-today-sub"></div></div><button type="button" class="mu-today-btn" id="mu-today-btn" onclick="filterFromBanner()">추천곡 보기</button></div><div class="mu-tabs"><button type="button" class="mu-tab active" onclick="filterMu('all',this)">전체</button><button type="button" class="mu-tab" onclick="filterMu('찬불가',this)">🙏 찬불가</button><button type="button" class="mu-tab" onclick="filterMu('명상',this)">🧘 명상</button><button type="button" class="mu-tab liked-tab" onclick="filterMu('liked',this)">♥ 찜한 목록</button></div><div class="mu-grid" id="mu-grid"></div><div class="mu-sec-label">🕌 음악 목적별 추천 기도도량</div><div class="mu-connect-grid"><a class="mu-connect-card" href="/sacred"><div class="mu-connect-cat">🌊 찬불가 — 관음 기도</div><div class="mu-connect-name">관음 성지 도량</div><div class="mu-connect-list">낙산사 홍련암<br>남해 보리암<br>강화 보문사<br>여수 향일암</div></a><a class="mu-connect-card" href="/sacred"><div class="mu-connect-cat">🕯️ 독경 — 조상·천도 기도</div><div class="mu-connect-name">지장 도량</div><div class="mu-connect-list">서울 봉은사<br>직지사 명부전<br>고창 선운사<br>법주사</div></a><a class="mu-connect-card" href="/sacred"><div class="mu-connect-cat">🧘 명상 — 수행·정진</div><div class="mu-connect-name">산사 선방 도량</div><div class="mu-connect-list">해인사<br>통도사<br>오대산 월정사<br>지리산 쌍계사</div></a><a class="mu-connect-card" href="/sacred"><div class="mu-connect-cat">💊 약사 기도 — 건강 회복</div><div class="mu-connect-name">약사 도량</div><div class="mu-connect-list">팔공산 파계사<br>진주 청곡사<br>동화사 약사전<br>진관사</div></a><a class="mu-connect-card" href="/manse"><div class="mu-connect-cat">⭐ 나의 인연사찰 찾기</div><div class="mu-connect-name">사주로 찾는 기도도량</div><div class="mu-connect-list">생년월일시 입력<br>오행 분석<br>개인 기도 목적 매칭<br>전국 465곳 추천</div></a><a class="mu-connect-card" href="/prayer"><div class="mu-connect-cat">🙏 음악과 함께하는 기도문</div><div class="mu-connect-name">기도문·발원문 보기</div><div class="mu-connect-list">관음 기도문<br>약사여래 기도문<br>재물·합격 발원문<br>가족화합 발원문</div></a></div>
+</div><div class="mu-108-popup" id="mu-108-popup"><div class="mu-108-title">🙇 108배 카운터</div><div class="mu-108-counter" id="mu-108-count">0</div><div class="mu-108-target">/ 108배</div><div class="mu-108-progress"><div class="mu-108-bar" id="mu-108-bar" style="width:0%"></div></div><div class="mu-108-actions"><button type="button" class="mu-108-bow" onclick="addBow()">🙏 절하기</button><button type="button" class="mu-108-reset" onclick="resetBow()">초기화</button><button type="button" class="mu-108-close" onclick="close108()">닫기</button></div>
+</div><div class="mu-player" id="mu-player"><div class="mu-player-icon" id="mu-p-icon">🎵</div><div class="mu-player-info"><div class="mu-player-name" id="mu-p-name">재생 중...</div><div class="mu-player-cat" id="mu-p-cat"></div></div><div class="mu-player-audio"><audio id="mu-audio" controls onended="onAudioEnd()"><source src="" type="audio/mpeg"></audio></div><button type="button" class="mu-108-btn" id="mu-108-btn" onclick="toggle108()">🙇 108배</button><button type="button" class="mu-timer-btn" id="mu-timer-btn" onclick="toggleTimerPopup()">⏱ 타이머</button><button type="button" class="mu-player-close" onclick="closePlayer()">✕</button>
+</div><div class="mu-timer-popup" id="mu-timer-popup"><div class="mu-timer-title">⏱ 명상 타이머</div><div class="mu-timer-display" id="mu-timer-display">--:--</div><div class="mu-timer-opts"><button type="button" class="mu-timer-opt" onclick="setTimer(5)">5분</button><button type="button" class="mu-timer-opt" onclick="setTimer(10)">10분</button><button type="button" class="mu-timer-opt" onclick="setTimer(30)">30분</button><button type="button" class="mu-timer-opt" onclick="setTimer(60)">60분</button></div><button type="button" class="mu-timer-stop" onclick="stopTimer()">⏹ 타이머 종료</button>
+</div><script>var MUSICS=[
+{cat:'찬불가',icon:'🌊',name:'관세음보살 찬불가',desc:'천수천안 관세음보살께 귀의하며 자비와 인연을 발원하는 찬불가. 관음재일(음력 18일·24일) 기도에 어울립니다.',dur:'약 3분',
+txt:'나무관세음보살 나무관세음보살 나무관세음보살 천수천안 관자재보살 광대원만 무애대비심 자비로운 관세음보살이시여 중생의 고통을 살펴 주소서 인연과 건강을 발원하오니 굽어 살펴 주시옵소서 나무관세음보살 나무관세음보살 나무관세음보살'},
+{cat:'찬불가',icon:'💊',name:'약사여래 찬불가',desc:'유리광세계 약사유리광여래께 귀의하며 건강과 병고 소멸을 발원하는 찬불가.',dur:'약 2분',
+txt:'나무 약사유리광여래 나무 약사유리광여래 동방 유리광세계 약사여래 열두 가지 서원으로 중생을 구제하시는 부처님이시여 몸과 마음의 병을 낫게 하여 주소서 나무 약사여래 나무 약사여래 나무 약사유리광여래'},
+{cat:'찬불가',icon:'🕯️',name:'지장보살 찬불가',desc:'지옥 중생을 구제하겠다는 원력의 지장보살께 귀의하며 조상 천도와 발원을 담은 찬불가.',dur:'약 2분',
+txt:'나무지장보살 나무지장보살 지옥이 텅 비기 전엔 성불하지 않겠다 하신 지장보살이시여 조상과 영가들이 극락에 왕생하도록 이끌어 주소서 나무지장보살 나무지장보살 나무지장보살'},
+{cat:'찬불가',icon:'🌅',name:'나무아미타불 찬불가',desc:'서방 극락세계 아미타불의 무량광·무량수를 찬탄하며 극락왕생을 발원하는 찬불가.',dur:'약 3분',
+txt:'나무아미타불 나무아미타불 서방정토 극락세계 아미타불이시여 무량광 무량수 자비 광명으로 중생을 극락으로 이끌어 주소서 나무아미타불 나무아미타불 나무아미타불 나무아미타불'},
+{cat:'찬불가',icon:'🙏',name:'삼귀의가',desc:'불·법·승 삼보에 귀의하는 삼귀의를 찬불가로 담았습니다. 법회 시작과 예불에서 독송합니다.',dur:'약 2분',
+txt:'귀의불 양족존 귀의법 이욕존 귀의승 중중존 귀의불경 귀의법경 귀의승경 삼보에 귀의합니다 부처님과 가르침과 스님께 귀의합니다 귀의불 귀의법 귀의승'},
+{cat:'찬불가',icon:'⭐',name:'보현행원가',desc:'보현보살의 열 가지 행원을 노래한 찬불가. 예경·찬탄·공양·참회·수희·청법·청불·상수학·항순중생·보개회향.',dur:'약 3분',
+txt:'부처님을 예경하고 찬탄하며 공양올리고 업장을 참회하며 공덕을 함께 기뻐하고 법을 청하고 세상에 머무르시길 청하며 항상 부처님을 배우고 중생을 따르고 회향하옵니다 나무보현보살 나무보현보살'},
+{cat:'찬불가',icon:'🌸',name:'석가여래 찬불가',desc:'사바세계 교주 석가모니 부처님의 탄생과 성도·열반을 찬탄하는 찬불가. 부처님 오신 날에 봉행합니다.',dur:'약 2분',
+txt:'나무 본사 석가모니불 나무 본사 석가모니불 룸비니 동산에서 탄생하시고 보리수 아래서 성도하시고 쿠시나가라에서 열반하신 석가모니 부처님이시여 세세생생 부처님 법 따르겠습니다 나무석가모니불'},
+{cat:'찬불가',icon:'🔮',name:'미륵보살 찬불가',desc:'미래 세상에 오실 미륵보살을 찬탄하며 희망과 자비의 세상을 발원하는 찬불가.',dur:'약 2분',
+txt:'나무미륵보살 나무미륵보살 도솔천에 계시는 미륵보살이시여 자비와 희망의 세상을 열어 주소서 용화세계가 이 땅에 펼쳐지기를 발원하오니 굽어 살펴 주소서 나무미륵보살'},
+{cat:'찬불가',icon:'🦁',name:'자비의 사자후',desc:'관세음보살의 자비로운 사자후를 담은 찬불가. 웅장하고 힘 있는 멜로디로 관음 기도를 이끕니다.',dur:'약 3분',src:'https://cdn1.suno.ai/eb34d589-82ba-4564-990a-30e097ade82c.mp3'},
+{cat:'찬불가',icon:'🏯',name:'철옹성의 자비',desc:'관세음보살의 견고하고 흔들림 없는 자비를 노래한 찬불가. 어떤 번뇌도 꿰뚫는 자비의 힘.',dur:'약 3분',src:'https://cdn1.suno.ai/b158d84d-6d45-4d2e-aaa1-e7b6e4c0082c.mp3'},
+{cat:'찬불가',icon:'🌧️',name:'감로의 비',desc:'관세음보살의 자비가 감로의 비처럼 온 세상에 내리는 찬불가. 관음재일 기도에 어울립니다.',dur:'약 3분',src:'https://cdn1.suno.ai/f28b7490-1d4d-4693-90cd-363c7ca04c4d.mp3'},
+{cat:'찬불가',icon:'🌙',name:'마음의 달',desc:'관세음보살의 자비를 보름달에 비유한 찬불가. 고요한 달빛 아래 기도하는 마음을 담았습니다.',dur:'약 3분',src:'https://cdn1.suno.ai/b8ab9a8b-adab-447b-8f60-13f6ed74b7b4.mp3'},
+{cat:'찬불가',icon:'🪷',name:'연꽃의 미소',desc:'관세음보살의 연꽃 같은 미소와 자비를 노래한 찬불가. 맑고 청아한 선율로 마음을 정화합니다.',dur:'약 3분',src:'https://cdn1.suno.ai/94844956-1e39-4645-b508-4925f4534e3e.mp3'},
+{cat:'찬불가',icon:'📿',name:'반야심경',desc:'마하반야바라밀다심경 262자 전문. 색즉시공 공즉시색의 지혜를 담은 핵심 경전. 매일 아침 독송하면 마음이 고요해집니다.',dur:'약 3분',
+txt:'관자재보살 행심반야바라밀다시 조견오온개공 도일체고액 사리자 색불이공 공불이색 색즉시공 공즉시색 수상행식 역부여시 사리자 시제법공상 불생불멸 불구부정 부증불감 시고공중 무색 무수상행식 무안이비설신의 무색성향미촉법 무안계 내지 무의식계 무무명 역무무명진 내지 무노사 역무노사진 무고집멸도 무지역무득 이무소득고 보리살타 의반야바라밀다고 심무가애 무가애고 무유공포 원리전도몽상 구경열반 삼세제불 의반야바라밀다고 득아뇩다라삼먁삼보리 고지반야바라밀다 시대신주 시대명주 시무상주 시무등등주 능제일체고 진실불허 고설반야바라밀다주 즉설주왈 아제아제 바라아제 바라승아제 모지사바하'},
+{cat:'찬불가',icon:'🔔',name:'신묘장구대다라니',desc:'천수경 핵심 다라니. 관세음보살의 대자대비를 담은 진언으로, 모든 고통 소멸과 소원 성취에 가장 널리 독송되는 진언입니다.',dur:'약 4분',
+txt:'나무 라다나 다라야야 나막알야 바로기제 새바라야 모지사다바야 마하사다바야 마하가로니가야 옴 살바 바예수 다라나 가라야 다사명 나막까리다바 이맘알야 바로기제 새바라 다바 나라근치 혜혜하례 마하모지사다바 사마라 사마라 하리나야 구로구로 갈마 사다야 사다야 도로도로 미연제 마하미연제 다라다라 다린나례 새바라 자라자라 마라 미마라 아마라 몰제예 혜혜 로계 새바라 라아미사미 나사야 나베사미 사미 나사야 모하자라 미사미 나사야 호로호로 마라호로 하례 바나마나바 사라사라 시리시리 소로소로 못쟈못쟈 모다야 모다야 매다리야 니라간타 가마사 날사남 바라하라나야 마낙사바하 싣다야 사바하 마하싣다야 사바하 나무관세음보살'},
+{cat:'찬불가',icon:'✨',name:'광명진언',desc:'비로자나불의 광명진언. 망자의 극락왕생과 업장 소멸에 효험이 크다고 알려진 진언. 49재·천도재 시 독송합니다.',dur:'약 2분',
+txt:'옴 아모가 바이로차나 마하무드라 마니 파드마 즈바라 프라바릍타야 훔 옴 아모가 바이로차나 마하무드라 마니 파드마 즈바라 프라바릍타야 훔 옴 아모가 바이로차나 마하무드라 마니 파드마 즈바라 프라바릍타야 훔'},
+{cat:'찬불가',icon:'💫',name:'준제진언',desc:'준제관음보살의 진언. 모든 소원 성취와 재앙 소멸에 효험. 천수경 독송 후 이어서 독송합니다.',dur:'약 2분',
+txt:'나무 사다남 삼먁삼못다 구치남 다냐타 옴 자례주례 준제 사바하 나무 사다남 삼먁삼못다 구치남 다냐타 옴 자례주례 준제 사바하 나무 사다남 삼먁삼못다 구치남 다냐타 옴 자례주례 준제 사바하'},
+{cat:'찬불가',icon:'🌺',name:'나무관세음보살 108염불',desc:'관세음보살의 명호를 108번 독송하는 염불. 관음재일에 묵주를 돌리며 독송하면 인연·건강 기도에 공덕이 큽니다.',dur:'약 6분',
+txt:'나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 관세음보살이시여 자비를 베푸소서 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살 나무관세음보살'},
+{cat:'찬불가',icon:'🙏',name:'나무아미타불 108염불',desc:'아미타불의 명호를 108번 독송하는 염불. 극락왕생 발원과 조상·영가 천도 기도. 보름·초하루 법회에서 독송합니다.',dur:'약 6분',
+txt:'나무아미타불 나무아미타불 나무아미타불 나무아미타불 나무아미타불 나무아미타불 나무아미타불 나무아미타불 나무아미타불 나무아미타불 아미타불이시여 서방정토 극락세계로 인도하여 주소서 나무아미타불 나무아미타불 나무아미타불 나무아미타불 나무아미타불 나무아미타불'},
+{cat:'찬불가',icon:'🕉️',name:'모지 사바하',desc:'반야심경의 마지막 진언 — 아제아제 바라아제 바라승아제 모지 사바하. 해탈과 깨달음을 향한 서원을 음악으로 담았습니다.',dur:'약 3분',src:'https://cdn1.suno.ai/0ac469c6-c65b-48e5-bc0b-7f3a74b06e0c.mp3'},
+{cat:'찬불가',icon:'🪷',name:'연꽃이 특별한 이유',desc:'연꽃의 특별함 — 진흙 속에서도 청정하게 피어나는 연꽃처럼 번뇌 속에서 피어나는 불성을 노래합니다.',dur:'6:06',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/yeonkkot.mp3'},
+{cat:'명상',icon:'🔔',name:'산사 종소리 명상',desc:'사찰 범종 소리가 은은히 울리는 명상 음악. 종소리 한 번 한 번마다 마음의 번뇌가 사라집니다. 수행·집중에 적합합니다.',dur:'계속 재생',webAudio:'bell'},
+{cat:'명상',icon:'🪷',name:'연꽃 드론 명상',desc:'낮은 주파수의 옴(OM) 드론 명상음. 부처님 성도 시 울렸다는 소리를 현대적으로 재현. 집중력과 깊은 이완에 도움을 줍니다.',dur:'계속 재생',webAudio:'drone'},
+{cat:'명상',icon:'🌧️',name:'빗소리 선정',desc:'은은한 빗소리와 함께하는 명상 음악. 마음을 가라앉히고 깊은 이완과 수면에 도움을 줍니다.',dur:'계속 재생',webAudio:'rain'},
+{cat:'명상',icon:'🌲',name:'숲속 선방',desc:'깊은 산 숲속 선방의 바람 소리를 담은 명상 음악. 자연 속 선정으로 마음을 비웁니다.',dur:'계속 재생',webAudio:'wind'},
+{cat:'명상',icon:'🌕',name:'달빛 싱잉볼',desc:'티베트 싱잉볼의 여운처럼 천천히 퍼지는 배음(倍音) 명상 음악. 수면 전 마음을 고요히 합니다.',dur:'계속 재생',webAudio:'bowl'},
+{cat:'명상',icon:'🔔',name:'종소리 자비빛',desc:'은은한 종소리와 함께 자비의 빛이 퍼져나가는 명상 음악. 마음을 비우고 깊은 고요함으로 이끕니다.',dur:'약 3분',src:'https://cdn1.suno.ai/7d6a09bd-4f84-4d0c-99ca-b2952bfc7b88.mp3'},
+{cat:'명상',icon:'✨',name:'광명의 숨결',desc:'빛과 숨결이 하나 되는 명상 음악. 비로자나불의 광명이 온몸으로 스며드는 깊은 이완.',dur:'5:20',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong.mp3'},
+{cat:'명상',icon:'🌸',name:'반야의 향기',desc:'반야바라밀의 지혜가 향기처럼 퍼지는 명상 음악. 색즉시공의 깨달음을 소리로 담았습니다.',dur:'4:31',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/banya-hyangi.mp3'},
+{cat:'명상',icon:'🌊',name:'자비의 물결',desc:'관세음보살의 자비가 물결처럼 퍼져나가는 명상 음악. 깊은 기도와 수행에 어울립니다.',dur:'7:00',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/jabi-mulgyeol.mp3'},
+{cat:'명상',icon:'🧘',name:'고요의 자리',desc:'모든 소리가 멈추고 고요함만 남는 자리. 선정과 집중, 깊은 명상을 위한 8분 음악.',dur:'8:00',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/goyoui-jari.mp3'},
+{cat:'찬불가',icon:'💨',name:'자비의 숨결',desc:'관세음보살의 자비가 숨결처럼 스며드는 찬불가. 한 호흡마다 자비가 가득 차오르는 기도 음악.',dur:'6:17',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/jabi-sumgyeol.mp3'},
+{cat:'찬불가',icon:'✨',name:'자비의 빛',desc:'관세음보살의 자비가 빛으로 온 세상을 밝히는 찬불가. 어둠 속에서도 꺼지지 않는 자비의 빛.',dur:'7:59',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/jabi-bit.mp3'},
+{cat:'찬불가',icon:'🙏',name:'나무관세음보살 001 — 자비의 손길',desc:'관세음보살의 자비로운 손길을 노래한 찬불가. 중생의 고통을 어루만지는 천수천안의 손길.',dur:'5:58',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwanseum-001.mp3'},
+{cat:'찬불가',icon:'🌊',name:'나무관세음보살 002 — 바다의 관음',desc:'바다처럼 넓고 깊은 관세음보살의 자비를 노래한 찬불가. 파도처럼 밀려오는 자비의 물결.',dur:'5:54',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwanseum-002.mp3'},
+{cat:'찬불가',icon:'💝',name:'나무관세음보살 003 — 어머니의 자비',desc:'어머니처럼 따뜻한 관세음보살의 자비를 담은 찬불가. 모든 중생을 품어 안는 무한한 어머니의 사랑.',dur:'5:57',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwanseum-003.mp3'},
+{cat:'찬불가',icon:'🪷',name:'나무관세음보살 004 — 연꽃의 기도',desc:'연꽃처럼 청정한 마음으로 드리는 관세음보살 기도 찬불가. 진흙 속에서 피어나는 연꽃의 원력.',dur:'5:32',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwanseum-004.mp3'},
+{cat:'찬불가',icon:'🌺',name:'꽃 중의 꽃',desc:'불교에서 최고의 꽃인 연꽃처럼 청정한 불성을 찬탄하는 찬불가. 모든 꽃 중에 가장 아름다운 깨달음의 꽃.',dur:'6:46',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/kkot-jungui-kkot.mp3'},
+{cat:'찬불가',icon:'💧',name:'눈물이 연꽃으로 피어날 때',desc:'슬픔과 고통의 눈물이 연꽃으로 피어나는 불교적 위로의 찬불가. 번뇌가 깨달음으로 전환되는 기적.',dur:'7:22',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/nunmul-yeonkkot.mp3'},
+{cat:'찬불가',icon:'🎶',name:'노는 입에 염불하세',desc:'늘 입으로 염불하며 부처님을 기억하라는 가르침을 담은 찬불가. 일상 속 수행의 즐거움.',dur:'약 6분',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/noneunibe.mp3'},
+{cat:'찬불가',icon:'🔱',name:'천수천안대비심다라니',desc:'천수천안 관세음보살의 대자대비심 다라니. 신묘장구대다라니의 원형으로 모든 소원 성취와 업장 소멸에 효험.',dur:'7:59',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/cheonsu-dharani.mp3'},
+{cat:'찬불가',icon:'💛',name:'광명진언 003 — 자비의 강',desc:'비로자나불의 광명진언 시리즈. 자비가 강처럼 흘러 모든 중생을 정화하는 진언. 천도재·49재에 독송.',dur:'6:17',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong-003.mp3'},
+{cat:'찬불가',icon:'🚪',name:'광명진언 004 — 극락의 문',desc:'광명진언으로 극락세계의 문을 여는 진언. 왕생극락을 발원하며 독송하는 비로자나불의 진언.',dur:'6:12',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong-004.mp3'},
+{cat:'찬불가',icon:'🌄',name:'광명진언 005 — 깨달음의 새벽',desc:'광명진언 새벽 독송. 깨달음의 새벽빛이 어둠을 밝히듯 업장을 소멸하는 비로자나 광명 진언.',dur:'5:28',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong-005.mp3'},
+{cat:'찬불가',icon:'🕯️',name:'광명진언 006 — 조상 천도',desc:'조상 영가와 선망 부모를 극락으로 천도하는 광명진언. 49재·기일재에 독송하면 영가가 광명을 얻습니다.',dur:'5:39',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong-006.mp3'},
+{cat:'찬불가',icon:'⭐',name:'광명진언 007 — 소원 성취',desc:'소원 성취를 발원하는 광명진언. 비로자나불의 무한 광명으로 정성스러운 발원이 이루어지기를.',dur:'5:54',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong-007.mp3'},
+{cat:'찬불가',icon:'💡',name:'광명진언 008 — 지혜의 빛',desc:'지혜의 빛을 발원하는 광명진언. 어리석음의 어둠을 비로자나불의 지혜 광명으로 밝히는 진언.',dur:'6:09',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong-008.mp3'},
+{cat:'찬불가',icon:'🌍',name:'광명진언 009 — 중생 구제',desc:'모든 중생을 구제하는 광명진언. 사바세계 모든 중생이 광명을 얻고 고통에서 벗어나기를 발원.',dur:'5:28',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong-009.mp3'},
+{cat:'찬불가',icon:'🌌',name:'광명진언 010 — 법계 광명',desc:'법계 전체에 광명을 비추는 광명진언 완결편. 온 법계가 비로자나불의 광명으로 가득 차기를 발원.',dur:'5:35',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong-010.mp3'},
+{cat:'찬불가',icon:'🌅',name:'새벽의 광명진언 — 인연의 정화',desc:'새벽 예불에 독송하는 광명진언. 인연의 업장을 정화하고 맑은 하루를 여는 새벽 진언 기도.',dur:'4:33',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gwangmyeong-inyeon.mp3'},
+{cat:'찬불가',icon:'📖',name:'천수경 하편',desc:'관세음보살께 드리는 천수경 하편. 천수천안 관세음보살의 대자대비한 가르침과 서원을 담은 경전.',dur:'7:07',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/cheonsugyeong-ha.mp3'},
+{cat:'찬불가',icon:'📗',name:'천수경 상편',desc:'관세음보살께 드리는 천수경 상편. 신묘장구대다라니를 포함한 관음 신앙의 핵심 경전.',dur:'약 6분',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/cheonsugyeong-sang.mp3'},
+{cat:'찬불가',icon:'🪘',name:'목탁의 울림 — 나무아미타불',desc:'목탁 소리에 맞춰 나무아미타불을 염불하는 독경. 목탁의 청정한 울림과 함께 극락왕생을 발원.',dur:'7:24',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/moktak-amita.mp3'},
+{cat:'찬불가',icon:'🔔',name:'나무아미타불 종소리',desc:'범종 소리에 맞춰 나무아미타불을 염불하는 독경. 종소리 한 번 울릴 때마다 마음이 정화됩니다.',dur:'5:13',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/amitabul-jongsori.mp3'},
+{cat:'찬불가',icon:'🌿',name:'나무아미타불 — 고요 속으로',desc:'고요한 선정 속에서 나무아미타불을 염불하는 독경. 깊은 삼매의 고요함 속에서 극락을 발원.',dur:'5:29',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/amitabul-goyo.mp3'},
+{cat:'찬불가',icon:'💧',name:'나무아미타불 — 눈물이 꽃이 되는 순간',desc:'눈물 어린 간절한 기도가 꽃이 되는 순간을 담은 아미타 염불. 지극한 마음의 기도.',dur:'4:39',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/amitabul-nunmul.mp3'},
+{cat:'찬불가',icon:'🤗',name:'나무아미타불 — 따뜻하게 스며드는 위로',desc:'아미타불의 따뜻한 위로가 마음 깊이 스며드는 염불. 슬픔과 외로움을 위로하는 극락의 빛.',dur:'4:49',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/amitabul-wiro.mp3'},
+{cat:'찬불가',icon:'🫁',name:'나무아미타불 — 숨을 따라',desc:'호흡에 맞춰 나무아미타불을 염불하는 독경. 들숨 날숨 하나하나에 아미타불을 담는 수행.',dur:'5:58',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/amitabul-sum.mp3'},
+{cat:'찬불가',icon:'🫂',name:'나무아미타불 — 포근히 안아주는 순간',desc:'아미타불의 품 안에 안기는 듯한 위로의 염불. 모든 고통을 포근히 안아주는 무량광의 품.',dur:'5:58',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/amitabul-pogeun.mp3'},
+{cat:'찬불가',icon:'🌙',name:'내려놓는 새벽',desc:'새벽 예불에 모든 것을 내려놓고 아미타불께 귀의하는 독경. 번뇌를 내려놓고 새벽을 여는 기도.',dur:'5:04',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/naeryeonot-saebyeok.mp3'},
+{cat:'찬불가',icon:'🙇',name:'십악참회',desc:'탐·진·치 열 가지 악업을 참회하는 독경. 몸과 입과 뜻으로 지은 죄업을 진심으로 참회합니다.',dur:'약 5분',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/sibak-chamhoe.mp3'},
+{cat:'명상',icon:'🌊',name:'무상의 강을 건너 정토에 닿다',desc:'무상(無常)의 강을 건너 정토(淨土)에 닿는 여정을 담은 명상 음악. 덧없음을 받아들이는 깊은 수행.',dur:'7:59',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/musang-jeongto.mp3'},
+{cat:'명상',icon:'🌫️',name:'비움 — 새벽 산사의 고요',desc:'비움(空)의 경지를 담은 새벽 산사 명상 음악. 모든 것을 비워내는 새벽 선방의 고요함.',dur:'5:54',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/bium-goyo.mp3'},
+{cat:'명상',icon:'🪘',name:'목탁 소리와 범종이 울린다',desc:'목탁과 범종의 어울림. 두 소리가 교차하며 마음을 정화하는 사찰 명상 음악.',dur:'5:54',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/moktak-beomjong.mp3'},
+{cat:'명상',icon:'🧘',name:'고요 속에 머무는 나',desc:'고요함 속에서 본래의 나를 만나는 명상 음악. 소음과 번뇌가 사라지고 순수한 의식만 남는 순간.',dur:'7:59',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/goyo-me.mp3'},
+{cat:'명상',icon:'🌬️',name:'고요 속으로',desc:'점점 깊어지는 고요 속으로 빠져드는 명상 음악. 가사 없이 순수한 소리로만 이루어진 깊은 선정.',dur:'7:59',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/goyo-gasaeopeum.mp3'},
+{cat:'명상',icon:'💎',name:'고요한 깨달음',desc:'고요함 속에서 찾아오는 깨달음의 순간을 담은 명상 음악. 선정과 지혜가 하나 되는 경지.',dur:'5:43',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/goyo-gaedaleum.mp3'},
+{cat:'명상',icon:'⛰️',name:'고요한 산의 심장 위로',desc:'산의 심장처럼 깊고 고요한 명상 음악. 산을 오르듯 점차 높아지는 선정의 경지로 이끕니다.',dur:'6:08',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/goyo-san.mp3'},
+{cat:'명상',icon:'🌙',name:'달빛 아래의 기도',desc:'보름달 아래 조용히 드리는 기도를 담은 명상 음악. 달빛처럼 청정한 마음으로 드리는 밤 기도.',dur:'7:23',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/dalbit-gido.mp3'},
+{cat:'명상',icon:'💧',name:'물처럼 살아라',desc:'물의 유연함과 겸손함을 닮으라는 불교 가르침을 담은 명상 음악. 상선약수(上善若水)의 지혜.',dur:'7:53',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/mul-salara.mp3'},
+{cat:'명상',icon:'🌬️',name:'바람의 사원',desc:'바람이 스치는 사원의 고요함을 담은 명상 음악. 바람처럼 자유롭고 집착 없는 수행자의 마음.',dur:'7:15',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/baram-sawon.mp3'},
+{cat:'명상',icon:'🏞️',name:'시간의 강 위에서',desc:'흘러가는 시간의 강 위에 서서 무상을 관하는 명상 음악. 과거도 미래도 없이 지금 이 순간.',dur:'4:49',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/sigan-gang.mp3'},
+{cat:'명상',icon:'🕉️',name:'옴 마니 뻬메 훔 — 고요의 진동',desc:'티베트 불교의 핵심 진언 옴 마니 뻬메 훔을 음악으로 담은 명상. 고요한 진동이 온몸으로 퍼집니다.',dur:'7:21',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/om-mani.mp3'},
+{cat:'명상',icon:'☁️',name:'하늘로 흘러가는 마음',desc:'모든 생각이 구름처럼 하늘로 흘러가는 명상 음악. 집착을 놓고 마음이 하늘처럼 넓어지는 수행.',dur:'6:45',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/haneul-maeum.mp3'},
+{cat:'명상',icon:'🔔',name:'마음의 종소리',desc:'마음속 깊은 곳에서 울리는 종소리 명상 음악. 한 번 울릴 때마다 번뇌가 사라지고 마음이 열립니다.',dur:'6:46',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/maeum-jongsori.mp3'},
+{cat:'명상',icon:'🚶',name:'무명을 걷다',desc:'무명(無明)의 어둠 속을 걸어가는 수행자의 여정을 담은 명상 음악. 한 걸음씩 깨달음을 향해.',dur:'6:14',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/mumyeong-geotda.mp3'},
+{cat:'명상',icon:'🍃',name:'바람이 허공에 머물지 않듯',desc:'바람이 허공에 머물지 않듯 집착 없이 흘러가는 무상(無常)을 담은 명상 음악.',dur:'7:19',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/baram-heogong.mp3'},
+{cat:'명상',icon:'🌄',name:'심검당의 새벽',desc:'선방 심검당(尋劍堂)의 새벽을 담은 명상 음악. 칼날 같은 집중력으로 화두를 드는 새벽 좌선.',dur:'5:34',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/simgeomdang.mp3'},
+{cat:'명상',icon:'🌑',name:'업의 그림자',desc:'업(業)의 그림자를 관하고 참회하는 명상 음악. 과거의 인과를 직시하고 새로운 인연을 만드는 수행.',dur:'5:09',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/eop-geurimja.mp3'},
+{cat:'명상',icon:'🕯️',name:'자비의 등불',desc:'어둠 속에서도 꺼지지 않는 자비의 등불 명상 음악. 한 등불이 다른 등불을 밝히듯 자비가 퍼집니다.',dur:'6:23',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/jabi-deungbul.mp3'},
+{cat:'명상',icon:'🌿',name:'잠시 쉬어가는 마음',desc:'바쁜 일상 속 잠시 멈추고 쉬어가는 명상 음악. 마음의 짐을 내려놓고 고요히 쉬는 시간.',dur:'5:51',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/jamsi-swio.mp3'},
+{cat:'명상',icon:'⛩️',name:'절의 길',desc:'사찰로 향하는 고즈넉한 절의 길을 담은 명상 음악. 한 걸음 한 걸음 마음을 모으며 걷는 참배의 길.',dur:'7:33',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/jeol-gil.mp3'},
+{cat:'명상',icon:'🌊',name:'해탈의 물결',desc:'해탈(解脫)의 물결이 온 존재를 씻어내는 명상 음악. 모든 속박에서 벗어나 자유로워지는 순간.',dur:'6:01',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/haetal-mulgyeol.mp3'},
+{cat:'명상',icon:'🤫',name:'묵언 — 말 없는 깨달음의 길',desc:'묵언(默言) 수행처럼 말을 멈추고 내면을 듣는 명상 음악. 침묵 속에서만 들리는 깨달음의 소리.',dur:'6:34',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/mugeon.mp3'},
+{cat:'명상',icon:'🔥',name:'불길 너머의 고요',desc:'타오르는 불길 너머에 있는 절대 고요를 담은 명상 음악. 번뇌의 불길이 다 타고 나면 남는 청정함.',dur:'약 6분',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/bulgil-goyo.mp3'},
+{cat:'명상',icon:'🌅',name:'개운사의 새벽기도',desc:'서울 개운사 새벽 예불 분위기를 담은 명상 음악. 도심 속 고요한 산사의 새벽 기도 시간.',dur:'약 7분',src:'https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/audio/gaeunsa-dawn.mp3'}
+];
+</script>
+<script>var cur='all';
+var curPlayIdx=-1;
+var timerSec=0, timerInterval=null;
+var bowCount=parseInt(localStorage.getItem('mu_bow_count')||'0');
+var todayBannerCat=null;
+
+function getLike(name){return localStorage.getItem('mu_like_'+name)==='1';}
+function toggleLike(name,el){
+var liked=getLike(name);
+localStorage.setItem('mu_like_'+name,liked?'0':'1');
+el.classList.toggle('liked',!liked);
+el.querySelector('.mu-like-cnt').textContent=!liked?'♥':'♡';
+}
+
+function getPlayCnt(name){return parseInt(localStorage.getItem('mu_play_'+name)||'0');}
+function incPlayCnt(name){
+var n=getPlayCnt(name)+1;
+localStorage.setItem('mu_play_'+name,n);
+return n;
+}
+
+function getTodayJaeil(){
+var d=new Date().getDate();
+if(d<=2)  return{icon:'🌙',label:'초하루 법회',msg:'새달의 안녕을 발원하는 날입니다.',sub:'찬불가를 들으며 기도하세요.',cat:'찬불가',color:'choharu'};
+if(d>=14&&d<=16) return{icon:'🌕',label:'보름 법회',msg:'달이 가장 밝은 날, 조상 천도 기도를 드리기 좋습니다.',sub:'독경·진언을 들으며 마음을 모으세요.',cat:'찬불가',color:'boreum'};
+if(d>=17&&d<=19) return{icon:'🌊',label:'관음재일 · 지장재일',msg:'관세음보살과 지장보살을 기리는 날입니다.',sub:'찬불가와 함께 인연·천도 기도를 드리세요.',cat:'찬불가',color:'gwan'};
+if(d>=23&&d<=25) return{icon:'🌊',label:'관음재일',msg:'관세음보살을 기리는 날입니다.',sub:'인연·건강 기도를 드리기 가장 좋은 날입니다.',cat:'찬불가',color:'gwan'};
+return{icon:'🪔',label:'오늘도 기도하는 하루',msg:'매일 찬불가와 함께 마음을 고요히 합니다.',sub:'명상 음악으로 하루를 시작해보세요.',cat:null,color:'normal'};
+}
+function initTodayBanner(){
+var j=getTodayJaeil();
+todayBannerCat=j.cat;
+var el=document.getElementById('mu-today-banner');
+el.className='mu-today '+j.color;
+el.style.display='flex';
+document.getElementById('mu-today-icon').textContent=j.icon;
+document.getElementById('mu-today-label').textContent=j.label;
+document.getElementById('mu-today-msg').textContent=j.msg;
+document.getElementById('mu-today-sub').textContent=j.sub;
+if(!j.cat) document.getElementById('mu-today-btn').style.display='none';
+}
+function filterFromBanner(){
+if(!todayBannerCat) return;
+document.querySelectorAll('.mu-tab').forEach(function(t){t.classList.remove('active');});
+document.querySelectorAll('.mu-tab').forEach(function(t){
+if(t.textContent.indexOf(todayBannerCat)>-1){t.classList.add('active');}
+});
+cur=todayBannerCat;
+render();
+}
+
+function filterMu(cat,btn){
+cur=cat;
+document.querySelectorAll('.mu-tab').forEach(function(t){t.classList.remove('active');});
+btn.classList.add('active');
+render();
+}
+
+function render(){
+var list;
+if(cur==='all') list=MUSICS;
+else if(cur==='liked') list=MUSICS.filter(function(m){return getLike(m.name);});
+else list=MUSICS.filter(function(m){return m.cat===cur;});
+if(cur==='liked'&&list.length===0){
+document.getElementById('mu-grid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#475569;font-size:14px">♡ 좋아요를 누른 곡이 없습니다.<br><span style="font-size:12px;color:#334155">곡 카드의 ♡ 버튼을 눌러 찜해보세요.</span></div>';
+return;
+}
+var html='';
+list.forEach(function(m){
+var realIdx=MUSICS.indexOf(m);
+var liked=getLike(m.name);
+var plays=getPlayCnt(m.name);
+var isPlaying=(realIdx===curPlayIdx);
+var hasTxt=!!m.txt;
+var hasWA=!!m.webAudio;
+var clickAct=m.coming?'alert(\'곧 공개됩니다!\')':hasWA?'playWA('+realIdx+')':hasTxt?'playTTS('+realIdx+')':m.src?'playAudio('+realIdx+')':'alert(\'준비 중입니다.\')';
+html+='<div class="mu-card'+(isPlaying?' playing':'')+'\" id="mu-card-'+realIdx+'">';
+html+='<div class="mu-card-thumb" onclick="'+clickAct+'">';
+html+=m.icon;
+if(!m.coming){
+html+='<div class="mu-play-btn"><div class="mu-play-icon">'+(isPlaying?'⏸':'▶')+'</div></div>';
+} else {
+html+='<div style="position:absolute;bottom:8px;right:10px;font-size:10px;color:#FBBF24;font-weight:800;background:rgba(0,0,0,.5);padding:2px 7px;border-radius:6px">제작 중</div>';
+}
+if(plays>0)html+='<div style="position:absolute;top:8px;left:10px;font-size:10px;color:rgba(255,255,255,0.6);background:rgba(0,0,0,.5);padding:2px 7px;border-radius:6px">▶ '+plays+'</div>';
+html+='</div>';
+html+='<div class="mu-card-body">';
+html+='<div class="mu-card-cat">'+m.cat+'</div>';
+html+='<div class="mu-card-name">'+m.name+'</div>';
+html+='<div class="mu-card-desc">'+m.desc+'</div>';
+html+='<div class="mu-card-row"><span class="mu-card-duration">⏱ '+m.dur+'</span>';
+html+='<div class="mu-card-actions">';
+html+='<button type="button" class="mu-like-btn'+(liked?' liked':'')+'\" onclick="toggleLike(\''+m.name.replace(/'/g,"\\'")+'\\',this)"><span class="mu-like-cnt">'+(liked?'♥':'♡')+'</span></button>';
+if(m.coming)html+='<span style="font-size:11px;color:#FBBF24;font-weight:700">제작 중</span>';
+else if(hasWA)html+='<button type="button" class="mu-card-play" onclick="playWA('+realIdx+')">'+(isPlaying?'⏸ 재생 중':'▶ 재생')+'</button>';
+else if(hasTxt)html+='<button type="button" class="mu-card-play" onclick="playTTS('+realIdx+')">'+(isPlaying?'⏸ 독송 중':'🔊 독송')+'</button>';
+else if(m.src)html+='<button type="button" class="mu-card-play" onclick="playAudio('+realIdx+')">'+(isPlaying?'⏸ 재생 중':'▶ 재생')+'</button>';
+else html+='<span style="font-size:11px;color:#475569">업로드 예정</span>';
+html+='</div></div></div></div>';
+});
+document.getElementById('mu-grid').innerHTML=html;
+}
+
+function playTTS(i){
+var m=MUSICS[i];
+if(!m.txt)return;
+if(!window.speechSynthesis){alert('이 브라우저는 음성 재생을 지원하지 않습니다.');return;}
+speechSynthesis.cancel();
+stopWA();
+if(curPlayIdx===i){curPlayIdx=-1;render();return;}
+curPlayIdx=i;
+incPlayCnt(m.name);
+var utter=new SpeechSynthesisUtterance(m.txt);
+utter.lang='ko-KR';utter.rate=0.5;utter.pitch=0.8;utter.volume=1;
+utter.onend=function(){curPlayIdx=-1;render();};
+document.getElementById('mu-p-icon').textContent=m.icon;
+document.getElementById('mu-p-name').textContent=m.name;
+document.getElementById('mu-p-cat').textContent=m.cat;
+document.getElementById('mu-player').classList.add('show');
+speechSynthesis.speak(utter);
+render();
+}
+
+/* ===== Web Audio API — 명상 음악 생성기 ===== */
+var waCtx=null, waStopFns=[];
+function stopWA(){
+waStopFns.forEach(function(f){try{f();}catch(e){}});
+waStopFns=[];
+if(waCtx){try{waCtx.close();}catch(e){} waCtx=null;}
+}
+function getWACtx(){
+if(!waCtx||waCtx.state==='closed')
+waCtx=new(window.AudioContext||window.webkitAudioContext)();
+return waCtx;
+}
+function playWA(i){
+var m=MUSICS[i];
+if(!m.webAudio)return;
+speechSynthesis.cancel();
+if(curPlayIdx===i){stopWA();curPlayIdx=-1;render();return;}
+stopWA();
+curPlayIdx=i;
+incPlayCnt(m.name);
+var ctx=getWACtx();
+var master=ctx.createGain();
+master.gain.value=0.35;
+master.connect(ctx.destination);
+if(m.webAudio==='bell'){
+/* 범종 소리: 528Hz + 3배음, 9초 간격 반복 */
+var bellTimer;
+function ringBell(){
+var freqs=[528,1056,1584,2112];
+freqs.forEach(function(f,fi){
+var o=ctx.createOscillator();
+var g=ctx.createGain();
+o.type='sine';o.frequency.value=f;
+var vol=0.6/Math.pow(2,fi);
+g.gain.setValueAtTime(vol,ctx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+7);
+o.connect(g);g.connect(master);
+o.start();o.stop(ctx.currentTime+7);
+});
+}
+ringBell();
+bellTimer=setInterval(ringBell,9000);
+waStopFns.push(function(){clearInterval(bellTimer);});
+}else if(m.webAudio==='drone'){
+/* 옴 드론: C2(65Hz) + G2(98Hz) + C3(130Hz) */
+var freqs=[65,98,130,196];
+freqs.forEach(function(f,fi){
+var o=ctx.createOscillator();
+var g=ctx.createGain();
+var lfo=ctx.createOscillator();
+var lfoG=ctx.createGain();
+o.type=(fi===0?'sawtooth':'sine');
+o.frequency.value=f;
+lfo.frequency.value=0.12+fi*0.05;
+lfoG.gain.value=0.04;
+lfo.connect(lfoG);lfoG.connect(g.gain);
+g.gain.value=0.18/Math.pow(1.6,fi);
+o.connect(g);g.connect(master);
+lfo.start();o.start();
+waStopFns.push(function(){o.stop();lfo.stop();});
+});
+}else if(m.webAudio==='rain'){
+/* 빗소리: 화이트 노이즈 + 로우패스 필터 */
+var bufSize=ctx.sampleRate*2;
+var buf=ctx.createBuffer(1,bufSize,ctx.sampleRate);
+var data=buf.getChannelData(0);
+for(var k=0;k<bufSize;k++)data[k]=(Math.random()*2-1);
+function loopNoise(){
+var src=ctx.createBufferSource();
+var filt=ctx.createBiquadFilter();
+var g=ctx.createGain();
+src.buffer=buf;src.loop=true;
+filt.type='lowpass';filt.frequency.value=800;filt.Q.value=0.5;
+g.gain.value=0.9;
+src.connect(filt);filt.connect(g);g.connect(master);
+src.start();
+waStopFns.push(function(){src.stop();});
+}
+loopNoise();
+}else if(m.webAudio==='wind'){
+/* 바람 소리: 밴드패스 필터 화이트 노이즈 + 느린 LFO */
+var bufSize=ctx.sampleRate*2;
+var buf=ctx.createBuffer(1,bufSize,ctx.sampleRate);
+var data=buf.getChannelData(0);
+for(var k=0;k<bufSize;k++)data[k]=(Math.random()*2-1);
+var src=ctx.createBufferSource();
+var filt=ctx.createBiquadFilter();
+var lfo=ctx.createOscillator();
+var lfoG=ctx.createGain();
+var g=ctx.createGain();
+src.buffer=buf;src.loop=true;
+filt.type='bandpass';filt.frequency.value=400;filt.Q.value=0.8;
+lfo.frequency.value=0.07;lfoG.gain.value=250;
+lfo.connect(lfoG);lfoG.connect(filt.frequency);
+g.gain.value=0.7;
+src.connect(filt);filt.connect(g);g.connect(master);
+src.start();lfo.start();
+waStopFns.push(function(){src.stop();lfo.stop();});
+}else if(m.webAudio==='bowl'){
+/* 싱잉볼: 432Hz + 7배음, 12초 간격 */
+var bowlTimer;
+function ringBowl(){
+var freqs=[432,864,1296,1728];
+freqs.forEach(function(f,fi){
+var o=ctx.createOscillator();
+var g=ctx.createGain();
+o.type='sine';o.frequency.value=f;
+var vol=0.5/Math.pow(2,fi);
+g.gain.setValueAtTime(0,ctx.currentTime);
+g.gain.linearRampToValueAtTime(vol,ctx.currentTime+0.3);
+g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+11);
+o.connect(g);g.connect(master);
+o.start();o.stop(ctx.currentTime+11);
+});
+}
+ringBowl();
+bowlTimer=setInterval(ringBowl,12000);
+waStopFns.push(function(){clearInterval(bowlTimer);});
+}
+document.getElementById('mu-p-icon').textContent=m.icon;
+document.getElementById('mu-p-name').textContent=m.name;
+document.getElementById('mu-p-cat').textContent='🎵 '+m.cat+' · 계속 재생';
+document.getElementById('mu-player').classList.add('show');
+render();
+}
+
+function playAudio(i){
+var m=MUSICS[i];
+if(!m.src)return;
+var audio=document.getElementById('mu-audio');
+if(curPlayIdx===i){
+if(audio.paused){audio.play();}else{audio.pause();}
+render();return;
+}
+curPlayIdx=i;
+audio.src=m.src;
+audio.play();
+incPlayCnt(m.name);
+document.getElementById('mu-p-icon').textContent=m.icon;
+document.getElementById('mu-p-name').textContent=m.name;
+document.getElementById('mu-p-cat').textContent=m.cat;
+document.getElementById('mu-player').classList.add('show');
+render();
+}
+function onAudioEnd(){
+curPlayIdx=-1;
+stopTimer();
+render();
+}
+function closePlayer(){
+speechSynthesis.cancel();
+stopWA();
+document.getElementById('mu-audio').pause();
+document.getElementById('mu-player').classList.remove('show');
+document.getElementById('mu-timer-popup').classList.remove('show');
+curPlayIdx=-1;
+stopTimer();
+render();
+}
+
+function toggleTimerPopup(){
+document.getElementById('mu-timer-popup').classList.toggle('show');
+}
+function setTimer(min){
+stopTimer();
+timerSec=min*60;
+document.querySelectorAll('.mu-timer-opt').forEach(function(el){el.classList.remove('sel');});
+event.target.classList.add('sel');
+document.getElementById('mu-timer-btn').classList.add('running');
+updateTimerDisplay();
+timerInterval=setInterval(function(){
+timerSec--;
+updateTimerDisplay();
+if(timerSec<=0){
+stopTimer();
+document.getElementById('mu-audio').pause();
+curPlayIdx=-1;
+render();
+alert('⏱ 명상 타이머가 종료되었습니다.\n수고하셨습니다. 🙏');
+}
+},1000);
+}
+function updateTimerDisplay(){
+var m=Math.floor(timerSec/60);
+var s=timerSec%60;
+document.getElementById('mu-timer-display').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+function stopTimer(){
+if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+timerSec=0;
+document.getElementById('mu-timer-display').textContent='--:--';
+document.getElementById('mu-timer-btn').classList.remove('running');
+document.querySelectorAll('.mu-timer-opt').forEach(function(el){el.classList.remove('sel');});
+document.getElementById('mu-timer-popup').classList.remove('show');
+}
+
+function toggle108(){
+var p=document.getElementById('mu-108-popup');
+p.classList.toggle('show');
+document.getElementById('mu-108-btn').classList.toggle('active',p.classList.contains('show'));
+}
+function close108(){
+document.getElementById('mu-108-popup').classList.remove('show');
+document.getElementById('mu-108-btn').classList.remove('active');
+}
+function addBow(){
+if(bowCount>=108){
+setTimeout(function(){alert('🙏 이미 108배를 완성하셨습니다!\n초기화 버튼을 눌러 다시 시작하세요.');},0);
+return;
+}
+bowCount++;
+localStorage.setItem('mu_bow_count',bowCount);
+updateBowDisplay();
+if(bowCount===108){
+setTimeout(function(){alert('🎉 108배 완성!\n모든 번뇌가 사라지기를 발원합니다. 🙏');},300);
+}
+}
+function resetBow(){
+bowCount=0;
+localStorage.setItem('mu_bow_count',0);
+updateBowDisplay();
+}
+function updateBowDisplay(){
+var el=document.getElementById('mu-108-count');
+var bar=document.getElementById('mu-108-bar');
+if(el) el.textContent=bowCount;
+if(bar) bar.style.width=Math.min(bowCount/108*100,100)+'%';
+}
+
+render();
+initTodayBanner();
+updateBowDisplay();</script><style>#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}#jg-top-btn.show{opacity:1;pointer-events:auto}#jg-top-btn:active{transform:scale(.9)}</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();</script>
