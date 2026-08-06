@@ -1,0 +1,252 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title id="pg-title">문화재 사찰 상세 | 잼공인연사찰</title>
+<meta name="description" id="pg-desc" content="문화재 사찰 상세 안내 — 국보·보물·역사·관람 정보">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#07040f;color:#e2e8f0;min-height:100vh}
+.hero{position:relative;height:60vw;max-height:420px;min-height:260px;overflow:hidden}
+.hero-img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.9)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,4,15,.95) 0%,rgba(7,4,15,.4) 35%,rgba(0,0,0,.05) 100%)}
+.hero-content{position:absolute;bottom:0;left:0;right:0;padding:28px 24px}
+.hero-badge{display:inline-flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.hb{border-radius:20px;padding:4px 12px;font-size:.65rem;font-weight:800}
+.hb-pop{background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.5);color:#fcd34d}
+.hb-her{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.5);color:#fca5a5}
+.hb-type{background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.5);color:#c4b5fd}
+.hero-name{font-size:1.8rem;font-weight:900;color:#f8fafc;line-height:1.15;margin-bottom:4px}
+.hero-loc{font-size:.8rem;color:#94a3b8}
+.body{max-width:860px;margin:0 auto;padding:28px 16px 80px}
+.info-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:24px}
+.info-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center}
+.info-box-label{font-size:.65rem;font-weight:800;color:#64748b;letter-spacing:.1em;margin-bottom:5px}
+.info-box-val{font-size:.85rem;font-weight:800;color:#f8fafc}
+.info-box-val.gold{color:#FBBF24}
+.sec{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:22px;margin-bottom:16px}
+.sec-title{font-size:.8rem;font-weight:900;color:#fbbf24;letter-spacing:.12em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(251,191,36,.3),transparent)}
+.sec-body{font-size:.83rem;color:#94a3b8;line-height:1.85;word-break:keep-all}
+.sec-body strong{color:#f1f5f9;font-weight:700}
+.artifact-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.artifact-item{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.15);border-radius:12px}
+.artifact-badge{min-width:48px;text-align:center;border-radius:8px;padding:3px 8px;font-size:.6rem;font-weight:900;flex-shrink:0}
+.ab-guknbo{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.ab-bomul{background:rgba(251,191,36,.15);color:#fcd34d;border:1px solid rgba(251,191,36,.3)}
+.artifact-name{font-size:.82rem;font-weight:800;color:#f1f5f9;margin-bottom:2px}
+.artifact-desc{font-size:.71rem;color:#64748b;line-height:1.5}
+.tip-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.tip-item{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.tip-item:last-child{border-bottom:none}
+.tip-icon{font-size:1rem;flex-shrink:0}
+.tip-text{font-size:.8rem;color:#94a3b8;line-height:1.6}
+.tip-text strong{color:#f1f5f9}
+.tag-list{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;border-radius:8px;padding:4px 11px;font-size:.68rem;font-weight:600}
+.cta{background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(239,68,68,.04));border:1px solid rgba(251,191,36,.25);border-radius:18px;padding:24px;text-align:center;margin-top:24px}
+.cta h3{font-size:1rem;font-weight:900;color:#f8fafc;margin-bottom:6px}
+.cta p{font-size:.78rem;color:#64748b;margin-bottom:16px;line-height:1.6}
+.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 22px;border-radius:12px;font-size:.8rem;font-weight:800;text-decoration:none}
+.btn-primary{background:linear-gradient(135deg,#b45309,#fbbf24);color:#07040f}
+.btn-secondary{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#e2e8f0}
+#not-found{display:none;text-align:center;padding:80px 24px;color:#64748b}
+#pg-wrap{display:none}
+</style>
+<div id="not-found"><p style="font-size:1.1rem;margin-bottom:12px">사찰 정보를 찾을 수 없습니다.</p><a href="page-heritage.html" style="color:#fbbf24">← 문화재 사찰 목록으로</a></div>
+<div id="pg-wrap">
+<div class="hero">
+  <img class="hero-img" id="pg-img" src="" alt="">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge" id="pg-badges"></div>
+    <div class="hero-name" id="pg-name"></div>
+    <div class="hero-loc" id="pg-loc"></div>
+  </div>
+</div>
+<div class="body">
+  <div class="info-row" id="pg-info-row"></div>
+  <div class="sec"><div class="sec-title">🏛️ 사찰 소개</div><div class="sec-body" id="pg-intro"></div></div>
+  <div class="sec"><div class="sec-title">🏆 국보·보물 문화재</div><ul class="artifact-list" id="pg-artifacts"></ul></div>
+  <div class="sec"><div class="sec-title">📜 역사 연표</div><div class="sec-body" id="pg-history"></div></div>
+  <div class="sec"><div class="sec-title">💡 관람 팁</div><ul class="tip-list" id="pg-tips"></ul></div>
+  <div class="sec"><div class="sec-title">🚗 교통 안내</div><div class="sec-body" id="pg-access"></div></div>
+  <div class="sec"><div class="sec-title">🏷️ 태그</div><div class="tag-list" id="pg-tags"></div></div>
+  <div class="cta">
+    <h3 id="pg-cta-title">문화재 사찰 방문 안내</h3>
+    <p id="pg-cta-text"></p>
+    <div class="cta-btns">
+      <a class="btn btn-secondary" id="pg-map-btn" href="#" target="_blank" rel="noopener">📍 지도 보기</a>
+      <a class="btn btn-secondary" href="page-heritage.html">← 목록으로</a>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+var DB={
+  seonunsa:{
+    name:'선운사',wikiName:'선운사',loc:'전북 고창',
+    badges:[{t:'국보 제290호',c:'hb-pop'},{t:'동백꽃 성지',c:'hb-type'}],
+    info:[
+      {l:'창건',v:'577년(백제)'},
+      {l:'종단',v:'조계종 24교구'},
+      {l:'국보',v:'1건',g:true},
+      {l:'보물',v:'8건',g:true},
+      {l:'특징',v:'동백꽃 군락'},
+      {l:'입장료',v:'성인 3,000원'}
+    ],
+    intro:'<strong>선운사</strong>는 전북 고창 도솔산에 자리한 백제 위덕왕 24년(577년) 검단선사 창건의 천년 고찰입니다. 봄이면 3,000그루의 동백나무가 일제히 붉게 피어나 "선운사 동백꽃"으로 전국적으로 유명합니다. 도솔암 마애불(보물 제1200호)은 높이 15m의 웅장한 마애불로 기도 명소로도 알려져 있습니다. 국보 제290호 금동보살좌상을 비롯해 수많은 문화재를 보유합니다.',
+    artifacts:[
+      {badge:'국보',bc:'ab-guknbo',name:'금동보살좌상',desc:'고려시대 금동 보살상, 국보 제290호 — 정교한 조각미의 극치'},
+      {badge:'보물',bc:'ab-bomul',name:'도솔암 마애불',desc:'높이 15m 암벽 마애불, 보물 제1200호 — 고창 기도 명소'},
+      {badge:'보물',bc:'ab-bomul',name:'대웅전',desc:'조선 후기 목조 건축, 보물 제290호 — 팔작지붕의 아름다움'},
+      {badge:'보물',bc:'ab-bomul',name:'영산전',desc:'조선 중기 건축, 보물 제1093호 — 나한도 봉안'},
+      {badge:'보물',bc:'ab-bomul',name:'지장보살상',desc:'보물 제280호 — 고려 말 지장보살 목조상'}
+    ],
+    history:'<strong>577년</strong> 백제 위덕왕 때 검단선사가 창건<br><strong>9세기</strong> 신라 말 도선국사 중창<br><strong>1354년</strong> 고려 공민왕 때 효정선사 대중창<br><strong>임진왜란</strong> 승병 활동 거점, 일부 전소<br><strong>1707년</b> 조선 숙종 때 대대적 중건<br><strong>2009년</strong> 선운사 성보박물관 개관',
+    tips:[
+      {icon:'🌸',text:'<strong>동백꽃 시즌(3~4월)</strong>이 최대 인기 — 주말은 매우 혼잡하므로 평일 방문 권장'},
+      {icon:'🕐',text:'<strong>관람 시간:</strong> 일출~일몰 (계절별 변동), 도솔암은 추가 30분 소요'},
+      {icon:'🥾',text:'도솔암 마애불까지 왕복 약 40분 — 편한 신발 필수'},
+      {icon:'📸',text:'동백꽃 낙화 시기(4월 중순) 붉은 꽃 카펫이 장관 — 사진 명소'},
+      {icon:'🎫',text:'입장료 성인 3,000원 / 청소년 2,000원 / 어린이 1,000원'}
+    ],
+    access:'<strong>자가용:</strong> 서해안고속도로 → 고창IC → 22번 국도 → 선운사 (서울 약 3시간)<br><strong>버스:</strong> 고창버스터미널 → 선운사행 직행버스 (20분)<br><strong>주차:</strong> 선운사 주차장 (소형 2,000원)',
+    tags:['동백꽃','국보','도솔암','마애불','백제창건','고창','봄'],
+    ctaTitle:'선운사 방문 안내',
+    ctaText:'봄 동백꽃 시즌에는 주말 주차 혼잡이 심합니다. 대중교통 이용을 추천드립니다.',
+    map:'https://map.kakao.com/link/search/선운사+고창'
+  },
+  sudeoksa:{
+    name:'수덕사',wikiName:'수덕사',loc:'충남 예산',
+    badges:[{t:'국보 제49호 대웅전',c:'hb-pop'},{t:'고려 목조 건축',c:'hb-her'}],
+    info:[
+      {l:'창건',v:'599년(백제)'},
+      {l:'종단',v:'조계종 7교구'},
+      {l:'국보',v:'대웅전',g:true},
+      {l:'보물',v:'3건',g:true},
+      {l:'특징',v:'고려 최고 목조'},
+      {l:'입장료',v:'성인 2,000원'}
+    ],
+    intro:'<strong>수덕사 대웅전</strong>(국보 제49호)은 고려 충렬왕 34년(1308년)에 건립된 현존 최고(最古) 목조 건축물 중 하나입니다. 배흘림기둥과 맞배지붕이 어우러진 간결한 아름다움이 특징으로, 한국 고려 시대 목조 건축의 정수를 보여줍니다. 충남 예산 덕숭산 기슭에 자리하며, 경허·만공으로 이어지는 한국 근·현대 선불교의 중심 도량입니다.',
+    artifacts:[
+      {badge:'국보',bc:'ab-guknbo',name:'수덕사 대웅전',desc:'국보 제49호, 1308년 고려 건립 — 현존 최고의 맞배지붕 목조 건축'},
+      {badge:'보물',bc:'ab-bomul',name:'수덕사 노사나불괘불탱',desc:'보물 제1263호 — 조선 1673년 제작 대형 괘불'},
+      {badge:'보물',bc:'ab-bomul',name:'수덕사 삼층석탑',desc:'보물 제1495호 — 고려 시대 석탑'},
+      {badge:'보물',bc:'ab-bomul',name:'덕숭총림 정혜사',desc:'만공선사 창건 선원, 근대 선불교 수행처'}
+    ],
+    history:'<strong>599년</strong> 백제 법왕 원년 창건 (지명법사)<br><strong>1308년</strong> 고려 충렬왕 때 대웅전 건립 — 현재까지 보존<br><strong>조선시대</strong> 수차례 중수, 선찰로 발전<br><strong>1898년</strong> 경허선사 부임, 한국 선불교 중흥<br><strong>1905년</strong> 만공선사 정혜사 창건<br><strong>1973년</strong> 덕숭총림 지정',
+    tips:[
+      {icon:'🏛️',text:'<strong>대웅전</strong>은 정면 3칸, 측면 4칸의 맞배지붕 건물 — 배흘림기둥을 꼭 확인'},
+      {icon:'🕐',text:'<strong>관람 시간:</strong> 오전 6시~오후 6시 (연중무휴)'},
+      {icon:'🚶',text:'정혜사까지 덕숭산 등산로 왕복 약 1시간 — 만공탑·금선대 탐방 가능'},
+      {icon:'🎨',text:'수덕여관(나혜석 화백 작업실 터) — 근대 여성 예술가의 흔적'},
+      {icon:'♨️',text:'근처 덕산온천(차로 10분)과 연계 여행 추천'}
+    ],
+    access:'<strong>자가용:</strong> 서해안고속도로 → 해미IC → 32번 국도 → 덕산 → 수덕사 (서울 약 2시간)<br><strong>버스:</strong> 예산 또는 홍성 터미널 → 덕산행 → 수덕사 하차<br><strong>주차:</strong> 수덕사 주차장 (유료, 넓음)',
+    tags:['국보','대웅전','고려건축','경허','만공','참선','덕숭산','온천'],
+    ctaTitle:'수덕사 방문 안내',
+    ctaText:'대웅전 국보 건축과 덕숭산 트레킹을 함께 즐기는 반나절 코스를 추천드립니다.',
+    map:'https://map.kakao.com/link/search/수덕사+예산'
+  },
+  beomaesa:{
+    name:'범어사',wikiName:'범어사',loc:'부산 금정산',
+    badges:[{t:'보물 7건',c:'hb-pop'},{t:'금정총림',c:'hb-type'}],
+    info:[
+      {l:'창건',v:'678년(신라)'},
+      {l:'종단',v:'조계종 14교구'},
+      {l:'국보',v:'없음'},
+      {l:'보물',v:'7건',g:true},
+      {l:'특징',v:'도심 접근 고찰'},
+      {l:'입장료',v:'성인 1,000원'}
+    ],
+    intro:'<strong>범어사</strong>는 부산 금정산에 자리한 신라 문무왕 18년(678년) 의상대사 창건의 천년 고찰입니다. "금빛 물고기가 오색 구름을 타고 내려와 놀았다"는 전설에서 범어사(梵魚寺)라는 이름이 유래합니다. 보물 7건을 보유한 부산의 대표 사찰이며, 금정총림으로서 선 수행 전통이 깊습니다. 지하철로 접근 가능한 도심 인근 산사로 연간 방문객이 많습니다.',
+    artifacts:[
+      {badge:'보물',bc:'ab-bomul',name:'범어사 조계문',desc:'보물 제1461호 — 조선 후기 일주문, 전국 3대 일주문 중 하나'},
+      {badge:'보물',bc:'ab-bomul',name:'범어사 대웅전',desc:'보물 제434호 — 조선 1713년 건립, 다포식 팔작지붕'},
+      {badge:'보물',bc:'ab-bomul',name:'범어사 삼층석탑',desc:'보물 제250호 — 통일신라 석탑, 2.6m 소형 정제미'},
+      {badge:'보물',bc:'ab-bomul',name:'범어사 당간지주',desc:'보물 제15호 — 통일신라 화강암 당간지주'},
+      {badge:'보물',bc:'ab-bomul',name:'동종',desc:'보물 제1253호 — 1728년 주조 청동 범종'}
+    ],
+    history:'<strong>678년</strong> 신라 문무왕 때 의상대사 창건<br><strong>829년</strong> 흥덕왕 때 대대적 중창<br><strong>임진왜란</strong> 전소 후 1613년 재건<br><strong>1713년</strong> 현재 대웅전 건립<br><strong>일제강점기</strong> 독립운동 거점 역할<br><strong>2012년</strong> 금정총림 지정',
+    tips:[
+      {icon:'🚇',text:'<strong>지하철 접근:</strong> 1호선 범어사역 → 도보 20분 또는 버스 환승 (부산 최고 접근성)'},
+      {icon:'🏔️',text:'금정산 등산 코스 출발점 — 고당봉(801m)까지 왕복 약 3시간'},
+      {icon:'🌿',text:'범어사 숲길(산문~조계문)의 단풍이 10월 말~11월 초 절경'},
+      {icon:'🎫',text:'입장료 성인 1,000원 — 전국 주요 사찰 중 가장 저렴'},
+      {icon:'📿',text:'성보박물관 관람 추천 — 조선 불화와 유물 전시'}
+    ],
+    access:'<strong>지하철:</strong> 1호선 범어사역 1번 출구 → 마을버스 90번 (10분)<br><strong>자가용:</strong> 부산시내 → 금정산 방향 (내비 "범어사 주차장")<br><strong>주차:</strong> 범어사 주차장 (유료, 협소 — 주말 대중교통 권장)',
+    tags:['보물','의상대사','금정산','조계문','부산','지하철','등산'],
+    ctaTitle:'범어사 방문 안내',
+    ctaText:'부산 여행 중 금정산 등산과 함께 범어사를 방문하는 코스를 추천드립니다. 주말은 지하철 이용이 편리합니다.',
+    map:'https://map.kakao.com/link/search/범어사+부산'
+  },
+  jeondeungsa:{
+    name:'전등사',wikiName:'전등사',loc:'인천 강화도',
+    badges:[{t:'현존 최고(最古) 건축',c:'hb-pop'},{t:'조선 왕실 원찰',c:'hb-her'}],
+    info:[
+      {l:'창건',v:'381년(고구려)'},
+      {l:'종단',v:'조계종 1교구'},
+      {l:'보물',v:'5건',g:true},
+      {l:'특징',v:'한국 최오래 사찰'},
+      {l:'주변',v:'강화 고려궁지'},
+      {l:'입장료',v:'성인 3,000원'}
+    ],
+    intro:'<strong>전등사</strong>는 인천 강화도 정족산 삼랑성 안에 자리한 고구려 소수림왕 11년(381년) 아도화상 창건의 고찰로, <strong>한국에서 가장 오래된 사찰 중 하나</strong>입니다. 1282년 고려 충렬왕비 정화궁주가 옥등(玉燈)을 시주한 데서 전등사(傳燈寺)라는 이름이 유래합니다. 조선왕조실록을 보관한 정족산 사고(史庫)가 경내에 있으며, 대웅보전 처마 나부(裸婦) 조각으로도 유명합니다.',
+    artifacts:[
+      {badge:'보물',bc:'ab-bomul',name:'전등사 대웅보전',desc:'보물 제178호 — 조선 1621년 건립, 처마 나부 조각 4구로 유명'},
+      {badge:'보물',bc:'ab-bomul',name:'전등사 약사전',desc:'보물 제179호 — 조선 중기 건립, 소박한 맞배지붕'},
+      {badge:'보물',bc:'ab-bomul',name:'전등사 범종',desc:'보물 제393호 — 중국 북송 1097년 제작 청동 범종'},
+      {badge:'보물',bc:'ab-bomul',name:'전등사 철제 향로',desc:'보물 제1509호 — 고려 말 조선 초 철제 향로'},
+      {badge:'보물',bc:'ab-bomul',name:'정족산 사고',desc:'조선왕조실록 봉안처 — 임진왜란 때 유일 소실 피함'}
+    ],
+    history:'<strong>381년</strong> 고구려 소수림왕, 아도화상 창건 (진종사)<br><strong>1282년</strong> 고려 충렬왕비 정화궁주, 옥등 시주 → 전등사 개명<br><strong>1621년</strong> 광해군 때 현재 대웅보전 건립<br><strong>병자호란</strong> 전략 요충지, 삼랑성 항전<br><strong>1866년</strong> 병인양요, 프랑스군 침략 방어<br><strong>1976년</strong> 사적 제130호 지정',
+    tips:[
+      {icon:'🏛️',text:'대웅보전 처마 네 모서리 <strong>나부(裸婦) 조각</strong> — 전설의 "배신한 여인" 이야기 안내판 확인'},
+      {icon:'🔔',text:'보물 범종은 중국 북송 제작 — 국내 봉안 중국 범종 중 가장 오래됨'},
+      {icon:'🏯',text:'삼랑성(정족산성) 성벽 따라 산책 코스 (약 1시간) — 강화 전경 감상'},
+      {icon:'📚',text:'정족산 사고터 탐방 — 조선왕조실록 보관 장소의 역사 현장'},
+      {icon:'🚗',text:'강화도 고려궁지·광성보·마니산과 묶어 1일 강화 역사 투어 추천'}
+    ],
+    access:'<strong>자가용:</strong> 강화대교 → 48번 국도 → 온수리 → 전등사 (서울 약 1.5시간)<br><strong>버스:</strong> 강화버스터미널 → 전등사 방면 버스 (40분)<br><strong>주차:</strong> 전등사 주차장 (소형 2,000원)',
+    tags:['최오래사찰','고구려','대웅보전','조선왕조실록','강화도','나부조각','병인양요'],
+    ctaTitle:'전등사 방문 안내',
+    ctaText:'강화도 역사 여행의 필수 코스입니다. 고려궁지·광성보와 함께 당일 강화 투어를 추천드립니다.',
+    map:'https://map.kakao.com/link/search/전등사+강화도'
+  }
+};
+(function(){
+  var id=(new URLSearchParams(location.search).get('id')||'').toLowerCase();
+  var d=DB[id];
+  if(!d){document.getElementById('not-found').style.display='block';return;}
+  document.getElementById('pg-wrap').style.display='block';
+  document.title=d.name+' 문화재 | 잼공인연사찰';
+  document.getElementById('pg-title').textContent=d.name+' 문화재 | 잼공인연사찰';
+  var img=document.getElementById('pg-img');
+  img.alt=d.name;
+  img.src='';
+  function loadWikiImg(name,fbUrl){
+    fetch('https://ko.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(name))
+      .then(function(r){return r.json();})
+      .then(function(d2){
+        var src=d2.originalimage||d2.thumbnail;
+        if(src&&src.source)img.src=src.source.replace(/\/\d+px-/,'/800px-');
+        else if(fbUrl)img.src=fbUrl;
+      }).catch(function(){if(fbUrl)img.src=fbUrl;});
+  }
+  loadWikiImg(d.wikiName||d.name,null);
+  document.getElementById('pg-badges').innerHTML=d.badges.map(function(b){return'<span class="hb '+b.c+'">'+b.t+'</span>';}).join('');
+  document.getElementById('pg-name').textContent=d.name;
+  document.getElementById('pg-loc').textContent='📍 '+d.loc;
+  document.getElementById('pg-info-row').innerHTML=d.info.map(function(i){return'<div class="info-box"><div class="info-box-label">'+i.l+'</div><div class="info-box-val'+(i.g?' gold':'')+'">'+i.v+'</div></div>';}).join('');
+  document.getElementById('pg-intro').innerHTML=d.intro;
+  document.getElementById('pg-artifacts').innerHTML=d.artifacts.map(function(a){return'<li class="artifact-item"><div class="artifact-badge '+a.bc+'">'+a.badge+'</div><div><div class="artifact-name">'+a.name+'</div><div class="artifact-desc">'+a.desc+'</div></div></li>';}).join('');
+  document.getElementById('pg-history').innerHTML=d.history;
+  document.getElementById('pg-tips').innerHTML=d.tips.map(function(t){return'<li class="tip-item"><span class="tip-icon">'+t.icon+'</span><div class="tip-text">'+t.text+'</div></li>';}).join('');
+  document.getElementById('pg-access').innerHTML=d.access;
+  document.getElementById('pg-tags').innerHTML=d.tags.map(function(t){return'<span class="tag">'+t+'</span>';}).join('');
+  document.getElementById('pg-cta-title').textContent=d.ctaTitle||'방문 안내';
+  document.getElementById('pg-cta-text').innerHTML=d.ctaText.replace(/\n/g,'<br>');
+  document.getElementById('pg-map-btn').href=d.map;
+})();
+</script>
