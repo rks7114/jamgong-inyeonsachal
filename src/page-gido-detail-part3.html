@@ -1,0 +1,205 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title id="pg-title">기도도량 상세 | 잼공인연사찰</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#07040f;color:#e2e8f0;min-height:100vh}
+.hero{position:relative;height:55vw;max-height:400px;min-height:240px;overflow:hidden}
+.hero-img{width:100%;height:100%;object-fit:cover;filter:brightness(.85)}
+.hero-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,4,15,.95) 0%,rgba(7,4,15,.4) 35%,rgba(0,0,0,.05) 100%)}
+.hero-ct{position:absolute;bottom:0;left:0;right:0;padding:24px}
+.hb{display:inline-block;border-radius:20px;padding:4px 12px;font-size:.65rem;font-weight:800;margin-bottom:8px;margin-right:4px}
+.hb-v{background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.5);color:#c4b5fd}
+.hb-g{background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.5);color:#fcd34d}
+.hero-name{font-size:1.8rem;font-weight:900;color:#f8fafc;line-height:1.15;margin-bottom:3px}
+.hero-loc{font-size:.8rem;color:#94a3b8}
+.body{max-width:860px;margin:0 auto;padding:24px 16px 80px}
+.info-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:20px}
+.ib{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center}
+.ib-l{font-size:.6rem;font-weight:800;color:#64748b;letter-spacing:.1em;margin-bottom:4px}
+.ib-v{font-size:.82rem;font-weight:800;color:#f8fafc}
+.ib-v.g{color:#FBBF24}
+.sec{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;margin-bottom:14px}
+.sec-t{font-size:.78rem;font-weight:900;color:#a78bfa;letter-spacing:.1em;margin-bottom:12px}
+.sec-t::after{content:'';display:block;height:1px;background:linear-gradient(to right,rgba(139,92,246,.3),transparent);margin-top:6px}
+.sec-b{font-size:.82rem;color:#94a3b8;line-height:1.85;word-break:keep-all}
+.sec-b strong{color:#f1f5f9;font-weight:700}
+.prayer-box{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:16px;margin-top:10px}
+.prayer-title{font-size:.72rem;font-weight:900;color:#a78bfa;margin-bottom:8px}
+.prayer-text{font-size:.78rem;color:#cbd5e1;line-height:2;word-break:keep-all}
+.step-list{list-style:none}
+.step-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.step-item:last-child{border-bottom:none}
+.step-num{width:26px;height:26px;border-radius:50%;background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.4);color:#c4b5fd;font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-t{font-size:.82rem;font-weight:700;color:#f1f5f9;margin-bottom:2px}
+.step-d{font-size:.72rem;color:#64748b;line-height:1.5}
+.rel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.rel-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-decoration:none;display:block;transition:all .2s}
+.rel-card:hover{border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.06)}
+.rel-icon{font-size:1.3rem;margin-bottom:4px}
+.rel-name{font-size:.78rem;font-weight:800;color:#f1f5f9}
+.rel-desc{font-size:.68rem;color:#64748b;margin-top:2px}
+.back-btn{display:inline-block;padding:10px 20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#e2e8f0;text-decoration:none;font-size:.78rem;font-weight:700;margin-top:20px}
+#not-found{display:none;text-align:center;padding:80px 24px;color:#64748b}
+#pg-wrap{display:none}
+</style>
+<div id="not-found"><p style="font-size:1.1rem;margin-bottom:12px">도량 정보를 찾을 수 없습니다.</p><a href="page-gido-list.html" style="color:#a78bfa">← 기도도량 목록으로</a></div>
+<div id="pg-wrap">
+<div class="hero"><img class="hero-img" id="pg-img" src="" alt=""><div class="hero-ov"></div>
+<div class="hero-ct"><div id="pg-badges"></div><div class="hero-name" id="pg-name"></div><div class="hero-loc" id="pg-loc"></div></div></div>
+<div class="body">
+  <div class="info-row" id="pg-info"></div>
+  <div class="sec"><div class="sec-t">🙏 도량 소개</div><div class="sec-b" id="pg-intro"></div></div>
+  <div class="sec"><div class="sec-t">📿 기도 안내</div><div id="pg-prayer"></div></div>
+  <div class="sec"><div class="sec-t">🪜 기도 순서</div><ul class="step-list" id="pg-steps"></ul></div>
+  <div class="sec"><div class="sec-t">🚗 교통 안내</div><div class="sec-b" id="pg-access"></div></div>
+  <div class="sec"><div class="sec-t">🔗 함께 찾는 도량</div><div class="rel-grid" id="pg-rel"></div></div>
+  <a class="back-btn" href="page-gido-list.html">← 기도도량 목록으로</a>
+</div></div>
+<script>
+var DB={
+  seoraksan:{name:"봉정암",loc:"강원 인제",cat:"적멸보궁·업장소멸 기도",icon:"⛰️",
+    badges:[{t:"5대 적멸보궁",c:"hb-g"},{t:"설악산 1,244m",c:"hb-v"}],
+    info:[{l:"창건",v:"643년"},{l:"고도",v:"1,244m",g:true},{l:"본존",v:"사리탑"},{l:"소요",v:"왕복 6~8시간"},{l:"교구",v:"제3교구"},{l:"입장료",v:"무료"}],
+    intro:"<strong>봉정암</strong>은 강원 인제 설악산 1,244m에 자리한 5대 적멸보궁 중 하나로 한국에서 가장 높은 곳에 위치한 사찰입니다. 643년 자장율사가 당나라에서 모셔온 부처님 진신사리를 봉안한 5층 석탑이 있습니다. 편도 3~4시간의 가파른 산행 후 드리는 기도는 더욱 간절하고 특별합니다.",
+    prayer:[{title:"적멸보궁 기도",text:"나무석가모니불 나무석가모니불 나무석가모니불.\n설악산 봉정암에서 부처님 진신사리 앞에 엎드려 발원합니다. 업장이 소멸되고 몸과 마음이 청정해지기를, 간절한 소원이 이루어지기를 기도드립니다."}],
+    steps:[{t:"백담사 출발",d:"백담사에서 봉정암까지 등산로 출발"},{t:"수렴동 대피소",d:"약 2시간 산행 후 대피소 경유"},{t:"봉정암 도착",d:"약 4시간 후 봉정암 도착"},{t:"5층 석탑",d:"진신사리 봉안 석탑 삼배"},{t:"적멸보궁",d:"부처님 사리 앞 기도"}],
+    access:"<strong>자가용:</strong> 서울양양고속도로 → 인제IC → 백담사 주차장 (서울 약 2시간)<br><strong>버스:</strong> 인제버스터미널 → 백담사<br><strong>주의:</strong> 겨울(12~3월) 통제, 예약 필수",
+    rel:[{id:"odaesan",icon:"⭐",name:"오대산 상원사",desc:"평창 문수 도량",pg:"page-gido-detail-part2"},{id:"woljeongsa",icon:"⭐",name:"월정사",desc:"오대산 적멸보궁",pg:"page-gido-detail-part3"}]},
+  "tongdosa-boggung":{name:"통도사 금강계단",loc:"경남 양산",cat:"적멸보궁·원력 기도",icon:"⭐",
+    badges:[{t:"5대 적멸보궁",c:"hb-g"},{t:"불보종찰",c:"hb-v"}],
+    info:[{l:"창건",v:"646년"},{l:"본존",v:"진신사리"},{l:"특징",v:"금강계단",g:true},{l:"입장료",v:"3,000원"},{l:"교구",v:"제15교구"},{l:"규모",v:"영축총림"}],
+    intro:"<strong>통도사 금강계단</strong>은 경남 양산 통도사의 핵심 성지로, 자장율사가 당나라에서 모셔온 부처님 진신사리를 봉안한 계단(戒壇)입니다. 이 때문에 통도사는 대웅전에 불상 없이 금강계단을 향해 예불을 드리는 유일한 사찰입니다. 5대 적멸보궁 중 가장 접근이 편리합니다.",
+    prayer:[{title:"적멸보궁 기도",text:"나무석가모니불 나무석가모니불 나무석가모니불.\n불보종찰 통도사 금강계단, 부처님 진신사리 앞에 엎드려 발원합니다. 업장이 소멸되고 소원이 이루어지기를 간절히 기도드립니다."}],
+    steps:[{t:"일주문 통과",d:"불이문·천왕문·불이문 순서로 경내 진입"},{t:"대웅전",d:"불상 없는 특별한 대웅전 참배"},{t:"금강계단",d:"진신사리 봉안 계단 삼배"},{t:"사리탑",d:"적멸보궁 앞 기도"},{t:"성보박물관",d:"통도사 국보·보물 유물 관람"}],
+    access:"<strong>자가용:</strong> 경부고속도로 → 통도사IC → 통도사 (부산 약 40분, 서울 약 3.5시간)<br><strong>버스:</strong> 양산버스터미널 → 통도사행 버스<br><strong>주차:</strong> 통도사 주차장 (유료)",
+    rel:[{id:"seoraksan",icon:"⛰️",name:"봉정암",desc:"설악 적멸보궁",pg:"page-gido-detail-part3"},{id:"tongdosa",icon:"🔥",name:"통도사",desc:"불보종찰",pg:"page-gido-detail"}]},
+  donghaksa:{name:"동학사",loc:"충남 공주",cat:"관음·소원 기도",icon:"🌿",
+    badges:[{t:"계룡산 비구니 사찰",c:"hb-v"},{t:"봄 벚꽃 명소",c:"hb-g"}],
+    info:[{l:"창건",v:"724년"},{l:"본존",v:"석가모니불"},{l:"특징",v:"비구니 총림",g:true},{l:"입장료",v:"3,000원"},{l:"교구",v:"제6교구"},{l:"주변",v:"계룡산 국립공원"}],
+    intro:"<strong>동학사</strong>는 충남 공주 계룡산에 자리한 724년 창건의 고찰로 비구니 스님들의 총림입니다. 봄이면 동학사 계곡 길 벚꽃이 장관을 이루어 '계룡산 봄 명소' 로 손꼽힙니다. 신라의 한(限)을 품은 역사적 사찰로 숙모전에는 충신들의 위패가 봉안돼 있습니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n계룡산 동학사에서 관세음보살님께 기도드립니다. 자비로운 손길로 저의 소원을 들어주시고 가정에 평화와 행복이 깃들기를 발원합니다."}],
+    steps:[{t:"매표소",d:"입장료 납부 후 동학사 계곡길 진입"},{t:"삼성각",d:"산신·칠성·독성 삼배"},{t:"대웅전",d:"석가모니불 기도"},{t:"숙모전",d:"충신 위패 참배"},{t:"계곡 탐방",d:"봄 벚꽃 / 여름 계곡물 즐기기"}],
+    access:"<strong>자가용:</strong> 논산천안고속도로 → 남공주IC → 동학사 (대전 약 30분)<br><strong>버스:</strong> 공주버스터미널 → 동학사행 버스<br><strong>주차:</strong> 동학사 주차장 (유료)",
+    rel:[{id:"magoksa",icon:"🌲",name:"마곡사",desc:"공주 유네스코",pg:"page-gido-detail-part2"},{id:"buseoksa",icon:"🏔️",name:"부석사",desc:"영주 관음",pg:"page-gido-detail"}]},
+  geumseon:{name:"현등사",loc:"경기 가평",cat:"관음·소원 기도",icon:"🌊",
+    badges:[{t:"경기 기도 명소",c:"hb-v"},{t:"명지산 청정",c:"hb-g"}],
+    info:[{l:"창건",v:"576년"},{l:"본존",v:"관세음보살"},{l:"특징",v:"청정 기도처",g:true},{l:"입장료",v:"무료"},{l:"교구",v:"제25교구"},{l:"주변",v:"가평 자라섬"}],
+    intro:"<strong>현등사</strong>는 경기 가평 명지산에 자리한 576년 창건의 고찰입니다. 조용하고 청정한 환경 속에서 관음 기도로 유명하며, 수도권에서 접근하기 좋은 기도처입니다. 봄·가을 단풍과 함께하는 산사 기도가 인상적입니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n명지산 현등사 관세음보살님께 간절히 발원합니다. 청정한 산사의 기운으로 소원이 이루어지고 가정과 사업에 평안이 깃들기를 기도드립니다."}],
+    steps:[{t:"명지산 입구",d:"가평에서 명지산 방향 출발"},{t:"현등사 도착",d:"청정 산사 도착"},{t:"관음전",d:"관세음보살 삼배"},{t:"대웅전",d:"석가모니불 기도"},{t:"하산",d:"기도 후 명지계곡 산책"}],
+    access:"<strong>자가용:</strong> 서울양양고속도로 → 가평IC → 명지산 방향 → 현등사 (서울 약 1시간)<br><strong>버스:</strong> 가평버스터미널 → 현등사 방면<br><strong>주차:</strong> 현등사 주차장",
+    rel:[{id:"naksan",icon:"🌊",name:"낙산사 홍련암",desc:"강원 관음",pg:"page-gido-detail"},{id:"jogyesa",icon:"🏯",name:"조계사",desc:"서울 총본산",pg:"page-gido-detail"}]},
+  songgwangsa:{name:"송광사",loc:"전남 순천",cat:"승보·소원 기도",icon:"🌿",
+    badges:[{t:"승보종찰",c:"hb-g"},{t:"조계산 16국사",c:"hb-v"}],
+    info:[{l:"창건",v:"867년"},{l:"본존",v:"석가모니불"},{l:"특징",v:"16국사 배출",g:true},{l:"입장료",v:"3,000원"},{l:"교구",v:"제21교구"},{l:"규모",v:"승보종찰"}],
+    intro:"<strong>송광사</strong>는 전남 순천 조계산에 자리한 삼보사찰 중 승보종찰입니다. 보조국사 지눌이 창건한 이래 16명의 국사를 배출한 한국 불교 수행의 중심 도량입니다. 보조국사 감로탑(국보)과 16국사 진영을 모신 국사전(국보)이 있습니다.",
+    prayer:[{title:"승보 기도",text:"나무석가모니불 나무석가모니불 나무석가모니불.\n승보종찰 송광사, 보조국사 지눌의 가르침이 서린 도량에서 기도드립니다. 수행의 힘과 지혜를 내려주시어 소원이 이루어지기를 발원합니다."}],
+    steps:[{t:"우화각",d:"물 위의 다리 우화각 통과"},{t:"대웅보전",d:"석가모니불 삼배 기도"},{t:"국사전",d:"16국사 진영 참배"},{t:"보조국사탑",d:"국보 감로탑 참배"},{t:"경내 산책",d:"조계산 청정 기운 감상"}],
+    access:"<strong>자가용:</strong> 순천완주고속도로 → 주암IC → 송광사 (광주 약 50분)<br><strong>버스:</strong> 순천버스터미널 → 송광사행 버스<br><strong>주차:</strong> 송광사 주차장 (유료)",
+    rel:[{id:"seonamsa",icon:"🌸",name:"선암사",desc:"순천 조계산",pg:"page-gido-detail-part2"},{id:"haeinsa",icon:"📜",name:"해인사",desc:"법보종찰",pg:"page-gido-detail"}]},
+  beopjusa:{name:"법주사",loc:"충북 보은",cat:"미륵·소원 기도",icon:"🌅",
+    badges:[{t:"미륵대불 33m",c:"hb-g"},{t:"세계유산",c:"hb-v"}],
+    info:[{l:"창건",v:"553년"},{l:"본존",v:"미륵불(33m)"},{l:"국보",v:"팔상전 외 3건",g:true},{l:"입장료",v:"5,000원"},{l:"교구",v:"제5교구"},{l:"주변",v:"속리산 국립공원"}],
+    intro:"<strong>법주사</strong>는 충북 보은 속리산에 자리한 553년 창건의 유네스코 세계유산 사찰입니다. 33m 금동 미륵대불은 한국 최대 규모 불상이며, 팔상전(국보)은 목탑 형식의 5층 건물로 국내 유일입니다. '정이품송'으로도 유명한 속리산 국립공원 내에 위치합니다.",
+    prayer:[{title:"미륵 기도",text:"나무당래하생미륵존불 나무당래하생미륵존불 나무당래하생미륵존불.\n법주사 미륵대불 앞에 엎드려 발원합니다. 33m 금동 미륵부처님의 가피로 소원이 이루어지고 미래에 복덕이 넘치기를 기도드립니다."}],
+    steps:[{t:"금강문",d:"사천왕 참배"},{t:"팔상전",d:"국보 5층 목탑 외관 참배"},{t:"미륵대불",d:"33m 금동 미륵불 삼배"},{t:"대웅보전",d:"석가모니불 기도"},{t:"속리산 산행",d:"천왕봉 방향 트레킹 (선택)"}],
+    access:"<strong>자가용:</strong> 경부고속도로 → 청주IC → 괴산 → 보은 → 속리산 (서울 약 2.5시간)<br><strong>버스:</strong> 보은버스터미널 → 법주사행 버스<br><strong>주차:</strong> 법주사 주차장 (유료)",
+    rel:[{id:"geumsansa",icon:"🌅",name:"금산사",desc:"전북 미륵 도량",pg:"page-gido-detail-part2"},{id:"seonoam",icon:"🌸",name:"선운사",desc:"고창 미륵",pg:"page-gido-detail-part2"}]},
+  woljeongsa:{name:"월정사",loc:"강원 평창",cat:"적멸보궁·문수 기도",icon:"⭐",
+    badges:[{t:"5대 적멸보궁",c:"hb-g"},{t:"전나무 숲길",c:"hb-v"}],
+    info:[{l:"창건",v:"643년"},{l:"본존",v:"문수보살"},{l:"국보",v:"팔각9층석탑",g:true},{l:"입장료",v:"5,000원"},{l:"교구",v:"제4교구"},{l:"특징",v:"전나무 숲 산책"}],
+    intro:"<strong>월정사</strong>는 강원 평창 오대산에 자리한 643년 자장율사 창건의 고찰입니다. 사찰 입구 1km의 아름다운 전나무 숲길이 유명하며, 팔각9층석탑(국보 제48호)이 경내에 우뚝 서 있습니다. 상원사와 함께 문수보살의 성지로 지혜·학업 기도처로 알려져 있습니다.",
+    prayer:[{title:"문수 기도",text:"나무문수사리보살 나무문수사리보살 나무문수사리보살.\n오대산 월정사에서 문수보살님께 발원합니다. 지혜의 빛으로 어리석음을 밝혀 주시고 학업과 사업에서 바른 길을 인도해 주소서."}],
+    steps:[{t:"전나무 숲길",d:"1km 전나무 숲길 걸으며 마음 정화"},{t:"일주문",d:"마음을 가다듬고 입사"},{t:"팔각9층석탑",d:"국보 석탑 삼배"},{t:"적광전",d:"비로자나불 기도"},{t:"상원사 탐방",d:"9km 탐방로 따라 문수동자 친견 (선택)"}],
+    access:"<strong>자가용:</strong> 영동고속도로 → 진부IC → 오대산 → 월정사 (서울 약 2.5시간)<br><strong>버스:</strong> 진부버스터미널 → 월정사행 버스<br><strong>주차:</strong> 월정사 주차장 (유료)",
+    rel:[{id:"odaesan",icon:"⭐",name:"오대산 상원사",desc:"문수 기도처",pg:"page-gido-detail-part2"},{id:"seoraksan",icon:"⛰️",name:"봉정암",desc:"설악 적멸보궁",pg:"page-gido-detail-part3"}]},
+  bulguksa:{name:"불국사",loc:"경북 경주",cat:"소원·관음 기도",icon:"🏛️",
+    badges:[{t:"유네스코 세계유산",c:"hb-g"},{t:"국보 8건",c:"hb-v"}],
+    info:[{l:"창건",v:"528년"},{l:"본존",v:"아미타불"},{l:"국보",v:"8건",g:true},{l:"입장료",v:"6,000원"},{l:"교구",v:"제11교구"},{l:"주변",v:"석굴암 연계"}],
+    intro:"<strong>불국사</strong>는 경북 경주에 자리한 유네스코 세계유산 사찰입니다. 신라 경덕왕 10년(751년) 김대성이 중창한 이후 극락세계를 현세에 구현한 건축으로 유명합니다. 다보탑·석가탑(국보), 청운교·백운교(국보) 등 8건의 국보를 보유한 한국 최대 문화재 사찰입니다.",
+    prayer:[{title:"아미타 기도",text:"나무아미타불 나무아미타불 나무아미타불.\n불국사 아미타부처님, 극락세계로 인도하시는 자비로운 부처님께 발원합니다. 선망부모와 조상의 극락왕생을 기원하고 저도 부처님의 세계에 가까워지기를 기도드립니다."}],
+    steps:[{t:"청운교·백운교",d:"국보 계단을 통해 자하문 진입"},{t:"다보탑·석가탑",d:"국보 쌍탑 앞 삼배"},{t:"대웅전",d:"석가모니불 기도"},{t:"극락전",d:"아미타불 극락왕생 기도"},{t:"석굴암",d:"차량으로 15분 — 석굴암 본존불 참배"}],
+    access:"<strong>자가용:</strong> 경부고속도로 → 경주IC → 불국사 (부산 약 50분, 서울 약 3.5시간)<br><strong>버스:</strong> 경주버스터미널 → 불국사행 버스<br><strong>주차:</strong> 불국사 주차장 (유료)",
+    rel:[{id:"haeinsa",icon:"📜",name:"해인사",desc:"법보종찰",pg:"page-gido-detail"},{id:"tongdosa",icon:"🔥",name:"통도사",desc:"불보종찰",pg:"page-gido-detail"}]},
+  sudoksa:{name:"수덕사",loc:"충남 예산",cat:"관음·소원 기도",icon:"🌸",
+    badges:[{t:"국보 대웅전",c:"hb-g"},{t:"경허·만공 선맥",c:"hb-v"}],
+    info:[{l:"창건",v:"599년"},{l:"본존",v:"석가모니불"},{l:"국보",v:"대웅전",g:true},{l:"입장료",v:"2,000원"},{l:"교구",v:"제7교구"},{l:"특징",v:"덕숭총림"}],
+    intro:"<strong>수덕사</strong>는 충남 예산 덕숭산에 자리한 599년 창건의 고찰로 국보 대웅전(1308년 고려 건립)을 보유합니다. 경허·만공으로 이어지는 한국 근현대 선불교의 중심이며 덕숭총림으로서 수행 전통이 깊습니다. 덕산온천과 연계한 여행도 인기입니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n수덕사 관세음보살님께 간절히 기도드립니다. 경허·만공 선사의 법력이 서린 청정한 도량에서 소원이 이루어지기를 발원합니다."}],
+    steps:[{t:"일주문",d:"덕숭산 수덕사 입장"},{t:"국보 대웅전",d:"1308년 고려 건물 삼배"},{t:"관음전",d:"관세음보살 기도"},{t:"정혜사 탐방",d:"만공선사 창건 선원 방문 (선택)"},{t:"덕산온천",d:"기도 후 온천 힐링 (차로 10분)"}],
+    access:"<strong>자가용:</strong> 서해안고속도로 → 해미IC → 32번 국도 → 수덕사 (서울 약 2시간)<br><strong>버스:</strong> 예산버스터미널 → 덕산행 → 수덕사<br><strong>주차:</strong> 수덕사 주차장 (유료)",
+    rel:[{id:"magoksa",icon:"🌲",name:"마곡사",desc:"공주 유네스코",pg:"page-gido-detail-part2"},{id:"beopjusa",icon:"🌅",name:"법주사",desc:"충북 미륵",pg:"page-gido-detail-part3"}]},
+  donghwasa:{name:"동화사",loc:"대구 팔공산",cat:"관음·약사 기도",icon:"🔵",
+    badges:[{t:"팔공산 관음 성지",c:"hb-v"},{t:"갓바위 연계",c:"hb-g"}],
+    info:[{l:"창건",v:"493년"},{l:"본존",v:"비로자나불"},{l:"특징",v:"갓바위 연계",g:true},{l:"입장료",v:"3,000원"},{l:"교구",v:"제9교구"},{l:"주변",v:"팔공산 갓바위"}],
+    intro:"<strong>동화사</strong>는 대구 팔공산에 자리한 493년 창건의 고찰입니다. 팔공산 갓바위(관봉 석조여래좌상, 보물)와 함께 합격·취업 기도처로 전국적으로 유명합니다. 경내 통일약사여래대불(높이 17m)이 웅장하며, 팔공산 케이블카와 연계한 여행도 인기입니다.",
+    prayer:[{title:"약사여래 기도",text:"나무약사유리광여래 나무약사유리광여래 나무약사유리광여래.\n팔공산 동화사 약사여래 부처님, 몸과 마음의 병고를 거두어 주시고 합격과 취업의 소원을 이루어 주소서. 갓바위 부처님의 가피를 내려주소서."}],
+    steps:[{t:"동화사 입장",d:"입장료 납부 후 경내 진입"},{t:"통일약사여래",d:"17m 대불 삼배 기도"},{t:"대웅전",d:"비로자나불 기도"},{t:"팔공산 갓바위",d:"케이블카 또는 등산 (약 1시간) — 합격 기도"},{t:"팔공산 드라이브",d:"팔공산 드라이브 코스 관광"}],
+    access:"<strong>자가용:</strong> 중앙고속도로 → 서대구IC → 팔공산 → 동화사 (대구역 약 30분)<br><strong>버스:</strong> 동대구역 → 팔공산행 버스<br><strong>주차:</strong> 동화사 주차장 (유료)",
+    rel:[{id:"buseoksa",icon:"🏔️",name:"부석사",desc:"경북 관음",pg:"page-gido-detail"},{id:"jikjisa",icon:"🌿",name:"직지사",desc:"경북 김천",pg:"page-gido-detail-part3"}]},
+  sinheungsa:{name:"신흥사",loc:"강원 속초",cat:"관음·소원 기도",icon:"🏔️",
+    badges:[{t:"설악산 관문",c:"hb-v"},{t:"통일대불",c:"hb-g"}],
+    info:[{l:"창건",v:"652년"},{l:"본존",v:"석가모니불"},{l:"특징",v:"설악산 관문",g:true},{l:"입장료",v:"무료(국립공원 별도)"},{l:"교구",v:"제3교구"},{l:"주변",v:"속초 관광"}],
+    intro:"<strong>신흥사</strong>는 강원 속초 설악산 입구에 자리한 652년 창건의 고찰입니다. 설악산 케이블카 탑승 전 들르는 참배지로 유명하며, 경내 통일대불(청동 좌불 15m)이 웅장합니다. 속초 해수욕장·아바이마을과 함께 강원 여행의 필수 코스입니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n설악산 신흥사에서 관세음보살님께 기도드립니다. 설악산의 청정한 기운으로 소원이 이루어지고 가정과 나라에 평화가 깃들기를 발원합니다."}],
+    steps:[{t:"일주문",d:"설악산 신흥사 입장"},{t:"통일대불",d:"15m 청동 통일대불 삼배"},{t:"극락보전",d:"아미타불 기도"},{t:"설악산 케이블카",d:"권금성 케이블카 (별도 요금)"},{t:"비선대 탐방",d:"설악산 비선대 트레킹 (선택)"}],
+    access:"<strong>자가용:</strong> 서울양양고속도로 → 속초IC → 설악산 → 신흥사 (서울 약 2.5시간)<br><strong>버스:</strong> 속초버스터미널 → 설악산 입구 → 신흥사<br><strong>주차:</strong> 설악산 주차장 (유료)",
+    rel:[{id:"seoraksan",icon:"⛰️",name:"봉정암",desc:"설악 적멸보궁",pg:"page-gido-detail-part3"},{id:"naksan",icon:"🌊",name:"낙산사 홍련암",desc:"양양 관음",pg:"page-gido-detail"}]},
+  jikjisa:{name:"직지사",loc:"경북 김천",cat:"관음·소원 기도",icon:"🌿",
+    badges:[{t:"경북 5대 사찰",c:"hb-v"},{t:"사명대사 출가",c:"hb-g"}],
+    info:[{l:"창건",v:"418년"},{l:"본존",v:"석가모니불"},{l:"특징",v:"사명대사 출가",g:true},{l:"입장료",v:"3,000원"},{l:"교구",v:"제8교구"},{l:"주변",v:"황악산"}],
+    intro:"<strong>직지사</strong>는 경북 김천 황악산에 자리한 418년 창건의 고찰로 사명대사의 출가 도량입니다. 경북 5대 사찰 중 하나이며 KTX 김천구미역에서 가까워 접근성이 좋습니다. 황악산 등산과 연계하거나 사명대사 기념관을 탐방할 수 있습니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n직지사 관세음보살님께 기도드립니다. 사명대사의 호국 원력이 서린 도량에서 나라와 가정의 평화, 그리고 저의 소원이 이루어지기를 발원합니다."}],
+    steps:[{t:"사천왕문",d:"사천왕 참배"},{t:"대웅전",d:"석가모니불 삼배"},{t:"사명대사기념관",d:"사명대사 유물·생애 관람"},{t:"비로전",d:"비로자나불 기도"},{t:"황악산 산행",d:"비로봉 탐방 (선택, 왕복 4시간)"}],
+    access:"<strong>KTX:</strong> 김천구미역 → 택시 20분 (가장 편리)<br><strong>자가용:</strong> 경부고속도로 → 김천IC → 직지사 (서울 약 2.5시간)<br><strong>주차:</strong> 직지사 주차장 (유료)",
+    rel:[{id:"donghwasa",icon:"🔵",name:"동화사",desc:"대구 팔공산",pg:"page-gido-detail-part3"},{id:"buseoksa",icon:"🏔️",name:"부석사",desc:"영주 의상대사",pg:"page-gido-detail"}]},
+  unmunsa:{name:"운문사",loc:"경북 청도",cat:"관음·소원 기도",icon:"🌸",
+    badges:[{t:"비구니 최대 강원",c:"hb-v"},{t:"처진 소나무",c:"hb-g"}],
+    info:[{l:"창건",v:"560년"},{l:"본존",v:"비로자나불"},{l:"특징",v:"비구니 사찰",g:true},{l:"입장료",v:"2,500원"},{l:"교구",v:"제9교구"},{l:"명물",v:"처진 소나무(천연기념물)"}],
+    intro:"<strong>운문사</strong>는 경북 청도 호거산에 자리한 560년 창건의 고찰로 전국 최대 비구니 강원이 있습니다. 경내 처진 소나무(천연기념물 제180호)가 수백 년의 수령을 자랑하며 독특한 자태를 뽐냅니다. 봄 벚꽃과 함께하는 사찰 풍경이 아름답기로 유명합니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n운문사 관세음보살님께 기도드립니다. 청정한 비구니 강원의 수행 기운으로 소원이 이루어지고 지혜롭게 살아갈 수 있도록 인도해 주소서."}],
+    steps:[{t:"일주문",d:"호거산 운문사 입장"},{t:"처진 소나무",d:"천연기념물 소나무 앞 묵상"},{t:"대웅전",d:"비로자나불 삼배"},{t:"관음전",d:"관세음보살 기도"},{t:"경내 산책",d:"봄 벚꽃 / 청정 자연 감상"}],
+    access:"<strong>자가용:</strong> 경부고속도로 → 경산IC 또는 청도IC → 운문사 (대구 약 1시간)<br><strong>버스:</strong> 청도버스터미널 → 운문사행 버스<br><strong>주차:</strong> 운문사 주차장 (유료)",
+    rel:[{id:"donghwasa",icon:"🔵",name:"동화사",desc:"대구 팔공산",pg:"page-gido-detail-part3"},{id:"tongdosa",icon:"🔥",name:"통도사",desc:"양산 불보종찰",pg:"page-gido-detail"}]},
+  gapsa:{name:"갑사",loc:"충남 공주",cat:"관음·소원 기도",icon:"🍁",
+    badges:[{t:"계룡산 가을 단풍",c:"hb-g"},{t:"추갑사 명소",c:"hb-v"}],
+    info:[{l:"창건",v:"420년"},{l:"본존",v:"석가모니불"},{l:"특징",v:"가을 단풍 최고",g:true},{l:"입장료",v:"3,000원"},{l:"교구",v:"제6교구"},{l:"속담",v:"춘마곡추갑사"}],
+    intro:"<strong>갑사</strong>는 충남 공주 계룡산에 자리한 420년 창건의 고찰입니다. '춘마곡추갑사(春麻谷秋甲寺)'라 하여 가을 단풍이 최고로 꼽히는 명소입니다. 갑사 계곡을 따라 오르는 단풍길이 장관이며, 마곡사와 함께 충남 대표 사찰입니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n계룡산 갑사 관세음보살님께 기도드립니다. 가을 단풍처럼 결실을 맺고 소원이 이루어지기를 발원합니다. 자비로운 가피를 내려주소서."}],
+    steps:[{t:"갑사 계곡길",d:"단풍 계곡길 따라 입사"},{t:"대웅전",d:"석가모니불 삼배 기도"},{t:"삼성각",d:"산신·칠성·독성 참배"},{t:"공우탑",d:"의신조사 공적 기념탑 참배"},{t:"계룡산 산행",d:"연천봉 방향 트레킹 (선택)"}],
+    access:"<strong>자가용:</strong> 논산천안고속도로 → 남공주IC → 계룡산 → 갑사 (대전 약 30분)<br><strong>버스:</strong> 공주버스터미널 → 갑사행 버스<br><strong>주차:</strong> 갑사 주차장 (유료)",
+    rel:[{id:"magoksa",icon:"🌲",name:"마곡사",desc:"공주 유네스코",pg:"page-gido-detail-part2"},{id:"donghaksa",icon:"🌿",name:"동학사",desc:"공주 벚꽃",pg:"page-gido-detail-part3"}]},
+  pyochungsa:{name:"표충사",loc:"경남 밀양",cat:"관음·소원 기도",icon:"⚔️",
+    badges:[{t:"사명대사 기념",c:"hb-g"},{t:"재약산 고찰",c:"hb-v"}],
+    info:[{l:"창건",v:"654년"},{l:"본존",v:"석가모니불"},{l:"특징",v:"사명대사 사당",g:true},{l:"입장료",v:"2,000원"},{l:"교구",v:"제14교구"},{l:"주변",v:"밀양 얼음골"}],
+    intro:"<strong>표충사</strong>는 경남 밀양 재약산에 자리한 654년 창건의 고찰입니다. 임진왜란 때 의병을 이끈 사명대사를 기리는 표충사당이 경내에 있어 '표충사'라는 이름이 붙었습니다. 재약산과 사자평 억새밭이 가을 경치로 유명하며, 밀양 얼음골 관광과 연계됩니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n표충사 관세음보살님께 기도드립니다. 사명대사의 호국 원력처럼 나라와 가정을 지키고 소원이 이루어지기를 간절히 발원합니다."}],
+    steps:[{t:"일주문",d:"재약산 표충사 입장"},{t:"대웅전",d:"석가모니불 삼배 기도"},{t:"표충사당",d:"사명대사 위패 참배"},{t:"삼층석탑",d:"경내 석탑 참배"},{t:"재약산 산행",d:"사자평 억새밭 트레킹 (선택)"}],
+    access:"<strong>자가용:</strong> 남해고속도로 → 밀양IC → 표충사 (부산 약 50분)<br><strong>버스:</strong> 밀양버스터미널 → 표충사행 버스<br><strong>주차:</strong> 표충사 주차장 (유료)",
+    rel:[{id:"tongdosa",icon:"🔥",name:"통도사",desc:"양산 불보종찰",pg:"page-gido-detail"},{id:"jikjisa",icon:"🌿",name:"직지사",desc:"사명대사 출가",pg:"page-gido-detail-part3"}]}
+};
+(function(){
+  var id=(new URLSearchParams(location.search).get('id')||'').toLowerCase();
+  var d=DB[id];
+  if(!d){document.getElementById('not-found').style.display='block';return;}
+  document.getElementById('pg-wrap').style.display='block';
+  document.title=d.name+' 기도도량 | 잼공인연사찰';
+  document.getElementById('pg-title').textContent=d.name+' | 잼공인연사찰';
+  var img=document.getElementById('pg-img');
+  img.alt=d.name;
+  fetch('https://ko.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(d.name))
+    .then(function(r){return r.json();})
+    .then(function(w){var s=w.originalimage||w.thumbnail;if(s&&s.source)img.src=s.source.replace(/\/\d+px-/,'/800px-');})
+    .catch(function(){});
+  document.getElementById('pg-badges').innerHTML=d.badges.map(function(b){return'<span class="hb '+b.c+'">'+b.t+'</span>';}).join('');
+  document.getElementById('pg-name').textContent=d.name;
+  document.getElementById('pg-loc').textContent='📍 '+d.loc+' · '+d.cat;
+  document.getElementById('pg-info').innerHTML=d.info.map(function(i){return'<div class="ib"><div class="ib-l">'+i.l+'</div><div class="ib-v'+(i.g?' g':'')+'">'+i.v+'</div></div>';}).join('');
+  document.getElementById('pg-intro').innerHTML=d.intro;
+  document.getElementById('pg-prayer').innerHTML=d.prayer.map(function(p){return'<div class="prayer-box"><div class="prayer-title">'+p.title+'</div><div class="prayer-text">'+p.text.replace(/\n/g,'<br>')+'</div></div>';}).join('');
+  document.getElementById('pg-steps').innerHTML=d.steps.map(function(s,i){return'<li class="step-item"><div class="step-num">'+(i+1)+'</div><div><div class="step-t">'+s.t+'</div><div class="step-d">'+s.d+'</div></div></li>';}).join('');
+  document.getElementById('pg-access').innerHTML=d.access;
+  document.getElementById('pg-rel').innerHTML=d.rel.map(function(r){return'<a class="rel-card" href="'+(r.pg||'page-gido-detail')+'.html?id='+r.id+'"><div class="rel-icon">'+r.icon+'</div><div class="rel-name">'+r.name+'</div><div class="rel-desc">'+r.desc+'</div></a>';}).join('');
+})();
+</script>
