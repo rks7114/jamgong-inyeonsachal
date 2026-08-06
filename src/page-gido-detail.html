@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title id="pg-title">기도도량 상세 | 잼공인연사찰</title>
+<meta name="description" id="pg-desc" content="잼공인연사찰 기도도량 상세 안내. 위치·기도유형·법당정보·교통편 안내.">
+<meta property="og:title" id="og-title" content="기도도량 상세 - 잼공인연사찰">
+<meta property="og:description" id="og-desc" content="위치·기도유형·법당정보·교통편 안내. 사주 오행에 맞는 도량을 AI가 추천합니다.">
+<meta property="og:image" content="https://jamgong.kr/og-image.png">
+<meta property="og:url" id="og-url" content="https://jamgong.kr/gido">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --violet:#7c3aed;--violet-dark:#4c1d95;--violet-light:#a78bfa;
+  --gold:#f5c842;--gold-light:#fde68a;
+  --deep:#07040f;--dark:#0d0820;--card:#ffffff08;
+  --border:#ffffff12;--border-glow:#7c3aed40;
+  --text:#f1f0f8;--muted:#64748b;--subtle:#94a3b8
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--deep);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── 히어로 ──────────────────────────── */
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 24px 80px;text-align:center;overflow:hidden}
+.aurora{position:absolute;inset:0;z-index:0;overflow:hidden}
+.aurora-blob{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 12s ease-in-out infinite alternate}
+.aurora-blob:nth-child(1){width:700px;height:500px;top:-100px;left:-200px;background:radial-gradient(ellipse,rgba(109,40,217,.52),transparent 70%);animation-delay:0s}
+.aurora-blob:nth-child(2){width:600px;height:600px;bottom:-150px;right:-200px;background:radial-gradient(ellipse,rgba(245,200,66,.2),transparent 70%);animation-delay:-4s}
+.aurora-blob:nth-child(3){width:500px;height:400px;top:40%;left:30%;background:radial-gradient(ellipse,rgba(167,139,250,.18),transparent 70%);animation-delay:-8s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(40px,30px) scale(1.08)}}
+
+.particles{position:absolute;inset:0;z-index:1;pointer-events:none}
+.p{position:absolute;width:2px;height:2px;border-radius:50%;background:#7c3aed;animation:float-p linear infinite;opacity:0}
+@keyframes float-p{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:.5}90%{opacity:.25}100%{transform:translateY(-20px) translateX(var(--dx,0));opacity:0}}
+
+.hero-inner{position:relative;z-index:2}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.35);border-radius:99px;padding:6px 20px;font-size:11px;font-weight:800;color:var(--violet-light);letter-spacing:.18em;margin-bottom:28px;backdrop-filter:blur(8px)}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'✦';font-size:9px;color:var(--gold)}
+.hero-title{font-size:clamp(32px,6vw,68px);font-weight:900;line-height:1.12;letter-spacing:-.04em;margin-bottom:14px}
+.hero-title .gradient-text{background:linear-gradient(135deg,#7c3aed,#a78bfa,#f5c842);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-addr{font-size:14px;color:var(--muted);margin-bottom:24px;letter-spacing:.02em}
+.hero-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.hero-tag{font-size:12px;font-weight:700;padding:6px 16px;border-radius:99px;border:1px solid;backdrop-filter:blur(8px)}
+.hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.hero-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;padding:12px 24px;border-radius:14px;text-decoration:none;transition:all .25s;cursor:pointer;border:none;font-family:inherit;letter-spacing:.02em}
+.hero-btn:hover{transform:translateY(-3px)}
+.hero-btn-map{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.35);color:#34d399}
+.hero-btn-kakao{background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.35);color:var(--gold)}
+.hero-btn-back{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted)}
+
+.scroll-hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.12em;animation:bob 2.4s ease-in-out infinite}
+.scroll-hint-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--violet),transparent)}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+
+/* ── 본문 ────────────────────────────── */
+.body{max-width:880px;margin:0 auto;padding:60px 24px 100px}
+
+/* 정보 그리드 */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:28px}
+.info-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;transition:all .25s;backdrop-filter:blur(6px)}
+.info-item:hover{border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.06)}
+.info-label{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.1em;margin-bottom:6px}
+.info-value{font-size:14px;color:var(--text);font-weight:700}
+
+/* 글래스 카드 */
+.gc{position:relative;background:var(--card);border-radius:24px;padding:32px;margin-bottom:20px;backdrop-filter:blur(12px);overflow:hidden;transition:transform .3s,box-shadow .3s}
+.gc::before{content:'';position:absolute;inset:0;border-radius:24px;padding:1px;background:linear-gradient(135deg,rgba(124,58,237,.35),rgba(168,85,247,.2),rgba(255,255,255,.06));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.gc:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(124,58,237,.12)}
+.gc-glow{position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.12),transparent 70%);pointer-events:none}
+.gc-title{font-size:13px;font-weight:900;color:var(--violet-light);letter-spacing:.14em;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.gc-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(124,58,237,.3),transparent)}
+.gc-body{font-size:14px;color:var(--subtle);line-height:2;word-break:keep-all}
+.gc-body strong{color:var(--text);font-weight:700}
+
+/* 효험 배지 */
+.effect-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.effect-badge{font-size:12px;font-weight:700;padding:7px 16px;border-radius:99px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.22);color:#c4b5fd;transition:all .2s;cursor:default}
+.effect-badge:hover{background:rgba(124,58,237,.16);border-color:rgba(124,58,237,.5);transform:translateY(-2px)}
+
+/* 기도 스텝 */
+.steps{display:flex;flex-direction:column;gap:14px}
+.step{display:flex;gap:16px;align-items:flex-start;padding:16px;background:rgba(255,255,255,.02);border-radius:14px;border:1px solid var(--border);transition:all .2s}
+.step:hover{border-color:rgba(124,58,237,.25);background:rgba(124,58,237,.04)}
+.step-num{width:32px;height:32px;background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(76,29,149,.15));border:1px solid rgba(124,58,237,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:var(--violet-light);flex-shrink:0}
+.step-content{font-size:14px;color:var(--subtle);line-height:1.85}
+.step-content strong{color:var(--text);display:block;font-size:14px;font-weight:800;margin-bottom:3px}
+
+/* 기도문 */
+.prayer-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.prayer-tab{font-size:12px;font-weight:800;padding:7px 18px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .22s;letter-spacing:.04em}
+.prayer-tab.active,.prayer-tab:hover{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.45);color:var(--violet-light)}
+.prayer-wrap{position:relative}
+.prayer-text{font-size:14px;color:#c4b5fd;line-height:2.3;white-space:pre-line;font-style:italic;background:rgba(124,58,237,.04);border:1px solid rgba(124,58,237,.14);border-left:3px solid var(--violet);border-radius:0 14px 14px 0;padding:22px 24px;position:relative}
+.prayer-text::before{content:'"';position:absolute;top:-8px;left:16px;font-size:48px;color:rgba(124,58,237,.2);font-style:normal;line-height:1}
+.prayer-audio-btn{position:absolute;top:12px;right:12px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.35);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:var(--violet-light);cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px}
+.prayer-audio-btn:hover{background:rgba(124,58,237,.28);transform:scale(1.04)}
+.prayer-note{font-size:11px;color:var(--muted);margin-top:12px;padding-left:4px;line-height:1.8}
+
+/* 관련 도량 */
+.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.related-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:16px;padding:18px;cursor:pointer;text-decoration:none;display:block;transition:all .25s;position:relative;overflow:hidden}
+.related-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(124,58,237,.08),transparent);opacity:0;transition:opacity .25s}
+.related-card:hover{border-color:rgba(124,58,237,.4);transform:translateY(-4px);box-shadow:0 16px 40px rgba(124,58,237,.1)}
+.related-card:hover::before{opacity:1}
+.related-icon{font-size:22px;margin-bottom:10px}
+.related-name{font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px}
+.related-desc{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* 지도 */
+.map-wrap{width:100%;height:300px;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-top:16px}
+
+/* ── 프리미엄 섹션 ──────────────────── */
+.prem-section{position:relative;border-radius:28px;padding:36px 32px;margin-bottom:20px;overflow:hidden;background:linear-gradient(135deg,rgba(76,29,149,.08),rgba(124,58,237,.05))}
+.prem-section::before{content:'';position:absolute;inset:0;border-radius:28px;padding:1.5px;background:linear-gradient(135deg,rgba(124,58,237,.5),rgba(168,85,247,.3),rgba(245,200,66,.2));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.prem-bg-glow{position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.12),transparent 70%);pointer-events:none}
+.prem-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.prem-badge{font-size:10px;font-weight:900;padding:4px 14px;border-radius:6px;letter-spacing:.1em;flex-shrink:0}
+.prem-badge-oracle{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff}
+.prem-badge-basic{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);color:#a78bfa}
+.prem-divider{height:1px;flex:1;background:linear-gradient(to right,rgba(124,58,237,.3),transparent);min-width:20px}
+.prem-title{font-size:20px;font-weight:900;color:#f5f3ff;margin-bottom:6px;letter-spacing:-.02em}
+.prem-desc{font-size:12px;color:var(--muted);margin-bottom:26px;line-height:1.7}
+
+/* 잠금 오버레이 */
+.lock-overlay{position:absolute;inset:0;border-radius:28px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);background:rgba(7,4,15,.65);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:10;padding:32px;text-align:center}
+.lock-icon{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(76,29,149,.25),rgba(124,58,237,.15));border:1.5px solid rgba(124,58,237,.5);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 30px rgba(124,58,237,.15)}
+.lock-title{font-size:16px;font-weight:900;color:#f5f3ff;margin-bottom:6px}
+.lock-desc{font-size:12px;color:var(--muted);line-height:1.8}
+.lock-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.lock-cta{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;font-size:13px;font-weight:900;padding:12px 24px;border-radius:14px;text-decoration:none;letter-spacing:.02em;transition:filter .2s}
+.lock-cta:hover{filter:brightness(1.1)}
+.lock-preview{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--subtle);font-size:12px;font-weight:700;padding:12px 18px;border-radius:14px;cursor:pointer;font-family:inherit;transition:all .2s}
+.lock-preview:hover{background:rgba(255,255,255,.09)}
+
+/* 폼 */
+.form-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.form-field{display:flex;flex-direction:column;gap:7px}
+.form-label{font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.1em}
+.form-select{background:#100c1e;border:1px solid rgba(124,58,237,.28);border-radius:12px;padding:12px 16px;color:#f8fafc;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;width:100%;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%2394a3b8' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;cursor:pointer}
+.form-select:focus{border-color:rgba(124,58,237,.65);box-shadow:0 0 0 3px rgba(124,58,237,.08)}
+.form-select option{background:#100c1e;color:#f8fafc}
+.analyze-btn{width:100%;background:linear-gradient(135deg,#4c1d95,#7c3aed,#a78bfa);color:#fff;font-size:15px;font-weight:900;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:.06em;transition:all .25s;box-shadow:0 8px 30px rgba(76,29,149,.3)}
+.analyze-btn:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 14px 40px rgba(76,29,149,.4)}
+
+/* 결과 */
+.result-score-card{text-align:center;background:rgba(0,0,0,.3);border:1px solid rgba(124,58,237,.15);border-radius:20px;padding:28px;margin-bottom:18px;backdrop-filter:blur(8px)}
+.score-label{font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.18em;margin-bottom:12px}
+.score-number{font-size:64px;font-weight:900;background:linear-gradient(135deg,#7c3aed,#a78bfa,#f5c842);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.score-bar-wrap{width:100%;height:6px;background:rgba(255,255,255,.06);border-radius:10px;margin:16px 0;overflow:hidden}
+.score-bar{height:100%;background:linear-gradient(90deg,#4c1d95,#7c3aed,#f5c842);border-radius:10px;width:0;transition:width 1.8s cubic-bezier(.4,0,.2,1)}
+.score-desc{font-size:13px;color:var(--subtle)}
+
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.chart-card{border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:22px 14px 18px;text-align:center;position:relative;overflow:hidden;backdrop-filter:blur(8px)}
+.chart-card-glow{position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:200px;height:100px;border-radius:50%;pointer-events:none}
+.chart-card-label{font-size:10px;font-weight:900;letter-spacing:.12em;margin-bottom:16px}
+.chart-legend{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--subtle)}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+.dates-card{background:rgba(124,58,237,.04);border:1px solid rgba(124,58,237,.18);border-radius:16px;padding:20px;margin-bottom:16px}
+.dates-title{font-size:11px;font-weight:900;color:var(--violet-light);letter-spacing:.12em;margin-bottom:14px}
+.date-row{display:flex;align-items:center;gap:14px;padding:11px 14px;background:rgba(124,58,237,.05);border:1px solid rgba(124,58,237,.12);border-radius:12px}
+.date-num{width:26px;height:26px;border-radius:50%;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.45);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--violet-light);flex-shrink:0}
+.date-info{flex:1}
+.date-main{font-size:13px;font-weight:800;color:var(--text)}
+.date-sub{font-size:11px;color:var(--muted)}
+
+.ai-prayer-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px}
+.ai-prayer-title{font-size:11px;font-weight:900;color:#c4b5fd;letter-spacing:.12em;margin-bottom:16px}
+.ai-prayer-text{font-size:14px;color:#c4b5fd;line-height:2.1;font-style:italic;background:rgba(124,58,237,.06);border-radius:12px;padding:18px;border-left:3px solid rgba(124,58,237,.5)}
+
+/* 스크롤 등장 */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
+.reveal.visible{opacity:1;transform:none}
+
+/* 챗봇 FAB */
+.chatbot-fab{position:fixed;bottom:24px;right:18px;z-index:9999;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;border:none;border-radius:99px;padding:12px 20px;font-size:13px;font-weight:900;cursor:pointer;font-family:'Noto Sans KR',sans-serif;box-shadow:0 8px 28px rgba(76,29,149,.45);display:flex;align-items:center;gap:8px;transition:all .25s;text-decoration:none;letter-spacing:.02em}
+.chatbot-fab:hover{filter:brightness(1.1);transform:translateY(-3px);box-shadow:0 14px 36px rgba(76,29,149,.5)}
+.chatbot-fab-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+.top-btn{position:fixed;bottom:80px;right:18px;z-index:9998;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--subtle);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(8px)}
+.top-btn.show{opacity:1;pointer-events:auto}
+.top-btn:hover{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:var(--violet-light)}
+
+@media(max-width:640px){
+  .hero{min-height:auto;padding:100px 20px 60px}
+  .body{padding:36px 16px 80px}
+  .gc{padding:22px 20px}
+  .prem-section{padding:24px 20px}
+  .form-grid,.chart-row{grid-template-columns:1fr}
+  .hero-title{font-size:clamp(28px,8vw,42px)}
+}
+</style>
+</head>
+<body>
+
+<!-- 히어로 -->
+<div class="hero">
+  <div class="aurora">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+  </div>
+  <div class="particles" id="particles"></div>
+
+  <div class="hero-inner">
+    <div class="hero-eyebrow" id="id-badge">🙏 기도도량</div>
+    <h1 class="hero-title">
+      <span class="gradient-text" id="id-title">사찰명</span>
+    </h1>
+    <div class="hero-addr" id="id-sub">📍 위치</div>
+    <div class="hero-tags" id="id-tags"></div>
+    <div class="hero-btns" id="id-btns"></div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-hint-line"></div>
+    <span>SCROLL</span>
+  </div>
+</div>
+
+<div class="body">
+
+  <div class="info-grid reveal" id="id-info-grid"></div>
+
+  <div class="gc reveal">
+    <div class="gc-glow"></div>
+    <div class="gc-title">🙏 도량 소개</div>
+    <div class="gc-body" id="id-intro"></div>
+  </div>
+
+  <div class="gc reveal">
+    <div class="gc-glow"></div>
+    <div class="gc-title">✨ 기도 영험</div>
+    <div class="effect-wrap" id="id-effects"></div>
+  </div>
+
+  <div class="gc reveal">
+    <div class="gc-glow"></div>
+    <div class="gc-title">📿 기도 방법</div>
+    <div class="steps" id="id-steps"></div>
+  </div>
+
+  <div class="gc reveal" id="id-prayer-card">
+    <div class="gc-glow"></div>
+    <div class="gc-title">📖 기도문</div>
+    <div id="id-prayers"></div>
+  </div>
+
+  <div class="gc reveal">
+    <div class="gc-glow"></div>
+    <div class="gc-title">📜 역사와 유래</div>
+    <div class="gc-body" id="id-history"></div>
+  </div>
+
+  <!-- 잼공 오라클 섹션 -->
+  <div class="prem-section reveal" id="premium-section">
+    <div class="prem-bg-glow"></div>
+
+    <div class="lock-overlay" id="premium-lock">
+      <div class="lock-icon">🔒</div>
+      <div>
+        <div class="lock-title">잼공 오라클 전용 기능</div>
+        <div class="lock-desc">오행 도량 분석 · 궁합 점수 · 최적 기도일 · AI 발원문<br>잼공 오라클로 업그레이드하면 바로 이용 가능합니다</div>
+      </div>
+      <div class="lock-btns">
+        <a href="/pricing" class="lock-cta">잼공 오라클 시작하기 →</a>
+        <button class="lock-preview" onclick="document.getElementById('premium-lock').style.display='none'">미리보기</button>
+      </div>
+    </div>
+
+    <div class="prem-header">
+      <div class="prem-badge prem-badge-oracle">잼공 오라클</div>
+      <div class="prem-badge prem-badge-basic">잼공 인연: 상세페이지 열람</div>
+      <div class="prem-divider"></div>
+    </div>
+    <div class="prem-title">내 사주 오행 × 기도도량 궁합 분석</div>
+    <div class="prem-desc">잼공 특허 출원 알고리즘 — 오행으로 이 도량과의 기도 궁합을 계산하고 최적 기도일을 안내합니다</div>
+
+    <div class="form-grid">
+      <div class="form-field">
+        <span class="form-label">생년월일</span>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
+          <select id="prem-year" class="form-select" style="padding:12px 8px"></select>
+          <select id="prem-month" class="form-select" style="padding:12px 6px"></select>
+          <select id="prem-day" class="form-select" style="padding:12px 6px"></select>
+        </div>
+      </div>
+      <div class="form-field">
+        <span class="form-label">성별</span>
+        <select id="prem-gender" class="form-select">
+          <option value="m">남성</option>
+          <option value="f">여성</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <span class="form-label">기도 목적</span>
+        <select id="prem-purpose" class="form-select">
+          <option value="소원">🙏 소원성취</option>
+          <option value="건강">💚 건강기도</option>
+          <option value="합격">📚 합격·취업</option>
+          <option value="사업">💼 사업번창</option>
+          <option value="인연">💕 인연성취</option>
+        </select>
+      </div>
+    </div>
+    <button class="analyze-btn" onclick="premAnalyze()">🔮 오행 궁합 분석하기</button>
+
+    <div id="prem-result" style="display:none;margin-top:28px">
+      <div class="result-score-card">
+        <div class="score-label">JAMGONG 오행 × 기도도량 궁합 점수</div>
+        <div><span class="score-number" id="prem-score-num">0</span><span style="font-size:22px;font-weight:900;color:var(--violet-light)">점</span></div>
+        <div class="score-bar-wrap"><div class="score-bar" id="prem-score-bar"></div></div>
+        <div class="score-desc" id="prem-score-desc"></div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-card" style="background:rgba(124,58,237,.04)">
+          <div class="chart-card-glow" style="background:radial-gradient(ellipse,rgba(124,58,237,.1),transparent 70%)"></div>
+          <div class="chart-card-label" style="color:#a78bfa">내 오행 분포</div>
+          <canvas id="prem-my-chart" width="180" height="180" style="display:block;margin:0 auto"></canvas>
+          <div class="chart-legend" id="prem-my-legend"></div>
+        </div>
+        <div class="chart-card" style="background:rgba(167,139,250,.03)">
+          <div class="chart-card-glow" style="background:radial-gradient(ellipse,rgba(167,139,250,.07),transparent 70%)"></div>
+          <div class="chart-card-label" id="prem-temple-label" style="color:#c4b5fd">도량 기도 기운</div>
+          <canvas id="prem-temple-chart" width="180" height="180" style="display:block;margin:0 auto"></canvas>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#4ade80"></span>木</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#f87171"></span>火</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#fbbf24"></span>土</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#cbd5e1"></span>金</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#60a5fa"></span>水</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dates-card">
+        <div class="dates-title">📅 최적 기도일 TOP 5</div>
+        <div id="prem-dates" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+
+      <div class="ai-prayer-card">
+        <div class="ai-prayer-title">🔮 AI 발원문</div>
+        <div class="ai-prayer-text" id="prem-prayer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gc reveal">
+    <div class="gc-glow"></div>
+    <div class="gc-title">🗺️ 찾아가는 길</div>
+    <div class="gc-body" id="id-access"></div>
+    <div class="map-wrap" id="id-map"></div>
+  </div>
+
+  <div class="gc reveal">
+    <div class="gc-glow"></div>
+    <div class="gc-title">🔗 함께 방문하면 좋은 기도도량</div>
+    <div class="related-grid" id="id-related"></div>
+  </div>
+
+</div>
+
+<!-- 챗봇 FAB -->
+<a href="/chatbot" class="chatbot-fab">
+  <span class="chatbot-fab-dot"></span>
+  인연 도우미에게 질문
+</a>
+
+<button class="top-btn" id="top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+/* ── DB ─────────────────────────────── */
+const GIDO_DB = {
+  "naksan": {
+    name:"낙산사 홍련암", category:"관음기도 도량", categoryIcon:"🌊",
+    region:"강원 양양", address:"강원도 양양군 강현면 낙산사로 100", mapQuery:"낙산사+양양",
+    tags:[
+      {text:"관음기도 성지",color:"rgba(124,58,237,.15)",border:"rgba(124,58,237,.4)",textColor:"#a78bfa"},
+      {text:"바다 기도도량",color:"rgba(59,130,246,.12)",border:"rgba(59,130,246,.35)",textColor:"#60a5fa"},
+      {text:"3대 관음기도처",color:"rgba(245,200,66,.08)",border:"rgba(245,200,66,.35)",textColor:"#f5c842"}
+    ],
+    info:[
+      {label:"소재지",value:"강원 양양"},{label:"기도 대상",value:"관세음보살"},
+      {label:"개산 시기",value:"671년 (신라)"},{label:"기도 유형",value:"소원·인연·건강"},
+      {label:"특별 기도",value:"매월 관음재일"},{label:"관람 시간",value:"04:00~21:00"}
+    ],
+    intro:`낙산사 홍련암은 <strong>신라 문무왕 11년(671년)</strong> 의상대사가 창건한 한국 3대 관음기도 도량입니다. 동해 바닷가 절벽 위에 세워진 홍련암은 그 아래 동굴에서 관세음보살이 현신했다는 설화로 유명하며, 파도 소리와 함께 드리는 관음기도의 영험함으로 전국에서 신도들이 찾아옵니다.<br><br>매년 일출 관음기도로 알려진 이 도량은 특히 <strong>새해 첫날 일출 기도</strong>로 유명하며, 파도 소리를 들으며 드리는 기도가 마음 깊숙이 울린다고 합니다.`,
+    effects:["소원성취","인연기도","건강기도","합격·취업","사업번창","가족안녕","재난소멸"],
+    steps:[
+      {title:"홍련암 삼배",desc:"홍련암 관음보살 앞에 삼배를 올립니다. 동굴 아래 파도 소리가 들리면 기도를 시작합니다."},
+      {title:"관음정근 독송",desc:"<strong>「나무관세음보살」</strong>을 108번 이상 독송합니다."},
+      {title:"의상대 기도",desc:"의상대에서 동해를 바라보며 소원을 발원합니다."},
+      {title:"해수관음상 참배",desc:"낙산사 해수관음상 앞에서 합장하고 소원을 빕니다."},
+      {title:"일출 관음기도",desc:"새벽 4시 예불 후 일출과 함께 드리는 기도가 특히 영험합니다."}
+    ],
+    history:`671년 의상대사가 관세음보살의 진신이 이곳에 머문다는 계시를 받고 창건했습니다. 조선 세조는 이곳에서 기도 후 피부병이 나았다는 기록이 전해지며, 왕실의 원찰로 지정됐습니다. 2005년 양양 산불로 소실됐다가 복원됐으며, 현재도 3대 관음기도 도량으로 전국 신도들의 발길이 끊이지 않습니다.`,
+    prayers:[
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살\n\n(108번 반복)`,note:"홍련암 앞에서 파도 소리에 맞춰 독송합니다. 새벽 예불 후 독송이 특히 영험합니다."},
+      {title:"관음예문",text:`지심귀명례 삼계도사 사생자부\n시아본사 석가모니불\n지심귀명례 천백억 화신 석가모니불\n지심귀명례 당래하생 미륵존불\n\n나무관세음보살\n나무관세음보살\n나무관세음보살`,note:"관음재일(매달 18일)에 독송하면 더욱 영험합니다."},
+      {title:"신묘장구 대다라니",text:`나모라 다나다라 야야\n나막 알약 바로기제 새바라야\n모지 사다바야 마하사다바야\n마하가로니가야 옴 살바 바예수\n다라나 가라야 다사명\n나막 가리다바 이맘 알야\n바로기제 새바라 다바\n니라간타 나막 하리나야\n마발다 이사미\n\n나무관세음보살`,note:"관세음보살의 큰 다라니. 소원성취와 재난소멸에 영험합니다. 매일 7번 독송을 권합니다."}
+    ],
+    access:`<strong>자가용:</strong> 서울→동서울→영동고속도로→속초→낙산사 (약 3시간)<br><strong>버스:</strong> 동서울터미널→속초→낙산사 입구 (약 2시간 30분)<br><strong>주차:</strong> 낙산사 주차장 유료`,
+    related:[{id:"bomunsa",icon:"🌿",name:"보문사",desc:"인천 강화 관음도량"},{id:"hyangilam",icon:"🌄",name:"향일암",desc:"여수 일출 관음도량"}]
+  },
+  "bomunsa": {
+    name:"보문사", category:"관음기도 도량", categoryIcon:"🌿",
+    region:"인천 강화", address:"인천광역시 강화군 삼산면 삼산남로828번길 44", mapQuery:"보문사+강화",
+    tags:[
+      {text:"마애석불 기도",color:"rgba(124,58,237,.15)",border:"rgba(124,58,237,.4)",textColor:"#a78bfa"},
+      {text:"3대 관음기도처",color:"rgba(245,200,66,.08)",border:"rgba(245,200,66,.35)",textColor:"#f5c842"},
+      {text:"눈썹바위 기도",color:"rgba(52,211,153,.1)",border:"rgba(52,211,153,.35)",textColor:"#34d399"}
+    ],
+    info:[
+      {label:"소재지",value:"인천 강화"},{label:"기도 대상",value:"마애관음보살"},
+      {label:"개산 시기",value:"635년 (신라)"},{label:"기도 유형",value:"소원·득남·인연"},
+      {label:"명물",value:"눈썹바위 마애불"},{label:"관람 시간",value:"06:00~20:00"}
+    ],
+    intro:`보문사는 <strong>신라 선덕여왕 4년(635년)</strong> 회정대사가 창건한 서해안 최대의 관음기도 도량입니다. 눈썹바위에 새겨진 <strong>마애관음보살상</strong>이 이 사찰의 핵심으로, 높이 32m의 절벽에 새겨진 마애불은 소원성취와 득남기도로 전국에 이름이 높습니다.<br><br>강화도 석모도에 위치한 이 사찰은 서해 낙조와 함께 마애불을 바라보는 풍경이 장관이며, 특히 <strong>득남기도</strong>와 <strong>소원성취</strong>로 영험하다고 알려져 있습니다.`,
+    effects:["소원성취","득남기도","인연성취","건강기도","합격·취업","재난소멸","사업번창"],
+    steps:[
+      {title:"나한전 참배",desc:"나한전에서 오백나한에게 삼배를 올립니다. 나한기도는 소원성취에 특히 효험이 있습니다."},
+      {title:"마애불 계단 오르기",desc:"419계단을 오르며 마음을 정화합니다. 계단마다 한 걸음씩 기도하는 마음으로 오릅니다."},
+      {title:"마애관음보살 삼배",desc:"눈썹바위 마애관음보살상 앞에 삼배를 올리고 소원을 발원합니다."},
+      {title:"관음정근 독송",desc:"<strong>「나무관세음보살」</strong>을 108번 독송합니다."},
+      {title:"일몰 기도",desc:"서해 낙조와 함께 마애불 앞에서 드리는 기도가 특히 영험합니다."}
+    ],
+    history:`635년 회정대사 창건 후 조선 숙종 때 크게 번창했습니다. 1928년 금강산에서 관음보살상을 모셔 눈썹바위에 마애불을 조성했으며, 이후 득남기도와 소원성취로 유명해졌습니다. 현재도 연간 수십만 명의 기도객이 방문하는 서해 최대의 관음기도 도량입니다.`,
+    prayers:[
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살\n\n(마애불 앞에서 108번 독송)`,note:"419계단을 오른 후 마애불 앞에서 독송합니다."},
+      {title:"관음예문",text:`지심귀명례 삼계도사 사생자부\n시아본사 석가모니불\n지심귀명례 천백억 화신 석가모니불\n지심귀명례 당래하생 미륵존불\n\n나무관세음보살\n나무관세음보살\n나무관세음보살`,note:"관음재일 또는 보름날 독송합니다."},
+      {title:"자녀·득남 발원문",text:`관세음보살님,\n자비로운 눈길로 저를 굽어살피소서.\n\n이 몸과 마음을 다해 기도하오니\n새 생명을 점지해 주소서.\n건강하고 지혜롭게 태어나\n세상의 빛이 되게 하여 주소서.\n\n나무관세음보살\n나무관세음보살\n나무관세음보살`,note:"마애불 앞에서 삼배 후 독송합니다. 매월 1일과 보름 기도가 가장 효험 있다고 합니다."}
+    ],
+    access:`<strong>자가용:</strong> 강화도→석모도→보문사 (서울에서 약 1시간 30분)<br><strong>버스:</strong> 신촌/강화터미널→석모도 선착장→마을버스→보문사<br><strong>주차:</strong> 보문사 주차장 무료`,
+    related:[{id:"naksan",icon:"🌊",name:"낙산사 홍련암",desc:"강원 양양 관음도량"},{id:"hyangilam",icon:"🌄",name:"향일암",desc:"여수 일출 관음도량"}]
+  },
+  "hyangilam": {
+    name:"향일암", category:"관음기도 도량", categoryIcon:"🌄",
+    region:"전남 여수", address:"전라남도 여수시 돌산읍 향일암로 60", mapQuery:"향일암+여수",
+    tags:[
+      {text:"일출 기도 성지",color:"rgba(245,200,66,.1)",border:"rgba(245,200,66,.4)",textColor:"#f5c842"},
+      {text:"3대 관음기도처",color:"rgba(124,58,237,.15)",border:"rgba(124,58,237,.4)",textColor:"#a78bfa"},
+      {text:"남해 관음도량",color:"rgba(59,130,246,.1)",border:"rgba(59,130,246,.35)",textColor:"#60a5fa"}
+    ],
+    info:[
+      {label:"소재지",value:"전남 여수"},{label:"기도 대상",value:"관세음보살"},
+      {label:"개산 시기",value:"644년 (신라)"},{label:"기도 유형",value:"소원·인연·건강"},
+      {label:"명물",value:"남해 일출·관음전"},{label:"관람 시간",value:"05:00~20:00"}
+    ],
+    intro:`향일암은 <strong>신라 선덕여왕 13년(644년)</strong> 원효대사가 창건한 남해 최고의 관음기도 도량입니다. '해를 바라보는 암자'라는 뜻의 향일암은 남해 바다 위에 떠오르는 <strong>일출 기도</strong>로 전국에서 가장 유명한 기도처 중 하나입니다.<br><br>돌산도 금오산 기슭에 자리하며, 바위 사이로 이어지는 좁은 통로를 지나 올라가는 독특한 구조로 유명합니다. 특히 <strong>새해 일출 기도</strong>에는 수만 명이 몰려 장관을 이룹니다.`,
+    effects:["소원성취","인연기도","건강기도","합격·취업","사업번창","가족안녕","재난소멸"],
+    steps:[
+      {title:"관음전 삼배",desc:"관음전에서 관세음보살께 삼배를 올립니다."},
+      {title:"관음정근 독송",desc:"<strong>「나무관세음보살」</strong>을 108번 독송합니다."},
+      {title:"일출 기도",desc:"일출 시각에 맞춰 남해를 바라보며 소원을 발원합니다. 특히 새해 일출 기도가 영험합니다."},
+      {title:"바위 통로 기도",desc:"좁은 바위 통로를 통과하며 마음속 소원을 간절히 기원합니다."},
+      {title:"용왕단 기도",desc:"남해 용왕께 안전과 소원성취를 기원합니다."}
+    ],
+    history:`644년 원효대사 창건 후 고려·조선을 거치며 중건됐습니다. 원래 이름은 '원통암'이었다가 조선 숙종 때 '향일암'으로 개칭됐습니다. 2009년 화재로 일부 소실됐다가 2012년 복원됐으며, 현재 남해 3대 관음기도 도량이자 한국 4대 기도 도량 중 하나로 꼽힙니다.`,
+    prayers:[
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살\n\n(일출을 바라보며 108번 독송)`,note:"일출 시각에 맞춰 남해를 바라보며 독송합니다."},
+      {title:"일출 발원문",text:`해가 솟아오르듯\n저의 소원도 이루어지이다.\n\n남해의 넓은 바다처럼\n관세음보살님의 자비가 가득하여\n이 하루도 지혜롭고 건강하게\n살아갈 수 있도록 보살펴 주소서.\n\n나무관세음보살\n나무관세음보살\n나무관세음보살`,note:"일출 기도 시 관음전 앞에서 독송합니다. 새벽 5시 예불 참석을 권합니다."},
+      {title:"관음예문",text:`지심귀명례 삼계도사 사생자부\n시아본사 석가모니불\n지심귀명례 천백억 화신 석가모니불\n지심귀명례 당래하생 미륵존불\n\n나무관세음보살\n나무관세음보살\n나무관세음보살`,note:"관음재일에 독송합니다."}
+    ],
+    access:`<strong>자가용:</strong> 여수→돌산도→향일암 (여수에서 약 30분)<br><strong>버스:</strong> 여수시외버스터미널→돌산행 버스→향일암 입구<br><strong>주차:</strong> 향일암 입구 유료 주차장`,
+    related:[{id:"naksan",icon:"🌊",name:"낙산사 홍련암",desc:"강원 양양 관음도량"},{id:"bomunsa",icon:"🌿",name:"보문사",desc:"인천 강화 관음도량"}]
+  },
+
+  /* ── 조계사 ── */
+  "jogyesa": {
+    name:"조계사", category:"관음기도 도량", categoryIcon:"🏯",
+    region:"서울 종로", address:"서울특별시 종로구 우정국로 55", mapQuery:"조계사+서울+종로",
+    tags:[
+      {text:"조계종 총본산",color:"rgba(167,139,250,.15)",border:"rgba(167,139,250,.4)",textColor:"#a78bfa"},
+      {text:"서울 도심 기도",color:"rgba(245,200,66,.08)",border:"rgba(245,200,66,.35)",textColor:"#f5c842"},
+      {text:"연등축제",color:"rgba(244,114,182,.1)",border:"rgba(244,114,182,.35)",textColor:"#f472b6"}
+    ],
+    info:[
+      {label:"소재지",value:"서울 종로"},{label:"기도 대상",value:"관세음보살"},
+      {label:"창건 시기",value:"1395년 (조선)"},{label:"기도 유형",value:"소원·관음·건강"},
+      {label:"특별 행사",value:"연등축제·연중 법회"},{label:"관람 시간",value:"04:00~23:00"}
+    ],
+    intro:`조계사는 <strong>대한불교조계종 총본산</strong>으로 서울 종로 한복판에 위치한 도심 기도도량입니다. 1395년 창건 이후 조선·근현대를 거치며 한국 불교의 중심이 되었습니다.<br><br>경내에는 <strong>대웅전(보물 제1762호)</strong>을 중심으로 사리탑·수령 500년 백송·느티나무 등 유서 깊은 문화재가 가득합니다. 매년 부처님오신날 연등축제는 서울의 대표 문화행사이며, 연중 새벽 4시부터 저녁까지 기도와 법회가 끊이지 않는 곳입니다.`,
+    effects:["소원성취","관음기도","건강기도","합격·취업","사업번창","가족안녕","연등공양"],
+    steps:[
+      {title:"대웅전 삼배",desc:"대웅전 석가모니불 앞에 삼배를 올립니다. 도심 속에서 가장 쉽게 접근할 수 있는 기도처입니다."},
+      {title:"관음전 기도",desc:"<strong>「나무관세음보살」</strong>을 108번 독송하며 소원을 발원합니다."},
+      {title:"연등 공양",desc:"연등에 불을 밝히고 이름을 적어 소원을 담아 봉헌합니다."},
+      {title:"사리탑 예배",desc:"경내 사리탑 앞에서 삼배를 올리고 기도합니다."},
+      {title:"새벽 예불 참석",desc:"새벽 4시 예불에 참석하면 더욱 깊은 기도 효험을 얻을 수 있습니다."}
+    ],
+    history:`1395년(태조 4년) 창건된 태고사가 전신입니다. 일제강점기 불교 정화운동을 거쳐 1954년 현재의 조계사로 개칭, 조계종 총본산이 됐습니다. 대웅전은 보물 제1762호로 지정됐으며 경내 백송은 천연기념물 제9호입니다. 1975년부터 이어온 연등축제는 유네스코 인류무형문화유산으로 등재됐습니다.`,
+    prayers:[
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살\n\n(108번 반복)`,note:"대웅전·관음전 앞에서 독송합니다."},
+      {title:"소원성취 발원문",text:`부처님, 오늘 이 도량에서 간절히 발원합니다.\n\n저의 바람이 하늘에 닿아\n뜻하는 바가 모두 이루어지기를 기원합니다.\n지혜와 용기를 내려주시어\n바른 길로 나아갈 수 있게 해주소서.\n\n나무석가모니불\n나무관세음보살`,note:"대웅전 삼배 후 독송합니다. 연등 공양과 함께하면 더욱 영험합니다."},
+      {title:"연등 발원문",text:`이 등불을 밝혀\n세상의 어둠을 밝히듯\n저의 앞길도 환히 열리기를 발원합니다.\n\n부처님 법등이 항상 함께하여\n모든 어려움을 슬기롭게 헤쳐나가게 하시고\n소원하는 바가 원만히 성취되기를 기원합니다.\n\n나무석가모니불 나무관세음보살`,note:"연등 공양 시 독송합니다. 부처님오신날 연등축제 기간에 특히 영험합니다."}
+    ],
+    access:`<strong>지하철:</strong> 3호선 안국역 6번 출구 도보 5분 / 1호선 종각역 2번 출구 도보 8분<br><strong>버스:</strong> 종로 방면 다수 버스 정류장 인접<br><strong>주차:</strong> 조계사 인근 유료 주차장 이용 (대중교통 권장)`,
+    related:[{id:"naksan",icon:"🌊",name:"낙산사 홍련암",desc:"강원 양양 관음도량"},{id:"haeinsa",icon:"📜",name:"해인사",desc:"경남 합천 법보사찰"}]
+  },
+
+  /* ── 해인사 ── */
+  "haeinsa": {
+    name:"해인사", category:"법보사찰·소원기도 도량", categoryIcon:"📜",
+    region:"경남 합천", address:"경상남도 합천군 가야면 해인사길 122", mapQuery:"해인사+합천+경남",
+    tags:[
+      {text:"법보사찰",color:"rgba(52,211,153,.15)",border:"rgba(52,211,153,.4)",textColor:"#34d399"},
+      {text:"팔만대장경",color:"rgba(245,200,66,.1)",border:"rgba(245,200,66,.4)",textColor:"#f5c842"},
+      {text:"유네스코 세계유산",color:"rgba(59,130,246,.1)",border:"rgba(59,130,246,.35)",textColor:"#60a5fa"}
+    ],
+    info:[
+      {label:"소재지",value:"경남 합천"},{label:"기도 대상",value:"비로자나불·관세음보살"},
+      {label:"창건 시기",value:"802년 (신라)"},{label:"기도 유형",value:"소원·지혜·건강"},
+      {label:"세계유산",value:"팔만대장경 장경판전"},{label:"관람 시간",value:"08:00~18:00"}
+    ],
+    intro:`해인사는 <strong>신라 애장왕 3년(802년)</strong> 순응·이정 두 대사가 창건한 천년 고찰로, 불·법·승 삼보사찰 중 <strong>법보사찰(法寶寺刹)</strong>로 불립니다. 가야산 깊은 숲 속에 자리한 이 사찰은 <strong>팔만대장경(고려대장경)</strong>을 보존하고 있으며, 장경판전과 팔만대장경은 유네스코 세계문화유산으로 등재됐습니다.<br><br>비로자나불·관세음보살·지장보살 등 다양한 전각에서 기도할 수 있으며, 특히 <strong>소원성취·지혜·학업</strong> 기도로 전국 신도들이 찾는 명찰입니다.`,
+    effects:["소원성취","지혜기도","학업·합격","건강기도","사업번창","가족안녕","재난소멸"],
+    steps:[
+      {title:"대적광전 삼배",desc:"비로자나불을 모신 대적광전에 삼배를 올립니다. 지혜와 진리의 법신불께 기도합니다."},
+      {title:"관음전 기도",desc:"<strong>「나무관세음보살」</strong>을 108번 독송하며 소원을 발원합니다."},
+      {title:"팔만대장경 예배",desc:"장경판전 앞에서 삼배를 올리며 팔만대장경의 법력이 함께하기를 발원합니다."},
+      {title:"지장전 기도",desc:"지장보살께 가족의 건강과 안녕을 기원합니다."},
+      {title:"새벽 예불 참석",desc:"새벽 4시 대적광전 예불. 가야산 새벽 공기 속 기도가 깊은 울림을 줍니다."}
+    ],
+    history:`802년 신라 순응·이정 대사 창건. 고려 고종 때(1237~1248) 몽골 침략을 막기 위해 팔만대장경을 조성, 현재 장경판전에 보존 중입니다. 조선 시대에도 왕실 원찰로 기능했으며, 성철스님이 오랫동안 주석하며 현대 한국 불교를 이끈 곳으로도 유명합니다. 팔만대장경 장경판전은 1995년, 팔만대장경은 2007년 유네스코 세계유산으로 등재됐습니다.`,
+    prayers:[
+      {title:"비로자나불 정근",text:`나무비로자나불 나무비로자나불\n나무비로자나불 나무비로자나불\n나무비로자나불 나무비로자나불\n나무비로자나불 마하살\n\n(108번 반복)`,note:"대적광전에서 독송합니다. 지혜와 소원성취에 영험합니다."},
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살`,note:"관음전에서 108번 독송합니다."},
+      {title:"소원 발원문",text:`팔만 법문의 진리가 깃든\n이 도량에서 간절히 발원합니다.\n\n지혜의 빛으로 저의 앞길을 밝히시고\n소원하는 바가 법에 어긋남 없이\n원만히 이루어지기를 기원합니다.\n\n나무비로자나불\n나무관세음보살`,note:"장경판전 앞에서 삼배 후 독송합니다. 학업·합격 기도에 특히 영험합니다."}
+    ],
+    access:`<strong>자가용:</strong> 대구·부산 → 합천 → 가야면 해인사 (대구에서 약 1시간)<br><strong>버스:</strong> 합천터미널 → 해인사행 버스 (약 40분)<br><strong>주차:</strong> 해인사 입구 유료 주차장`,
+    related:[{id:"tongdosa",icon:"🔥",name:"통도사",desc:"경남 양산 불보사찰"},{id:"jogyesa",icon:"🏯",name:"조계사",desc:"서울 조계종 총본산"}]
+  },
+
+  /* ── 통도사 ── */
+  "tongdosa": {
+    name:"통도사", category:"불보사찰·관음기도 도량", categoryIcon:"🔥",
+    region:"경남 양산", address:"경상남도 양산시 하북면 통도사로 108", mapQuery:"통도사+양산+경남",
+    tags:[
+      {text:"불보사찰",color:"rgba(239,68,68,.15)",border:"rgba(239,68,68,.4)",textColor:"#f87171"},
+      {text:"진신사리 봉안",color:"rgba(245,200,66,.1)",border:"rgba(245,200,66,.4)",textColor:"#f5c842"},
+      {text:"유네스코 세계유산",color:"rgba(59,130,246,.1)",border:"rgba(59,130,246,.35)",textColor:"#60a5fa"}
+    ],
+    info:[
+      {label:"소재지",value:"경남 양산"},{label:"기도 대상",value:"진신사리·관세음보살"},
+      {label:"창건 시기",value:"646년 (신라)"},{label:"기도 유형",value:"소원·관음·나한"},
+      {label:"특별 기도처",value:"금강계단·적멸보궁"},{label:"관람 시간",value:"04:00~21:00"}
+    ],
+    intro:`통도사는 <strong>신라 선덕여왕 15년(646년)</strong> 자장율사가 창건한 삼보사찰 중 <strong>불보사찰(佛寶寺刹)</strong>입니다. 부처님의 진신사리와 금란가사를 봉안한 <strong>금강계단</strong>이 있어 대웅전에 불상 없이 계단만으로 예불을 드리는 독특한 전통이 있습니다.<br><br>영축산 기슭에 자리한 이 사찰은 2018년 유네스코 세계문화유산으로 등재됐으며, 관음전·약사전·나한전·지장전 등 30여 개 전각을 갖춘 대도량으로 어떤 기도든 드릴 수 있는 곳입니다.`,
+    effects:["소원성취","관음기도","나한기도","건강·약사","지장기도","가족안녕","사업번창"],
+    steps:[
+      {title:"금강계단 삼배",desc:"부처님 진신사리 봉안 금강계단 앞에 삼배를 올립니다. 한국 불교의 성지입니다."},
+      {title:"관음전 정근",desc:"<strong>「나무관세음보살」</strong>을 108번 독송하며 소원을 발원합니다."},
+      {title:"나한전 기도",desc:"오백나한 앞에서 소원을 빕니다. 나한기도는 응험이 빠르기로 유명합니다."},
+      {title:"약사전 건강기도",desc:"약사여래 앞에서 가족 건강과 치료를 기원합니다."},
+      {title:"새벽 예불",desc:"새벽 4시 영축산 자락에서 드리는 예불. 진신사리의 법력이 함께합니다."}
+    ],
+    history:`646년 자장율사 창건. 당나라 유학 중 문수보살에게 받은 부처님 진신사리와 금란가사를 금강계단에 봉안했습니다. 이후 임진왜란 등 여러 차례 소실됐다가 중건됐으며, 현재 경내 국보·보물만 수십 점에 달합니다. 2018년 '한국의 산사'로 유네스코 세계문화유산에 등재됐습니다.`,
+    prayers:[
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살`,note:"관음전에서 108번 독송합니다."},
+      {title:"진신사리 발원문",text:`부처님 진신사리가 봉안된\n이 금강계단 앞에서 발원합니다.\n\n부처님의 가피력이 저와 함께하여\n소원하는 바가 모두 이루어지기를 기원합니다.\n모든 업장이 소멸되고\n지혜의 빛이 가득하기를 발원합니다.\n\n나무석가모니불`,note:"금강계단 앞에서 삼배 후 독송합니다. 가장 영험한 기도처로 알려져 있습니다."},
+      {title:"나한 발원문",text:`오백나한님, 저의 간절한 소원을 들어주소서.\n\n영험하신 나한의 힘으로\n제 앞의 장애가 걷히고\n뜻하는 바가 이루어지기를 발원합니다.\n\n나무영산회상불보살`,note:"나한전에서 삼배 후 독송합니다. 응험이 빠르기로 유명합니다."}
+    ],
+    access:`<strong>자가용:</strong> 경부고속도로 양산IC → 통도사 (양산에서 약 20분)<br><strong>버스:</ർ�언양터미널·양산터미널→통도사행 버스<br><strong>주차:</strong> 통도사 유료 주차장`,
+    related:[{id:"haeinsa",icon:"📜",name:"해인사",desc:"경남 합천 법보사찰"},{id:"beomeosa",icon:"🐠",name:"범어사",desc:"부산 금정산 대찰"}]
+  },
+
+  /* ── 범어사 ── */
+  "beomeosa": {
+    name:"범어사", category:"소원기도 도량", categoryIcon:"🐠",
+    region:"부산 금정", address:"부산광역시 금정구 범어사로 250", mapQuery:"범어사+부산+금정산",
+    tags:[
+      {text:"부산 대표 사찰",color:"rgba(59,130,246,.15)",border:"rgba(59,130,246,.4)",textColor:"#60a5fa"},
+      {text:"금정산 천년고찰",color:"rgba(52,211,153,.1)",border:"rgba(52,211,153,.35)",textColor:"#34d399"},
+      {text:"독성각·나한전",color:"rgba(245,200,66,.08)",border:"rgba(245,200,66,.35)",textColor:"#f5c842"}
+    ],
+    info:[
+      {label:"소재지",value:"부산 금정"},{label:"기도 대상",value:"관세음보살·나한"},
+      {label:"창건 시기",value:"678년 (신라)"},{label:"기도 유형",value:"소원·관음·나한"},
+      {label:"명물",value:"금정산·독성각"},{label:"관람 시간",value:"04:00~20:00"}
+    ],
+    intro:`범어사는 <strong>신라 문무왕 18년(678년)</strong> 의상대사가 창건한 부산 최대의 천년 고찰입니다. 금정산의 수려한 자연 속에 자리하며, <strong>독성각(獨聖閣)의 나반존자</strong>와 나한전 기도가 영험하기로 유명합니다.<br><br>부산 도심에서 30분 이내로 접근 가능한 편리한 위치에도 불구하고 깊은 산사의 분위기를 간직하고 있어, 평일·주말 할 것 없이 기도객의 발길이 끊이지 않습니다. 특히 <strong>소원성취·인연기도</strong>로 유명합니다.`,
+    effects:["소원성취","관음기도","나한기도","인연기도","건강기도","합격·취업","사업번창"],
+    steps:[
+      {title:"대웅전 삼배",desc:"석가모니불 앞에 삼배를 올립니다."},
+      {title:"독성각 기도",desc:"나반존자께 삼배를 올리고 소원을 발원합니다. 인연기도에 특히 영험합니다."},
+      {title:"관음전 정근",desc:"<strong>「나무관세음보살」</strong>을 108번 독송합니다."},
+      {title:"나한전 기도",desc:"오백나한 앞에서 소원을 빌며 응험을 구합니다."},
+      {title:"금정산 산행 기도",desc:"범어사에서 금정산성까지 산행하며 기도하는 전통도 있습니다."}
+    ],
+    history:`678년 의상대사 창건. 임진왜란 때 소실됐다가 광해군 때 중건됐습니다. 조선 후기부터 '금정총림'으로 승격된 부산·경남 불교의 중심 사찰입니다. 3.1운동 당시 불교계 독립운동의 거점이 됐으며, 현재도 부산 시민들의 기도처이자 문화 공간으로 연간 수십만 명이 방문합니다.`,
+    prayers:[
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살`,note:"관음전에서 108번 독송합니다."},
+      {title:"나반존자 정근",text:`나무독성나반존자 나무독성나반존자\n나무독성나반존자 나무독성나반존자\n나무독성나반존자 나무독성나반존자\n나무독성나반존자 마하살\n\n(108번 반복)`,note:"독성각에서 나반존자께 독송합니다. 소원성취·인연기도에 특히 영험합니다."},
+      {title:"소원 발원문",text:`금정산의 깊은 기운과\n부처님의 자비가 가득한 이 도량에서\n간절히 발원합니다.\n\n저의 소원이 법에 어긋남 없이\n이루어지기를 기원하며\n감사하는 마음으로 살아가겠습니다.\n\n나무관세음보살`,note:"대웅전 삼배 후 독송합니다."}
+    ],
+    access:`<strong>지하철:</strong> 1호선 범어사역 5번 출구 → 마을버스 1번 → 범어사<br><strong>자가용:</strong> 금정구 청룡동 방면 → 범어사 주차장<br><strong>주차:</strong> 범어사 유료 주차장`,
+    related:[{id:"haedong",icon:"🐉",name:"해동용궁사",desc:"부산 기장 관음도량"},{id:"tongdosa",icon:"🔥",name:"통도사",desc:"경남 양산 불보사찰"}]
+  },
+
+  /* ── 부석사 ── */
+  "buseoksa": {
+    name:"부석사", category:"화엄기도 도량", categoryIcon:"🏔️",
+    region:"경북 영주", address:"경상북도 영주시 부석면 부석사로 345", mapQuery:"부석사+영주+경북",
+    tags:[
+      {text:"유네스코 세계유산",color:"rgba(245,200,66,.1)",border:"rgba(245,200,66,.4)",textColor:"#f5c842"},
+      {text:"무량수전 아미타불",color:"rgba(167,139,250,.15)",border:"rgba(167,139,250,.4)",textColor:"#a78bfa"},
+      {text:"소백산 화엄도량",color:"rgba(52,211,153,.1)",border:"rgba(52,211,153,.35)",textColor:"#34d399"}
+    ],
+    info:[
+      {label:"소재지",value:"경북 영주"},{label:"기도 대상",value:"아미타불·관세음보살"},
+      {label:"창건 시기",value:"676년 (신라)"},{label:"기도 유형",value:"극락왕생·소원"},
+      {label:"세계유산",value:"무량수전 등 국보 5점"},{label:"관람 시간",value:"08:30~18:00"}
+    ],
+    intro:`부석사는 <strong>신라 문무왕 16년(676년)</strong> 의상대사가 창건한 화엄 도량으로, 소백산 자락에 자리합니다. <strong>무량수전(국보 제18호)</strong>은 한국에서 가장 오래된 목조 건물 중 하나이며, 안에 모신 소조아미타여래좌상은 영원한 생명과 극락왕생을 주관합니다.<br><br>선묘낭자가 돌로 변해 절을 지켰다는 아름다운 설화와 함께, 2018년 유네스코 세계문화유산으로 등재됐습니다. 소백산의 빼어난 경치 속에서 드리는 <strong>극락왕생·소원성취 기도</strong>로 유명합니다.`,
+    effects:["극락왕생","소원성취","관음기도","조상천도","건강기도","가족안녕","인연기도"],
+    steps:[
+      {title:"무량수전 삼배",desc:"아미타불 앞에 삼배를 올리며 극락왕생과 소원성취를 발원합니다."},
+      {title:"아미타불 정근",desc:"<strong>「나무아미타불」</strong>을 108번 독송합니다."},
+      {title:"선묘낭자 설화 길 걷기",desc:"경내를 걷으며 인연과 소원을 마음속으로 기원합니다."},
+      {title:"안양루 전망 기도",desc:"안양루에서 소백산 전경을 바라보며 기도합니다. 일몰 무렵이 특히 장관입니다."},
+      {title:"부석(浮石) 예배",desc:"무량수전 서쪽 부석 앞에서 삼배를 올립니다. 선묘낭자의 돌이라 전해집니다."}
+    ],
+    history:`676년 의상대사 창건 시 당나라 유학 시절 의상을 도운 선묘낭자가 돌로 변해 악귀를 물리쳤다는 설화가 전해집니다. 고려 우왕 때 중건된 무량수전은 국보 제18호로 배흘림기둥 양식이 특징입니다. 선비의 고장 영주에서 가장 유서 깊은 사찰로, 2018년 유네스코 세계문화유산에 등재됐습니다.`,
+    prayers:[
+      {title:"아미타불 정근",text:`나무아미타불 나무아미타불\n나무아미타불 나무아미타불\n나무아미타불 나무아미타불\n나무아미타불 마하살\n\n(108번 반복)`,note:"무량수전에서 독송합니다. 극락왕생과 소원성취에 영험합니다."},
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살`,note:"관음전에서 108번 독송합니다."},
+      {title:"극락 발원문",text:`아미타불의 극락세계에\n저와 제 가족 모두가\n왕생하기를 발원합니다.\n\n이 생에서는 모든 소원이 이루어지고\n다음 생에는 극락에 태어나\n불법을 수행하게 해주소서.\n\n나무아미타불 나무관세음보살`,note:"무량수전 삼배 후 독송합니다. 조상 천도와 극락왕생 기도에 적합합니다."}
+    ],
+    access:`<strong>자가용:</strong> 중앙고속도로 풍기IC → 부석사 (풍기에서 약 15분)<br><strong>버스:</strong> 영주시외버스터미널 → 부석사행 버스 (약 1시간)<br><strong>주차:</strong> 부석사 입구 유료 주차장`,
+    related:[{id:"haeinsa",icon:"📜",name:"해인사",desc:"경남 합천 법보사찰"},{id:"tongdosa",icon:"🔥",name:"통도사",desc:"경남 양산 불보사찰"}]
+  }
+};
+
+  /* ── 송광사 ── */
+  "songgwangsa": {
+    name:"송광사", category:"승보사찰·소원기도 도량", categoryIcon:"🌿",
+    region:"전남 순천", address:"전라남도 순천시 송광면 송광사안길 100", mapQuery:"송광사+순천+전남",
+    tags:[
+      {text:"승보사찰",color:"rgba(52,211,153,.15)",border:"rgba(52,211,153,.4)",textColor:"#34d399"},
+      {text:"16국사 배출",color:"rgba(245,200,66,.1)",border:"rgba(245,200,66,.4)",textColor:"#f5c842"},
+      {text:"조계산 청정 도량",color:"rgba(124,58,237,.1)",border:"rgba(124,58,237,.35)",textColor:"#a78bfa"}
+    ],
+    info:[
+      {label:"소재지",value:"전남 순천"},{label:"기도 대상",value:"관세음보살·지장보살"},
+      {label:"창건 시기",value:"867년 (신라)"},{label:"기도 유형",value:"소원·관음·정진"},
+      {label:"특징",value:"16국사 배출 승보사찰"},{label:"관람 시간",value:"04:00~21:00"}
+    ],
+    intro:`송광사는 삼보사찰 중 <strong>승보사찰(僧寶寺刹)</strong>로, 보조국사 지눌 스님 이후 16명의 국사를 배출한 한국 불교 최고의 수행 도량입니다. <strong>신라 경문왕 7년(867년)</strong> 창건 후 고려 명종 때 보조국사가 대대적으로 중건, 현재의 모습을 갖췄습니다.<br><br>조계산 깊은 계곡 속에 자리하며 맑은 물과 울창한 숲이 어우러진 청정 도량으로, <strong>기도 정진</strong>과 소원성취 기도처로 전국 신도들이 즐겨 찾습니다.`,
+    effects:["소원성취","관음기도","정진수행","건강기도","합격·취업","사업번창","가족안녕"],
+    steps:[
+      {title:"대웅보전 삼배",desc:"석가모니불 앞에 삼배를 올립니다."},
+      {title:"관음전 정근",desc:"<strong>「나무관세음보살」</strong>을 108번 독송합니다."},
+      {title:"지장전 기도",desc:"지장보살께 가족의 건강과 안녕을 기원합니다."},
+      {title:"국사전 참배",desc:"16국사 진영을 모신 국사전에서 삼배를 올립니다."},
+      {title:"계곡 물소리 명상",desc:"청정 계곡 물소리를 들으며 마음을 정화하고 발원합니다."}
+    ],
+    history:`867년 신라 창건 후 고려 명종 때 보조국사 지눌이 정혜결사(定慧結社)를 결성하여 수행 도량으로 중건했습니다. 이후 16명의 국사가 배출되어 '승보사찰'의 위명을 얻었습니다. 여수·순천 사건(1948) 당시 소실됐다가 복원됐으며, 현재도 매년 수십만 명의 기도객이 방문합니다.`,
+    prayers:[
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살\n\n(108번 반복)`,note:"관음전에서 독송합니다."},
+      {title:"지장보살 정근",text:`나무지장보살 나무지장보살\n나무지장보살 나무지장보살\n나무지장보살 나무지장보살\n나무지장보살 마하살\n\n(108번 반복)`,note:"지장전에서 가족 건강과 안녕을 빌며 독송합니다."},
+      {title:"소원 발원문",text:`청정한 조계산의 기운과\n16국사의 법력이 깃든 이 도량에서\n간절히 발원합니다.\n\n지혜와 자비로\n저의 소원이 이루어지게 하시고\n모든 업장이 소멸되기를 기원합니다.\n\n나무관세음보살`,note:"대웅보전 삼배 후 독송합니다."}
+    ],
+    access:`<strong>자가용:</strong> 순천 → 송광면 → 송광사 (순천에서 약 30분)<br><strong>버스:</strong> 순천시외버스터미널 → 송광사행 버스<br><strong>주차:</strong> 송광사 입구 유료 주차장`,
+    related:[{id:"seonamsa",icon:"🌸",name:"선암사",desc:"순천 조계산 유네스코 세계유산"},{id:"hyangilam",icon:"🌄",name:"향일암",desc:"여수 일출 관음도량"}]
+  },
+
+  /* ── 법주사 ── */
+  "beopjusa": {
+    name:"법주사", category:"미륵기도 도량", categoryIcon:"🌅",
+    region:"충북 보은", address:"충청북도 보은군 속리산면 법주사로 405", mapQuery:"법주사+보은+충북",
+    tags:[
+      {text:"속리산 미륵도량",color:"rgba(245,200,66,.15)",border:"rgba(245,200,66,.4)",textColor:"#f5c842"},
+      {text:"팔상전 국보",color:"rgba(167,139,250,.1)",border:"rgba(167,139,250,.35)",textColor:"#a78bfa"},
+      {text:"유네스코 세계유산",color:"rgba(59,130,246,.1)",border:"rgba(59,130,246,.35)",textColor:"#60a5fa"}
+    ],
+    info:[
+      {label:"소재지",value:"충북 보은"},{label:"기도 대상",value:"미륵불·비로자나불"},
+      {label:"창건 시기",value:"553년 (신라)"},{label:"기도 유형",value:"미륵·소원·지혜"},
+      {label:"세계유산",value:"팔상전·사천왕석등 외"},{label:"관람 시간",value:"07:00~18:00"}
+    ],
+    intro:`법주사는 <strong>신라 진흥왕 14년(553년)</strong> 의신조사가 창건한 속리산 대찰입니다. 유일하게 남아 있는 목조 5층 전각인 <strong>팔상전(국보)</strong>과 높이 33m의 <strong>청동미륵대불</strong>이 이 사찰의 상징입니다.<br><br>2018년 유네스코 세계문화유산으로 등재됐으며, 미륵기도와 소원성취 기도처로 전국 신도들이 찾습니다.`,
+    effects:["미륵기도","소원성취","지혜기도","합격·취업","건강기도","사업번창","가족안녕"],
+    steps:[
+      {title:"미륵대불 삼배",desc:"33m 청동미륵대불 앞에 삼배를 올리며 미래 부처님의 가피를 구합니다."},
+      {title:"팔상전 참배",desc:"팔상전(국보)에서 부처님 일생 팔상도를 보며 기도합니다."},
+      {title:"대웅보전 삼배",desc:"비로자나불 앞에 삼배를 올립니다."},
+      {title:"사천왕석등 예배",desc:"국보 사천왕석등 앞에서 합장하고 소원을 발원합니다."},
+      {title:"속리산 산행 기도",desc:"문장대까지 산행하며 마음속 소원을 기원하는 전통이 있습니다."}
+    ],
+    history:`553년 의신조사 창건 후 신라 성왕 때 대대적으로 중건됐습니다. 팔상전은 현존하는 유일한 5층 목조전각으로 국보 제55호입니다. 조선 세조가 법주사에서 기도 후 피부병이 나았다는 설화도 유명합니다. 2018년 유네스코 세계문화유산으로 등재됐습니다.`,
+    prayers:[
+      {title:"미륵불 정근",text:`나무미륵존불 나무미륵존불\n나무미륵존불 나무미륵존불\n나무미륵존불 나무미륵존불\n나무미륵존불 마하살\n\n(미륵대불 앞에서 108번)`,note:"미륵대불 앞에서 독송합니다. 미래 세상이 열리기를 발원하는 기도입니다."},
+      {title:"비로자나불 정근",text:`나무비로자나불 나무비로자나불\n나무비로자나불 나무비로자나불\n나무비로자나불 나무비로자나불\n나무비로자나불 마하살`,note:"대웅보전에서 독송합니다. 지혜와 소원성취에 영험합니다."},
+      {title:"소원 발원문",text:`속리산의 맑은 기운을 받아\n미륵부처님 앞에서 발원합니다.\n\n미래 용화세계가 열리듯\n저의 앞길도 활짝 열리기를 기원하며\n소원하는 바가 원만히 이루어지기를\n간절히 빕니다.\n\n나무미륵존불`,note:"미륵대불 앞 삼배 후 독송합니다."}
+    ],
+    access:`<strong>자가용:</strong> 경부고속도로 → 청주 → 보은 → 속리산 법주사 (서울에서 약 2시간)<br><strong>버스:</strong> 동서울터미널 → 보은 → 법주사행 버스<br><strong>주차:</strong> 법주사 입구 유료 주차장`,
+    related:[{id:"haeinsa",icon:"📜",name:"해인사",desc:"경남 합천 법보사찰"},{id:"woljeongsa",icon:"⭐",name:"월정사",desc:"강원 평창 적멸보궁"}]
+  },
+
+  /* ── 월정사 ── */
+  "woljeongsa": {
+    name:"월정사", category:"적멸보궁·소원기도 도량", categoryIcon:"⭐",
+    region:"강원 평창", address:"강원도 평창군 진부면 오대산로 374-8", mapQuery:"월정사+평창+강원",
+    tags:[
+      {text:"5대 적멸보궁",color:"rgba(245,200,66,.15)",border:"rgba(245,200,66,.4)",textColor:"#f5c842"},
+      {text:"전나무 숲길",color:"rgba(52,211,153,.1)",border:"rgba(52,211,153,.35)",textColor:"#34d399"},
+      {text:"팔각9층석탑",color:"rgba(167,139,250,.1)",border:"rgba(167,139,250,.35)",textColor:"#a78bfa"}
+    ],
+    info:[
+      {label:"소재지",value:"강원 평창"},{label:"기도 대상",value:"적멸보궁·비로자나불"},
+      {label:"창건 시기",value:"643년 (신라)"},{label:"기도 유형",value:"적멸보궁·소원·지혜"},
+      {label:"명물",value:"1km 전나무 숲길·팔각9층석탑"},{label:"관람 시간",value:"04:00~21:00"}
+    ],
+    intro:`월정사는 <strong>신라 선덕여왕 12년(643년)</strong> 자장율사가 창건한 오대산 대찰입니다. 5대 적멸보궁 중 하나로 부처님 진신사리가 봉안된 <strong>상원사 적멸보궁</strong>이 이 사찰 위에 있습니다.<br><br>월정사에서 상원사까지 이어지는 <strong>1km 전나무 숲길</strong>은 사계절 아름다운 국내 최고의 숲길로 꼽히며, 경내 <strong>팔각9층석탑(국보)</strong>은 고려시대 걸작입니다.`,
+    effects:["소원성취","지혜기도","건강기도","합격·취업","사업번창","가족안녕","재난소멸"],
+    steps:[
+      {title:"전나무 숲길 걷기",desc:"월정사 입구에서 1km 전나무 숲길을 걸으며 마음을 정화합니다."},
+      {title:"팔각9층석탑 예배",desc:"국보 팔각9층석탑 앞에서 삼배를 올립니다."},
+      {title:"적광전 삼배",desc:"비로자나불 앞에 삼배를 올리며 지혜와 소원을 발원합니다."},
+      {title:"상원사 적멸보궁 참배",desc:"월정사에서 상원사까지 올라 적멸보궁에 삼배를 올립니다."},
+      {title:"새벽 예불",desc:"새벽 4시 오대산 예불. 아름다운 새벽 숲 속에서 드리는 기도가 깊은 울림을 줍니다."}
+    ],
+    history:`643년 자장율사 창건. 자장율사가 당나라에서 가져온 부처님 진신사리를 상원사에 봉안하면서 적멸보궁이 됐습니다. 한국전쟁 때 소실됐다가 복원됐으며, 현재 전나무 숲길과 팔각9층석탑이 많은 관광객과 기도객을 불러모읍니다. 조선 세조도 이곳에서 기도한 기록이 있습니다.`,
+    prayers:[
+      {title:"비로자나불 정근",text:`나무비로자나불 나무비로자나불\n나무비로자나불 나무비로자나불\n나무비로자나불 나무비로자나불\n나무비로자나불 마하살`,note:"적광전에서 독송합니다. 지혜와 소원성취에 영험합니다."},
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살`,note:"상원사로 가는 길에 독송합니다."},
+      {title:"전나무 숲 발원문",text:`천 년 전나무 숲의 맑은 기운 속에서\n간절히 발원합니다.\n\n오대산의 다섯 봉우리에서\n문수보살의 지혜가 내려오듯\n저의 앞길을 환히 밝혀주시고\n소원이 이루어지게 해주소서.\n\n나무비로자나불`,note:"전나무 숲길을 걸으며 독송합니다."}
+    ],
+    access:`<strong>자가용:</strong> 영동고속도로 진부IC → 월정사 (서울에서 약 2시간 30분)<br><strong>버스:</strong> 동서울터미널 → 진부 → 월정사<br><strong>주차:</strong> 월정사 입구 유료 주차장`,
+    related:[{id:"naksan",icon:"🌊",name:"낙산사 홍련암",desc:"강원 양양 관음도량"},{id:"beopjusa",icon:"🌅",name:"법주사",desc:"충북 보은 미륵도량"}]
+  },
+
+  /* ── 불국사 ── */
+  "bulguksa": {
+    name:"불국사", category:"소원기도 도량", categoryIcon:"🏛️",
+    region:"경북 경주", address:"경상북도 경주시 불국로 385", mapQuery:"불국사+경주+경북",
+    tags:[
+      {text:"유네스코 세계유산",color:"rgba(167,139,250,.15)",border:"rgba(167,139,250,.4)",textColor:"#a78bfa"},
+      {text:"신라 천년 불교",color:"rgba(245,200,66,.1)",border:"rgba(245,200,66,.4)",textColor:"#f5c842"},
+      {text:"석가탑·다보탑",color:"rgba(59,130,246,.1)",border:"rgba(59,130,246,.35)",textColor:"#60a5fa"}
+    ],
+    info:[
+      {label:"소재지",value:"경북 경주"},{label:"기도 대상",value:"아미타불·비로자나불"},
+      {label:"창건 시기",value:"528년 (신라)"},{label:"기도 유형",value:"소원·극락왕생·지혜"},
+      {label:"세계유산",value:"국보 8점 이상 보유"},{label:"관람 시간",value:"07:00~18:00"}
+    ],
+    intro:`불국사는 <strong>신라 법흥왕 15년(528년)</strong> 창건되어 경덕왕 때(751년) 김대성이 현재의 규모로 중건한 신라 불교 문화의 결정체입니다. 다보탑·석가탑·청운교·연화교 등 <strong>국보 8점</strong>을 보유한 유네스코 세계문화유산으로, 극락전 아미타불·비로전 비로자나불 등 여러 전각에서 기도할 수 있습니다.<br><br>신라 천년 불교의 정화를 품은 이 도량에서 드리는 기도는 예로부터 영험하기로 이름이 높습니다.`,
+    effects:["소원성취","극락왕생","지혜기도","합격·취업","건강기도","가족안녕","조상천도"],
+    steps:[
+      {title:"대웅전 삼배",desc:"석가모니불 앞에 삼배를 올립니다."},
+      {title:"석가탑·다보탑 예배",desc:"국보 석가탑과 다보탑 앞에서 합장하고 소원을 발원합니다."},
+      {title:"극락전 아미타불 기도",desc:"<strong>「나무아미타불」</strong>을 108번 독송하며 극락왕생을 기원합니다."},
+      {title:"비로전 비로자나불 기도",desc:"비로자나불께 지혜와 소원성취를 발원합니다."},
+      {title:"청운교·백운교 오르기",desc:"신성한 계단을 오르며 불국토에 입문하는 의미로 기도합니다."}
+    ],
+    history:`528년 창건. 경덕왕 때 재상 김대성이 현생 부모를 위해 불국사를, 전생 부모를 위해 석굴암을 창건했다는 기록이 전해집니다. 임진왜란 때 소실됐다가 조선 후기~근대에 복원됐습니다. 1995년 석굴암과 함께 유네스코 세계문화유산으로 등재됐습니다.`,
+    prayers:[
+      {title:"아미타불 정근",text:`나무아미타불 나무아미타불\n나무아미타불 나무아미타불\n나무아미타불 나무아미타불\n나무아미타불 마하살\n\n(108번 반복)`,note:"극락전에서 독송합니다. 극락왕생과 소원성취에 영험합니다."},
+      {title:"비로자나불 정근",text:`나무비로자나불 나무비로자나불\n나무비로자나불 나무비로자나불\n나무비로자나불 나무비로자나불\n나무비로자나불 마하살`,note:"비로전에서 독송합니다. 지혜와 학업 기도에 적합합니다."},
+      {title:"신라 천년 발원문",text:`신라 천년 불교의 정화가 깃든\n이 도량에서 간절히 발원합니다.\n\n석가탑의 법력과 다보탑의 영험으로\n저의 소원이 이루어지기를 기원하며\n청운교를 오르듯\n소망이 이루어지기를 발원합니다.\n\n나무아미타불 나무비로자나불`,note:"대웅전 삼배 후 독송합니다."}
+    ],
+    access:`<strong>자가용:</strong> 경부고속도로 경주IC → 불국사 (경주 시내에서 약 15분)<br><strong>버스:</strong> 경주고속터미널 → 불국사행 버스 (약 30분)<br><strong>주차:</strong> 불국사 입구 유료 주차장`,
+    related:[{id:"tongdosa",icon:"🔥",name:"통도사",desc:"경남 양산 불보사찰"},{id:"haeinsa",icon:"📜",name:"해인사",desc:"경남 합천 법보사찰"}]
+  },
+
+  /* ── 수덕사 ── */
+  "sudoksa": {
+    name:"수덕사", category:"관음기도 도량", categoryIcon:"🌸",
+    region:"충남 예산", address:"충청남도 예산군 덕산면 수덕사안길 79", mapQuery:"수덕사+예산+충남",
+    tags:[
+      {text:"대웅전 국보",color:"rgba(244,114,182,.15)",border:"rgba(244,114,182,.4)",textColor:"#f472b6"},
+      {text:"비구니 강원",color:"rgba(167,139,250,.1)",border:"rgba(167,139,250,.35)",textColor:"#a78bfa"},
+      {text:"덕숭산 청정 도량",color:"rgba(52,211,153,.1)",border:"rgba(52,211,153,.35)",textColor:"#34d399"}
+    ],
+    info:[
+      {label:"소재지",value:"충남 예산"},{label:"기도 대상",value:"관세음보살"},
+      {label:"창건 시기",value:"599년 (백제)"},{label:"기도 유형",value:"관음·소원·건강"},
+      {label:"명물",value:"대웅전(국보)·비구니 강원"},{label:"관람 시간",value:"04:00~20:00"}
+    ],
+    intro:`수덕사는 <strong>백제 법왕 원년(599년)</strong> 창건된 충남 최대의 천년 고찰입니다. 고려 시대(1308년) 중건된 <strong>대웅전(국보 제49호)</strong>은 현존하는 가장 오래된 목조건물 중 하나로, 배흘림기둥의 아름다움이 일품입니다.<br><br>한국 최대 비구니 강원이 있어 여성 수행자들이 많이 수행하는 청정 도량으로, 관음기도와 소원성취 기도처로 수도권에서 많은 신도들이 찾습니다.`,
+    effects:["관음기도","소원성취","건강기도","인연기도","합격·취업","사업번창","가족안녕"],
+    steps:[
+      {title:"대웅전 삼배",desc:"국보 대웅전 석가모니불 앞에 삼배를 올립니다."},
+      {title:"관음전 정근",desc:"<strong>「나무관세음보살」</strong>을 108번 독송합니다."},
+      {title:"덕숭산 정기 기도",desc:"덕숭산의 맑은 기운을 받으며 소원을 발원합니다."},
+      {title:"산신각 기도",desc:"덕숭산 산신께 건강과 안녕을 기원합니다."},
+      {title:"새벽 예불",desc:"새벽 4시 예불 참석 후 청정한 도량에서 기도합니다."}
+    ],
+    history:`599년 백제 법왕 때 창건됐다고 전해집니다. 고려 충숙왕 때(1308년) 중건된 대웅전은 맞배지붕·배흘림기둥 양식의 걸작으로 국보 제49호로 지정됐습니다. 근현대에는 만공스님이 주석하며 수덕사를 중흥시켰으며, 화가 나혜석이 이곳에 머물기도 했습니다.`,
+    prayers:[
+      {title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살`,note:"관음전에서 108번 독송합니다."},
+      {title:"신묘장구 대다라니",text:`나모라 다나다라 야야\n나막 알약 바로기제 새바라야\n모지 사다바야 마하사다바야\n마하가로니가야 옴 살바 바예수\n다라나 가라야 다사명\n나막 가리다바 이맘 알야\n바로기제 새바라 다바\n니라간타 나막 하리나야\n마발다 이사미\n\n나무관세음보살`,note:"관음전에서 7번 독송하면 영험합니다."},
+      {title:"소원 발원문",text:`백제의 숨결이 깃든\n수덕사 대웅전 앞에서 발원합니다.\n\n천년의 법력이 저와 함께하여\n건강하고 지혜롭게 살아가게 해주시고\n소원하는 바가 이루어지기를\n관세음보살님께 기원합니다.\n\n나무관세음보살`,note:"대웅전 삼배 후 독송합니다."}
+    ],
+    access:`<strong>자가용:</strong> 서해안고속도로 해미IC → 예산 덕산면 → 수덕사 (서울에서 약 1시간 30분)<br><strong>버스:</strong> 센트럴시티→예산터미널→덕산→수덕사<br><strong>주차:</strong> 수덕사 입구 유료 주차장`,
+    related:[{id:"magoksa",icon:"🏔️",name:"마곡사",desc:"충남 공주 유네스코 세계유산"},{id:"beopjusa",icon:"🌅",name:"법주사",desc:"충북 보은 미륵도량"}]
+  }
+};
+
+/* 오행 도량 점수 */
+const TO={
+  naksan:[40,25,20,15,65],bomunsa:[35,20,30,45,30],hyangilam:[50,30,20,20,45],
+  jogyesa:[30,45,55,20,20],haeinsa:[55,20,25,30,20],tongdosa:[45,35,20,25,30],
+  beomeosa:[40,30,20,25,35],buseoksa:[60,15,20,20,30],
+  songgwangsa:[50,20,25,20,35],beopjusa:[45,30,20,15,30],woljeongsa:[55,15,20,15,35],
+  bulguksa:[50,20,20,20,30],sudoksa:[35,25,30,20,30]
+};
+const DATES=[
+  {date:"2026년 8월 15일 (토)",lunar:"음력 6월 22일",note:"보름·관음재일"},
+  {date:"2026년 9월 9일 (수)",lunar:"음력 7월 18일",note:"중양절·기도길일"},
+  {date:"2026년 10월 4일 (일)",lunar:"음력 8월 14일",note:"한가위 전날"},
+  {date:"2026년 10월 22일 (목)",lunar:"음력 9월 1일",note:"초하루·소원기도"},
+  {date:"2026년 11월 20일 (금)",lunar:"음력 10월 1일",note:"동안거 시작"}
+];
+const PA={소원:"관세음보살님, 이 도량의 기운을 빌려 간절히 발원합니다. 저의 소원이 하늘에 닿아 이루어지기를 기도드립니다. 지혜와 복덕을 내려주시어 모든 것이 원만하게 성취되기를 바랍니다. 나무관세음보살.",건강:"관세음보살님, 자비로운 손길로 이 몸과 마음을 보살펴 주소서. 병환이 사라지고 건강하게 일상을 보낼 수 있도록 인도해 주소서. 나무관세음보살.",합격:"관세음보살님, 오늘 이 도량에서 간절히 발원합니다. 지혜를 내려주시어 시험에 통과하고 꿈에 그리던 자리에 오를 수 있도록 도와주소서. 나무관세음보살.",사업:"관세음보살님, 모든 장애를 거두어 주시고 사업이 번창하도록 도와주소서. 거래마다 신용이 쌓이고 이익이 넘치게 해주소서. 나무관세음보살.",인연:"관세음보살님, 좋은 인연을 점지해 주소서. 서로를 아끼고 존중하는 반려를 만나 행복한 삶을 이루게 해주소서. 나무관세음보살."};
+
+const EC=['#4ade80','#f87171','#fbbf24','#cbd5e1','#60a5fa'],EN=['木','火','土','金','水'];
+
+/* ── 파티클 ── */
+(function(){
+  const wrap=document.getElementById('particles');
+  for(let i=0;i<28;i++){
+    const p=document.createElement('div');p.className='p';
+    p.style.cssText=`left:${Math.random()*100}%;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s;--dx:${(Math.random()-.5)*80}px;${Math.random()>.6?'background:#f5c842':''}`;
+    wrap.appendChild(p);
+  }
+})();
+
+/* ── 기본 기도문 (타입별) ── */
+var PRAYER_MAP={
+  '관음':{title:'관세음보살 정근',text:'나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살\n\n(108번 반복)'},
+  '약사':{title:'약사여래 정근',text:'나무약사유리광여래 나무약사유리광여래\n나무약사유리광여래 나무약사유리광여래\n나무약사유리광여래 마하살\n\n(108번 반복)'},
+  '지장':{title:'지장보살 정근',text:'나무지장보살 나무지장보살\n나무지장보살 나무지장보살\n나무지장보살 마하살\n\n(108번 반복)'},
+  '미륵':{title:'미륵보살 정근',text:'나무미륵보살 나무미륵보살\n나무미륵보살 나무미륵보살\n나무미륵보살 마하살\n\n(108번 반복)'},
+  '아미타':{title:'아미타불 정근',text:'나무아미타불 나무아미타불\n나무아미타불 나무아미타불\n나무아미타불 마하살\n\n(108번 반복)'},
+  '문수':{title:'문수보살 정근',text:'나무문수사리보살 나무문수사리보살\n나무문수사리보살 마하살\n\n(108번 반복)'},
+  '화엄':{title:'비로자나불 정근',text:'나무비로자나불 나무비로자나불\n나무비로자나불 마하살\n\n(108번 반복)'},
+  '산신':{title:'산신기도',text:'山神大王 산신대왕님이시여\n이 도량을 굽어살피시고\n기도하는 저를 보살펴 주소서\n복덕과 수명을 더하여 주소서\n\n(108번 합장 기도)'},
+  '칠성':{title:'칠성기도',text:'北斗七星 칠성여래시여\n수명장수 복덕을 내려주소서\n이 몸과 마음을 보살피시어\n건강과 행운을 주소서\n\n(108번 합장 기도)'},
+  '독성':{title:'나반존자 기도',text:'나무독성나반존자\n나무독성나반존자\n나무독성나반존자\n\n복덕과 소원을 성취하게 하소서\n(108번 반복)'},
+  '나한':{title:'나한기도',text:'나무오백나한 나무오백나한\n나무오백나한 마하살\n\n소원을 성취하게 하소서\n(108번 반복)'},
+  'default':{title:'기도 정근',text:'지심귀명례 삼계도사 사생자부\n시아본사 석가모니불\n\n나무석가모니불 나무석가모니불\n나무시아본사 석가모니불\n\n(108번 반복)'}
+};
+
+/* ── 기본 fallback 렌더러 ── */
+function renderBasic(e){
+  var ttype=e.type&&e.type[0]||'관음';
+  var pr=PRAYER_MAP[ttype]||PRAYER_MAP['default'];
+  var tagColor={'관음':'rgba(59,130,246,.15)','약사':'rgba(52,211,153,.15)','지장':'rgba(139,92,246,.15)','미륵':'rgba(245,200,66,.15)','아미타':'rgba(139,92,246,.15)','산신':'rgba(124,58,237,.15)','화엄':'rgba(124,58,237,.15)'};
+  var tc=tagColor[ttype]||'rgba(167,139,250,.15)';
+  document.title=e.name+' — 기도도량 | 잼공인연사찰';
+  document.getElementById('pg-title').textContent=e.name+' | 잼공인연사찰';
+  document.getElementById('pg-desc').setAttribute('content',e.region+' '+e.name+' '+ttype+' 기도도량');
+  document.getElementById('id-badge').innerHTML=e.icon+' '+ttype+' 도량';
+  document.getElementById('id-title').textContent=e.name;
+  document.getElementById('id-sub').textContent='📍 '+e.region;
+  var tagsEl=document.getElementById('id-tags');
+  (e.tags||[]).forEach(function(t){var s=document.createElement('span');s.className='hero-tag';s.textContent=t;s.style.cssText='background:'+tc+';border-color:rgba(167,139,250,.4);color:#a78bfa';tagsEl.appendChild(s);});
+  document.getElementById('id-btns').innerHTML='<a class="hero-btn hero-btn-map" href="https://map.naver.com/v5/search/'+encodeURIComponent(e.name+' '+e.region)+'" target="_blank">🗺️ 네이버 지도</a><a class="hero-btn hero-btn-kakao" href="https://map.kakao.com/?q='+encodeURIComponent(e.name)+'" target="_blank">📍 카카오 지도</a><a class="hero-btn hero-btn-back" href="/gido">← 목록으로</a>';
+  document.getElementById('id-info-grid').innerHTML='<div class="info-item"><div class="info-label">소재지</div><div class="info-value">'+e.region+'</div></div><div class="info-item"><div class="info-label">기도 유형</div><div class="info-value">'+ttype+' 기도</div></div><div class="info-item"><div class="info-label">분류</div><div class="info-value">'+e.badge+'</div></div><div class="info-item"><div class="info-label">기도 방법</div><div class="info-value">108배 · 정근 · 발원</div></div>';
+  document.getElementById('id-intro').innerHTML='<strong>'+e.name+'</strong>은(는) '+e.region+'에 위치한 '+ttype+' 기도 도량입니다.<br><br>'+e.desc+'<br><br>'+ttype+' 기도의 영험함으로 전국에서 신도들이 찾아오는 청정 도량입니다. 진심을 다해 발원하면 관세음보살의 자비가 응답한다고 전해집니다.';
+  document.getElementById('id-history').innerHTML=e.name+'은(는) '+e.region+'의 유서 깊은 '+ttype+' 도량입니다. 오랜 역사 속에서 많은 신도들의 기도처가 되어왔으며, 지금도 기도객들의 발길이 끊이지 않는 영험한 도량입니다.';
+  document.getElementById('id-access').innerHTML='<strong>네이버/카카오 지도</strong>에서 <strong>"'+e.name+'"</strong>으로 검색하시면 정확한 위치와 교통편을 확인하실 수 있습니다.';
+  ['소원성취','기도','마음의 평화','건강기도','108배'].forEach(function(ef){document.getElementById('id-effects').innerHTML+='<span class="effect-badge">'+ef+'</span>';});
+  ['합장 삼배','정근 108번','발원문 낭독','회향'].forEach(function(st,i){document.getElementById('id-steps').innerHTML+='<div class="step"><div class="step-num">'+(i+1)+'</div><div class="step-content"><strong>'+st+'</strong></div></div>';});
+  window._prayerData=[{title:pr.title,text:pr.text,note:e.region+' '+e.name+'에서 진심으로 기도하세요.'}];
+  document.getElementById('id-prayers').innerHTML='<div class="prayer-tabs"><button class="prayer-tab active">'+pr.title+'</button></div><div class="prayer-wrap"><div class="prayer-text" id="prayer-text">'+pr.text+'</div><button class="prayer-audio-btn" id="audio-btn" onclick="playPrayer()">▶ 음성 듣기</button></div><div class="prayer-note" id="prayer-note">💡 '+e.region+' '+e.name+'에서 진심으로 기도하세요.</div>';
+  document.getElementById('id-map').innerHTML='<iframe src="https://www.google.com/maps?q='+encodeURIComponent(e.name+' '+e.region)+'&output=embed" loading="lazy" style="width:100%;height:100%;border:none"></iframe>';
+  document.getElementById('id-related').innerHTML='<a class="related-card" href="/gido"><div class="related-icon">🙏</div><div class="related-name">기도도량 목록</div><div class="related-desc">전국 465개 기도도량 보기</div></a>';
+}
+
+/* ── 렌더링 ── */
+(function(){
+  const q=new URLSearchParams(location.search),id=q.get('id')||'naksan',d=GIDO_DB[id];
+  if(!d){
+    // GIDO_DB에 없으면 gido-data.js에서 fallback
+    var url='https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/data/gido-data.js';
+    fetch(url).then(function(r){return r.ok?r.text():Promise.reject();})
+    .then(function(txt){
+      try{(new Function(txt))();}catch(e){}
+      var extra=window.GIDO_EXTRA||[];
+      var found=extra.find(function(x){return x.id===id;});
+      if(found){renderBasic(found);}
+      else{document.body.innerHTML='<div style="text-align:center;padding:120px 24px;font-family:\'Noto Sans KR\'"><div style="font-size:52px;margin-bottom:16px">🙏</div><h2 style="color:#f5f3ff;margin-bottom:10px">도량 정보를 찾을 수 없습니다</h2><a href="/gido" style="color:#a78bfa">← 기도도량 목록으로</a></div>';}
+    })
+    .catch(function(){document.body.innerHTML='<div style="text-align:center;padding:120px 24px;font-family:\'Noto Sans KR\'"><div style="font-size:52px;margin-bottom:16px">🙏</div><h2 style="color:#f5f3ff;margin-bottom:10px">도량 정보를 찾을 수 없습니다</h2><a href="/gido" style="color:#a78bfa">← 기도도량 목록으로</a></div>';});
+    return;
+  }
+
+  document.title=d.name+' — 기도도량 | 잼공인연사찰';
+  document.getElementById('pg-title').textContent=d.name+' | 잼공인연사찰';
+  document.getElementById('pg-desc').setAttribute('content',d.region+' '+d.name+' '+d.category);
+  document.getElementById('id-badge').innerHTML=d.categoryIcon+' '+d.category;
+  document.getElementById('id-title').textContent=d.name;
+  document.getElementById('id-sub').textContent='📍 '+d.address;
+
+  const tagsEl=document.getElementById('id-tags');
+  d.tags.forEach(t=>{const s=document.createElement('span');s.className='hero-tag';s.textContent=t.text;s.style.cssText=`background:${t.color};border-color:${t.border};color:${t.textColor}`;tagsEl.appendChild(s);});
+
+  document.getElementById('id-btns').innerHTML=`
+    <a class="hero-btn hero-btn-map" href="https://map.naver.com/v5/search/${encodeURIComponent(d.mapQuery)}" target="_blank">🗺️ 네이버 지도</a>
+    <a class="hero-btn hero-btn-kakao" href="https://map.kakao.com/?q=${encodeURIComponent(d.name)}" target="_blank">📍 카카오 지도</a>
+    <a class="hero-btn hero-btn-back" href="/gido">← 목록으로</a>`;
+
+  d.info.forEach(i=>{document.getElementById('id-info-grid').innerHTML+=`<div class="info-item"><div class="info-label">${i.label}</div><div class="info-value">${i.value}</div></div>`;});
+  document.getElementById('id-intro').innerHTML=d.intro;
+  document.getElementById('id-history').innerHTML=d.history;
+  document.getElementById('id-access').innerHTML=d.access;
+  d.effects.forEach(e=>{document.getElementById('id-effects').innerHTML+=`<span class="effect-badge">${e}</span>`;});
+  d.steps.forEach((s,i)=>{document.getElementById('id-steps').innerHTML+=`<div class="step"><div class="step-num">${i+1}</div><div class="step-content"><strong>${s.title}</strong>${s.desc}</div></div>`;});
+
+  // 기도문 탭
+  window._prayerData=d.prayers;
+  const pEl=document.getElementById('id-prayers');
+  pEl.innerHTML=`<div class="prayer-tabs">${d.prayers.map((p,i)=>`<button class="prayer-tab${i===0?' active':''}" onclick="switchPrayer(${i})">${p.title}</button>`).join('')}</div>
+  <div class="prayer-wrap">
+    <div class="prayer-text" id="prayer-text">${d.prayers[0].text}</div>
+    <button class="prayer-audio-btn" id="audio-btn" onclick="playPrayer()">▶ 음성 듣기</button>
+  </div>
+  <div class="prayer-note" id="prayer-note">💡 ${d.prayers[0].note}</div>`;
+
+  document.getElementById('id-map').innerHTML=`<iframe src="https://www.google.com/maps?q=${encodeURIComponent(d.name+' '+d.region)}&output=embed" loading="lazy" style="width:100%;height:100%;border:none"></iframe>`;
+  d.related.forEach(r=>{document.getElementById('id-related').innerHTML+=`<a class="related-card" href="?id=${r.id}"><div class="related-icon">${r.icon}</div><div class="related-name">${r.name}</div><div class="related-desc">${r.desc}</div></a>`;});
+
+  const tl=document.getElementById('prem-temple-label');if(tl)tl.textContent=d.name+' 기도 기운';
+  window.addEventListener('scroll',()=>document.getElementById('top-btn').classList.toggle('show',scrollY>400));
+})();
+
+function switchPrayer(idx){
+  const data=window._prayerData;if(!data)return;
+  document.querySelectorAll('.prayer-tab').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.getElementById('prayer-text').textContent=data[idx].text;
+  document.getElementById('prayer-note').textContent='💡 '+data[idx].note;
+  if(window._synth&&window.speechSynthesis.speaking)window.speechSynthesis.cancel();
+  const btn=document.getElementById('audio-btn');if(btn)btn.textContent='▶ 음성 듣기';
+}
+
+/* ── 기도문 음성 듣기 ── */
+function playPrayer(){
+  if(!window.speechSynthesis){alert('이 브라우저는 음성 듣기를 지원하지 않습니다.');return;}
+  const btn=document.getElementById('audio-btn');
+  if(window.speechSynthesis.speaking){window.speechSynthesis.cancel();btn.textContent='▶ 음성 듣기';return;}
+  const text=document.getElementById('prayer-text').textContent;
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.lang='ko-KR';utt.rate=0.75;utt.pitch=1.0;utt.volume=1;
+  const voices=window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith('ko'));
+  if(voices.length>0)utt.voice=voices[0];
+  utt.onend=()=>{btn.textContent='▶ 음성 듣기';};
+  utt.onerror=()=>{btn.textContent='▶ 음성 듣기';};
+  btn.textContent='⏹ 정지';
+  window.speechSynthesis.speak(utt);
+}
+
+/* ── 스크롤 등장 ── */
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i*.06)+'s';io.observe(el);});
+
+/* ── 오행 ── */
+function drawRadar(id,vals,accent,glow){
+  const cv=document.getElementById(id);if(!cv)return;
+  const ctx=cv.getContext('2d'),cx=90,cy=94,r=62,n=5;
+  ctx.clearRect(0,0,180,180);
+  for(let l=4;l>=1;l--){ctx.beginPath();for(let i=0;i<n;i++){const a=i*2*Math.PI/n-Math.PI/2;const x=cx+r*(l/4)*Math.cos(a),y=cy+r*(l/4)*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.fillStyle=`rgba(255,255,255,${.014*l})`;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=.6;ctx.stroke();}
+  for(let i=0;i<n;i++){const a=i*2*Math.PI/n-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;ctx.stroke();const lx=cx+(r+16)*Math.cos(a),ly=cy+(r+16)*Math.sin(a);ctx.save();ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=EC[i];ctx.shadowBlur=10;ctx.fillStyle=EC[i];ctx.fillText(EN[i],lx,ly);ctx.restore();}
+  const pts=vals.map((v,i)=>{const a=i*2*Math.PI/n-Math.PI/2,ratio=Math.max(.05,v/100);return[cx+r*ratio*Math.cos(a),cy+r*ratio*Math.sin(a)];});
+  ctx.save();ctx.beginPath();pts.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y));ctx.closePath();ctx.shadowColor=glow;ctx.shadowBlur=22;ctx.strokeStyle=accent;ctx.lineWidth=2.5;ctx.stroke();ctx.restore();
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,glow+'60');g.addColorStop(.5,glow+'22');g.addColorStop(1,glow+'08');
+  ctx.beginPath();pts.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y));ctx.closePath();ctx.fillStyle=g;ctx.fill();
+  pts.forEach(([x,y],i)=>{ctx.save();ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.shadowColor=EC[i];ctx.shadowBlur=14;ctx.fillStyle=EC[i];ctx.fill();ctx.restore();});
+}
+
+function getOhaeng(bv){const y=new Date(bv).getFullYear(),b=(y-1900)%10;const t=[[60,20,15,10,25],[25,60,15,10,20],[20,25,10,10,55],[15,55,20,15,25],[55,20,15,15,25],[20,55,15,10,30],[15,20,10,10,65],[65,15,15,10,20],[20,15,10,10,70],[10,20,15,65,20]];return t[((b%10)+10)%10].map(x=>Math.max(8,Math.min(90,x+Math.floor(Math.random()*8)-4)));}
+
+function countUp(el,target){let v=0;const t=setInterval(()=>{v=Math.min(v+1.8,target);el.textContent=Math.floor(v);if(v>=target)clearInterval(t);},18);}
+
+(function initSelects(){
+  const y=document.getElementById('prem-year'),m=document.getElementById('prem-month'),d=document.getElementById('prem-day');
+  if(!y)return;
+  for(let yr=new Date().getFullYear();yr>=1930;yr--){const o=document.createElement('option');o.value=yr;o.textContent=yr+'년';if(yr===1990)o.selected=true;y.appendChild(o);}
+  for(let mo=1;mo<=12;mo++){const o=document.createElement('option');o.value=mo;o.textContent=mo+'월';if(mo===5)o.selected=true;m.appendChild(o);}
+  function upDays(){const max=new Date(+y.value,+m.value,0).getDate(),cur=+d.value||15;d.innerHTML='';for(let dy=1;dy<=max;dy++){const o=document.createElement('option');o.value=dy;o.textContent=dy+'일';if(dy===Math.min(cur,max))o.selected=true;d.appendChild(o);}}
+  y.addEventListener('change',upDays);m.addEventListener('change',upDays);upDays();
+})();
+
+function premAnalyze(){
+  const y=document.getElementById('prem-year').value,m=document.getElementById('prem-month').value,dd=document.getElementById('prem-day').value;
+  if(!y||!m||!dd)return;
+  const bv=`${y}-${String(m).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+  const id=new URLSearchParams(location.search).get('id')||'naksan';
+  const tv=TO[id]||TO.naksan,uv=getOhaeng(bv);
+  let sc=55;uv.forEach((u,i)=>{if(u<35&&tv[i]>50)sc+=16;else if(u<35&&tv[i]>30)sc+=8;else if(u>65&&tv[i]<20)sc-=5;});
+  sc=Math.max(54,Math.min(98,sc+Math.floor(Math.random()*4)));
+  const pur=document.getElementById('prem-purpose').value;
+
+  document.getElementById('prem-result').style.display='block';
+  document.getElementById('prem-result').scrollIntoView({behavior:'smooth',block:'start'});
+  countUp(document.getElementById('prem-score-num'),sc);
+  setTimeout(()=>document.getElementById('prem-score-bar').style.width=sc+'%',100);
+  document.getElementById('prem-score-desc').innerHTML=sc>=88?`<strong style="color:#4ade80">매우 좋은 기도 궁합</strong> — 이 도량의 기운이 당신의 오행을 강하게 보완합니다.`:sc>=72?`<strong style="color:#a78bfa">좋은 기도 궁합</strong> — 이 도량에서의 기도가 소원 성취에 도움이 됩니다.`:`<strong style="color:#64748b">보통 궁합</strong> — 꾸준한 기도와 정성이 중요합니다.`;
+
+  setTimeout(()=>{
+    drawRadar('prem-my-chart',uv,'#7c3aed','#4c1d95');
+    drawRadar('prem-temple-chart',tv,'#a78bfa','#7c3aed');
+    const leg=document.getElementById('prem-my-legend');leg.innerHTML='';
+    EN.forEach((n,i)=>{leg.innerHTML+=`<span class="legend-item"><span class="legend-dot" style="background:${EC[i]}"></span>${n} ${uv[i]}</span>`;});
+  },300);
+
+  const de=document.getElementById('prem-dates');de.innerHTML='';
+  DATES.forEach((d,i)=>{de.innerHTML+=`<div class="date-row"><div class="date-num">${i+1}</div><div class="date-info"><div class="date-main">${d.date}</div><div class="date-sub">${d.lunar} · ${d.note}</div></div></div>`;});
+  document.getElementById('prem-prayer').innerHTML=PA[pur]||PA['소원'];
+}
+
+/* ── 우주 스타필드 ── */
+(function(){
+  const cv=document.createElement('canvas');
+  cv.id='gd-cv';
+  cv.style.cssText='position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none';
+  document.body.insertBefore(cv,document.body.firstChild);
+
+  const ctx=cv.getContext('2d');
+  let W,H;
+  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+  resize();window.addEventListener('resize',resize);
+
+  function mkStar(){
+    const t=Math.random();
+    if(t<.65)return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*.5+.2,vx:0,vy:0,a:Math.random()*.6+.15,da:(Math.random()-.5)*.003,col:'255,255,255',glow:false};
+    if(t<.88)return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*.7+.4,vx:(Math.random()-.5)*.05,vy:(Math.random()-.5)*.04,a:Math.random()*.5+.2,da:(Math.random()-.5)*.004,col:Math.random()>.5?'200,210,255':'255,255,255',glow:false};
+    const c=['139,92,246','167,139,250','245,200,66','196,220,255','255,255,255'];
+    return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.8,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.07,a:Math.random()*.4+.3,da:(Math.random()-.5)*.006,col:c[Math.floor(Math.random()*c.length)],glow:true};
+  }
+  const stars=Array.from({length:200},mkStar);
+  let meteors=[];
+  setInterval(()=>{if(Math.random()<.4)meteors.push({x:Math.random()*W*.6,y:Math.random()*H*.3,len:Math.random()*110+60,speed:Math.random()*8+5,angle:Math.PI/4+Math.random()*.3,life:1});},3500);
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.x+=s.vx;s.y+=s.vy;s.a+=s.da;
+      if(s.a<=.08||s.a>=.95)s.da*=-1;
+      if(s.x<0)s.x=W;if(s.x>W)s.x=0;if(s.y<0)s.y=H;if(s.y>H)s.y=0;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${s.col},${s.a})`;ctx.fill();
+      if(s.glow){
+        const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*5);
+        g.addColorStop(0,`rgba(${s.col},${s.a*.35})`);g.addColorStop(1,`rgba(${s.col},0)`);
+        ctx.beginPath();ctx.arc(s.x,s.y,s.r*5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+        const len=s.r*7*s.a;
+        ctx.save();ctx.globalAlpha=s.a*.18;ctx.strokeStyle=`rgb(${s.col})`;ctx.lineWidth=.6;
+        ctx.beginPath();ctx.moveTo(s.x-len,s.y);ctx.lineTo(s.x+len,s.y);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(s.x,s.y-len);ctx.lineTo(s.x,s.y+len);ctx.stroke();
+        ctx.restore();
+      }
+    });
+    meteors=meteors.filter(m=>{
+      m.x+=Math.cos(m.angle)*m.speed;m.y+=Math.sin(m.angle)*m.speed;m.life-=.025;
+      if(m.life<=0)return false;
+      const tl=ctx.createLinearGradient(m.x,m.y,m.x-Math.cos(m.angle)*m.len,m.y-Math.sin(m.angle)*m.len);
+      tl.addColorStop(0,`rgba(255,255,255,${m.life*.9})`);tl.addColorStop(.3,`rgba(200,210,255,${m.life*.4})`);tl.addColorStop(1,'rgba(200,210,255,0)');
+      ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-Math.cos(m.angle)*m.len,m.y-Math.sin(m.angle)*m.len);
+      ctx.strokeStyle=tl;ctx.lineWidth=1.5;ctx.stroke();return true;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
