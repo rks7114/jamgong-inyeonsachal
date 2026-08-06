@@ -1,0 +1,341 @@
+<meta charset="UTF-8">
+<meta name="description" content="국보·보물 문화재를 보유한 사찰 안내. 천년 역사의 불교 문화유산을 만나보세요. 잼공인연사찰">
+<meta property="og:title" content="문화재 사찰 안내 | 잼공인연사찰">
+<meta property="og:description" content="국보·보물 보유 사찰 — 불교 문화유산 완벽 가이드">
+<meta property="og:url" content="https://jamgong.kr/heritage">
+<meta property="og:image" content="https://jamgong.kr/og-image.png">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>문화재 사찰 안내 | 잼공인연사찰</title>
+<style>
+.hg{font-family:'Noto Sans KR',sans-serif;max-width:900px;margin:0 auto;padding:24px 16px 80px;color:#e2e8f0}
+.hg-hero{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(139,92,246,.06));border:1px solid rgba(251,191,36,.22);border-radius:22px;padding:36px 32px;margin-bottom:28px;text-align:center;position:relative;overflow:hidden}
+.hg-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(251,191,36,.07),transparent 60%);pointer-events:none}
+.hg-hero-icon{font-size:3rem;margin-bottom:12px;display:block}
+.hg-hero h1{font-size:1.7rem;font-weight:900;color:#f8fafc;margin:0 0 8px;letter-spacing:-.03em}
+.hg-hero p{font-size:.88rem;color:#64748b;margin:0;line-height:1.6}
+.hg-badge{display:inline-block;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.4);color:#FBBF24;border-radius:20px;padding:4px 14px;font-size:.72rem;font-weight:700;margin-top:12px}
+.hg-sec{margin-bottom:32px}
+.hg-sec-title{font-size:1rem;font-weight:900;color:#f8fafc;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px}
+.hg-stat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:28px}
+.hg-stat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px 16px;text-align:center}
+.hg-stat-num{font-size:1.5rem;font-weight:900;color:#FBBF24;display:block;margin-bottom:4px}
+.hg-stat-label{font-size:.7rem;color:#64748b;line-height:1.4}
+.hg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.hg-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;cursor:pointer;transition:all .25s cubic-bezier(.22,.68,0,1.2)}
+.hg-card:hover{transform:translateY(-4px) scale(1.02);border-color:rgba(251,191,36,.4);box-shadow:0 12px 32px rgba(0,0,0,.4),0 0 0 1px rgba(251,191,36,.15);background:rgba(251,191,36,.04)}
+.hg-card-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.hg-card-icon{font-size:1.5rem;flex-shrink:0}
+.hg-card-title-wrap{flex:1}
+.hg-card-name{font-size:.95rem;font-weight:800;color:#f8fafc;margin-bottom:3px}
+.hg-card-loc{font-size:.7rem;color:#64748b}
+.hg-card-badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.hg-nbadge{border-radius:10px;padding:3px 9px;font-size:.63rem;font-weight:800}
+.nb-gukbo{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);color:#f87171}
+.nb-bomul{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.28);color:#FBBF24}
+.nb-sido{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);color:#93c5fd}
+.nb-univ{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);color:#a78bfa}
+.hg-card-highlights{list-style:none;padding:0;margin:0}
+.hg-card-highlights li{font-size:.73rem;color:#475569;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:8px;align-items:flex-start;line-height:1.45}
+.hg-card-highlights li:last-child{border-bottom:none}
+.hg-card-highlights li::before{content:'▸';color:#FBBF24;font-size:.65rem;flex-shrink:0;margin-top:2px}
+.hg-cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:28px}
+.hg-cat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px}
+.hg-cat-icon{font-size:1.4rem;margin-bottom:8px}
+.hg-cat-name{font-size:.85rem;font-weight:800;color:#f8fafc;margin-bottom:4px}
+.hg-cat-desc{font-size:.7rem;color:#475569;line-height:1.5}
+.hg-cat-count{font-size:.68rem;color:#FBBF24;font-weight:700;margin-top:6px}
+.hg-tip{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.2);border-radius:14px;padding:16px 18px;margin-bottom:28px}
+.hg-tip-title{font-size:.83rem;font-weight:800;color:#FBBF24;margin-bottom:8px}
+.hg-tip-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.hg-tip-list li{font-size:.75rem;color:#64748b;display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+.hg-tip-list li::before{content:'💡';flex-shrink:0}
+.hg-cta{background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(139,92,246,.05));border:1px solid rgba(251,191,36,.25);border-radius:18px;padding:28px 24px;text-align:center}
+.hg-cta h3{font-size:1.05rem;font-weight:900;color:#f8fafc;margin:0 0 8px}
+.hg-cta p{font-size:.8rem;color:#64748b;margin:0 0 18px;line-height:1.6}
+.hg-cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.hg-cta-btns a{display:inline-flex;align-items:center;gap:6px;border-radius:12px;padding:11px 20px;font-size:.82rem;font-weight:800;text-decoration:none;transition:.2s}
+.hg-btn-primary{background:linear-gradient(135deg,#B45309,#92400E);color:#fff;box-shadow:0 4px 14px rgba(180,83,9,.3)}
+.hg-btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(180,83,9,.4)}
+.hg-btn-secondary{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#cbd5e1}
+.hg-btn-secondary:hover{background:rgba(255,255,255,.08);transform:translateY(-2px)}
+@media(max-width:600px){.hg-hero{padding:24px 18px}.hg-hero h1{font-size:1.3rem}.hg-cta-btns{flex-direction:column;align-items:center}}
+</style>
+
+<div class="hg">
+  <div class="hg-hero">
+    <span class="hg-hero-icon">🏛️</span>
+    <h1>문화재 사찰</h1>
+    <p>국보·보물을 품은 천년 사찰들<br>불교 문화유산의 깊은 역사를 만나보세요</p>
+    <span class="hg-badge">국가지정 문화재 다수 보유</span>
+  </div>
+
+  <div class="hg-sec">
+    <div class="hg-sec-title">📊 불교 문화재 현황</div>
+    <div class="hg-stat-row">
+      <div class="hg-stat"><span class="hg-stat-num">360+</span><div class="hg-stat-label">불교 관련<br>국보</div></div>
+      <div class="hg-stat"><span class="hg-stat-num">2,000+</span><div class="hg-stat-label">불교 관련<br>보물</div></div>
+      <div class="hg-stat"><span class="hg-stat-num">7</span><div class="hg-stat-label">유네스코<br>세계유산 사찰</div></div>
+      <div class="hg-stat"><span class="hg-stat-num">982</span><div class="hg-stat-label">전통사찰<br>법정 지정</div></div>
+    </div>
+  </div>
+
+  <div class="hg-sec">
+    <div class="hg-sec-title">🏯 문화재 보유 주요 사찰</div>
+    <div class="hg-grid">
+      <a class="hg-card" href="page-heritage-detail.html?id=bulguksa" style="text-decoration:none;display:block">
+        <div class="hg-card-header">
+          <div class="hg-card-icon">🌸</div>
+          <div class="hg-card-title-wrap">
+            <div class="hg-card-name">불국사</div>
+            <div class="hg-card-loc">📍 경북 경주</div>
+          </div>
+        </div>
+        <div class="hg-card-badges">
+          <span class="hg-nbadge nb-gukbo">국보 5점</span>
+          <span class="hg-nbadge nb-bomul">보물 다수</span>
+          <span class="hg-nbadge nb-univ">유네스코</span>
+        </div>
+        <ul class="hg-card-highlights">
+          <li>다보탑 (국보 20호), 석가탑 (국보 21호)</li>
+          <li>청운교·백운교 (국보 23호)</li>
+          <li>금동아미타여래좌상 (국보 27호)</li>
+          <li>신라 경덕왕 751년 창건, 김대성 중창</li>
+        </ul>
+      </div>
+      <a class="hg-card" href="page-heritage-detail.html?id=tongdosa" style="text-decoration:none;display:block">
+        <div class="hg-card-header">
+          <div class="hg-card-icon">🗿</div>
+          <div class="hg-card-title-wrap">
+            <div class="hg-card-name">통도사</div>
+            <div class="hg-card-loc">📍 경남 양산</div>
+          </div>
+        </div>
+        <div class="hg-card-badges">
+          <span class="hg-nbadge nb-gukbo">국보 2점</span>
+          <span class="hg-nbadge nb-bomul">보물 19점</span>
+          <span class="hg-nbadge nb-univ">유네스코</span>
+        </div>
+        <ul class="hg-card-highlights">
+          <li>대웅전 (국보 290호) — 불상 없는 유일한 금당</li>
+          <li>봉발탑 (보물 471호), 세존비각</li>
+          <li>자장율사 진신사리 봉안 (646년 창건)</li>
+          <li>삼보 중 불보사찰, 조계종 15교구 본사</li>
+        </ul>
+      </div>
+      <a class="hg-card" href="page-heritage-detail.html?id=busoksa" style="text-decoration:none;display:block">
+        <div class="hg-card-header">
+          <div class="hg-card-icon">📿</div>
+          <div class="hg-card-title-wrap">
+            <div class="hg-card-name">부석사</div>
+            <div class="hg-card-loc">📍 경북 영주</div>
+          </div>
+        </div>
+        <div class="hg-card-badges">
+          <span class="hg-nbadge nb-gukbo">국보 5점</span>
+          <span class="hg-nbadge nb-univ">유네스코</span>
+        </div>
+        <ul class="hg-card-highlights">
+          <li>무량수전 (국보 18호) — 현존 최고 목조 건물 중 하나</li>
+          <li>소조여래좌상 (국보 45호)</li>
+          <li>무량수전 앞 석등 (국보 17호)</li>
+          <li>의상대사 676년 창건, 선묘 전설</li>
+        </ul>
+      </div>
+      <a class="hg-card" href="page-heritage-detail.html?id=beopjusa" style="text-decoration:none;display:block">
+        <div class="hg-card-header">
+          <div class="hg-card-icon">🌲</div>
+          <div class="hg-card-title-wrap">
+            <div class="hg-card-name">법주사</div>
+            <div class="hg-card-loc">📍 충북 보은</div>
+          </div>
+        </div>
+        <div class="hg-card-badges">
+          <span class="hg-nbadge nb-gukbo">국보 3점</span>
+          <span class="hg-nbadge nb-bomul">보물 12점</span>
+          <span class="hg-nbadge nb-univ">유네스코</span>
+        </div>
+        <ul class="hg-card-highlights">
+          <li>팔상전 (국보 55호) — 현존 유일 5층 목탑</li>
+          <li>쌍사자석등 (국보 5호)</li>
+          <li>마애여래의상 (국보 216호)</li>
+          <li>553년 의신조사 창건, 속리산 호국사찰</li>
+        </ul>
+      </div>
+      <a class="hg-card" href="page-heritage-detail.html?id=hwaeomsa" style="text-decoration:none;display:block">
+        <div class="hg-card-header">
+          <div class="hg-card-icon">🍵</div>
+          <div class="hg-card-title-wrap">
+            <div class="hg-card-name">화엄사</div>
+            <div class="hg-card-loc">📍 전남 구례</div>
+          </div>
+        </div>
+        <div class="hg-card-badges">
+          <span class="hg-nbadge nb-gukbo">국보 4점</span>
+          <span class="hg-nbadge nb-bomul">보물 8점</span>
+          <span class="hg-nbadge nb-univ">유네스코</span>
+        </div>
+        <ul class="hg-card-highlights">
+          <li>각황전 (국보 67호) — 국내 최대 목조 불전</li>
+          <li>각황전앞석등 (국보 12호)</li>
+          <li>사사자삼층석탑 (국보 35호)</li>
+          <li>544년 연기조사 창건, 지리산 대찰</li>
+        </ul>
+      </div>
+      <a class="hg-card" href="page-heritage-detail.html?id=magoksa" style="text-decoration:none;display:block">
+        <div class="hg-card-header">
+          <div class="hg-card-icon">⛰️</div>
+          <div class="hg-card-title-wrap">
+            <div class="hg-card-name">마곡사</div>
+            <div class="hg-card-loc">📍 충남 공주</div>
+          </div>
+        </div>
+        <div class="hg-card-badges">
+          <span class="hg-nbadge nb-gukbo">국보 1점</span>
+          <span class="hg-nbadge nb-bomul">보물 6점</span>
+          <span class="hg-nbadge nb-univ">유네스코</span>
+        </div>
+        <ul class="hg-card-highlights">
+          <li>5층석탑 (보물 799호) — 라마교 양식 유일</li>
+          <li>대웅보전, 대광보전 (보물)</li>
+          <li>640년 자장율사 창건, 백범 김구 은신처</li>
+          <li>춘마곡추갑사 — 봄 경치 최고 사찰</li>
+        </ul>
+      </div>
+    </div>
+
+    <a class="hg-card" href="page-heritage-detail-part2.html?id=seonunsa" style="text-decoration:none;display:block">
+      <div class="hg-card-header">
+        <div class="hg-card-icon">🌸</div>
+        <div class="hg-card-title-wrap">
+          <div class="hg-card-name">선운사</div>
+          <div class="hg-card-loc">📍 전북 고창</div>
+        </div>
+      </div>
+      <div class="hg-card-badges">
+        <span class="hg-nbadge nb-gukbo">국보 1점</span>
+        <span class="hg-nbadge nb-bomul">보물 8점</span>
+      </div>
+      <ul class="hg-card-highlights">
+        <li>금동보살좌상 (국보 제290호)</li>
+        <li>도솔암 마애불 (보물) — 높이 15m 장관</li>
+        <li>577년 백제 검단선사 창건</li>
+        <li>3,000그루 동백꽃 — 봄 최고 사찰</li>
+      </ul>
+    </a>
+
+    <a class="hg-card" href="page-heritage-detail-part2.html?id=sudeoksa" style="text-decoration:none;display:block">
+      <div class="hg-card-header">
+        <div class="hg-card-icon">🏛️</div>
+        <div class="hg-card-title-wrap">
+          <div class="hg-card-name">수덕사</div>
+          <div class="hg-card-loc">📍 충남 예산</div>
+        </div>
+      </div>
+      <div class="hg-card-badges">
+        <span class="hg-nbadge nb-gukbo">국보 1점</span>
+        <span class="hg-nbadge nb-bomul">보물 3점</span>
+      </div>
+      <ul class="hg-card-highlights">
+        <li>대웅전 (국보 제49호) — 1308년 고려 목조</li>
+        <li>현존 최고(最古) 목조 건축 중 하나</li>
+        <li>배흘림기둥·맞배지붕의 극치</li>
+        <li>경허·만공 선맥 — 한국 선불교 중심</li>
+      </ul>
+    </a>
+
+    <a class="hg-card" href="page-heritage-detail-part2.html?id=beomaesa" style="text-decoration:none;display:block">
+      <div class="hg-card-header">
+        <div class="hg-card-icon">🐟</div>
+        <div class="hg-card-title-wrap">
+          <div class="hg-card-name">범어사</div>
+          <div class="hg-card-loc">📍 부산 금정산</div>
+        </div>
+      </div>
+      <div class="hg-card-badges">
+        <span class="hg-nbadge nb-bomul">보물 7점</span>
+      </div>
+      <ul class="hg-card-highlights">
+        <li>조계문 (보물 제1461호) — 전국 3대 일주문</li>
+        <li>대웅전 (보물 제434호) — 1713년 건립</li>
+        <li>678년 의상대사 창건, 지하철 접근</li>
+        <li>금정총림 — 부산 최대 사찰</li>
+      </ul>
+    </a>
+
+    <a class="hg-card" href="page-heritage-detail-part2.html?id=jeondeungsa" style="text-decoration:none;display:block">
+      <div class="hg-card-header">
+        <div class="hg-card-icon">🕯️</div>
+        <div class="hg-card-title-wrap">
+          <div class="hg-card-name">전등사</div>
+          <div class="hg-card-loc">📍 인천 강화도</div>
+        </div>
+      </div>
+      <div class="hg-card-badges">
+        <span class="hg-nbadge nb-bomul">보물 5점</span>
+      </div>
+      <ul class="hg-card-highlights">
+        <li>대웅보전 (보물 제178호) — 처마 나부 조각</li>
+        <li>범종 (보물) — 중국 북송 1097년 제작</li>
+        <li>381년 고구려 창건 — 한국 최오래 사찰</li>
+        <li>정족산 사고 — 조선왕조실록 보관처</li>
+      </ul>
+    </a>
+
+  </div>
+
+  <div class="hg-sec">
+    <div class="hg-sec-title">🗂️ 문화재 유형별 안내</div>
+    <div class="hg-cat-grid">
+      <div class="hg-cat">
+        <div class="hg-cat-icon">🏛️</div>
+        <div class="hg-cat-name">목조 건축</div>
+        <div class="hg-cat-desc">고려~조선 시대 목조 불전. 기둥 배열과 공포 양식으로 시대 구분</div>
+        <div class="hg-cat-count">무량수전·대웅전·팔상전 등</div>
+      </div>
+      <div class="hg-cat">
+        <div class="hg-cat-icon">🗿</div>
+        <div class="hg-cat-name">석조물·탑</div>
+        <div class="hg-cat-desc">삼국~통일신라 석탑·석등·부도. 비례미와 장식 문양이 핵심</div>
+        <div class="hg-cat-count">다보탑·석가탑·사사자탑 등</div>
+      </div>
+      <div class="hg-cat">
+        <div class="hg-cat-icon">🪷</div>
+        <div class="hg-cat-name">불상·불화</div>
+        <div class="hg-cat-desc">금동불·소조불·석불 등 존상류와 후불탱화·괘불 등 회화류</div>
+        <div class="hg-cat-count">금동아미타·소조여래 등</div>
+      </div>
+      <div class="hg-cat">
+        <div class="hg-cat-icon">📜</div>
+        <div class="hg-cat-name">전적·사경</div>
+        <div class="hg-cat-desc">금니·은니 사경, 목판본 불경, 필사본 의식문 등 서지류 문화재</div>
+        <div class="hg-cat-count">팔만대장경판 포함</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hg-tip">
+    <div class="hg-tip-title">📌 문화재 사찰 관람 팁</div>
+    <ul class="hg-tip-list">
+      <li>국보·보물 문화재는 사진 촬영 가능하나 플래시·삼각대는 금지인 경우가 많습니다</li>
+      <li>문화재 훼손 방지를 위해 지정 관람 동선을 따라 이동해주세요</li>
+      <li>문화재청 '우리문화재알리미' 앱으로 해설 QR을 스캔하면 무료 오디오 가이드를 이용할 수 있습니다</li>
+      <li>유네스코 세계유산 7개 사찰(산사, 한국의 산지승원)은 통합 안내 프로그램도 운영합니다</li>
+    </ul>
+  </div>
+
+  <div class="hg-cta">
+    <h3>🔍 더 많은 문화재 정보</h3>
+    <p>문화재청 공식 포털과 유네스코 세계유산 홈페이지에서<br>전국 불교 문화재 상세 정보를 확인하세요</p>
+    <div class="hg-cta-btns">
+      <a class="hg-btn-primary" href="https://www.heritage.go.kr" target="_blank">🏛️ 문화재청 포털</a>
+      <a class="hg-btn-secondary" href="https://sansa.cha.go.kr" target="_blank">⛰️ 산사 세계유산</a>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.hg-card').forEach(function(c){
+  c.addEventListener('mouseenter',function(){this.style.transform='translateY(-4px) scale(1.02)';});
+  c.addEventListener('mouseleave',function(){this.style.transform='';});
+});
+</script>
