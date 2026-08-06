@@ -830,9 +830,29 @@ function revealCards(){
   });
 }
 
-// 초기 렌더
-applyFilters();
-revealCards();
+// ── 외부 데이터(gido-data.js) 로드 후 DB 병합 ──
+(function loadExtra(){
+  var url='https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/data/gido-data.js';
+  fetch(url)
+    .then(function(r){return r.ok?r.text():Promise.reject(r.status);})
+    .then(function(txt){
+      // eval로 window.GIDO_EXTRA 세팅
+      try{(new Function(txt))();}catch(e){console.warn('gido-data eval err:',e);}
+      if(window.GIDO_EXTRA&&Array.isArray(window.GIDO_EXTRA)){
+        // 중복 방지: 기존 DB에 없는 id만 추가
+        var ids=new Set(DB.map(function(d){return d.id;}));
+        window.GIDO_EXTRA.forEach(function(d){
+          if(!ids.has(d.id)){DB.push(d);ids.add(d.id);}
+        });
+        console.log('기도도량 총 '+DB.length+'개 로드 완료');
+      }
+    })
+    .catch(function(e){console.warn('gido-data.js 로드 실패(오프라인/캐시 사용):',e);})
+    .finally(function(){
+      applyFilters();
+      revealCards();
+    });
+})();
 
 /* ── 3D 마우스 틸트 ── */
 (function(){
