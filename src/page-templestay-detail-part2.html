@@ -1,0 +1,283 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title id="pg-title">템플스테이 상세 | 잼공인연사찰</title>
+<meta name="description" id="pg-desc" content="사찰 템플스테이 상세 안내 — 프로그램·일정·가격·교통편">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#07040f;color:#e2e8f0;min-height:100vh}
+.hero{position:relative;height:60vw;max-height:420px;min-height:260px;overflow:hidden}
+.hero-img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.9)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,4,15,.95) 0%,rgba(7,4,15,.4) 35%,rgba(0,0,0,.05) 100%)}
+.hero-content{position:absolute;bottom:0;left:0;right:0;padding:28px 24px}
+.hero-badge{display:inline-flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.hb{border-radius:20px;padding:4px 12px;font-size:.65rem;font-weight:800}
+.hb-pop{background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.5);color:#fcd34d}
+.hb-type{background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.5);color:#c4b5fd}
+.hero-name{font-size:1.8rem;font-weight:900;color:#f8fafc;line-height:1.15;margin-bottom:4px}
+.hero-loc{font-size:.8rem;color:#94a3b8}
+.body{max-width:860px;margin:0 auto;padding:28px 16px 80px}
+.info-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:24px}
+.info-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center}
+.info-box-label{font-size:.65rem;font-weight:800;color:#64748b;letter-spacing:.1em;margin-bottom:5px}
+.info-box-val{font-size:.85rem;font-weight:800;color:#f8fafc}
+.info-box-val.gold{color:#FBBF24}
+.sec{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:22px;margin-bottom:16px}
+.sec-title{font-size:.8rem;font-weight:900;color:#a78bfa;letter-spacing:.12em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(139,92,246,.3),transparent)}
+.sec-body{font-size:.83rem;color:#94a3b8;line-height:1.85;word-break:keep-all}
+.sec-body strong{color:#f1f5f9;font-weight:700}
+.prog-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.prog-item{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.12);border-radius:12px}
+.prog-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px}
+.prog-name{font-size:.83rem;font-weight:800;color:#f1f5f9;margin-bottom:2px}
+.prog-desc{font-size:.73rem;color:#64748b;line-height:1.5}
+.tl{list-style:none;display:flex;flex-direction:column}
+.tl-item{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.tl-item:last-child{border-bottom:none}
+.tl-time{min-width:55px;font-size:.73rem;font-weight:700;color:#FBBF24;padding-top:2px;flex-shrink:0}
+.tl-title{font-size:.82rem;font-weight:700;color:#f1f5f9;margin-bottom:2px}
+.tl-desc{font-size:.7rem;color:#64748b;line-height:1.5}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.price-box{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.2);border-radius:13px;padding:14px;text-align:center}
+.price-type{font-size:.7rem;color:#64748b;font-weight:700;margin-bottom:6px}
+.price-val{font-size:1.1rem;font-weight:900;color:#FBBF24}
+.price-note{font-size:.65rem;color:#475569;margin-top:4px}
+.tag-list{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;border-radius:8px;padding:4px 11px;font-size:.68rem;font-weight:600}
+.cta{background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(251,191,36,.06));border:1px solid rgba(139,92,246,.3);border-radius:18px;padding:24px;text-align:center;margin-top:24px}
+.cta h3{font-size:1rem;font-weight:900;color:#f8fafc;margin-bottom:6px}
+.cta p{font-size:.78rem;color:#64748b;margin-bottom:16px;line-height:1.6}
+.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 22px;border-radius:12px;font-size:.8rem;font-weight:800;text-decoration:none;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
+.btn-secondary{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#e2e8f0}
+#not-found{display:none;text-align:center;padding:80px 24px;color:#64748b}
+#pg-wrap{display:none}
+</style>
+<div id="not-found"><p style="font-size:1.1rem;margin-bottom:12px">사찰 정보를 찾을 수 없습니다.</p><a href="page-templestay.html" style="color:#a78bfa">← 템플스테이 목록으로</a></div>
+<div id="pg-wrap">
+<div class="hero">
+  <img class="hero-img" id="pg-img" src="" alt="">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge" id="pg-badges"></div>
+    <div class="hero-name" id="pg-name"></div>
+    <div class="hero-loc" id="pg-loc"></div>
+  </div>
+</div>
+<div class="body">
+  <div class="info-row" id="pg-info-row"></div>
+  <div class="sec"><div class="sec-title">🏯 사찰 소개</div><div class="sec-body" id="pg-intro"></div></div>
+  <div class="sec"><div class="sec-title">🌿 템플스테이 프로그램</div><ul class="prog-list" id="pg-programs"></ul></div>
+  <div class="sec"><div class="sec-title">⏰ 일정표</div><ul class="tl" id="pg-schedule"></ul></div>
+  <div class="sec"><div class="sec-title">💰 참가비</div><div class="price-grid" id="pg-prices"></div></div>
+  <div class="sec"><div class="sec-title">🚗 교통 안내</div><div class="sec-body" id="pg-access"></div></div>
+  <div class="sec"><div class="sec-title">🏷️ 태그</div><div class="tag-list" id="pg-tags"></div></div>
+  <div class="cta">
+    <h3>템플스테이 예약 안내</h3>
+    <p id="pg-cta-text"></p>
+    <div class="cta-btns">
+      <a class="btn btn-primary" href="https://www.templestay.com" target="_blank" rel="noopener">한국불교문화사업단 예약</a>
+      <a class="btn btn-secondary" id="pg-map-btn" href="#" target="_blank" rel="noopener">📍 지도 보기</a>
+      <a class="btn btn-secondary" href="page-templestay.html">← 목록으로</a>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+var DB={
+  daeheungsa:{
+    name:'대흥사',wikiName:'대흥사',loc:'전남 해남',
+    badges:[{t:'유네스코 세계유산',c:'hb-pop'},{t:'선교 양종 대찰',c:'hb-type'}],
+    info:[
+      {l:'창건',v:'426년(신라)'},
+      {l:'종단',v:'조계종 22교구'},
+      {l:'특징',v:'서산대사 유물',g:true},
+      {l:'템플스테이',v:'연중 운영'},
+      {l:'주변',v:'두륜산 케이블카'},
+      {l:'가격',v:'₩70,000~',g:true}
+    ],
+    intro:'<strong>대흥사</strong>는 전남 해남 두륜산에 자리한 유네스코 세계유산 사찰입니다. 임진왜란 때 조선 불교를 지킨 서산대사의 의발이 봉안된 표충사가 있으며, 13개의 대종사와 13명의 대강사를 배출한 유서 깊은 도량입니다. 두륜산 케이블카를 통해 오르는 풍경이 장관이며, 가을 단풍과 동백꽃으로도 유명합니다.',
+    programs:[
+      {icon:'🌅',name:'새벽예불',desc:'새벽 4시 도량석 — 두륜산의 고요한 새벽을 맞이'},
+      {icon:'🍵',name:'다도 체험',desc:'서산대사 차 문화 전통 — 명상과 함께하는 다도'},
+      {icon:'🖌️',name:'서예·사경',desc:'불교 서예와 경전 필사 체험'},
+      {icon:'🚶',name:'두륜산 산행',desc:'케이블카 탑승 또는 등산로 트레킹'},
+      {icon:'🙏',name:'108배 기도',desc:'서산대사 표충사에서의 정성 기도'}
+    ],
+    schedule:[
+      {t:'05:00',n:'기상 및 도량석',d:'스님의 목탁 소리와 함께 하루 시작'},
+      {t:'05:30',n:'새벽예불',d:'대웅보전 새벽 예불 참여'},
+      {t:'07:00',n:'아침 공양',d:'산채 발우공양'},
+      {t:'09:00',n:'다도 체험',d:'서산대사 차 전통 계승 프로그램'},
+      {t:'11:00',n:'두륜산 탐방',d:'케이블카 또는 등산로 자유 탐방'},
+      {t:'13:00',n:'점심 공양',d:'사찰 전통 채식'},
+      {t:'15:00',n:'사경 체험',d:'반야심경 필사 또는 불화 색칠'},
+      {t:'17:30',n:'저녁예불',d:'대웅보전 저녁 예불'},
+      {t:'19:00',n:'스님과의 대화',d:'선문답·불교 인생 상담'}
+    ],
+    prices:[
+      {type:'1박 2일',val:'₩70,000',note:'식사·숙박 포함'},
+      {type:'2박 3일',val:'₩120,000',note:'다도·사경 패키지'},
+      {type:'당일 체험',val:'₩35,000',note:'다도·사경 당일권'}
+    ],
+    access:'<strong>자가용:</strong> 서해안고속도로 → 목포IC → 13번 국도 → 해남 → 대흥사 (서울 약 4시간)<br><strong>버스:</strong> 해남버스터미널 → 대흥사 직행 버스 (20분)<br><strong>주차:</strong> 대흥사 주차장 (유료, 약 500대)',
+    tags:['유네스코','서산대사','두륜산','다도','동백꽃','표충사','세계유산'],
+    ctaText:'한국불교문화사업단(www.templestay.com)에서 대흥사 템플스테이를 예약하세요.\n문의: 061-534-5502',
+    map:'https://map.kakao.com/link/search/대흥사+해남'
+  },
+  sudeoksa:{
+    name:'수덕사',wikiName:'수덕사',loc:'충남 예산',
+    badges:[{t:'국보 제49호 대웅전',c:'hb-pop'},{t:'덕숭총림',c:'hb-type'}],
+    info:[
+      {l:'창건',v:'599년(백제)'},
+      {l:'종단',v:'조계종 7교구'},
+      {l:'국보',v:'대웅전',g:true},
+      {l:'템플스테이',v:'연중 운영'},
+      {l:'주변',v:'덕산 스파'},
+      {l:'가격',v:'₩60,000~',g:true}
+    ],
+    intro:'<strong>수덕사</strong>는 충남 예산 덕숭산에 자리한 백제 창건 고찰입니다. 대웅전(국보 제49호)은 고려 충렬왕 34년(1308년)에 건립된 한국 목조 건축의 정수로, 배흘림기둥과 맞배지붕이 아름다운 걸작입니다. 경허·만공·혜암으로 이어지는 한국 근·현대 선불교의 중심 도량이며 덕숭총림으로서 선 수행 전통이 깊습니다.',
+    programs:[
+      {icon:'🧘',name:'참선 수행',desc:'경허·만공 선맥 전통 — 좌선과 화두 참구'},
+      {icon:'🌅',name:'새벽예불',desc:'새벽 4시 국보 대웅전에서 드리는 예불'},
+      {icon:'🚶',name:'덕숭산 등산',desc:'정혜사·금선대·만공탑 탐방 코스'},
+      {icon:'🍵',name:'차담·법문',desc:'스님과 함께하는 차담 및 불교 법문'},
+      {icon:'📿',name:'염주 만들기',desc:'수행의 의미를 담은 108염주 제작'}
+    ],
+    schedule:[
+      {t:'04:00',n:'기상 및 도량석',d:'새벽 목탁 소리와 함께 시작'},
+      {t:'04:30',n:'새벽예불',d:'국보 대웅전 새벽 예불'},
+      {t:'06:30',n:'아침 공양',d:'발우공양'},
+      {t:'08:00',n:'참선 수행',d:'경허 선맥 전통 좌선 프로그램'},
+      {t:'10:00',n:'덕숭산 탐방',d:'정혜사·만공탑·금선대 탐방'},
+      {t:'13:00',n:'점심 공양',d:'사찰 채식'},
+      {t:'14:30',n:'염주 만들기',d:'108염주 제작 체험'},
+      {t:'17:00',n:'저녁예불',d:'대웅전 저녁 예불'},
+      {t:'19:00',n:'스님과의 차담',d:'선사의 지혜를 듣는 시간'}
+    ],
+    prices:[
+      {type:'1박 2일',val:'₩60,000',note:'식사·숙박 포함'},
+      {type:'2박 3일',val:'₩100,000',note:'참선 집중 수련'},
+      {type:'당일 체험',val:'₩30,000',note:'참선·염주 당일'}
+    ],
+    access:'<strong>자가용:</strong> 서해안고속도로 → 해미IC → 32번 국도 → 덕산 → 수덕사 (서울 약 2시간)<br><strong>버스:</strong> 예산 또는 홍성 버스터미널 → 덕산행 버스 → 수덕사<br><strong>주차:</strong> 수덕사 주차장 (유료)',
+    tags:['국보','대웅전','경허선맥','참선','덕숭산','백제','고려건축'],
+    ctaText:'한국불교문화사업단(www.templestay.com)에서 수덕사 템플스테이를 예약하세요.\n문의: 041-330-7700',
+    map:'https://map.kakao.com/link/search/수덕사+예산'
+  },
+  bongeunsa:{
+    name:'봉은사',wikiName:'봉은사',loc:'서울 강남',
+    badges:[{t:'도심 사찰',c:'hb-pop'},{t:'미륵대불',c:'hb-type'}],
+    info:[
+      {l:'창건',v:'794년(신라)'},
+      {l:'종단',v:'조계종 직할'},
+      {l:'특징',v:'강남 도심 사찰',g:true},
+      {l:'템플스테이',v:'연중 운영'},
+      {l:'교통',v:'9호선 봉은사역'},
+      {l:'가격',v:'₩80,000~',g:true}
+    ],
+    intro:'<strong>봉은사</strong>는 서울 강남구 코엑스 맞은편에 자리한 도심 사찰입니다. 794년 연회국사가 창건한 유서 깊은 도량으로, 높이 23m의 미륵대불이 도심 속 위용을 자랑합니다. 외국인 템플스테이로도 유명하며, 지하철 9호선 봉은사역에서 도보 5분 거리로 접근성이 탁월합니다. 글로벌 도시 서울에서 불교 문화를 체험할 수 있는 최적의 장소입니다.',
+    programs:[
+      {icon:'🌆',name:'도심 명상',desc:'강남 번화가 속 고요한 사찰 명상 체험'},
+      {icon:'🌅',name:'새벽예불',desc:'미륵대불 앞 새벽 예불 — 도시의 새벽 맞이'},
+      {icon:'🖌️',name:'불화 그리기',desc:'전통 불화 색칠 체험 — 초보자 환영'},
+      {icon:'🍵',name:'다도 체험',desc:'한국 전통 다도 문화 체험'},
+      {icon:'🌍',name:'영어 법문',desc:'외국인을 위한 영어 불교 강의'}
+    ],
+    schedule:[
+      {t:'05:00',n:'기상 및 도량석',d:'도심 새벽, 사찰의 고요함'},
+      {t:'05:30',n:'새벽예불',d:'미륵대불 앞 새벽 예불'},
+      {t:'07:00',n:'아침 공양',d:'사찰 발우공양'},
+      {t:'09:00',n:'불화 그리기',desc:'전통 불화 색칠 체험'},
+      {t:'11:00',n:'사찰 탐방',d:'미륵대불·판전·대웅전 안내'},
+      {t:'13:00',n:'점심 공양',d:'사찰 채식 점심'},
+      {t:'15:00',n:'다도 체험',d:'전통 다도 및 명상'},
+      {t:'17:30',n:'저녁예불',d:'대웅전 저녁 예불'},
+      {t:'19:00',n:'스님과의 대화',d:'불교 Q&A 및 명상 나눔'}
+    ],
+    prices:[
+      {type:'1박 2일',val:'₩80,000',note:'식사·숙박 포함'},
+      {type:'당일 체험',val:'₩40,000',note:'명상·다도·불화'},
+      {type:'외국인 패키지',val:'₩90,000',note:'영어 가이드 포함'}
+    ],
+    access:'<strong>지하철:</strong> 9호선 봉은사역 1번 출구 도보 5분 (가장 편리)<br><strong>버스:</strong> 강남구청 방면 다수 노선<br><strong>자가용:</strong> 코엑스 주차장 이용 (유료, 도보 5분)',
+    tags:['도심사찰','미륵대불','강남','외국인','영어법문','지하철','코엑스'],
+    ctaText:'한국불교문화사업단(www.templestay.com)에서 봉은사 템플스테이를 예약하세요.\n문의: 02-3218-4895',
+    map:'https://map.kakao.com/link/search/봉은사+강남'
+  },
+  jikjisa:{
+    name:'직지사',wikiName:'직지사',loc:'경북 김천',
+    badges:[{t:'경북 5대 사찰',c:'hb-pop'},{t:'황악산 대찰',c:'hb-type'}],
+    info:[
+      {l:'창건',v:'418년(신라)'},
+      {l:'종단',v:'조계종 8교구'},
+      {l:'특징',v:'사명대사 출가지',g:true},
+      {l:'템플스테이',v:'연중 운영'},
+      {l:'주변',v:'황악산 등산'},
+      {l:'가격',v:'₩65,000~',g:true}
+    ],
+    intro:'<strong>직지사</strong>는 경북 김천 황악산에 자리한 신라 눌지왕 2년(418년) 창건의 고찰입니다. 임진왜란 때 의병을 이끈 사명대사(유정)의 출가 사찰로 유명하며, 사명대사기념관이 있습니다. 황악산 자락의 맑은 계곡과 울창한 숲이 어우러져 수행과 휴식의 최적 환경을 제공하며, 경북 5대 사찰 중 하나로 꼽힙니다.',
+    programs:[
+      {icon:'🏔️',name:'황악산 산행',desc:'직지사 뒤 황악산 등산 — 비로봉까지 왕복 4시간'},
+      {icon:'🌅',name:'새벽예불',desc:'새벽 4시 대웅전 예불 — 맑은 산사의 새벽'},
+      {icon:'📿',name:'108배 기도',desc:'사명대사 정신 계승 — 나라와 가정을 위한 기도'},
+      {icon:'🍵',name:'차담 법문',desc:'스님과 함께하는 차담과 불교 법문'},
+      {icon:'🖌️',name:'탁본 체험',desc:'사찰 내 석비 탁본 전통 체험'}
+    ],
+    schedule:[
+      {t:'04:00',n:'기상 및 도량석',d:'황악산 새벽 도량석'},
+      {t:'04:30',n:'새벽예불',d:'대웅전 새벽 예불'},
+      {t:'06:30',n:'아침 공양',d:'산채 발우공양'},
+      {t:'08:00',n:'황악산 산행',d:'비로봉 탐방 또는 계곡 트레킹'},
+      {t:'13:00',n:'점심 공양',d:'사찰 채식'},
+      {t:'14:30',n:'탁본 체험',d:'석비 탁본 전통 체험'},
+      {t:'16:00',n:'108배 기도',d:'사명대사 정신 계승 기도'},
+      {t:'17:30',n:'저녁예불',d:'대웅전 저녁 예불'},
+      {t:'19:00',n:'스님과의 차담',d:'불교 인연과 수행에 대한 대화'}
+    ],
+    prices:[
+      {type:'1박 2일',val:'₩65,000',note:'식사·숙박 포함'},
+      {type:'2박 3일',val:'₩110,000',note:'황악산 등반 포함'},
+      {type:'당일 체험',val:'₩35,000',note:'예불·탁본·발우공양'}
+    ],
+    access:'<strong>자가용:</strong> 경부고속도로 → 김천IC → 직지사 (서울 약 2.5시간)<br><strong>기차:</strong> KTX 김천구미역 → 택시 또는 버스 (약 20분)<br><strong>버스:</strong> 김천버스터미널 → 직지사행 버스',
+    tags:['사명대사','황악산','경북5대사찰','산행','탁본','신라창건','KTX'],
+    ctaText:'한국불교문화사업단(www.templestay.com)에서 직지사 템플스테이를 예약하세요.\n문의: 054-429-1700',
+    map:'https://map.kakao.com/link/search/직지사+김천'
+  }
+};
+(function(){
+  var id=(new URLSearchParams(location.search).get('id')||'').toLowerCase();
+  var d=DB[id];
+  if(!d){document.getElementById('not-found').style.display='block';return;}
+  document.getElementById('pg-wrap').style.display='block';
+  document.title=d.name+' 템플스테이 | 잼공인연사찰';
+  document.getElementById('pg-title').textContent=d.name+' 템플스테이 | 잼공인연사찰';
+  var img=document.getElementById('pg-img');
+  img.alt=d.name;
+  img.src=d.imgFb||'';
+  function loadWikiImg(name,fbUrl){
+    fetch('https://ko.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(name))
+      .then(function(r){return r.json();})
+      .then(function(d2){
+        var src=d2.originalimage||d2.thumbnail;
+        if(src&&src.source)img.src=src.source.replace(/\/\d+px-/,'/800px-');
+        else if(fbUrl)img.src=fbUrl;
+      }).catch(function(){if(fbUrl)img.src=fbUrl;});
+  }
+  loadWikiImg(d.wikiName||d.name,d.imgFb);
+  document.getElementById('pg-badges').innerHTML=d.badges.map(function(b){return'<span class="hb '+b.c+'">'+b.t+'</span>';}).join('');
+  document.getElementById('pg-name').textContent=d.name;
+  document.getElementById('pg-loc').textContent='📍 '+d.loc;
+  document.getElementById('pg-info-row').innerHTML=d.info.map(function(i){return'<div class="info-box"><div class="info-box-label">'+i.l+'</div><div class="info-box-val'+(i.g?' gold':'')+'">'+i.v+'</div></div>';}).join('');
+  document.getElementById('pg-intro').innerHTML=d.intro;
+  document.getElementById('pg-programs').innerHTML=d.programs.map(function(p){return'<li class="prog-item"><div class="prog-icon">'+p.icon+'</div><div><div class="prog-name">'+p.name+'</div><div class="prog-desc">'+p.desc+'</div></div></li>';}).join('');
+  document.getElementById('pg-schedule').innerHTML=d.schedule.map(function(s){return'<li class="tl-item"><span class="tl-time">'+s.t+'</span><div><div class="tl-title">'+s.n+'</div><div class="tl-desc">'+s.d+'</div></div></li>';}).join('');
+  document.getElementById('pg-prices').innerHTML=d.prices.map(function(p){return'<div class="price-box"><div class="price-type">'+p.type+'</div><div class="price-val">'+p.val+'</div><div class="price-note">'+p.note+'</div></div>';}).join('');
+  document.getElementById('pg-access').innerHTML=d.access;
+  document.getElementById('pg-tags').innerHTML=d.tags.map(function(t){return'<span class="tag">'+t+'</span>';}).join('');
+  document.getElementById('pg-cta-text').innerHTML=d.ctaText.replace(/\n/g,'<br>');
+  document.getElementById('pg-map-btn').href=d.map;
+})();
+</script>
