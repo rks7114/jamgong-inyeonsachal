@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>전국 기도도량 목록 | 잼공인연사찰</title>
+<meta name="description" content="전국 465곳 기도도량을 한눈에. 관음·약사·지장·미륵·나한·적멸보궁 등 유형별, 지역별 검색. 잼공 오라클로 내 사주 오행과 궁합 좋은 도량 추천.">
+<meta property="og:title" content="전국 기도도량 465곳 - 잼공인연사찰">
+<meta property="og:description" content="관음·약사·지장·미륵·나한·적멸보궁 유형별 기도도량. 내 사주 오행과 궁합 맞는 도량을 AI가 추천합니다.">
+<meta property="og:image" content="https://jamgong.kr/og-image.png">
+<meta property="og:url" content="https://jamgong.kr/gido">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="전국 기도도량 465곳 - 잼공인연사찰">
+<meta name="twitter:description" content="관음·약사·지장·미륵·나한·적멸보궁 유형별 기도도량 검색">
+<meta name="twitter:image" content="https://jamgong.kr/og-image.png">
+<link rel="canonical" href="https://jamgong.kr/gido">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --violet:#7c3aed;--violet-dark:#4c1d95;--violet-light:#a78bfa;
+  --gold:#f5c842;--gold-light:#fde68a;
+  --deep:#07040f;--card:#ffffff06;
+  --border:#ffffff12;--text:#f1f0f8;--muted:#64748b;--subtle:#94a3b8
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--deep);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── 배경: 그라디언트 + 도트 그리드 + 오로라 ── */
+body{background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(76,29,149,.55) 0%,rgba(7,4,15,1) 55%) fixed,var(--deep)}
+
+/* 도트 그리드 오버레이 */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(167,139,250,.18) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:radial-gradient(ellipse 80% 70% at 50% 20%,black 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 20%,black 30%,transparent 100%)}
+
+/* 오로라 블롭 */
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.aurora-blob{position:absolute;border-radius:50%;filter:blur(80px);animation:drift 16s ease-in-out infinite alternate}
+.aurora-blob:nth-child(1){width:700px;height:500px;top:-200px;left:-200px;background:radial-gradient(ellipse,rgba(109,40,217,.55),transparent 70%)}
+.aurora-blob:nth-child(2){width:600px;height:500px;bottom:-150px;right:-200px;background:radial-gradient(ellipse,rgba(245,200,66,.22),transparent 70%);animation-delay:-7s}
+.aurora-blob:nth-child(3){width:500px;height:400px;top:30%;left:30%;background:radial-gradient(ellipse,rgba(167,139,250,.2),transparent 70%);animation-delay:-12s;animation-duration:20s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(35px,22px) scale(1.1)}}
+
+/* ── Canvas 파티클 ── */
+#jg-cv{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;pointer-events:none}
+
+/* ── 다르마 휠 ── */
+.dharma-wheel{position:fixed;top:-80px;right:-100px;width:380px;height:380px;
+  opacity:.045;z-index:0;pointer-events:none;
+  animation:dharmaRotate 80s linear infinite}
+@keyframes dharmaRotate{to{transform:rotate(360deg)}}
+
+/* ── 상단 빛줄기 ── */
+.light-beam{position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:2px;height:260px;z-index:1;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(139,92,246,.9),transparent);
+  animation:beamPulse 4s ease-in-out infinite}
+.light-beam::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(139,92,246,.28),transparent 70%);
+  animation:beamPulse 4s ease-in-out infinite}
+@keyframes beamPulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* ── CSS 파티클 (폴백) ── */
+.p{position:fixed;border-radius:50%;pointer-events:none;z-index:1;animation:twinkle ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.9;transform:scale(1)}50%{opacity:.1;transform:scale(.5)}}
+
+/* ── 히어로 ── */
+.hero{position:relative;z-index:2;padding:90px 24px 60px;text-align:center}
+
+/* 중앙 글로우 후광 */
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:600px;height:400px;
+  background:radial-gradient(ellipse,rgba(109,40,217,.35) 0%,rgba(124,58,237,.15) 40%,transparent 70%);
+  pointer-events:none;z-index:0}
+
+.hero-inner{position:relative;z-index:2;max-width:740px;margin:0 auto}
+
+/* 뱃지 — 글로우 펄스 */
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,rgba(109,40,217,.22),rgba(124,58,237,.08));
+  border:1.5px solid rgba(167,139,250,.55);border-radius:99px;
+  padding:9px 26px;font-size:11px;font-weight:800;color:#ddd6fe;
+  letter-spacing:.18em;margin-bottom:24px;
+  box-shadow:0 0 0 rgba(124,58,237,0),inset 0 0 12px rgba(167,139,250,.08);
+  opacity:0;animation:fadeUp .6s .1s ease forwards,eyebrowGlow 3s 1s ease-in-out infinite}
+@keyframes eyebrowGlow{
+  0%,100%{box-shadow:0 0 16px rgba(124,58,237,.25)}
+  50%{box-shadow:0 0 32px rgba(124,58,237,.55),0 0 60px rgba(124,58,237,.2)}}
+
+/* 메인 타이틀 — 더 큰 사이즈 */
+.hero-title{font-size:clamp(34px,7vw,68px);font-weight:900;line-height:1.1;
+  letter-spacing:-.04em;margin-bottom:16px;
+  opacity:0;animation:fadeUp .7s .3s ease forwards;
+  text-shadow:0 0 60px rgba(109,40,217,.3)}
+.hero-title .g{
+  background:linear-gradient(125deg,#ffffff 0%,#e9d5ff 25%,#a78bfa 55%,#f5c842 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradShift 6s ease-in-out infinite alternate}
+@keyframes gradShift{
+  0%{filter:drop-shadow(0 0 18px rgba(167,139,250,.4))}
+  100%{filter:drop-shadow(0 0 36px rgba(245,200,66,.45))}}
+
+/* 서브텍스트 */
+.hero-sub{font-size:15px;color:#94a3b8;line-height:1.9;max-width:520px;
+  margin:0 auto 36px;word-break:keep-all;
+  opacity:0;animation:fadeUp .65s .55s ease forwards}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* ── 히어로 스탯 ── */
+.hero-stats{display:flex;gap:0;justify-content:center;flex-wrap:wrap;
+  opacity:0;animation:fadeUp .6s .8s ease forwards;
+  position:relative;
+  background:rgba(109,40,217,.1);
+  border:1px solid rgba(167,139,250,.3);
+  border-radius:20px;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  overflow:hidden;max-width:520px;margin:0 auto 20px;
+  box-shadow:0 0 0 1px rgba(167,139,250,.08),0 8px 40px rgba(76,29,149,.25)}
+
+/* 스캔라인 — 위에서 아래로 흐르는 빛 */
+.hero-stats::before{content:'';position:absolute;top:-2px;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent 10%,rgba(167,139,250,.8) 50%,transparent 90%);
+  animation:statScan 3s ease-in-out infinite}
+@keyframes statScan{0%,100%{opacity:.4;transform:scaleX(.5)}50%{opacity:1;transform:scaleX(1)}}
+
+.hero-stat{flex:1;text-align:center;padding:22px 12px;position:relative;min-width:80px}
+.hero-stat::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;
+  background:linear-gradient(to bottom,transparent,rgba(167,139,250,.25),transparent)}
+.hero-stat:last-child::after{display:none}
+.hero-stat-num{font-size:30px;font-weight:900;
+  background:linear-gradient(135deg,#e9d5ff,#a78bfa,#f5c842);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1}
+.hero-stat-label{font-size:10px;color:#64748b;font-weight:700;letter-spacing:.07em;margin-top:6px}
+
+/* 스크롤 힌트 */
+.hero-scroll{display:flex;flex-direction:column;align-items:center;gap:6px;
+  color:rgba(167,139,250,.45);font-size:10px;letter-spacing:.22em;
+  margin-top:36px;opacity:0;animation:fadeUp .5s 1.2s ease forwards}
+.hero-scroll-arrow{width:20px;height:20px;
+  border-right:2px solid rgba(167,139,250,.4);
+  border-bottom:2px solid rgba(167,139,250,.4);
+  transform:rotate(45deg);animation:scrolldown 1.7s ease-in-out infinite}
+@keyframes scrolldown{0%,100%{opacity:.3;transform:rotate(45deg) translateY(0)}50%{opacity:1;transform:rotate(45deg) translateY(6px)}}
+
+/* ── 툴바 ── */
+.toolbar{position:relative;z-index:2;max-width:1200px;margin:0 auto 32px;padding:0 24px}
+/* 툴바 — 흐르는 그라디언트 보더 */
+.toolbar-glass{
+  position:relative;
+  background:linear-gradient(135deg,rgba(76,29,149,.14) 0%,rgba(10,6,20,.75) 100%);
+  border-radius:26px;padding:26px 28px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 8px 40px rgba(0,0,0,.4),0 0 60px rgba(76,29,149,.12)}
+.toolbar-glass::before{
+  content:'';position:absolute;inset:0;border-radius:26px;padding:1px;
+  background:linear-gradient(90deg,#7c3aed,#a78bfa,#f5c842,#a78bfa,#7c3aed);
+  background-size:300% 100%;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:borderFlow 5s linear infinite;pointer-events:none;z-index:0}
+
+/* 검색창 — 바이올렛 글로우 */
+.search-wrap{position:relative;margin-bottom:20px;z-index:1}
+.search-input{
+  width:100%;
+  background:rgba(76,29,149,.1);
+  border:1.5px solid rgba(124,58,237,.5);
+  border-radius:16px;padding:15px 22px 15px 52px;
+  font-size:15px;color:var(--text);
+  font-family:'Noto Sans KR',sans-serif;outline:none;transition:all .3s;
+  box-shadow:0 0 0 4px rgba(124,58,237,.06),0 2px 16px rgba(76,29,149,.25)}
+.search-input:focus{
+  border-color:rgba(167,139,250,.9);
+  background:rgba(109,40,217,.14);
+  box-shadow:0 0 0 4px rgba(124,58,237,.2),0 0 30px rgba(124,58,237,.2),0 2px 16px rgba(76,29,149,.4)}
+.search-input::placeholder{color:rgba(167,139,250,.5)}
+/* 검색 아이콘 보라색 글로우 */
+.search-icon{color:rgba(167,139,250,.8);filter:drop-shadow(0 0 6px rgba(124,58,237,.6))}
+.search-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none}
+.search-clear{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;display:none}
+.filter-divider{height:1px;background:rgba(255,255,255,.07);margin:18px 0}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;position:relative;z-index:1}
+.filter-label{font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.12em;white-space:nowrap;min-width:22px}
+.filter-btn{font-size:12px;font-weight:700;padding:7px 16px;border-radius:99px;
+  border:1px solid rgba(124,58,237,.2);
+  background:linear-gradient(135deg,rgba(76,29,149,.1),rgba(15,10,30,.5));
+  color:var(--subtle);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .22s;white-space:nowrap}
+.filter-btn.active{
+  background:linear-gradient(135deg,rgba(124,58,237,.28),rgba(76,29,149,.2));
+  border-color:rgba(167,139,250,.7);color:var(--violet-light);
+  box-shadow:0 0 16px rgba(124,58,237,.25),0 0 0 1px rgba(167,139,250,.12) inset}
+.filter-btn:hover:not(.active){
+  background:linear-gradient(135deg,rgba(124,58,237,.14),rgba(15,10,30,.6));
+  border-color:rgba(167,139,250,.4);color:#c4b5fd}
+.result-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:18px;padding-top:18px;border-top:1px solid rgba(124,58,237,.18);position:relative;z-index:1}
+.result-info{font-size:13px;color:var(--muted)}
+.result-info strong{color:var(--violet-light)}
+.sort-select{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:7px 14px;font-size:12px;color:var(--subtle);font-family:'Noto Sans KR',sans-serif;outline:none;cursor:pointer}
+.sort-select option{background:#100c1e;color:var(--text)}
+
+/* ── 카드 그리드 ── */
+.grid{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-bottom:60px;perspective:1400px}
+
+.tc{position:relative;background:rgba(255,255,255,.04);border-radius:24px;padding:26px 24px;overflow:hidden;
+  transition:transform .45s cubic-bezier(.22,.68,0,1.2),box-shadow .45s,border-color .3s,opacity .6s;
+  text-decoration:none;display:block;color:inherit;opacity:0;transform:translateY(22px);
+  transform-style:preserve-3d;will-change:transform}
+.tc.visible{opacity:1;transform:none}
+.tc::before{content:'';position:absolute;inset:0;border-radius:24px;padding:1px;
+  background:linear-gradient(135deg,rgba(124,58,237,.22),rgba(255,255,255,.04),rgba(245,200,66,.1));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;transition:background .35s}
+/* 홀로그램 shimmer 레이어 */
+.tc::after{content:'';position:absolute;inset:0;border-radius:24px;
+  background:linear-gradient(135deg,
+    rgba(255,255,255,.13) 0%,rgba(255,255,255,.04) 40%,
+    transparent 55%,rgba(167,139,250,.06) 75%,transparent 100%);
+  opacity:0;transition:opacity .35s;pointer-events:none}
+.tc:hover{
+  transform:translateY(-14px) rotateX(-6deg) rotateY(2deg) scale(1.02);
+  box-shadow:
+    0 40px 100px rgba(124,58,237,.3),
+    0 16px 40px rgba(0,0,0,.5),
+    0 0 0 1px rgba(167,139,250,.35),
+    inset 0 1px 0 rgba(255,255,255,.12)}
+.tc:hover::before{background:linear-gradient(135deg,rgba(124,58,237,.75),rgba(167,139,250,.4),rgba(245,200,66,.3))}
+.tc:hover::after{opacity:1}
+.tc:hover .tc-icon{box-shadow:0 0 28px rgba(124,58,237,.45);transform:scale(1.12) rotate(-4deg) translateZ(8px)}
+.tc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.tc-icon{width:54px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:1px solid rgba(255,255,255,.1);transition:all .3s cubic-bezier(.22,.68,0,1.2)}
+.tc-badges{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.tc-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:6px;letter-spacing:.06em;white-space:nowrap}
+.tc-name{font-size:17px;font-weight:900;color:var(--text);margin-bottom:4px;line-height:1.3}
+.tc-region{font-size:12px;color:var(--muted);margin-bottom:10px}
+.tc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tc-tag{font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.18);color:#c4b5fd}
+.tc-desc{font-size:13px;color:var(--subtle);line-height:1.75;margin-bottom:18px}
+.tc-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.07);padding-top:14px}
+.tc-footer-type{font-size:11px;color:var(--muted);font-weight:700}
+.tc-arrow{font-size:12px;font-weight:800;color:var(--violet-light);display:flex;align-items:center;gap:4px;transition:gap .2s}
+.tc:hover .tc-arrow{gap:9px}
+
+/* ── 오라클 배너 ── */
+.oracle-banner{position:relative;z-index:2;max-width:1200px;margin:0 auto 32px;padding:0 24px}
+.oracle-inner{
+  background:linear-gradient(135deg,rgba(109,40,217,.2) 0%,rgba(76,29,149,.12) 50%,rgba(245,200,66,.06) 100%);
+  border:1.5px solid rgba(124,58,237,.5);
+  border-radius:26px;padding:28px 32px;
+  display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+  position:relative;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(167,139,250,.06),0 16px 60px rgba(76,29,149,.3)}
+
+/* 흐르는 그라디언트 보더 */
+.oracle-inner::before{content:'';position:absolute;inset:0;border-radius:26px;padding:1.5px;
+  background:linear-gradient(90deg,#7c3aed,#a78bfa,#f5c842,#7c3aed);
+  background-size:300% 100%;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:borderFlow 4s linear infinite;pointer-events:none}
+@keyframes borderFlow{to{background-position:-300% 0}}
+/* 우측 글로우 원 */
+.oracle-inner::after{content:'';position:absolute;top:-60px;right:-60px;
+  width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,58,237,.22),transparent 70%);
+  pointer-events:none}
+
+.oracle-icon{font-size:46px;flex-shrink:0;
+  filter:drop-shadow(0 0 20px rgba(167,139,250,.7));
+  animation:orbPulse 2.8s ease-in-out infinite;position:relative;z-index:1}
+@keyframes orbPulse{
+  0%,100%{filter:drop-shadow(0 0 14px rgba(167,139,250,.5));transform:scale(1)}
+  50%{filter:drop-shadow(0 0 30px rgba(167,139,250,.9));transform:scale(1.06)}}
+
+.oracle-text{flex:1;min-width:200px;position:relative;z-index:1}
+.oracle-title{font-size:17px;font-weight:900;
+  background:linear-gradient(90deg,#f5f3ff,#ddd6fe);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:7px}
+.oracle-desc{font-size:13px;color:#94a3b8;line-height:1.75}
+
+.oracle-btn{
+  background:linear-gradient(135deg,#5b21b6,#7c3aed,#6d28d9);
+  color:#fff;font-size:13px;font-weight:900;padding:14px 24px;
+  border-radius:14px;text-decoration:none;white-space:nowrap;
+  letter-spacing:.02em;transition:all .22s;position:relative;z-index:1;
+  box-shadow:0 4px 20px rgba(76,29,149,.5),inset 0 1px 0 rgba(255,255,255,.15)}
+.oracle-btn:hover{filter:brightness(1.15);transform:translateY(-2px);
+  box-shadow:0 12px 36px rgba(76,29,149,.65)}
+
+/* ── 페이지네이션 ── */
+.pagination{position:relative;z-index:2;max-width:1200px;margin:0 auto 60px;padding:0 24px;display:flex;justify-content:center;align-items:center;gap:8px}
+.pg-btn{width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:var(--subtle);font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .22s}
+.pg-btn.active{background:rgba(124,58,237,.22);border-color:rgba(167,139,250,.55);color:var(--violet-light);box-shadow:0 0 16px rgba(124,58,237,.22)}
+.pg-btn:hover:not(.active){background:rgba(255,255,255,.07)}
+.pg-btn:disabled{opacity:.3;cursor:default}
+
+/* ── 빈 결과 ── */
+.empty{text-align:center;padding:80px 24px;color:var(--muted)}
+.empty-icon{font-size:52px;margin-bottom:16px}
+.empty-title{font-size:18px;font-weight:800;color:var(--subtle);margin-bottom:8px}
+
+/* ── FAB ── */
+.chatbot-fab{position:fixed;bottom:24px;right:18px;z-index:9999;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;border:none;border-radius:99px;padding:12px 20px;font-size:13px;font-weight:900;cursor:pointer;font-family:'Noto Sans KR',sans-serif;box-shadow:0 8px 28px rgba(76,29,149,.5);display:flex;align-items:center;gap:8px;transition:all .25s;text-decoration:none}
+.chatbot-fab:hover{filter:brightness(1.1);transform:translateY(-3px);box-shadow:0 12px 40px rgba(76,29,149,.6)}
+.chatbot-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+@media(max-width:640px){
+  .hero{padding:90px 16px 60px}
+  .toolbar,.grid,.oracle-banner,.pagination{padding:0 14px}
+  .toolbar-glass{padding:18px 16px}
+  .grid{grid-template-columns:1fr}
+  .oracle-inner{padding:22px 18px}
+  .filter-row{gap:6px}
+  .hero-stat{padding:16px 10px}
+  .hero-stats{max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- Canvas 파티클 -->
+<canvas id="jg-cv"></canvas>
+
+<!-- 다르마 휠 (법륜) 배경 -->
+<svg class="dharma-wheel" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="96" stroke="white" stroke-width="2.5"/>
+  <circle cx="100" cy="100" r="20" stroke="white" stroke-width="2.5"/>
+  <circle cx="100" cy="100" r="68" stroke="white" stroke-width="1" stroke-dasharray="5 5"/>
+  <line x1="100" y1="4" x2="100" y2="196" stroke="white" stroke-width="2"/>
+  <line x1="4" y1="100" x2="196" y2="100" stroke="white" stroke-width="2"/>
+  <line x1="32" y1="32" x2="168" y2="168" stroke="white" stroke-width="2"/>
+  <line x1="168" y1="32" x2="32" y2="168" stroke="white" stroke-width="2"/>
+  <g transform="rotate(22.5 100 100)">
+    <line x1="100" y1="4" x2="100" y2="196" stroke="white" stroke-width="1"/>
+    <line x1="4" y1="100" x2="196" y2="100" stroke="white" stroke-width="1"/>
+    <line x1="32" y1="32" x2="168" y2="168" stroke="white" stroke-width="1"/>
+    <line x1="168" y1="32" x2="32" y2="168" stroke="white" stroke-width="1"/>
+  </g>
+  <circle cx="100" cy="4" r="5" fill="white"/>
+  <circle cx="100" cy="196" r="5" fill="white"/>
+  <circle cx="4" cy="100" r="5" fill="white"/>
+  <circle cx="196" cy="100" r="5" fill="white"/>
+  <circle cx="32" cy="32" r="4" fill="white"/>
+  <circle cx="168" cy="168" r="4" fill="white"/>
+  <circle cx="168" cy="32" r="4" fill="white"/>
+  <circle cx="32" cy="168" r="4" fill="white"/>
+</svg>
+
+<!-- 빛줄기 -->
+<div class="light-beam"></div>
+
+<!-- 오로라 고정 배경 -->
+<div class="aurora">
+  <div class="aurora-blob"></div>
+  <div class="aurora-blob"></div>
+  <div class="aurora-blob"></div>
+</div>
+
+<!-- 히어로 -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">✦ 전국 기도도량 탐색 ✦</div>
+    <h1 class="hero-title">
+      <span class="g">465곳</span> 기도도량<br>한눈에 찾기
+    </h1>
+    <p class="hero-sub">관음·약사·지장·미륵·나한·적멸보궁 — 유형별·지역별로 전국 기도도량을 탐색하고 내 사주 오행과 궁합 좋은 도량을 확인하세요.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num" id="cnt-total">0</div><div class="hero-stat-label">기도도량 수록</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" id="cnt-type">0</div><div class="hero-stat-label">기도 유형</div></div>
+      <div class="hero-stat"><div class="hero-stat-num" id="cnt-region">0</div><div class="hero-stat-label">광역 지역</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">AI</div><div class="hero-stat-label">오행 궁합 분석</div></div>
+    </div>
+    <div class="hero-scroll"><div class="hero-scroll-arrow"></div><span>SCROLL</span></div>
+  </div>
+</div>
+
+<!-- 오라클 배너 -->
+<div class="oracle-banner">
+  <div class="oracle-inner">
+    <div class="oracle-icon">🔮</div>
+    <div class="oracle-text">
+      <div class="oracle-title">내 사주 오행에 맞는 기도도량 추천받기</div>
+      <div class="oracle-desc">잼공 오라클이 생년월일 오행을 분석해 궁합 좋은 기도도량과 최적 기도일을 알려드립니다.</div>
+    </div>
+    <a href="/manse" class="oracle-btn">🔮 오라클 시작하기 →</a>
+  </div>
+</div>
+
+<!-- 툴바 -->
+<div class="toolbar">
+  <div class="toolbar-glass">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="search-input" placeholder="사찰명·지역·기도유형 검색 (예: 해인사, 부산, 관음)" oninput="applyFilters()">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-row">
+      <span class="filter-label">유형</span>
+      <button class="filter-btn active" data-type="" onclick="setType(this,'')">전체</button>
+      <button class="filter-btn" data-type="관음" onclick="setType(this,'관음')">🌸 관음</button>
+      <button class="filter-btn" data-type="약사" onclick="setType(this,'약사')">💚 약사</button>
+      <button class="filter-btn" data-type="지장" onclick="setType(this,'지장')">🌑 지장</button>
+      <button class="filter-btn" data-type="미륵" onclick="setType(this,'미륵')">🌅 미륵</button>
+      <button class="filter-btn" data-type="나한" onclick="setType(this,'나한')">🙏 나한</button>
+      <button class="filter-btn" data-type="적멸보궁" onclick="setType(this,'적멸보궁')">⭐ 적멸보궁</button>
+      <button class="filter-btn" data-type="소원" onclick="setType(this,'소원')">✨ 소원성취</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">지역</span>
+      <button class="filter-btn active" data-region="" onclick="setRegion(this,'')">전국</button>
+      <button class="filter-btn" data-region="서울" onclick="setRegion(this,'서울')">서울</button>
+      <button class="filter-btn" data-region="경기" onclick="setRegion(this,'경기')">경기</button>
+      <button class="filter-btn" data-region="강원" onclick="setRegion(this,'강원')">강원</button>
+      <button class="filter-btn" data-region="충청" onclick="setRegion(this,'충청')">충청</button>
+      <button class="filter-btn" data-region="경상" onclick="setRegion(this,'경상')">경상</button>
+      <button class="filter-btn" data-region="전라" onclick="setRegion(this,'전라')">전라</button>
+      <button class="filter-btn" data-region="제주" onclick="setRegion(this,'제주')">제주</button>
+      <button class="filter-btn" data-region="인천" onclick="setRegion(this,'인천')">인천</button>
+      <button class="filter-btn" data-region="부산" onclick="setRegion(this,'부산')">부산</button>
+    </div>
+    <div class="result-row">
+      <span class="result-info" id="result-count">전체 <strong>0</strong>개 도량</span>
+      <select class="sort-select" onchange="applyFilters()">
+        <option value="default">기본 순서</option>
+        <option value="name">이름순</option>
+        <option value="region">지역순</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- 카드 그리드 -->
+<div class="grid" id="card-grid"></div>
+
+<!-- 페이지네이션 -->
+<div class="pagination" id="pagination"></div>
+
+<a href="/chatbot" class="chatbot-fab">
+  <span class="chatbot-dot"></span>기도도량 안내 질문
+</a>
+
+<script>
+/* ══════════════════════════════════════════
+   전국 기도도량 DB (465개 중 핵심 26개 상세 수록)
+══════════════════════════════════════════ */
+const DB = [
+  /* ── 관음 도량 ── */
+  {id:"naksan",name:"낙산사 홍련암",region:"강원 양양",type:["관음","소원"],icon:"🌊",
+   iconBg:"rgba(59,130,246,.15)",tags:["3대 관음기도처","바다 도량","일출 기도"],
+   desc:"의상대사 창건 동해 관음 성지. 파도 소리 속 홍련암 기도가 영험하기로 유명.",
+   detail:true,badge:"3대 관음",badgeColor:"rgba(59,130,246,.2)",badgeText:"#60a5fa"},
+  {id:"bomunsa",name:"보문사",region:"인천 강화",type:["관음","소원","득남"],icon:"🌿",
+   iconBg:"rgba(52,211,153,.12)",tags:["마애관음상","눈썹바위","득남기도"],
+   desc:"눈썹바위 마애관음보살. 419계단 위 서해 낙조와 함께 드리는 기도가 영험.",
+   detail:true,badge:"3대 관음",badgeColor:"rgba(52,211,153,.2)",badgeText:"#34d399"},
+  {id:"hyangilam",name:"향일암",region:"전남 여수",type:["관음","소원","일출"],icon:"🌄",
+   iconBg:"rgba(245,200,66,.12)",tags:["일출 기도","남해 관음","4대 기도처"],
+   desc:"남해 돌산도 금오산 기슭. 바위 사이 관음도량. 새해 일출 기도로 전국 유명.",
+   detail:true,badge:"4대 기도처",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842"},
+  {id:"jogyesa",name:"조계사",region:"서울 종로",type:["관음","소원"],icon:"🏯",
+   iconBg:"rgba(167,139,250,.15)",tags:["조계종 총본산","서울 도심","연중 법회"],
+   desc:"대한불교조계종 총본산. 서울 도심 한복판 기도도량으로 연중 법회가 끊이지 않는 곳.",
+   detail:true,badge:"총본산",badgeColor:"rgba(167,139,250,.2)",badgeText:"#a78bfa"},
+  {id:"haedong",name:"해동용궁사",region:"부산 기장",type:["관음","소원","인연"],icon:"🐉",
+   iconBg:"rgba(59,130,246,.15)",tags:["바다 관음","십이지신상","인연기도"],
+   desc:"고려 창건 부산 해안 절벽 위 관음도량. 십이지신상 앞 기도와 소원성취로 유명.",
+   detail:true,pg:"page-gido-detail-part2",badge:"3대 관음",badgeColor:"rgba(59,130,246,.2)",badgeText:"#60a5fa"},
+  {id:"seonamsa",name:"선암사",region:"전남 순천",type:["관음","소원"],icon:"🌸",
+   iconBg:"rgba(244,114,182,.12)",tags:["유네스코 세계유산","원통전","조계산"],
+   desc:"천년의 아름다움. 유네스코 세계문화유산 조계산 선암사 원통전 관음 기도처.",
+   badge:"세계유산",badgeColor:"rgba(244,114,182,.2)",badgeText:"#f472b6",detail:true,pg:"page-gido-detail-part2"},
+  {id:"ssanggyesa",name:"쌍계사",region:"경남 하동",type:["관음","소원"],icon:"🍃",
+   iconBg:"rgba(52,211,153,.12)",tags:["지리산 섬진강","금당천 벚꽃","팔상전"],
+   desc:"지리산 섬진강 변 천년 고찰. 봄 벚꽃길과 팔상전 기도가 유명. 육조혜능 영당 봉안.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part2"},
+  {id:"magoksa",name:"마곡사",region:"충남 공주",type:["관음","소원"],icon:"🏔️",
+   iconBg:"rgba(245,200,66,.12)",tags:["유네스코 세계유산","충남 최대 사찰","대웅보전"],
+   desc:"충남 최대 사찰. 유네스코 세계문화유산으로 지정된 산사. 김구 선생이 출가한 곳.",
+   badge:"세계유산",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail-part2"},
+
+  /* ── 약사 도량 ── */
+  {id:"yakcheonsa",name:"약천사",region:"제주",type:["약사","건강","소원"],icon:"💊",
+   iconBg:"rgba(52,211,153,.12)",tags:["동양 최대 법당","제주 약사","건강기도"],
+   desc:"동양 최대 규모 법당. 제주 서귀포 약사여래 기도도량. 건강·치료 기도에 영험.",
+   badge:"동양 최대",badgeColor:"rgba(52,211,153,.2)",badgeText:"#34d399",detail:true,pg:"page-gido-detail-part2"},
+  {id:"hwaeomsa",name:"화엄사",region:"전남 구례",type:["약사","소원"],icon:"🍂",
+   iconBg:"rgba(245,200,66,.12)",tags:["지리산 대찰","각황전","4사자 3층석탑"],
+   desc:"지리산 대찰. 각황전과 4사자3층석탑 국보 보유. 화엄 도량으로 소원성취 기도처.",
+   badge:"국보 보유",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail-part2"},
+  {id:"daeheungsa",name:"대흥사",region:"전남 해남",type:["약사","관음","소원"],icon:"🌊",
+   iconBg:"rgba(59,130,246,.12)",tags:["유네스코 세계유산","두륜산","서산대사 유물"],
+   desc:"두륜산 대흥사. 유네스코 세계문화유산. 13대 대종사·13대 대선사 배출한 유서 깊은 도량.",
+   badge:"세계유산",badgeColor:"rgba(59,130,246,.2)",badgeText:"#60a5fa",detail:true,pg:"page-gido-detail-part2"},
+
+  /* ── 지장 도량 ── */
+  {id:"eunseonsa",name:"은선사",region:"서울 관악",type:["지장","관음"],icon:"⛰️",
+   iconBg:"rgba(124,58,237,.12)",tags:["관악산 지장도량","망자 천도","기도처"],
+   desc:"관악산 기슭 지장기도 도량. 망자 천도와 가족 안녕 기도처로 수도권 신도들이 많이 찾음.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part2"},
+  {id:"cheoneunsa",name:"천은사",region:"전남 구례",type:["지장","관음"],icon:"🌿",
+   iconBg:"rgba(52,211,153,.12)",tags:["지리산 3대 사찰","수구초심","담양 진목"],
+   desc:"지리산 3대 사찰 중 하나. 천은사 수령 거목과 빛내림 풍경. 지장기도와 소원성취.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part2"},
+  {id:"cheontaesa",name:"천태사",region:"충북 영동",type:["지장","소원"],icon:"🌑",
+   iconBg:"rgba(100,116,139,.15)",tags:["충북 영동","천태종 본찰","지장기도"],
+   desc:"충북 영동 민주지산 기슭. 천태종 소속 지장기도 도량. 망자 천도와 가족 안녕.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part2"},
+
+  /* ── 미륵 도량 ── */
+  {id:"geumsansa",name:"금산사",region:"전북 김제",type:["미륵","소원"],icon:"🌅",
+   iconBg:"rgba(245,200,66,.15)",tags:["미륵 본찰","모악산","3층 법당 미륵전"],
+   desc:"모악산 금산사 미륵전. 한국 유일 3층 목조 건물에 미륵불 봉안. 미륵기도 총본산.",
+   badge:"미륵 총본산",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail-part2"},
+  {id:"seonoam",name:"선운사",region:"전북 고창",type:["미륵","관음","소원"],icon:"🌸",
+   iconBg:"rgba(244,114,182,.12)",tags:["꽃무릇·벚꽃 명소","도솔천","마애미륵불"],
+   desc:"도솔산 선운사 도솔암 마애미륵불. 꽃무릇·꽃무릇 축제 유명. 미륵기도와 소원성취.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part2"},
+
+  /* ── 나한 도량 ── */
+  {id:"seonamsa-nahan",name:"선암사 응진전",region:"전남 순천",type:["나한","소원"],icon:"🙏",
+   iconBg:"rgba(251,146,60,.12)",tags:["오백나한","응진전","소원성취"],
+   desc:"선암사 응진전 오백나한. 저마다 다른 표정의 나한상 앞 기도가 영험하기로 유명.",
+   badge:"오백나한",badgeColor:"rgba(251,146,60,.2)",badgeText:"#fb923c",detail:true,pg:"page-gido-detail-part2"},
+  {id:"tongdosa-nahan",name:"통도사 응진전",region:"경남 양산",type:["나한","소원"],icon:"🙏",
+   iconBg:"rgba(251,146,60,.12)",tags:["불보사찰","나한기도","영험"],
+   desc:"불보사찰 통도사 응진전. 1000년 영험 나한기도처. 소원성취와 자녀 기도에 유명.",
+   badge:"불보사찰",badgeColor:"rgba(251,146,60,.2)",badgeText:"#fb923c",detail:true,pg:"page-gido-detail-part2"},
+
+  /* ── 적멸보궁 ── */
+  {id:"odaesan",name:"오대산 상원사",region:"강원 평창",type:["적멸보궁","소원"],icon:"⭐",
+   iconBg:"rgba(245,200,66,.15)",tags:["5대 적멸보궁","문수보살","세조 기도처"],
+   desc:"5대 적멸보궁 중 하나. 세조가 문수동자를 만나 피부병이 나았다는 설화로 유명.",
+   badge:"5대 적멸보궁",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail-part2"},
+  {id:"seoraksan",name:"봉정암",region:"강원 인제",type:["적멸보궁","소원"],icon:"⭐",
+   iconBg:"rgba(245,200,66,.15)",tags:["5대 적멸보궁","설악산","최고 난이도 기도처"],
+   desc:"설악산 봉정암. 국내 최고(해발 1244m) 적멸보궁. 산행 기도로 소원성취 영험.",
+   badge:"5대 적멸보궁",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail-part3"},
+  {id:"tongdosa-boggung",name:"통도사 금강계단",region:"경남 양산",type:["적멸보궁","소원"],icon:"⭐",
+   iconBg:"rgba(245,200,66,.15)",tags:["5대 적멸보궁","진신사리","불보사찰"],
+   desc:"부처님 진신사리 봉안 금강계단. 불보사찰 통도사 핵심 기도처.",
+   badge:"5대 적멸보궁",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail-part3"},
+
+  /* ── 복합·유명 도량 ── */
+  {id:"haeinsa",name:"해인사",region:"경남 합천",type:["소원","관음"],icon:"📜",
+   iconBg:"rgba(52,211,153,.12)",tags:["법보사찰","팔만대장경","가야산"],
+   desc:"법보사찰 해인사. 팔만대장경을 보존한 유네스코 세계유산. 소원성취 기도로 유명.",
+   detail:true,badge:"법보사찰",badgeColor:"rgba(52,211,153,.2)",badgeText:"#34d399"},
+  {id:"tongdosa",name:"통도사",region:"경남 양산",type:["소원","관음","적멸보궁"],icon:"🔥",
+   iconBg:"rgba(239,68,68,.12)",tags:["불보사찰","금강계단","영축산"],
+   desc:"불보사찰 통도사. 부처님 진신사리 금강계단. 관음·지장·나한·적멸보궁 모두 갖춘 대도량.",
+   detail:true,badge:"불보사찰",badgeColor:"rgba(239,68,68,.2)",badgeText:"#f87171"},
+  {id:"buseoksa",name:"부석사",region:"경북 영주",type:["소원","관음"],icon:"🏔️",
+   iconBg:"rgba(245,200,66,.12)",tags:["유네스코 세계유산","무량수전","선묘낭자 전설"],
+   desc:"의상대사 창건 화엄 도량. 무량수전·선묘낭자 전설 깃든 유네스코 세계문화유산.",
+   badge:"세계유산",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail"},
+  {id:"beomeosa",name:"범어사",region:"부산 금정",type:["소원","관음"],icon:"🐠",
+   iconBg:"rgba(59,130,246,.12)",tags:["금정산 대찰","부산 도심","삼보사찰 근접"],
+   desc:"금정산 범어사. 부산 시내에서 가까운 천년 고찰. 독성각·나한전 기도로 유명.",
+   detail:true,badge:"",badgeColor:"",badgeText:""},
+  {id:"donghaksa",name:"동학사",region:"충남 공주",type:["관음","소원"],icon:"🌿",
+   iconBg:"rgba(52,211,153,.12)",tags:["계룡산","여성 강원","봄 벚꽃"],
+   desc:"계룡산 동학사. 한국 최초 비구니 강원. 봄 벚꽃과 산행 기도로 수도권 기도객 많이 방문.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part3"},
+  {id:"geumseon",name:"현등사",region:"경기 가평",type:["관음","소원"],icon:"🌊",
+   iconBg:"rgba(59,130,246,.12)",tags:["운악산","경기 소금강","관음 성지"],
+   desc:"경기 소금강 운악산 관음 성지. 빼어난 기암괴석과 계곡이 어우러진 청정 기도도량.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part3"},
+
+  /* ── 추가 도량 ── */
+  {id:"songgwangsa",name:"송광사",region:"전남 순천",type:["소원","관음"],icon:"🌿",
+   iconBg:"rgba(52,211,153,.12)",tags:["승보사찰","16국사 배출","삼보사찰"],
+   desc:"삼보사찰 중 승보사찰. 16국사 배출. 조계산 깊은 계곡 속 청정 수행 도량으로 소원성취 기도처.",
+   detail:true,pg:"page-gido-detail-part3",badge:"승보사찰",badgeColor:"rgba(52,211,153,.2)",badgeText:"#34d399"},
+  {id:"beopjusa",name:"법주사",region:"충북 보은",type:["미륵","소원"],icon:"🌅",
+   iconBg:"rgba(245,200,66,.12)",tags:["속리산","미륵대불","유네스코 세계유산"],
+   desc:"속리산 법주사 팔상전·미륵대불. 유네스코 세계문화유산. 미륵기도와 소원성취로 유명.",
+   detail:true,pg:"page-gido-detail-part3",badge:"세계유산",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842"},
+  {id:"woljeongsa",name:"월정사",region:"강원 평창",type:["적멸보궁","소원"],icon:"⭐",
+   iconBg:"rgba(245,200,66,.15)",tags:["5대 적멸보궁","오대산","전나무 숲길"],
+   desc:"오대산 월정사. 5대 적멸보궁 중 하나. 아름다운 전나무 숲길과 팔각9층석탑의 천년 도량.",
+   detail:true,pg:"page-gido-detail-part3",badge:"5대 적멸보궁",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842"},
+  {id:"bulguksa",name:"불국사",region:"경북 경주",type:["소원","관음"],icon:"🏛️",
+   iconBg:"rgba(167,139,250,.15)",tags:["유네스코 세계유산","석가탑·다보탑","신라 천년"],
+   desc:"신라 천년 불교의 정화. 다보탑·석가탑·청운교·연화교 등 국보 8점 보유. 소원성취 기도처.",
+   detail:true,pg:"page-gido-detail-part3",badge:"세계유산",badgeColor:"rgba(167,139,250,.2)",badgeText:"#a78bfa"},
+  {id:"sudoksa",name:"수덕사",region:"충남 예산",type:["관음","소원"],icon:"🌸",
+   iconBg:"rgba(244,114,182,.12)",tags:["덕숭산","비구니 강원","대웅전 국보"],
+   desc:"덕숭산 수덕사. 대웅전(국보) 고려 목조건축. 한국 최대 비구니 강원. 관음·소원기도처.",
+   detail:true,pg:"page-gido-detail-part3",badge:"",badgeColor:"",badgeText:""},
+  {id:"donghwasa",name:"동화사",region:"대구 팔공",type:["관음","약사","소원"],icon:"🔵",
+   iconBg:"rgba(59,130,246,.12)",tags:["팔공산","갓바위 약사여래","영남 대도량"],
+   desc:"팔공산 동화사. 갓바위 약사여래석불로 유명. 합격·치료 기도에 전국에서 수험생이 몰림.",
+   badge:"갓바위 기도",badgeColor:"rgba(59,130,246,.2)",badgeText:"#60a5fa",detail:true,pg:"page-gido-detail-part3"},
+  {id:"sinheungsa",name:"신흥사",region:"강원 속초",type:["관음","소원"],icon:"🏔️",
+   iconBg:"rgba(124,58,237,.12)",tags:["설악산","통일대불","동해 관음"],
+   desc:"설악산 국립공원 내 신흥사. 청동통일대불(108톤)과 동해 관음기도. 소원성취 관음도량.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part3"},
+  {id:"jikjisa",name:"직지사",region:"경북 김천",type:["관음","소원"],icon:"🌿",
+   iconBg:"rgba(52,211,153,.12)",tags:["황악산","영남 최고 사찰","신라 창건"],
+   desc:"황악산 직지사. 신라 눌지왕 때 창건. 경북 김천의 영남 최고 사찰. 관음·소원성취 기도처.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part3"},
+  {id:"unmunsa",name:"운문사",region:"경북 청도",type:["관음","소원"],icon:"🌸",
+   iconBg:"rgba(244,114,182,.12)",tags:["청도 호거산","비구니 최대 도량","처진 소나무"],
+   desc:"호거산 운문사. 한국 최대 비구니 승가대학. 처진 소나무(천연기념물)와 관음기도처.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part3"},
+  {id:"gapsa",name:"갑사",region:"충남 공주",type:["관음","소원"],icon:"🍁",
+   iconBg:"rgba(245,200,66,.12)",tags:["계룡산","단풍 명소","당간지주"],
+   desc:"계룡산 갑사. 백제 창건 천년고찰. 가을 단풍 명소. 관음기도와 소원성취 기도처.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part3"},
+  {id:"pyochungsa",name:"표충사",region:"경남 밀양",type:["관음","소원"],icon:"⚔️",
+   iconBg:"rgba(239,68,68,.12)",tags:["사명대사 호국도량","재약산","가을 억새"],
+   desc:"재약산 표충사. 사명대사 부도탑 봉안. 호국불교 성지. 가을 억새밭과 관음기도처.",
+   badge:"호국도량",badgeColor:"rgba(239,68,68,.2)",badgeText:"#f87171",detail:true,pg:"page-gido-detail-part3"},
+  {id:"naesosa",name:"내소사",region:"전북 부안",type:["관음","소원"],icon:"🌲",
+   iconBg:"rgba(52,211,153,.12)",tags:["변산반도","전나무 숲","대웅보전 꽃살문"],
+   desc:"변산반도 능가산 내소사. 전나무 숲길과 대웅보전 꽃살문이 아름다운 관음 기도도량.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part4"},
+  {id:"seoraksan-sinheung",name:"봉은사",region:"서울 강남",type:["관음","소원"],icon:"🏙️",
+   iconBg:"rgba(167,139,250,.12)",tags:["강남 도심","미륵대불","판전 화엄경"],
+   desc:"강남 코엑스 인근 도심 사찰. 미륵대불·판전 화엄경 봉안. 서울 강남 주요 관음기도처.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part4"},
+  {id:"hwagyesa",name:"화계사",region:"서울 강북",type:["관음","소원"],icon:"🌺",
+   iconBg:"rgba(244,114,182,.12)",tags:["북한산","국제선원","숭산스님"],
+   desc:"북한산 화계사. 숭산스님 국제선원으로 외국인 수행자가 많이 찾는 관음기도처.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part4"},
+  {id:"jeondeungsa",name:"전등사",region:"인천 강화",type:["관음","소원","지장"],icon:"🕯️",
+   iconBg:"rgba(245,200,66,.12)",tags:["강화 마니산","국내 최고 사찰","단군 창건"],
+   desc:"강화도 마니산 정족산사고 인근. 단군의 세 공주가 창건한 국내 최고(最古) 사찰. 관음·지장기도.",
+   badge:"최고(最古) 사찰",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail-part4"},
+  {id:"dopyeonsa",name:"도피안사",region:"강원 철원",type:["적멸보궁","소원"],icon:"⭐",
+   iconBg:"rgba(245,200,66,.15)",tags:["5대 적멸보궁","철원","철조비로자나불"],
+   desc:"철원 도피안사. 5대 적멸보궁 중 하나. 철조비로자나불(국보) 봉안. 지혜·소원기도처.",
+   badge:"5대 적멸보궁",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail-part4"},
+  {id:"jeongamsa",name:"정암사",region:"강원 정선",type:["적멸보궁","소원"],icon:"⭐",
+   iconBg:"rgba(245,200,66,.15)",tags:["5대 적멸보궁","정선","수마노탑"],
+   desc:"강원 정선 함백산 정암사. 5대 적멸보궁. 수마노탑(국보)에 자장율사가 봉안한 진신사리.",
+   badge:"5대 적멸보궁",badgeColor:"rgba(245,200,66,.2)",badgeText:"#f5c842",detail:true,pg:"page-gido-detail-part4"},
+  {id:"mihwangsa",name:"미황사",region:"전남 해남",type:["관음","소원"],icon:"🌊",
+   iconBg:"rgba(59,130,246,.12)",tags:["달마산","땅끝 기도처","남도 관음"],
+   desc:"달마산 미황사. 한반도 최남단 땅끝 마을 인근. 남도 관음기도처. 달마고도 트레킹 기점.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part4"},
+  {id:"seonamsa-suncheon",name:"선암사",region:"전남 순천",type:["관음","소원"],icon:"🌸",
+   iconBg:"rgba(244,114,182,.12)",tags:["유네스코 세계유산","승선교","원통전"],
+   desc:"조계산 선암사. 유네스코 세계문화유산. 승선교·원통전 관음기도. 봄 벚꽃·매화 명소.",
+   badge:"세계유산",badgeColor:"rgba(244,114,182,.2)",badgeText:"#f472b6",detail:true,pg:"page-gido-detail-part4"},
+  {id:"tongyeong-yonghwasa",name:"용화사",region:"경남 통영",type:["미륵","소원"],icon:"🌅",
+   iconBg:"rgba(245,200,66,.12)",tags:["미륵산","케이블카","남해 미륵기도"],
+   desc:"통영 미륵산 용화사. 케이블카 인근 남해 미륵기도처. 미륵불 기도와 소원성취로 유명.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part4"},
+  {id:"mangwolsa",name:"망월사",region:"경기 의정부",type:["지장","소원"],icon:"🌑",
+   iconBg:"rgba(100,116,139,.15)",tags:["도봉산","지장기도","천도재"],
+   desc:"도봉산 망월사. 수도권 지장기도 명소. 망자 천도와 가족 건강·안녕 기도처.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part4"},
+  {id:"cheongnyangsa",name:"청량사",region:"경북 봉화",type:["관음","소원"],icon:"🏔️",
+   iconBg:"rgba(124,58,237,.12)",tags:["청량산","공민왕 기도처","유리보전"],
+   desc:"청량산 청량사. 고려 공민왕이 홍건적 피난 시 기도한 도량. 유리보전 약사여래 봉안.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part4"},
+  {id:"najonghansa",name:"낙종한사",region:"경기 남양주",type:["지장","관음"],icon:"🌿",
+   iconBg:"rgba(52,211,153,.12)",tags:["수락산","서울 근교","지장·관음"],
+   desc:"수락산 기슭 남양주 지장·관음 복합 기도도량. 서울 근교에서 접근 용이.",
+   badge:"",badgeColor:"",badgeText:"",detail:true,pg:"page-gido-detail-part4"},
+  {id:"daeungjeon-jeju",name:"관음사",region:"제주",type:["관음","소원"],icon:"🌺",
+   iconBg:"rgba(244,114,182,.12)",tags:["한라산","제주 최대 사찰","관음기도"],
+   desc:"한라산 기슭 제주 최대 사찰. 4.3사건 위령 도량. 제주 관음기도와 소원성취.",
+   badge:"제주 최대",badgeColor:"rgba(244,114,182,.2)",badgeText:"#f472b6",detail:true,pg:"page-gido-detail-part4"},
+];
+
+/* ── 상태 ── */
+let activeType = '', activeRegion = '', currentPage = 1;
+const PER_PAGE = 12;
+
+function applyFilters(){
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  document.getElementById('search-clear').style.display = q ? 'block' : 'none';
+
+  const sortVal = document.querySelector('.sort-select').value;
+  let filtered = DB.filter(d => {
+    const matchType = !activeType || d.type.some(t => t.includes(activeType));
+    const matchRegion = !activeRegion || d.region.includes(activeRegion);
+    const matchQ = !q || d.name.includes(q) || d.region.includes(q) || d.tags.some(t=>t.includes(q)) || d.desc.includes(q) || d.type.some(t=>t.includes(q));
+    return matchType && matchRegion && matchQ;
+  });
+
+  if(sortVal === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+  else if(sortVal === 'region') filtered.sort((a,b) => a.region.localeCompare(b.region));
+
+  currentPage = 1;
+  renderCards(filtered);
+}
+
+function setType(btn, val){
+  document.querySelectorAll('[data-type]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeType = val;
+  applyFilters();
+}
+function setRegion(btn, val){
+  document.querySelectorAll('[data-region]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeRegion = val;
+  applyFilters();
+}
+function clearSearch(){
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-clear').style.display = 'none';
+  applyFilters();
+}
+
+function renderCards(data){
+  const total = data.length;
+  const totalPages = Math.ceil(total / PER_PAGE);
+  const start = (currentPage - 1) * PER_PAGE;
+  const slice = data.slice(start, start + PER_PAGE);
+  const countEl = document.getElementById('result-count');
+  countEl.innerHTML = `전체 <strong>${total}</strong>개 도량`;
+
+  const grid = document.getElementById('card-grid');
+  if(!slice.length){
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">검색 결과가 없습니다</div><p style="font-size:13px;color:var(--muted)">다른 검색어나 필터를 사용해보세요.</p></div>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  grid.innerHTML = slice.map(d => {
+    const href = d.detail ? `${d.pg||'page-gido-detail'}.html?id=${d.id}` : '#';
+    const typeLabels = d.type.join(' · ');
+    return `<a class="tc" href="${href}" ${!d.detail?'onclick="return false"':''}>
+      <div class="tc-top">
+        <div class="tc-icon" style="background:${d.iconBg}">${d.icon}</div>
+        <div class="tc-badges">
+          ${d.badge?`<span class="tc-badge" style="background:${d.badgeColor};color:${d.badgeText}">${d.badge}</span>`:''}
+          ${d.detail?'<span class="tc-badge" style="background:rgba(124,58,237,.15);color:#a78bfa">상세정보</span>':'<span class="tc-badge" style="background:rgba(255,255,255,.05);color:#475569">준비중</span>'}
+        </div>
+      </div>
+      <div class="tc-name">${d.name}</div>
+      <div class="tc-region">📍 ${d.region}</div>
+      <div class="tc-tags">${d.tags.map(t=>`<span class="tc-tag">${t}</span>`).join('')}</div>
+      <div class="tc-desc">${d.desc}</div>
+      <div class="tc-footer">
+        <span class="tc-footer-type">${typeLabels}</span>
+        ${d.detail?`<span class="tc-arrow">상세보기 →</span>`:`<span style="font-size:11px;color:var(--muted)">준비중</span>`}
+      </div>
+    </a>`;
+  }).join('');
+
+  // 카드 리빌
+  setTimeout(revealCards, 30);
+
+  // 페이지네이션
+  const pg = document.getElementById('pagination');
+  if(totalPages <= 1){pg.innerHTML='';return;}
+  let btns = '';
+  btns += `<button class="pg-btn" onclick="changePage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  for(let i=1;i<=totalPages;i++){
+    if(i===1||i===totalPages||Math.abs(i-currentPage)<=1) btns+=`<button class="pg-btn ${i===currentPage?'active':''}" onclick="changePage(${i})">${i}</button>`;
+    else if(Math.abs(i-currentPage)===2) btns+=`<span style="color:var(--muted);padding:0 4px">…</span>`;
+  }
+  btns += `<button class="pg-btn" onclick="changePage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  pg.innerHTML = btns;
+  // store for changePage
+  pg._data = data;
+}
+
+function changePage(n){
+  const data = document.getElementById('pagination')._data;
+  if(!data) return;
+  currentPage = n;
+  renderCards(data);
+  window.scrollTo({top: document.querySelector('.toolbar').offsetTop - 20, behavior:'smooth'});
+}
+
+/* ── CSS 반짝이 별 (고정 위치 트윙클) ── */
+(function(){
+  /* 흰별·청백별 위주 — 우주 고정 별 느낌 */
+  const cols=['rgba(255,255,255,.85)','rgba(220,230,255,.75)','rgba(200,210,255,.65)',
+              'rgba(167,139,250,.55)','rgba(255,255,255,.5)'];
+  for(let i=0;i<40;i++){
+    const p=document.createElement('div');
+    p.className='p';
+    const sz=Math.random()*2.2+.5;  /* 0.5~2.7px — 진짜 별처럼 작게 */
+    const dur=2.5+Math.random()*5;
+    const top=Math.random()*100;
+    p.style.cssText=`width:${sz}px;height:${sz}px;`+
+      `left:${Math.random()*100}%;top:${top}%;`+
+      `background:${cols[i%cols.length]};`+
+      `animation-duration:${dur}s;animation-delay:${Math.random()*8}s;`+
+      `box-shadow:0 0 ${sz*3}px ${cols[i%cols.length]}`;
+    document.body.appendChild(p);
+  }
+})();
+
+/* ── 숫자 카운트업 ── */
+function countUp(id,target,suffix){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const dur=1500,step=16;
+  const inc=target/(dur/step);
+  let cur=0;
+  const t=setInterval(()=>{
+    cur=Math.min(cur+inc,target);
+    el.textContent=Math.round(cur)+(suffix||'');
+    if(cur>=target)clearInterval(t);
+  },step);
+}
+setTimeout(()=>{countUp('cnt-total',465,'+');countUp('cnt-type',7,'');countUp('cnt-region',17,'');},900);
+
+/* ── 스크롤 리빌 옵저버 ── */
+const _srObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('visible');_srObs.unobserve(e.target);}
+  });
+},{threshold:.1});
+
+/* ── 카드 리빌 적용 (renderCards 후 호출) ── */
+function revealCards(){
+  document.querySelectorAll('.tc:not(.visible)').forEach((el,i)=>{
+    el.style.transitionDelay=(i*.06)+'s';
+    _srObs.observe(el);
+  });
+}
+
+// 초기 렌더
+applyFilters();
+revealCards();
+
+/* ── 3D 마우스 틸트 ── */
+(function(){
+  function attachTilt(card){
+    card.addEventListener('mousemove',function(e){
+      const r=card.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width-.5;   // -0.5 ~ 0.5
+      const y=(e.clientY-r.top)/r.height-.5;
+      card.style.transform=
+        `translateY(-14px) rotateX(${(-y*14).toFixed(2)}deg) rotateY(${(x*10).toFixed(2)}deg) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave',function(){
+      card.style.transform='';
+    });
+  }
+  // 현재 카드 + 향후 렌더된 카드에도 적용
+  function tiltAll(){
+    document.querySelectorAll('.tc:not([data-tilt])').forEach(c=>{
+      c.setAttribute('data-tilt','1');
+      attachTilt(c);
+    });
+  }
+  tiltAll();
+  // renderCards 이후에도 다시 적용
+  const _orig=window.revealCards||function(){};
+  const _tiltTimer=setInterval(tiltAll,600);
+  setTimeout(()=>clearInterval(_tiltTimer),12000);
+})();
+
+/* ── 우주 별빛 스타필드 엔진 ── */
+(function(){
+  const cv=document.getElementById('jg-cv');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  let W,H;
+  function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+  resize();
+  window.addEventListener('resize',resize);
+
+  /* 별 종류: 원거리(tiny·정적), 중거리(small·느린 이동), 근거리(bright·반짝) */
+  function mkStar(){
+    const tier=Math.random();
+    if(tier<.65) return {           /* 원거리 — 미세 고정 별 */
+      x:Math.random()*W, y:Math.random()*H,
+      r:Math.random()*.5+.2,
+      vx:0, vy:0,
+      a:Math.random()*.6+.15,
+      da:(Math.random()-.5)*.003,
+      col:'255,255,255', glow:false, tier:0
+    };
+    if(tier<.88) return {           /* 중거리 — 파란빛/흰 별 */
+      x:Math.random()*W, y:Math.random()*H,
+      r:Math.random()*.7+.4,
+      vx:(Math.random()-.5)*.06, vy:(Math.random()-.5)*.04,
+      a:Math.random()*.5+.2,
+      da:(Math.random()-.5)*.004,
+      col:Math.random()>.5?'200,210,255':'255,255,255',
+      glow:false, tier:1
+    };
+    /* 근거리 — 컬러 글로우 별 (보라·골드·청백) */
+    const cols=['139,92,246','167,139,250','245,200,66','196,220,255','255,255,255'];
+    return {
+      x:Math.random()*W, y:Math.random()*H,
+      r:Math.random()*1.2+.8,
+      vx:(Math.random()-.5)*.12, vy:(Math.random()-.5)*.08,
+      a:Math.random()*.4+.3,
+      da:(Math.random()-.5)*.006,
+      col:cols[Math.floor(Math.random()*cols.length)],
+      glow:true, tier:2
+    };
+  }
+
+  const stars=Array.from({length:200},mkStar);
+
+  /* 유성 (간헐적) */
+  let meteors=[];
+  function spawnMeteor(){
+    meteors.push({
+      x:Math.random()*W*.6, y:Math.random()*H*.3,
+      len:Math.random()*120+60,
+      speed:Math.random()*8+6,
+      angle:Math.PI/4+Math.random()*.3,
+      a:1, life:1
+    });
+  }
+  setInterval(()=>{if(Math.random()<.35)spawnMeteor();},3200);
+
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    t+=.008;
+
+    /* 별 그리기 */
+    stars.forEach(s=>{
+      s.x+=s.vx; s.y+=s.vy; s.a+=s.da;
+      if(s.a<=.08||s.a>=.95)s.da*=-1;
+      if(s.x<0)s.x=W; if(s.x>W)s.x=0;
+      if(s.y<0)s.y=H; if(s.y>H)s.y=0;
+
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${s.col},${s.a})`;
+      ctx.fill();
+
+      /* 근거리 별 — 십자 글로우 */
+      if(s.glow){
+        const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*5);
+        g.addColorStop(0,`rgba(${s.col},${s.a*.35})`);
+        g.addColorStop(1,`rgba(${s.col},0)`);
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r*5,0,Math.PI*2);
+        ctx.fillStyle=g;
+        ctx.fill();
+        /* 십자 빛줄기 */
+        const len=s.r*7*s.a;
+        ctx.save();
+        ctx.globalAlpha=s.a*.18;
+        ctx.strokeStyle=`rgb(${s.col})`;
+        ctx.lineWidth=.6;
+        ctx.beginPath();ctx.moveTo(s.x-len,s.y);ctx.lineTo(s.x+len,s.y);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(s.x,s.y-len);ctx.lineTo(s.x,s.y+len);ctx.stroke();
+        ctx.restore();
+      }
+    });
+
+    /* 유성 */
+    meteors=meteors.filter(m=>{
+      m.x+=Math.cos(m.angle)*m.speed;
+      m.y+=Math.sin(m.angle)*m.speed;
+      m.life-=.025;
+      if(m.life<=0)return false;
+      const tail=ctx.createLinearGradient(
+        m.x,m.y,
+        m.x-Math.cos(m.angle)*m.len,m.y-Math.sin(m.angle)*m.len
+      );
+      tail.addColorStop(0,`rgba(255,255,255,${m.life*.9})`);
+      tail.addColorStop(.3,`rgba(200,210,255,${m.life*.4})`);
+      tail.addColorStop(1,'rgba(200,210,255,0)');
+      ctx.beginPath();
+      ctx.moveTo(m.x,m.y);
+      ctx.lineTo(m.x-Math.cos(m.angle)*m.len,m.y-Math.sin(m.angle)*m.len);
+      ctx.strokeStyle=tail;
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+      return true;
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
