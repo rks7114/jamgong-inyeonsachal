@@ -1,0 +1,253 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title id="pg-title">문화재 사찰 상세 | 잼공인연사찰</title>
+<meta name="description" id="pg-desc" content="국보·보물 보유 사찰 상세 안내 — 문화재·역사·관람 정보">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#07040f;color:#e2e8f0;min-height:100vh}
+.hero{position:relative;height:60vw;max-height:440px;min-height:260px;overflow:hidden}
+.hero-img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.9)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,4,15,1) 0%,rgba(7,4,15,.45) 45%,transparent 100%)}
+.hero-content{position:absolute;bottom:0;left:0;right:0;padding:28px 24px}
+.hero-badges{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.hb{border-radius:20px;padding:4px 12px;font-size:.63rem;font-weight:800}
+.hb-gukbo{background:rgba(220,38,38,.2);border:1px solid rgba(220,38,38,.5);color:#f87171}
+.hb-bomul{background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.5);color:#fcd34d}
+.hb-univ{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.5);color:#34d399}
+.hero-name{font-size:1.9rem;font-weight:900;color:#f8fafc;line-height:1.15;margin-bottom:4px}
+.hero-loc{font-size:.8rem;color:#94a3b8}
+.body{max-width:860px;margin:0 auto;padding:28px 16px 80px}
+.info-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:24px}
+.info-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center}
+.info-label{font-size:.63rem;font-weight:800;color:#64748b;letter-spacing:.1em;margin-bottom:5px}
+.info-val{font-size:.83rem;font-weight:800;color:#f8fafc}
+.info-val.gold{color:#FBBF24}
+.info-val.red{color:#f87171}
+.sec{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:22px;margin-bottom:16px}
+.sec-title{font-size:.78rem;font-weight:900;color:#FBBF24;letter-spacing:.12em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(251,191,36,.3),transparent)}
+.sec-body{font-size:.83rem;color:#94a3b8;line-height:1.85;word-break:keep-all}
+.sec-body strong{color:#f1f5f9;font-weight:700}
+.artifact-list{display:flex;flex-direction:column;gap:8px}
+.artifact-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.15);border-radius:12px}
+.artifact-rank{font-size:.65rem;font-weight:900;padding:3px 9px;border-radius:10px;flex-shrink:0;margin-top:2px}
+.rank-gukbo{background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.4);color:#f87171}
+.rank-bomul{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.35);color:#fcd34d}
+.rank-sido{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:#93c5fd}
+.artifact-name{font-size:.85rem;font-weight:800;color:#f1f5f9;margin-bottom:2px}
+.artifact-desc{font-size:.72rem;color:#64748b;line-height:1.5}
+.tip-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.tip-item{display:flex;gap:10px;font-size:.76rem;color:#64748b;line-height:1.55;align-items:flex-start}
+.tip-item::before{content:'💡';flex-shrink:0}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;border-radius:8px;padding:4px 11px;font-size:.68rem;font-weight:600}
+.cta{background:linear-gradient(135deg,rgba(180,83,9,.08),rgba(251,191,36,.05));border:1px solid rgba(251,191,36,.25);border-radius:18px;padding:24px;text-align:center;margin-top:24px}
+.cta h3{font-size:1rem;font-weight:900;color:#f8fafc;margin-bottom:6px}
+.cta p{font-size:.78rem;color:#64748b;margin:0 0 16px;line-height:1.6}
+.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cta-btn{display:inline-flex;align-items:center;gap:6px;border-radius:12px;padding:11px 20px;font-size:.82rem;font-weight:800;text-decoration:none;transition:.2s}
+.cta-btn:hover{transform:translateY(-2px)}
+.btn-heritage{background:linear-gradient(135deg,#B45309,#92400E);color:#fff;box-shadow:0 4px 14px rgba(180,83,9,.3)}
+.btn-map{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:#34d399}
+.btn-back{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#94a3b8}
+#not-found{display:none;text-align:center;padding:60px 24px;color:#64748b}
+</style>
+
+<div id="not-found">
+  <div style="font-size:3rem;margin-bottom:16px">🏛️</div>
+  <div style="font-size:1rem;font-weight:700;color:#f1f5f9;margin-bottom:8px">사찰 정보를 찾을 수 없습니다</div>
+  <a href="/heritage" style="color:#FBBF24;font-size:.85rem">← 목록으로 돌아가기</a>
+</div>
+
+<div id="pg-wrap" style="display:none">
+  <div class="hero">
+    <img id="pg-img" class="hero-img" src="" alt="" loading="eager">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badges" id="pg-badges"></div>
+      <div class="hero-name" id="pg-name"></div>
+      <div class="hero-loc" id="pg-loc"></div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="info-row" id="pg-info-row"></div>
+    <div class="sec"><div class="sec-title">🏯 사찰 소개</div><div class="sec-body" id="pg-intro"></div></div>
+    <div class="sec"><div class="sec-title">🏆 주요 문화재</div><div class="artifact-list" id="pg-artifacts"></div></div>
+    <div class="sec"><div class="sec-title">📖 역사</div><div class="sec-body" id="pg-history"></div></div>
+    <div class="sec"><div class="sec-title">📌 관람 안내</div><ul class="tip-list" id="pg-tips"></ul></div>
+    <div class="sec"><div class="sec-title">🚗 교통편</div><div class="sec-body" id="pg-access"></div></div>
+    <div class="sec"><div class="sec-title">🏷 키워드</div><div class="tag-row" id="pg-tags"></div></div>
+    <div class="cta">
+      <h3 id="pg-cta-title"></h3>
+      <p id="pg-cta-text"></p>
+      <div class="cta-btns">
+        <a class="cta-btn btn-heritage" href="https://www.heritage.go.kr" target="_blank">🏛️ 문화재청</a>
+        <a class="cta-btn btn-map" id="pg-map-btn" href="#" target="_blank">🗺 지도 보기</a>
+        <a class="cta-btn btn-back" href="/heritage">← 목록</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var DB={
+  bulguksa:{
+    name:'불국사', loc:'경북 경주', wikiName:'불국사',
+    badges:[{t:'국보 5점',c:'hb-gukbo'},{t:'보물 다수',c:'hb-bomul'},{t:'유네스코',c:'hb-univ'}],
+    imgFb:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Bulguksa_temple.jpg/800px-Bulguksa_temple.jpg',
+    info:[{l:'소재지',v:'경북 경주'},{l:'창건',v:'751년 (신라)'},{l:'국보',v:'5점',r:true},{l:'보물',v:'다수',g:true},{l:'유네스코',v:'1995년 등재'},{l:'관람시간',v:'07:00~18:00'}],
+    intro:'불국사는 <strong>신라 경덕왕 10년(751년)</strong> 김대성이 창건한 한국 최대의 사찰 중 하나로, 1995년 유네스코 세계문화유산에 등재됐습니다. 토함산 서쪽 기슭에 자리한 불국사는 <strong>다보탑·석가탑·청운교·백운교</strong> 등 국보급 문화재를 경내에 집약한 살아있는 불교 박물관입니다.',
+    artifacts:[
+      {rank:'국보',rc:'rank-gukbo',name:'다보탑 (국보 20호)',desc:'통일신라 최고 걸작 석탑. 정교한 장식과 독창적 구조가 특징.'},
+      {rank:'국보',rc:'rank-gukbo',name:'석가탑 (국보 21호)',desc:'3층 석탑의 전형. 1966년 해체 시 세계 최고(最古) 목판 인쇄물 무구정광대다라니경 발견.'},
+      {rank:'국보',rc:'rank-gukbo',name:'청운교·백운교 (국보 23호)',desc:'대웅전으로 오르는 33계단 석교. 신라 건축 미학의 정수.'},
+      {rank:'국보',rc:'rank-gukbo',name:'연화교·칠보교 (국보 22호)',desc:'극락전으로 오르는 18계단. 연꽃 문양 조각 아름다움.'},
+      {rank:'국보',rc:'rank-gukbo',name:'금동아미타여래좌상 (국보 27호)',desc:'극락전 본존불. 통일신라 금동불의 대표작.'},
+    ],
+    history:'528년 법흥왕 때 소규모 사찰로 시작, 751년 재상 김대성이 현세 부모를 위해 불국사, 전세 부모를 위해 석굴암을 함께 중창했습니다. 임진왜란(1592) 때 대부분 소실됐다가 17~18세기 복원됐으며, 1969~1973년 박정희 정부의 복원 사업으로 현재 모습을 갖췄습니다. 1995년 유네스코 세계문화유산 등재.',
+    tips:['입장료: 성인 6,000원 / 청소년 4,000원 / 어린이 3,000원','관람 시간: 3~10월 07:00~18:00, 11~2월 07:30~17:30','석가탑·다보탑 근접 촬영 가능 (플래시 금지)','오디오 가이드: 현장 대여 또는 문화재청 앱 무료 QR 해설','주차장: 불국사 주차장 (성수기 혼잡, 조기 방문 권장)'],
+    access:'<strong>자가용:</strong> 경부고속도로 → 경주IC → 불국사 (경주 시내에서 약 20분)<br><strong>버스:</strong> 경주역·경주터미널 → 불국사행 10·11번 시내버스<br><strong>기차:</strong> KTX 신경주역 → 셔틀버스 또는 택시',
+    tags:['다보탑','석가탑','청운교','유네스코','국보','경주','신라'],
+    ctaTitle:'🏛️ 불국사 문화재 정보',
+    ctaText:'문화재청 국가문화유산포털에서 불국사 전체 문화재 목록과 상세 정보를 확인하세요.',
+    map:'https://map.kakao.com/link/search/불국사+경주'
+  },
+  tongdosa:{
+    name:'통도사', loc:'경남 양산', wikiName:'통도사',
+    badges:[{t:'국보 2점',c:'hb-gukbo'},{t:'보물 19점',c:'hb-bomul'},{t:'유네스코',c:'hb-univ'}],
+    imgFb:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Tongdosa_temple%2C_Korea.jpg/800px-Tongdosa_temple%2C_Korea.jpg',
+    info:[{l:'소재지',v:'경남 양산'},{l:'창건',v:'646년 (신라)'},{l:'국보',v:'2점',r:true},{l:'보물',v:'19점',g:true},{l:'유네스코',v:'2018년 등재'},{l:'관람시간',v:'04:00~21:00'}],
+    intro:'통도사는 <strong>신라 선덕여왕 15년(646년)</strong> 자장율사가 창건한 불보종찰(佛寶宗刹)입니다. 대웅전 뒤 금강계단에 석가모니불의 <strong>진신사리</strong>를 봉안하여 대웅전에 불상이 없는 독특한 구조로 유명합니다. 경내 33동의 건물 모두 문화재로 지정된 살아있는 박물관입니다.',
+    artifacts:[
+      {rank:'국보',rc:'rank-gukbo',name:'대웅전 (국보 290호)',desc:'불상 없는 유일한 금당. 진신사리를 향해 예불하는 구조. 임진왜란 후 1645년 중건.'},
+      {rank:'국보',rc:'rank-gukbo',name:'통도사 청동은입사향완 (국보 334호)',desc:'고려 시대 향로. 정교한 은입사 문양의 걸작.'},
+      {rank:'보물',rc:'rank-bomul',name:'봉발탑 (보물 471호)',desc:'부처님 밥그릇(발우)을 모신 석조물. 전국 유일.'},
+      {rank:'보물',rc:'rank-bomul',name:'통도사 삼층석탑 (보물 1471호)',desc:'고려 초기 석탑. 안정된 비례가 특징.'},
+    ],
+    history:'646년 자장율사가 당나라에서 석가모니불의 진신사리·가사·발우를 모셔와 창건했습니다. 임진왜란 때 소실 후 1645년 중건. 2018년 유네스코 산사 세계유산 등재. 현재 조계종 15교구 본사.',
+    tips:['입장료: 성인 3,000원','금강계단은 외부에서만 참관 가능','오전 이른 시간 방문 시 새벽 예불 체험 가능','통도사 성보박물관 별도 운영 (소장 문화재 전시)','주차: 통도사 유료 주차장'],
+    access:'<strong>자가용:</strong> 경부고속도로 → 양산IC → 통도사 (부산에서 약 50분)<br><strong>버스:</strong> 양산시외버스터미널 → 통도사행 직행버스<br><strong>기차:</strong> KTX 울산역 → 양산 → 통도사',
+    tags:['진신사리','대웅전','금강계단','불보종찰','유네스코','국보','양산'],
+    ctaTitle:'🏛️ 통도사 문화재 정보',
+    ctaText:'국가문화유산포털에서 통도사 보유 국보·보물 전체 목록을 확인하세요.',
+    map:'https://map.kakao.com/link/search/통도사+양산'
+  },
+  busoksa:{
+    name:'부석사', loc:'경북 영주', wikiName:'부석사',
+    badges:[{t:'국보 5점',c:'hb-gukbo'},{t:'유네스코',c:'hb-univ'}],
+    imgFb:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Buseoksa_Muryangsujeon.jpg/800px-Buseoksa_Muryangsujeon.jpg',
+    info:[{l:'소재지',v:'경북 영주'},{l:'창건',v:'676년 (신라)'},{l:'국보',v:'5점',r:true},{l:'보물',v:'다수',g:true},{l:'유네스코',v:'2018년 등재'},{l:'관람시간',v:'06:00~18:00'}],
+    intro:'부석사는 <strong>신라 문무왕 16년(676년)</strong> 의상대사가 창건한 사찰로, 소백산 봉황산 기슭에 자리합니다. <strong>무량수전(국보 18호)</strong>은 고려 시대 목조 건물 중 가장 아름다운 건축물로 꼽히며, 배흘림기둥 공법의 정수를 보여줍니다. 의상대사와 선묘 낭자의 전설도 유명합니다.',
+    artifacts:[
+      {rank:'국보',rc:'rank-gukbo',name:'무량수전 (국보 18호)',desc:'고려 시대 목조 건물 최고 걸작. 배흘림기둥과 팔작지붕. 현존 최고(最古) 목조 불전 중 하나.'},
+      {rank:'국보',rc:'rank-gukbo',name:'소조여래좌상 (국보 45호)',desc:'무량수전 본존불. 국내 최대 소조불상. 고려 초 제작.'},
+      {rank:'국보',rc:'rank-gukbo',name:'무량수전 앞 석등 (국보 17호)',desc:'통일신라 석등의 최고 걸작. 높이 2.97m.'},
+      {rank:'국보',rc:'rank-gukbo',name:'3층석탑 (국보 249호)',desc:'통일신라 시대 석탑. 정제된 비례미.'},
+      {rank:'국보',rc:'rank-gukbo',name:'조사당 (국보 19호)',desc:'의상대사 영정 봉안. 고려 초 건물.'},
+    ],
+    history:'676년 의상대사가 화엄종의 근본도량으로 창건. 선묘 낭자가 부석(浮石)이 되어 사찰을 지켰다는 전설이 전해집니다. 고려 시대 무량수전·소조불 조성. 2018년 유네스코 산사 세계유산 등재.',
+    tips:['입장료: 성인 1,500원 (국내 사찰 중 가장 저렴)','무량수전 내부 참배 시 신발 벗고 입장','일몰 시 무량수전에서 바라보는 소백산 전경 절경','은행나무(천연기념물 제212호) 가을 단풍 명소','주차: 부석사 유료 주차장'],
+    access:'<strong>자가용:</strong> 중앙고속도로 → 풍기IC → 부석사 (영주에서 약 30분)<br><strong>버스:</strong> 영주버스터미널 → 부석사행 버스<br><strong>주차:</strong> 부석사 주차장',
+    tags:['무량수전','소조여래','배흘림기둥','고려건축','유네스코','국보','영주'],
+    ctaTitle:'🏛️ 부석사 문화재 정보',
+    ctaText:'문화재청 포털에서 부석사 국보·보물 상세 정보를 확인하세요.',
+    map:'https://map.kakao.com/link/search/부석사+영주'
+  },
+  beopjusa:{
+    name:'법주사', loc:'충북 보은', wikiName:'법주사',
+    badges:[{t:'국보 3점',c:'hb-gukbo'},{t:'보물 12점',c:'hb-bomul'},{t:'유네스코',c:'hb-univ'}],
+    imgFb:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Beopjusa_Palsangjeon.jpg/800px-Beopjusa_Palsangjeon.jpg',
+    info:[{l:'소재지',v:'충북 보은'},{l:'창건',v:'553년 (신라)'},{l:'국보',v:'3점',r:true},{l:'보물',v:'12점',g:true},{l:'유네스코',v:'2018년 등재'},{l:'관람시간',v:'06:30~18:00'}],
+    intro:'법주사는 <strong>신라 진흥왕 14년(553년)</strong> 의신조사가 창건한 속리산 대찰입니다. <strong>팔상전(국보 55호)</strong>은 현존 유일의 5층 목탑으로, 석탑이 아닌 목탑 형식을 간직한 희귀한 문화재입니다. 경내 높이 33m의 청동 미륵대불도 장관입니다.',
+    artifacts:[
+      {rank:'국보',rc:'rank-gukbo',name:'팔상전 (국보 55호)',desc:'현존 유일의 5층 목탑. 석가모니 일생 8장면(팔상도) 봉안. 조선 인조 때 중건.'},
+      {rank:'국보',rc:'rank-gukbo',name:'쌍사자석등 (국보 5호)',desc:'두 사자가 받치고 있는 통일신라 석등. 생동감 넘치는 조각 걸작.'},
+      {rank:'국보',rc:'rank-gukbo',name:'마애여래의상 (국보 216호)',desc:'암벽에 새긴 높이 6.3m 통일신라 마애불. 당당한 기풍.'},
+      {rank:'보물',rc:'rank-bomul',name:'청동미륵대불',desc:'높이 33m 금동 미륵불. 1990년 완성. 법주사 랜드마크.'},
+    ],
+    history:'553년 의신조사 창건. 776년 진표율사가 미륵신앙 근본도량으로 중흥. 임진왜란 소실 후 인조 때 재건. 1990년 33m 청동 미륵대불 완성. 2018년 유네스코 산사 세계유산 등재.',
+    tips:['입장료: 성인 5,000원','팔상전 내부 탑돌이 체험 가능','속리산 국립공원 내 위치 — 트레킹 연계 추천','미륵대불 새벽 기도객 연중 방문','주차: 법주사 주차장 (유료)'],
+    access:'<strong>자가용:</strong> 경부고속도로 → 청주IC 또는 속리산IC → 법주사 (청주에서 약 1시간)<br><strong>버스:</strong> 청주·대전·보은 → 법주사행 버스<br><strong>주차:</strong> 속리산 주차장',
+    tags:['팔상전','목탑','미륵대불','쌍사자석등','속리산','유네스코','국보'],
+    ctaTitle:'🏛️ 법주사 문화재 정보',
+    ctaText:'국가문화유산포털에서 법주사 국보·보물 상세 정보를 확인하세요.',
+    map:'https://map.kakao.com/link/search/법주사+보은'
+  },
+  hwaeomsa:{
+    name:'화엄사', loc:'전남 구례', wikiName:'화엄사',
+    badges:[{t:'국보 4점',c:'hb-gukbo'},{t:'보물 8점',c:'hb-bomul'},{t:'유네스코',c:'hb-univ'}],
+    imgFb:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Hwaeomsa_temple.jpg/800px-Hwaeomsa_temple.jpg',
+    info:[{l:'소재지',v:'전남 구례'},{l:'창건',v:'544년 (백제)'},{l:'국보',v:'4점',r:true},{l:'보물',v:'8점',g:true},{l:'유네스코',v:'2018년 등재'},{l:'관람시간',v:'06:30~18:00'}],
+    intro:'화엄사는 <strong>백제 성왕 22년(544년)</strong> 연기조사가 창건한 지리산 대찰입니다. <strong>각황전(국보 67호)</strong>은 국내 최대 목조 불전으로, 가로 9칸·세로 5칸의 거대한 규모를 자랑합니다. 지리산 단풍과 함께 가을이면 최고의 경관을 연출합니다.',
+    artifacts:[
+      {rank:'국보',rc:'rank-gukbo',name:'각황전 (국보 67호)',desc:'국내 최대 목조 불전. 가로 9칸·세로 5칸 2층 구조. 1702년 중건.'},
+      {rank:'국보',rc:'rank-gukbo',name:'각황전앞석등 (국보 12호)',desc:'높이 6.36m. 통일신라 석등 중 가장 크고 웅장.'},
+      {rank:'국보',rc:'rank-gukbo',name:'사사자삼층석탑 (국보 35호)',desc:'4마리 사자가 탑을 받치는 독특한 구조. 통일신라 창의성의 극치.'},
+      {rank:'국보',rc:'rank-gukbo',name:'동오층석탑 (국보 133호)',desc:'화엄사 동쪽 5층 석탑. 1층 탑신 사면에 비천상 부조.'},
+    ],
+    history:'544년 연기조사 창건. 643년 자장율사 증건, 875년 도선국사 중수. 임진왜란으로 전소됐다가 1630~1702년 사이 재건. 각황전은 1699년 숙종 때 중건 시작, 1702년 완성. 2018년 유네스코 산사 세계유산 등재.',
+    tips:['입장료: 성인 4,500원','각황전 내부 참배 가능 (불화 세밀 감상 권장)','10~11월 지리산 단풍 시즌 절경','화엄사 성보박물관 별도 운영','주차: 화엄사 주차장 (성수기 혼잡)'],
+    access:'<strong>자가용:</strong> 광주대구고속도로 → 구례화엄사IC → 화엄사 (광주에서 약 1시간)<br><strong>버스:</strong> 구례공용버스터미널 → 화엄사행 버스<br><strong>기차:</strong> 구례구역 → 택시 또는 버스',
+    tags:['각황전','사사자탑','지리산','단풍','국보','유네스코','구례'],
+    ctaTitle:'🏛️ 화엄사 문화재 정보',
+    ctaText:'문화재청 포털에서 화엄사 국보·보물 상세 정보를 확인하세요.',
+    map:'https://map.kakao.com/link/search/화엄사+구례'
+  },
+  magoksa:{
+    name:'마곡사', loc:'충남 공주', wikiName:'마곡사',
+    badges:[{t:'국보 1점',c:'hb-gukbo'},{t:'보물 6점',c:'hb-bomul'},{t:'유네스코',c:'hb-univ'}],
+    imgFb:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Magoksa_temple.jpg/800px-Magoksa_temple.jpg',
+    info:[{l:'소재지',v:'충남 공주'},{l:'창건',v:'640년 (백제)'},{l:'국보',v:'1점',r:true},{l:'보물',v:'6점',g:true},{l:'유네스코',v:'2018년 등재'},{l:'관람시간',v:'08:00~18:00'}],
+    intro:'마곡사는 <strong>백제 의자왕 2년(640년)</strong> 자장율사가 창건한 충남 대표 사찰로, 2018년 유네스코 세계유산에 등재됐습니다. 마곡천을 사이에 두고 남원(영산전)과 북원(대웅보전)으로 나뉜 독특한 가람 배치가 특징이며, <strong>봄 벚꽃</strong>과 함께 '춘마곡(春麻谷)'이라 불리는 최고의 봄 사찰입니다.',
+    artifacts:[
+      {rank:'보물',rc:'rank-bomul',name:'5층석탑 (보물 799호)',desc:'원나라 라마교 양식 적용. 전국 유일 라마교 형식 석탑. 고려 말 조성.'},
+      {rank:'보물',rc:'rank-bomul',name:'대웅보전 (보물 801호)',desc:'조선 후기 건축. 충남 최대 불전. 3불좌상 봉안.'},
+      {rank:'보물',rc:'rank-bomul',name:'대광보전 (보물 802호)',desc:'비로자나불 봉안. 조선 중기 건축. 벽화 보존 양호.'},
+      {rank:'보물',rc:'rank-bomul',name:'영산전 (보물 800호)',desc:'남원 영산전. 고려 시대 건물. 석가모니 일대기 탱화.'},
+    ],
+    history:'640년 자장율사 창건. 고려 충숙왕 때 범일국사 중수. 백범 김구 선생이 일제강점기 이 곳에서 원종 스님으로 출가한 역사적 장소. 2018년 유네스코 산사 세계유산 등재.',
+    tips:['입장료: 성인 3,000원','마곡천 따라 산책로 조성 — 봄 벚꽃 절경','백범 명상길 (김구 선생 유적지 포함) 트레킹','봄(4월) 방문 시 벚꽃+사찰 최고 조합','주차: 마곡사 주차장 (무료·유료 구분)'],
+    access:'<strong>자가용:</strong> 논산천안고속도로 → 정안IC → 마곡사 (대전에서 약 40분)<br><strong>버스:</strong> 공주종합터미널 → 마곡사행 버스<br><strong>기차:</strong> 공주역(KTX) → 공주 시내버스 또는 택시',
+    tags:['5층석탑','라마교','대웅보전','봄벚꽃','백범김구','유네스코','공주'],
+    ctaTitle:'🏛️ 마곡사 문화재 정보',
+    ctaText:'국가문화유산포털에서 마곡사 보물 상세 정보를 확인하세요.',
+    map:'https://map.kakao.com/link/search/마곡사+공주'
+  }
+};
+
+(function(){
+  var id=(new URLSearchParams(location.search).get('id')||'').toLowerCase();
+  var d=DB[id];
+  if(!d){document.getElementById('not-found').style.display='block';return;}
+  document.getElementById('pg-wrap').style.display='block';
+  document.title=d.name+' 문화재 | 잼공인연사찰';
+
+  // Wikipedia 이미지
+  var img=document.getElementById('pg-img');
+  img.alt=d.name; img.src=d.imgFb;
+  fetch('https://ko.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(d.wikiName||d.name))
+    .then(function(r){return r.json();})
+    .then(function(w){
+      var src=w.originalimage||w.thumbnail;
+      if(src&&src.source)img.src=src.source.replace(/\/\d+px-/,'/800px-');
+    }).catch(function(){});
+
+  document.getElementById('pg-badges').innerHTML=d.badges.map(function(b){return'<span class="hb '+b.c+'">'+b.t+'</span>';}).join('');
+  document.getElementById('pg-name').textContent=d.name;
+  document.getElementById('pg-loc').textContent='📍 '+d.loc;
+  document.getElementById('pg-info-row').innerHTML=d.info.map(function(i){
+    return'<div class="info-box"><div class="info-label">'+i.l+'</div><div class="info-val'+(i.r?' red':i.g?' gold':'')+'">'+i.v+'</div></div>';
+  }).join('');
+  document.getElementById('pg-intro').innerHTML=d.intro;
+  document.getElementById('pg-artifacts').innerHTML=d.artifacts.map(function(a){
+    return'<div class="artifact-item"><span class="artifact-rank '+a.rc+'">'+a.rank+'</span><div><div class="artifact-name">'+a.name+'</div><div class="artifact-desc">'+a.desc+'</div></div></div>';
+  }).join('');
+  document.getElementById('pg-history').innerHTML=d.history;
+  document.getElementById('pg-tips').innerHTML=d.tips.map(function(t){return'<li class="tip-item">'+t+'</li>';}).join('');
+  document.getElementById('pg-access').innerHTML=d.access;
+  document.getElementById('pg-tags').innerHTML=d.tags.map(function(t){return'<span class="tag">'+t+'</span>';}).join('');
+  document.getElementById('pg-cta-title').textContent=d.ctaTitle;
+  document.getElementById('pg-cta-text').textContent=d.ctaText;
+  document.getElementById('pg-map-btn').href=d.map;
+})();
+</script>
