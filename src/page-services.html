@@ -1,3 +1,4 @@
+<meta charset="UTF-8">
 <style>
 .sv{font-family:'Noto Sans KR',sans-serif;max-width:1100px;margin:0 auto;padding:60px 24px;color:#e2e8f0}
 .sv-badge{display:inline-block;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 14px;border-radius:20px;margin-bottom:14px}
@@ -24,16 +25,27 @@
 .sv-faq-a{padding:0 22px 18px;font-size:14px;color:#94a3b8;line-height:1.8;display:none}
 .sv-faq-a.show{display:block}
 </style>
+<!-- 페이지 배너 -->
+<div style="position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Bulguksa_in_Gyeongju%2C_Korea.jpg/1280px-Bulguksa_in_Gyeongju%2C_Korea.jpg" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Bulguksa_in_Gyeongju%2C_Korea.jpg/1280px-Bulguksa_in_Gyeongju%2C_Korea.jpg'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center" loading="lazy">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.75) 100%)"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:0 24px;max-width:720px">
+    <div style="display:inline-block;background:rgba(255,255,255,0.1);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;letter-spacing:.2em;padding:4px 18px;border-radius:20px;margin-bottom:16px;font-family:'Noto Sans KR',sans-serif">ALL SERVICES · 전체 서비스</div>
+    <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:#ffffff;margin:0 0 10px;text-shadow:0 2px 20px rgba(0,0,0,0.7);font-family:'Noto Sans KR',sans-serif;line-height:1.2">모든 서비스</h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0;line-height:1.7;font-family:'Noto Sans KR',sans-serif">인연사찰 찾기부터 기도도량, 사주팔자, 꿈해몽까지 전 서비스 무료</p>
+  </div>
+</div>
+
 <div class="sv">
   <div class="sv-badge">ALL SERVICES</div>
   <div class="sv-title">잼공인연사찰의 <em>모든 서비스</em></div>
-  <p class="sv-sub">생년월일시 사주 오행 분석부터 전국 기도성지 탐방까지 — 나에게 맞는 모든 서비스를 한 곳에서.</p>
+  <p class="sv-sub">사주팔자로 인연사찰을 찾고, 궁합·택일에서 기도도량과 기도 방법까지 연결하는 통합 서비스.</p>
   <div class="sv-list">
     <div class="sv-item">
       <div><div class="sv-num">01</div><div class="sv-icon2">🔮</div></div>
       <div>
         <div class="sv-name">인연사찰 찾기</div>
-        <div class="sv-desc2">생년월일시를 입력하면 AI가 사주 팔자의 오행 기운을 분석합니다. 목·화·토·금·수 오행의 균형을 파악해 지금 내게 가장 필요한 기운을 보충해 줄 인연사찰을 정밀 추천합니다. 기도 목적(재물·건강·학업·인연·가정·취업 등)과 결합해 최적의 사찰을 안내합니다.</div>
+        <div class="sv-desc2">생년월일시의 사주 오행과 전통 신앙 요소를 참고해 기도 목적(재물·건강·학업·인연·가정·취업 등)에 어울리는 인연사찰을 안내합니다. 사주 기반 인연사찰·궁합·택일 분석 기술은 특허출원 중이며, 분석 결과는 문화·신앙 참고 콘텐츠입니다.</div>
         <div class="sv-tags"><span class="sv-tag">오행 분석</span><span class="sv-tag">기도 목적 매칭</span><span class="sv-tag">네이버 지도 연동</span></div>
         <a class="sv-link" href="/manse">🔮 인연사찰 찾기 →</a>
       </div>
@@ -68,10 +80,10 @@
     <div class="sv-item">
       <div><div class="sv-num">05</div><div class="sv-icon2">⭐</div></div>
       <div>
-        <div class="sv-name">전국 기도성지 327곳</div>
-        <div class="sv-desc2">영험하기로 소문난 관음·약사·미륵·지장·나한·적멸보궁·독성 성지 327곳을 지역별·유형별로 탐색합니다. 각 성지의 역사, 기도 방법, 교통 정보와 네이버·카카오 지도 길찾기를 제공합니다.</div>
-        <div class="sv-tags"><span class="sv-tag">327개 성지</span><span class="sv-tag">지역별 필터</span><span class="sv-tag">유형별 필터</span><span class="sv-tag">지도 연동</span></div>
-        <a class="sv-link" href="/sacred">⭐ 기도성지 탐색 →</a>
+        <div class="sv-name">전국 기도도량 465곳</div>
+        <div class="sv-desc2">오랜 세월 불자들의 기도와 발원이 이어져 온 전국 465곳의 기도도량을 안내합니다. 관음·지장·약사·미륵·적멸보궁 등 13개 기도 유형별로 실제 기도드릴 전각·암자·성지와 기도 방법을 함께 제공합니다. 위치·교통 정보와 지도 연동을 지원합니다.</div>
+        <div class="sv-tags"><span class="sv-tag">465곳 기도도량</span><span class="sv-tag">지역별 필터</span><span class="sv-tag">유형별 필터</span><span class="sv-tag">지도 연동</span></div>
+        <a class="sv-link" href="/gido">⭐ 기도도량 탐색 →</a>
       </div>
     </div>
     <div class="sv-item">
@@ -121,3 +133,68 @@ function toggleFaq(el){
   else{a.classList.add('show');icon.textContent='－';}
 }
 </script>
+
+<style>
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .2s ease}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+</style>
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>
+(function(){var btn=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){btn.classList.toggle('show',window.scrollY>300);},{passive:true});})();
+</script>
+<!-- ═══ 3D ENHANCEMENT ═══ -->
+<style>
+/* sv-list: perspective scene */
+.sv-list{perspective:1000px;perspective-origin:50% 30%}
+/* sv-item: preserve-3d + 기본 translateZ */
+.sv-item{transform-style:preserve-3d;transform:translateZ(0);will-change:transform}
+.sv-item:hover{transform:translateY(-6px) translateZ(18px) rotateX(1deg) !important;border-color:rgba(251,191,36,.4) !important;box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(251,191,36,.18),0 0 40px rgba(251,191,36,.06) !important;transition:all .35s cubic-bezier(.22,.68,0,1.2) !important}
+/* 아이콘 앞으로 */
+.sv-icon2{transform:translateZ(14px);display:inline-block;transition:transform .3s}
+.sv-item:hover .sv-icon2{transform:translateZ(28px) scale(1.12)}
+/* 서비스 이름 */
+.sv-name{display:inline-block;transform:translateZ(8px);transition:transform .3s}
+.sv-item:hover .sv-name{transform:translateZ(16px)}
+/* 링크 버튼 3D 눌림 */
+.sv-link{transform:translateZ(6px);display:inline-block}
+.sv-link:hover{transform:translateZ(14px) translateY(-2px) !important;box-shadow:0 6px 20px rgba(251,191,36,.25);transition:all .2s !important}
+.sv-link:active{transform:translateZ(2px) translateY(1px) !important}
+/* 번호 depth */
+.sv-num{transform:translateZ(4px);display:block;transition:transform .3s}
+.sv-item:hover .sv-num{transform:translateZ(10px);opacity:.35}
+/* FAQ 3D hover */
+.sv-faq-item{transition:transform .25s,box-shadow .25s}
+.sv-faq-item:hover{transform:translateX(4px) translateZ(6px);box-shadow:0 8px 30px rgba(0,0,0,.35)}
+</style>
+<script>
+(function(){
+  var items=document.querySelectorAll('.sv-item');
+  items.forEach(function(item){
+    item.style.transition='all .35s cubic-bezier(.22,.68,0,1.2)';
+    item.addEventListener('mousemove',function(e){
+      var r=item.getBoundingClientRect();
+      var y=(e.clientY-r.top)/r.height-.5;
+      item.style.transform='translateY(-6px) translateZ(18px) rotateX('+(-y*3)+'deg)';
+    });
+    item.addEventListener('mouseleave',function(){
+      item.style.transform='translateZ(0)';
+    });
+  });
+})();
+</script>
+<style>
+@keyframes svItemIn{
+  from{opacity:0;transform:translateX(-30px) translateZ(-60px) rotateY(8deg)}
+  to{opacity:1;transform:translateX(0) translateZ(0) rotateY(0)}
+}
+.sv-item{animation:svItemIn .65s both}
+.sv-item:nth-child(1){animation-delay:.15s}
+.sv-item:nth-child(2){animation-delay:.28s}
+.sv-item:nth-child(3){animation-delay:.41s}
+.sv-item:nth-child(4){animation-delay:.54s}
+.sv-item:nth-child(5){animation-delay:.67s}
+.sv-item:nth-child(6){animation-delay:.80s}
+.sv-item:nth-child(7){animation-delay:.93s}
+.sv-item:nth-child(8){animation-delay:1.06s}
+</style>
