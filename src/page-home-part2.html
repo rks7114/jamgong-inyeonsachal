@@ -1,0 +1,377 @@
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}
+body,div,section{max-width:100%;overflow-x:hidden}
+/* 히어로 3D 타이틀 깊이감 */
+.jg-line1,.jg-line2{text-shadow:0 2px 0 rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.2),0 0 40px rgba(251,191,36,0.15)}
+</style>
+<!-- 히어로 섹션 -->
+<div class="hero-wrap" style="min-height:100vh;padding-bottom:32px;gap:0">
+  <div class="hero-bg-img"></div>
+  <div class="hero-overlay"></div>
+  <canvas id="hero-particles"></canvas>
+  <canvas id="hero-lanterns" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none"></canvas>
+  <div class="hero-inner" style="padding-top:120px">
+    <div class="hero-badge">🏯 전국 17,497곳 사찰 데이터 기반</div>
+    <h1 class="hero-title">잼공 인연사찰</h1>
+    <div class="hero-typo" id="hero-typo"></div>
+    <p class="hero-sub">사주 오행과 전통 신앙 요소를 참고해<br>기도 목적에 맞는 인연사찰과 기도도량을 안내합니다</p>
+    <div class="hero-btns">
+      <a class="hero-btn-main" href="/manse" onclick="jamgongTransition(event,'/manse')">🔍 인연사찰 찾기</a>
+      <a class="hero-btn-sub" href="/gido">🙏 전국 기도도량 보기</a>
+    </div>
+    <div class="hero-scroll" style="margin-top:56px">
+      <span>SCROLL</span>
+      <div class="hero-scroll-arrow"></div>
+    </div>
+  </div>
+  <!-- 절기 바 -->
+  <div class="hero-jukgi" style="margin-top:40px">
+    <div class="hero-jukgi-inner">
+      <div class="jukgi-icon">☀️</div>
+      <div>
+        <div class="jukgi-badge">오늘의 절기 · 여름</div>
+        <div class="jukgi-name">대서</div>
+      </div>
+      <div class="jukgi-desc">7월 22~23일 | 일년 중 가장 더운 시기. 불가에서는 이때 청량한 수행으로 열기를 다스립니다.</div>
+      <a class="jukgi-btn" href="/calendar">📅 이 절기의 사찰 보기</a>
+    </div>
+  </div>
+</div>
+
+<!-- 페이지 트랜지션 오버레이 -->
+<div id="jg-transition" style="position:fixed;inset:0;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;background:#050010;opacity:0;transition:opacity .35s ease">
+  <canvas id="jg-tr-bg" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+  <div style="position:relative;z-index:2;text-align:center">
+    <div style="font-size:10px;font-weight:800;letter-spacing:.22em;color:#FBBF24;margin-bottom:16px;opacity:0;animation:none" id="jg-tr-tag">✨ JAMGONG AFFINITY COMPATIBILITY ENGINE</div>
+    <div style="font-size:clamp(20px,3.5vw,36px);font-weight:900;color:#fff;line-height:1.4;margin-bottom:8px" id="jg-tr-line1"></div>
+    <div style="font-size:clamp(18px,3vw,30px);font-weight:900;line-height:1.4" id="jg-tr-line2"></div>
+    <div style="width:48px;height:2px;background:linear-gradient(90deg,#FBBF24,#f472b6);margin:20px auto 0;border-radius:2px;animation:jgPulse 1s ease infinite" id="jg-tr-bar"></div>
+  </div>
+</div>
+<style>
+@keyframes jgPulse{0%,100%{opacity:.4;transform:scaleX(.6)}50%{opacity:1;transform:scaleX(1)}}
+.jg-tchar{display:inline-block;opacity:0;transform:translateY(16px);transition:opacity .3s ease,transform .3s ease;font-family:'Noto Sans KR',sans-serif}
+.jg-tchar.gld{background:linear-gradient(90deg,#FBBF24,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.jg-tchar.vis{opacity:1;transform:none}
+</style>
+
+<script>
+(function(){
+  // 히어로 파티클
+  const c=document.getElementById('hero-particles');
+  if(!c)return;
+  const x=c.getContext('2d');
+  function resize(){c.width=c.offsetWidth||window.innerWidth;c.height=c.offsetHeight||window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  const pts=[];
+  for(let i=0;i<55;i++)pts.push({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.2+.3,op:Math.random()*.4+.08,col:Math.random()>.6?'#FBBF24':Math.random()>.5?'#c084fc':'rgba(255,255,255,.8)'});
+  function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    pts.forEach((a,i)=>{
+      pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<70){x.beginPath();x.strokeStyle=`rgba(255,255,255,${.025*(1-d/70)})`;x.lineWidth=.5;x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}});
+      x.beginPath();x.arc(a.x,a.y,a.r,0,Math.PI*2);x.fillStyle=a.col;x.globalAlpha=a.op;x.fill();x.globalAlpha=1;
+      a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>c.width)a.vx*=-1;if(a.y<0||a.y>c.height)a.vy*=-1;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+  // ── 연등 애니메이션 ──
+  (function(){
+    const lc=document.getElementById('hero-lanterns');
+    if(!lc)return;
+    const lx=lc.getContext('2d');
+    function lresize(){lc.width=lc.offsetWidth||window.innerWidth;lc.height=lc.offsetHeight||window.innerHeight;}
+    lresize();window.addEventListener('resize',lresize);
+
+    const COLORS=[
+      {body:'#e8380d',glow:'rgba(232,56,13,0.55)',shade:'#8b1a00'},   // 빨강
+      {body:'#f5a623',glow:'rgba(245,166,35,0.55)',shade:'#b06600'},   // 주황
+      {body:'#f7e04a',glow:'rgba(247,224,74,0.5)',shade:'#9a8000'},    // 노랑
+      {body:'#e03880',glow:'rgba(224,56,128,0.5)',shade:'#880040'},    // 분홍
+      {body:'#c060f0',glow:'rgba(192,96,240,0.45)',shade:'#6000a0'},   // 보라
+    ];
+
+    function mkLantern(i){
+      const col=COLORS[i%COLORS.length];
+      const w=lc.width;
+      const h=lc.height;
+      return {
+        x:Math.random()*w,
+        y:h+80+Math.random()*200,
+        ry:Math.random()*Math.PI*2,   // sway phase
+        vx:(Math.random()-.5)*0.22,
+        vy:-(0.28+Math.random()*0.32),
+        sw:1.4+Math.random()*0.9,     // sway width
+        sp:0.008+Math.random()*0.006, // sway speed
+        bw:18+Math.random()*14,       // body half-width
+        bh:24+Math.random()*18,       // body half-height
+        op:0.72+Math.random()*0.22,
+        col:col,
+        rot:(Math.random()-.5)*0.18,
+        pulse:Math.random()*Math.PI*2,
+      };
+    }
+
+    const COUNT=22;
+    const lanterns=[];
+    for(let i=0;i<COUNT;i++){
+      const l=mkLantern(i);
+      // scatter initial Y so they don't all start from bottom at once
+      l.y=lc.height*(0.2+Math.random()*1.3);
+      lanterns.push(l);
+    }
+
+    function drawLantern(l,t){
+      const col=l.col;
+      const px=Math.sin(l.ry)*l.sw;  // horizontal sway
+      const glow=Math.sin(l.pulse+t*0.0015)*0.12+0.88; // pulsing glow
+      const bw=l.bw, bh=l.bh;
+
+      lx.save();
+      lx.translate(l.x+px, l.y);
+      lx.rotate(l.rot+Math.sin(l.ry)*0.06);
+      lx.globalAlpha=l.op;
+
+      // glow halo
+      const g=lx.createRadialGradient(0,0,bh*0.3,0,0,bh*2.2);
+      g.addColorStop(0,col.glow.replace(')',`,${0.55*glow})`).replace('rgba','rgba'));
+      g.addColorStop(1,'rgba(0,0,0,0)');
+      lx.beginPath();
+      lx.ellipse(0,0,bw*2.2,bh*2.2,0,0,Math.PI*2);
+      lx.fillStyle=g;
+      lx.fill();
+
+      // string top
+      lx.beginPath();
+      lx.moveTo(0,-bh-2);
+      lx.lineTo(0,-bh-22);
+      lx.strokeStyle='rgba(255,255,255,0.35)';
+      lx.lineWidth=1;
+      lx.stroke();
+
+      // body gradient
+      const bg=lx.createRadialGradient(-bw*0.3,-bh*0.25,0,0,0,Math.max(bw,bh)*1.1);
+      bg.addColorStop(0,'rgba(255,255,200,0.9)');
+      bg.addColorStop(0.35,col.body);
+      bg.addColorStop(1,col.shade);
+      lx.beginPath();
+      lx.ellipse(0,0,bw,bh,0,0,Math.PI*2);
+      lx.fillStyle=bg;
+      lx.fill();
+
+      // ribs
+      lx.globalAlpha=l.op*0.25;
+      for(let r=-3;r<=3;r++){
+        const ry=r*(bh/3.5);
+        const rx=Math.sqrt(Math.max(0,1-(ry*ry)/(bh*bh)))*bw;
+        lx.beginPath();
+        lx.ellipse(0,ry,rx,1.2,0,0,Math.PI*2);
+        lx.fillStyle='rgba(0,0,0,0.4)';
+        lx.fill();
+      }
+      lx.globalAlpha=l.op;
+
+      // inner glow (candle)
+      const ig=lx.createRadialGradient(0,bh*0.1,0,0,bh*0.1,bh*0.7);
+      ig.addColorStop(0,`rgba(255,250,200,${0.45*glow})`);
+      ig.addColorStop(1,'rgba(255,200,50,0)');
+      lx.beginPath();
+      lx.ellipse(0,0,bw*0.75,bh*0.75,0,0,Math.PI*2);
+      lx.fillStyle=ig;
+      lx.fill();
+
+      // top cap
+      lx.beginPath();
+      lx.ellipse(0,-bh+2,bw*0.55,bh*0.18,0,0,Math.PI*2);
+      lx.fillStyle='rgba(255,255,200,0.55)';
+      lx.fill();
+
+      // bottom tassel
+      lx.beginPath();
+      lx.moveTo(0,bh);
+      lx.lineTo(-3,bh+12);
+      lx.moveTo(0,bh);
+      lx.lineTo(0,bh+16);
+      lx.moveTo(0,bh);
+      lx.lineTo(3,bh+12);
+      lx.strokeStyle=col.body;
+      lx.lineWidth=1.5;
+      lx.globalAlpha=l.op*0.8;
+      lx.stroke();
+
+      lx.restore();
+    }
+
+    let lt=0;
+    function ldraw(t){
+      lx.clearRect(0,0,lc.width,lc.height);
+      const dt=t-lt; lt=t;
+      lanterns.forEach(l=>{
+        l.ry+=l.sp*dt*0.016;
+        l.x+=l.vx;
+        l.y+=l.vy;
+        l.pulse+=0.012;
+        if(l.y<-120){
+          const nl=mkLantern(Math.floor(Math.random()*5));
+          Object.assign(l,nl);
+        }
+        if(l.x<-60)l.x=lc.width+60;
+        if(l.x>lc.width+60)l.x=-60;
+        drawLantern(l,t);
+      });
+      requestAnimationFrame(ldraw);
+    }
+    requestAnimationFrame(ldraw);
+  })();
+
+  // 타이포모션
+  const text='하늘이 새긴 당신의 운명 — AI가 인연을 찾아드립니다';
+  const el=document.getElementById('hero-typo');
+  if(el){
+    text.split('').forEach((ch,i)=>{
+      const s=document.createElement('span');
+      s.className='hchar';
+      s.textContent=ch===' '?' ':ch;
+      el.appendChild(s);
+      setTimeout(()=>s.classList.add('hvis'),700+i*45);
+    });
+  }
+})();
+
+// =============================================
+// 잼공 페이지 트랜지션 (JACE 풀스크린 애니메이션)
+// =============================================
+function jamgongTransition(e, url) {
+  e.preventDefault();
+  var ov = document.getElementById('jg-transition');
+  var trBg = document.getElementById('jg-tr-bg');
+  var tag = document.getElementById('jg-tr-tag');
+  var line1 = document.getElementById('jg-tr-line1');
+  var line2 = document.getElementById('jg-tr-line2');
+
+  // 초기화
+  ov.style.display = 'flex';
+  line1.innerHTML = '';
+  line2.innerHTML = '';
+  tag.style.opacity = '0';
+  tag.style.transform = 'translateY(10px)';
+  tag.style.transition = 'opacity .5s ease, transform .5s ease';
+
+  // 페이드인
+  setTimeout(function() { ov.style.opacity = '1'; }, 10);
+
+  // 배경 파티클 시작
+  (function() {
+    var w = window.innerWidth, h = window.innerHeight;
+    trBg.width = w; trBg.height = h;
+    var ctx = trBg.getContext('2d');
+    var pts = [];
+    for (var i = 0; i < 90; i++) {
+      pts.push({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
+        r: Math.random() * 1.8 + .4,
+        op: Math.random() * .6 + .1,
+        col: Math.random() > .65 ? '#FBBF24' : Math.random() > .5 ? '#c084fc' : '#60a5fa'
+      });
+    }
+    var raf;
+    function drawTr() {
+      ctx.clearRect(0, 0, w, h);
+      // 중앙 오라
+      var g = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.min(w,h)*0.45);
+      g.addColorStop(0, 'rgba(168,85,247,0.18)');
+      g.addColorStop(.5, 'rgba(251,191,36,0.06)');
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      // 스캔라인
+      var scanY = ((Date.now() / 12) % (h + 40)) - 20;
+      var sg = ctx.createLinearGradient(0, scanY - 1, 0, scanY + 1);
+      sg.addColorStop(0, 'transparent');
+      sg.addColorStop(.5, 'rgba(251,191,36,0.25)');
+      sg.addColorStop(1, 'transparent');
+      ctx.fillStyle = sg; ctx.fillRect(0, scanY - 1, w, 2);
+      // 파티클 + 연결선
+      pts.forEach(function(a, i) {
+        pts.slice(i + 1).forEach(function(b) {
+          var d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < 90) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255,255,255,' + (.04 * (1 - d / 90)) + ')';
+            ctx.lineWidth = .6;
+            ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+        });
+        ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+        ctx.fillStyle = a.col; ctx.globalAlpha = a.op; ctx.fill(); ctx.globalAlpha = 1;
+        a.x += a.vx; a.y += a.vy;
+        if (a.x < 0 || a.x > w) a.vx *= -1;
+        if (a.y < 0 || a.y > h) a.vy *= -1;
+      });
+      raf = requestAnimationFrame(drawTr);
+    }
+    drawTr();
+    setTimeout(function() { cancelAnimationFrame(raf); }, 2600);
+  })();
+
+  // 태그 페이드인
+  setTimeout(function() {
+    tag.style.opacity = '1';
+    tag.style.transform = 'none';
+  }, 200);
+
+  // 타이포모션 line1: 하늘이 새긴 당신의 운명
+  var t1 = '하늘이 새긴 당신의 운명';
+  t1.split('').forEach(function(ch, i) {
+    var sp = document.createElement('span');
+    sp.className = 'jg-tchar';
+    sp.style.fontSize = 'clamp(20px,3.5vw,38px)';
+    sp.style.fontWeight = '900';
+    sp.style.color = '#f8fafc';
+    sp.textContent = ch === ' ' ? ' ' : ch;
+    line1.appendChild(sp);
+    setTimeout(function() { sp.classList.add('vis'); }, 450 + i * 60);
+  });
+
+  // 타이포모션 line2: AI가 인연을 찾아드립니다 (골드 그라디언트)
+  var t2 = 'AI가 인연을 찾아드립니다';
+  t2.split('').forEach(function(ch, i) {
+    var sp = document.createElement('span');
+    sp.className = 'jg-tchar gld';
+    sp.style.fontSize = 'clamp(18px,3vw,32px)';
+    sp.style.fontWeight = '900';
+    sp.textContent = ch === ' ' ? ' ' : ch;
+    line2.appendChild(sp);
+    setTimeout(function() { sp.classList.add('vis'); }, 900 + i * 55);
+  });
+
+  // 이동
+  setTimeout(function() {
+    ov.style.opacity = '0';
+    setTimeout(function() { window.location.href = url; }, 380);
+  }, 2300);
+}
+</script>
+<!-- ═══ 3D 페이지 진입 애니메이션 ═══ -->
+<style>
+@keyframes heroTitleIn{
+  from{opacity:0;transform:translateZ(-100px) rotateX(20deg) translateY(40px);filter:blur(6px)}
+  to{opacity:1;transform:translateZ(0) rotateX(0) translateY(0);filter:blur(0)}
+}
+@keyframes heroBadgeIn{
+  from{opacity:0;transform:translateZ(-60px) scale(.8)}
+  to{opacity:1;transform:translateZ(0) scale(1)}
+}
+@keyframes heroSubIn{
+  from{opacity:0;transform:translateY(20px) translateZ(-40px)}
+  to{opacity:1;transform:translateY(0) translateZ(0)}
+}
+.jg-hero-badge,.jg-eyebrow{animation:heroBadgeIn .7s .1s cubic-bezier(.22,.68,0,1.2) both}
+.jg-line1{animation:heroTitleIn .9s .2s cubic-bezier(.22,.68,0,1.2) both}
+.jg-line2{animation:heroTitleIn .9s .38s cubic-bezier(.22,.68,0,1.2) both}
+.jg-hero-sub,.jg-sub{animation:heroSubIn .8s .55s cubic-bezier(.22,.68,0,1.2) both}
+.jg-cta-wrap,.jg-hero-btns{animation:heroSubIn .8s .72s cubic-bezier(.22,.68,0,1.2) both}
+/* 히어로 배너 perspective */
+.jg-hero,.hero-section,[class*="hero"]{perspective:1200px}
+</style>
