@@ -43,7 +43,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#07040f;color:#e2e8f0;min-
 #not-found{display:none;text-align:center;padding:80px 24px;color:#64748b}
 #pg-wrap{display:none}
 </style>
-<div id="not-found"><p style="font-size:1.1rem;margin-bottom:12px">도량 정보를 찾을 수 없습니다.</p><a href="page-gido-list.html" style="color:#a78bfa">← 기도도량 목록으로</a></div>
+<div id="not-found"><p style="font-size:1.1rem;margin-bottom:12px">도량 정보를 찾을 수 없습니다.</p><a href="/gido" style="color:#a78bfa">← 기도도량 목록으로</a></div>
 <div id="pg-wrap">
 <div class="hero"><img class="hero-img" id="pg-img" src="" alt=""><div class="hero-ov"></div>
 <div class="hero-ct"><div id="pg-badges"></div><div class="hero-name" id="pg-name"></div><div class="hero-loc" id="pg-loc"></div></div></div>
@@ -54,7 +54,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#07040f;color:#e2e8f0;min-
   <div class="sec"><div class="sec-t">🪜 기도 순서</div><ul class="step-list" id="pg-steps"></ul></div>
   <div class="sec"><div class="sec-t">🚗 교통 안내</div><div class="sec-b" id="pg-access"></div></div>
   <div class="sec"><div class="sec-t">🔗 함께 찾는 도량</div><div class="rel-grid" id="pg-rel"></div></div>
-  <a class="back-btn" href="page-gido-list.html">← 기도도량 목록으로</a>
+  <a class="back-btn" href="/gido">← 기도도량 목록으로</a>
 </div></div>
 <script>
 var DB={
@@ -176,6 +176,6 @@ var DB={
   document.getElementById('pg-prayer').innerHTML=d.prayer.map(function(p){return'<div class="prayer-box"><div class="prayer-title">'+p.title+'</div><div class="prayer-text">'+p.text.replace(/\n/g,'<br>')+'</div></div>';}).join('');
   document.getElementById('pg-steps').innerHTML=d.steps.map(function(s,i){return'<li class="step-item"><div class="step-num">'+(i+1)+'</div><div><div class="step-t">'+s.t+'</div><div class="step-d">'+s.d+'</div></div></li>';}).join('');
   document.getElementById('pg-access').innerHTML=d.access;
-  document.getElementById('pg-rel').innerHTML=d.rel.map(function(r){return'<a class="rel-card" href="'+(r.pg||'page-gido-detail')+'.html?id='+r.id+'"><div class="rel-icon">'+r.icon+'</div><div class="rel-name">'+r.name+'</div><div class="rel-desc">'+r.desc+'</div></a>';}).join('');
+  document.getElementById('pg-rel').innerHTML=d.rel.map(function(r){return'<a class="rel-card" href="'+(r.pg||'page-gido-detail').replace(/^page-/,'/')+'?id='+r.id+'"><div class="rel-icon">'+r.icon+'</div><div class="rel-name">'+r.name+'</div><div class="rel-desc">'+r.desc+'</div></a>';}).join('');
 })();
 </script>
