@@ -1,0 +1,247 @@
+<meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">사찰 상세 | 잼공인연사찰</title>
+<meta name="description" id="page-desc" content="잼공인연사찰 사찰 상세 정보">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+
+/* 히어로 */
+.td-hero{position:relative;padding:80px 24px 60px;text-align:center;background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 60%,#1a1a2e 100%);overflow:hidden}
+.td-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(139,92,246,0.15),transparent)}
+.td-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#FBBF24;font-size:11px;font-weight:800;letter-spacing:.15em;padding:5px 16px;border-radius:20px;margin-bottom:16px}
+.td-title{font-size:clamp(28px,5vw,48px);font-weight:900;color:#f8fafc;margin-bottom:10px;line-height:1.2}
+.td-addr{font-size:15px;color:#64748b;margin-bottom:20px}
+.td-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.td-tag{font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px}
+
+/* 지도 버튼 */
+.td-map-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.td-map-btn{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:700;padding:12px 24px;border-radius:12px;text-decoration:none;transition:all .2s}
+.td-map-btn:hover{transform:translateY(-2px)}
+
+/* 본문 */
+.td-body{max-width:860px;margin:0 auto;padding:48px 24px 80px}
+
+/* 섹션 카드 */
+.td-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:28px;margin-bottom:20px}
+.td-card-title{font-size:17px;font-weight:800;color:#FBBF24;letter-spacing:.06em;margin-bottom:18px}
+.td-card-body{font-size:17px;color:#94a3b8;line-height:2.1}
+.td-card-body strong{color:#f8fafc}
+
+/* 정보 그리드 */
+.td-info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.td-info-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px}
+.td-info-label{font-size:13px;font-weight:700;color:#475569;letter-spacing:.05em;margin-bottom:6px}
+.td-info-value{font-size:16px;color:#e2e8f0;font-weight:600}
+
+/* 기도 유형 배지 */
+.td-prayer-grid{display:flex;gap:8px;flex-wrap:wrap}
+.td-prayer-badge{font-size:14px;font-weight:700;padding:8px 18px;border-radius:20px;border:1px solid}
+
+/* 구글맵 임베드 */
+.td-map-embed{width:100%;height:320px;border-radius:16px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;margin-top:16px}
+.td-map-embed iframe{width:100%;height:100%;border:none}
+
+/* 관련 링크 */
+.td-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.td-link-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;text-decoration:none;color:inherit;display:block;transition:all .2s}
+.td-link-card:hover{border-color:rgba(251,191,36,0.4);background:rgba(251,191,36,0.05);transform:translateY(-2px)}
+.td-link-icon{font-size:22px;margin-bottom:8px}
+.td-link-name{font-size:13px;font-weight:700;color:#f8fafc;margin-bottom:4px}
+.td-link-desc{font-size:11px;color:#64748b}
+
+/* 주변 사찰 카드 */
+.td-nearby-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.td-nearby-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;cursor:pointer;text-decoration:none;display:block;transition:all .2s}
+.td-nearby-card:hover{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.35);transform:translateY(-2px)}
+.td-nearby-name{font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:4px}
+.td-nearby-dist{display:inline-block;font-size:10px;font-weight:700;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#a78bfa;padding:2px 8px;border-radius:20px;margin-bottom:6px}
+.td-nearby-addr{font-size:11px;color:#64748b;line-height:1.4}
+.td-nearby-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.td-nearby-tag{font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);color:#FBBF24}
+
+/* 스크롤 상단 */
+#jg-top-btn{position:fixed;bottom:80px;right:18px;z-index:99998;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#f59e0b);color:#0a0a0a;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(251,191,36,.45);cursor:pointer;border:none;outline:none;opacity:0;pointer-events:none;transition:opacity .3s,transform .2s}
+#jg-top-btn.show{opacity:1;pointer-events:auto}
+#jg-top-btn:active{transform:scale(.9)}
+
+@media(max-width:640px){
+  .td-hero{padding:60px 16px 40px}
+  .td-body{padding:32px 16px 60px}
+  .td-card{padding:20px}
+}
+
+.td-card,.td-item,.td-section{transition:transform .25s cubic-bezier(.22,.68,0,1.2),box-shadow .25s,border-color .2s}
+.td-card:hover,.td-item:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.4);border-color:rgba(251,191,36,.25)!important}
+</style>
+</head>
+<body>
+
+<div class="td-hero">
+  <div class="td-badge" id="td-badge">🏯 기도도량</div>
+  <h1 class="td-title" id="td-title">사찰명</h1>
+  <div class="td-addr" id="td-addr">📍 주소 로딩 중...</div>
+  <div class="td-tags" id="td-tags"></div>
+  <div class="td-map-row" id="td-map-row"></div>
+</div>
+
+<div class="td-body">
+
+  <!-- 소개 -->
+  <div class="td-card" id="td-intro-card">
+    <div class="td-card-title">🙏 사찰 소개</div>
+    <div class="td-card-body" id="td-intro"></div>
+  </div>
+
+  <!-- 기본 정보 -->
+  <div class="td-card">
+    <div class="td-card-title">📋 기본 정보</div>
+    <div class="td-info-grid" id="td-info-grid"></div>
+  </div>
+
+  <!-- 기도 유형 -->
+  <div class="td-card" id="td-prayer-card">
+    <div class="td-card-title">🕯️ 기도 유형</div>
+    <div class="td-prayer-grid" id="td-prayer-grid"></div>
+  </div>
+
+  <!-- 영험 이야기 -->
+  <div class="td-card" id="td-story-card" style="display:none">
+    <div class="td-card-title">✨ 영험 이야기</div>
+    <div class="td-card-body" id="td-story"></div>
+  </div>
+
+  <!-- 교통·방문 정보 -->
+  <div class="td-card" id="td-visit-card" style="display:none">
+    <div class="td-card-title">🚌 방문 정보</div>
+    <div class="td-card-body" id="td-visit"></div>
+  </div>
+
+  <!-- 지도 -->
+  <div class="td-card">
+    <div class="td-card-title">🗺️ 위치</div>
+    <div class="td-map-embed" id="td-map-embed"></div>
+  </div>
+
+  <!-- 주변 사찰 -->
+  <div class="td-card" id="td-nearby-card" style="display:none">
+    <div class="td-card-title">🏯 주변 사찰</div>
+    <div class="td-nearby-grid" id="td-nearby-grid"></div>
+  </div>
+
+  <!-- 관련 서비스 -->
+  <div class="td-card">
+    <div class="td-card-title">🔗 관련 서비스</div>
+    <div class="td-links">
+      <a class="td-link-card" href="/manse">
+        <div class="td-link-icon">🔮</div>
+        <div class="td-link-name">인연사찰 찾기</div>
+        <div class="td-link-desc">내 사주와 맞는 사찰 매칭</div>
+      </a>
+      <a class="td-link-card" href="/gido">
+        <div class="td-link-icon">⭐</div>
+        <div class="td-link-name">전국 기도도량</div>
+        <div class="td-link-desc">465곳 기도도량 전체 보기</div>
+      </a>
+      <a class="td-link-card" href="/prayer">
+        <div class="td-link-icon">🪔</div>
+        <div class="td-link-name">기도문·발원문</div>
+        <div class="td-link-desc">관음·지장·약사 기도문</div>
+      </a>
+      <a class="td-link-card" href="/etiquette">
+        <div class="td-link-icon">🏯</div>
+        <div class="td-link-name">사찰예절</div>
+        <div class="td-link-desc">처음 방문자 안내</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- 스크롤 상단 -->
+<button type="button" id="jg-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+<script>(function(){var b=document.getElementById('jg-top-btn');window.addEventListener('scroll',function(){b.classList.toggle('show',window.scrollY>300)},{passive:true});})();</script>
+
+<script src="temple-detail-db.js"></script>
+<script>
+/* ── 큐레이션 DB (영험 사찰 상세 스토리) ── */
+var TEMPLE_DB = {
+
+  '낙산사홍련암': {
+    name:'낙산사 홍련암', badge:'🌊 3대 관음도량',
+    addr:'강원도 양양군 강현면 전진리 산1',
+    sido:'강원도', phone:'033-672-2378',
+    prayers:['관음기도','인연기도','결혼기도'],
+    prayerColors:['#c4b5fd','#f472b6','#fb923c'],
+    intro:'671년 의상대사가 창건한 동해 제일 관음도량입니다. 동굴 속 관음보살이 동해바다를 바라보는 절경으로 유명하며, 인연·결혼 기도로 전국에서 참배객이 몰립니다. 해수관음상(15m)은 동양 최대급으로 꼽힙니다.',
+    story:'의상대사가 관음보살의 진신을 친견하고자 이곳에서 기도를 드렸으며, 관음보살이 바다 위에 홍련(붉은 연꽃)을 피워 나타났다는 설화가 전해집니다. 예로부터 인연을 구하는 기도처로 이름이 높아 전국 각지에서 참배객이 끊이지 않습니다.',
+    visit:'서울 → 동서울터미널 양양행 버스 약 2시간 30분. 양양터미널에서 낙산사행 버스 10분. 주차장에서 홍련암까지 도보 15분.',
+    mapQuery:'낙산사+홍련암+강원도+양양',
+    category:'관음도량', established:'671년 (신라 문무왕)'
+  },
+
+  '강화보문사': {
+    name:'강화도 보문사', badge:'🌊 3대 관음도량',
+    addr:'인천광역시 강화군 삼산면 매음리 629',
+    sido:'인천', phone:'032-933-8271',
+    prayers:['관음기도','소원기도'],
+    prayerColors:['#c4b5fd','#fbbf24'],
+    intro:'서해의 관음도량으로, 눈썹바위 마애관음상이 유명합니다. 서해 바다가 내려다보이는 절경 속 관음보살 기도처로, 눈썹바위 마애관음상은 조선 후기 최고의 마애불로 꼽힙니다.',
+    story:'신라 선덕여왕 때 회정대사가 창건하였으며, 눈썹바위 마애석불은 1928년 금강산 표훈사의 이화응 스님이 조성하였습니다. 이 관음보살상 앞에서 기도하면 소원이 이루어진다는 영험담이 전해집니다.',
+    visit:'서울 신촌 → 강화 직행버스 약 1시간. 강화 외포리 선착장에서 배로 석모도 이동 후 버스. 또는 강화대교 → 석모대교 경유 자가용.',
+    mapQuery:'강화도+보문사+인천+강화군',
+    category:'관음도량', established:'신라 선덕여왕 시기'
+  },
+
+  '여수향일암': {
+    name:'여수 향일암', badge:'🌅 남해 관음도량',
+    addr:'전라남도 여수시 돌산읍 율림리 17',
+    sido:'전남', phone:'061-644-4742',
+    prayers:['관음기도','소원기도','일출기도'],
+    prayerColors:['#c4b5fd','#fbbf24','#fb923c'],
+    intro:'남해 제일 관음도량. 기암괴석 절벽 위에 자리한 암자로 일출이 아름답기로 유명합니다. 원효대사가 창건하였으며, 좁은 석굴을 통과하는 참배 코스가 독특하고 소원성취로 이름 높습니다.',
+    story:'원효대사가 이곳에서 관음보살을 친견하고 암자를 세웠다고 전해집니다. 해돋이를 향해 앉아있는 암자라 하여 향일암(向日庵)이라 불리며, 매년 새해 일출 명소로 수만 명이 찾습니다.',
+    visit:'서울 센트럴시티 → 여수 버스 약 4시간. 여수시내에서 돌산행 버스 후 택시. 또는 여수엑스포역에서 택시 30분.',
+    mapQuery:'향일암+전남+여수+돌산읍',
+    category:'관음도량', established:'644년 (신라 선덕여왕)'
+  },
+
+  '남해보리암': {
+    name:'남해 보리암', badge:'🌊 3대 관음도량',
+    addr:'경상남도 남해군 상주면 상주리 산1-1',
+    sido:'경남', phone:'055-862-6115',
+    prayers:['관음기도','소원기도','국태민안기도'],
+    prayerColors:['#c4b5fd','#fbbf24','#34d399'],
+    intro:'3대 관음도량 중 하나. 금산 정상 해발 681m에 위치한 절경의 암자. 이성계가 이곳에서 기도 후 조선을 건국했다는 설화가 전해집니다.',
+    story:'고려 말 이성계가 조선 건국을 위해 이곳에서 100일 기도를 드렸으며, 소원이 이루어지자 금산에 비단을 둘렀다는 이야기가 전해집니다. 지금도 국태민안과 소원성취의 기도처로 전국 불자들이 찾습니다.',
+    visit:'서울 센트럴시티 → 남해 버스 약 4시간. 남해터미널에서 상주행 버스 후 금산 등산 30분. 또는 자가용 이용.',
+    mapQuery:'남해+보리암+경남+남해군+금산',
+    category:'관음도량', established:'683년 (신라 신문왕)'
+  },
+
+  '오대산상원사': {
+    name:'오대산 상원사', badge:'📚 문수보살 성지',
+    addr:'강원도 평창군 진부면 동산리 산1',
+    sido:'강원도', phone:'033-332-6666',
+    prayers:['문수기도','지혜기도','합격기도'],
+    prayerColors:['#34d399','#60a5fa','#fbbf24'],
+    intro:'문수보살 성지. 세조가 문수동자를 친견한 영험 설화로 유명합니다. 지혜·합격·학업 성취 기도처로 이름 높으며, 오대산 월정사의 말사입니다.',
+    story:'세조가 피부병을 치료하기 위해 이곳을 방문했을 때 문수동자가 나타나 세조의 등을 밀어주었고, 그 후 병이 나았다는 설화가 전해집니다. 이후 세조는 상원사에 큰 시주를 했다고 합니다.',
+    visit:'서울 동서울터미널 → 진부 버스 약 2시간. 진부터미널에서 월정사행 버스 후 상원사까지 셔틀버스 또는 도보.',
+    mapQuery:'오대산+상원사+강원+평창',
+    category:'문수도량', established:'705년 (신라 성덕왕)'
+  },
+
+  '통도사': {
+    name:'통도사', badge:'☸️ 불보사찰 · 적멸보궁',
+    addr:'경상남도 양산시 하북면 통도사로 108',
+    sido:'경남', phone:'055-382-7182',
+    prayers:['적멸보궁기도','관음기도','미타기도'],
+    prayerColors:['#fbbf24','#c4b5fd','#60a5fa'],
+    intro:'부처님의 진신사리와 가사를 봉안한 불보사찰. 5대 적멸보궁 중 으뜸으로, 불상 없이 금강계단을 향해 예배합니다. 646년 자장율사가 창건한 한국 최대 사찰 중 하나.',
+    story:'자장율사가 당나라에서 부처님의 진신사리와 가사를 가져와 금강계단에 봉안하였습니다. 사찰 이름 통도(通度)는 "승려가 되려면 반드시 이곳을 통해야 한다"는 의미를 담고 있습니다.',
