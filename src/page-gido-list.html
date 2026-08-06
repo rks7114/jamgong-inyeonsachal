@@ -733,7 +733,8 @@ function renderCards(data){
   }
 
   grid.innerHTML = slice.map(d => {
-    const href = d.detail ? `${d.pg||'page-gido-detail'}.html?id=${d.id}` : '#';
+    const pg = (d.pg||'page-gido-detail').replace(/^page-/,'/');
+    const href = d.detail ? `${pg}?id=${d.id}` : '#';
     const typeLabels = d.type.join(' · ');
     return `<a class="tc" href="${href}" ${!d.detail?'onclick="return false"':''}>
       <div class="tc-top">
@@ -842,7 +843,7 @@ function revealCards(){
         // 중복 방지: 기존 DB에 없는 id만 추가
         var ids=new Set(DB.map(function(d){return d.id;}));
         window.GIDO_EXTRA.forEach(function(d){
-          if(!ids.has(d.id)){DB.push(d);ids.add(d.id);}
+          if(!ids.has(d.id)){d.detail=true;DB.push(d);ids.add(d.id);}
         });
         console.log('기도도량 총 '+DB.length+'개 로드 완료');
       }
