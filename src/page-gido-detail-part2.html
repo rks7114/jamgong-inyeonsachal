@@ -1,0 +1,205 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title id="pg-title">기도도량 상세 | 잼공인연사찰</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#07040f;color:#e2e8f0;min-height:100vh}
+.hero{position:relative;height:55vw;max-height:400px;min-height:240px;overflow:hidden}
+.hero-img{width:100%;height:100%;object-fit:cover;filter:brightness(.85)}
+.hero-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,4,15,.95) 0%,rgba(7,4,15,.4) 35%,rgba(0,0,0,.05) 100%)}
+.hero-ct{position:absolute;bottom:0;left:0;right:0;padding:24px}
+.hb{display:inline-block;border-radius:20px;padding:4px 12px;font-size:.65rem;font-weight:800;margin-bottom:8px;margin-right:4px}
+.hb-v{background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.5);color:#c4b5fd}
+.hb-g{background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.5);color:#fcd34d}
+.hero-name{font-size:1.8rem;font-weight:900;color:#f8fafc;line-height:1.15;margin-bottom:3px}
+.hero-loc{font-size:.8rem;color:#94a3b8}
+.body{max-width:860px;margin:0 auto;padding:24px 16px 80px}
+.info-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:20px}
+.ib{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center}
+.ib-l{font-size:.6rem;font-weight:800;color:#64748b;letter-spacing:.1em;margin-bottom:4px}
+.ib-v{font-size:.82rem;font-weight:800;color:#f8fafc}
+.ib-v.g{color:#FBBF24}
+.sec{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;margin-bottom:14px}
+.sec-t{font-size:.78rem;font-weight:900;color:#a78bfa;letter-spacing:.1em;margin-bottom:12px}
+.sec-t::after{content:'';display:block;height:1px;background:linear-gradient(to right,rgba(139,92,246,.3),transparent);margin-top:6px}
+.sec-b{font-size:.82rem;color:#94a3b8;line-height:1.85;word-break:keep-all}
+.sec-b strong{color:#f1f5f9;font-weight:700}
+.prayer-box{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:16px;margin-top:10px}
+.prayer-title{font-size:.72rem;font-weight:900;color:#a78bfa;margin-bottom:8px}
+.prayer-text{font-size:.78rem;color:#cbd5e1;line-height:2;word-break:keep-all}
+.step-list{list-style:none;counter-reset:step}
+.step-item{counter-increment:step;display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.step-item:last-child{border-bottom:none}
+.step-num{width:26px;height:26px;border-radius:50%;background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.4);color:#c4b5fd;font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-t{font-size:.82rem;font-weight:700;color:#f1f5f9;margin-bottom:2px}
+.step-d{font-size:.72rem;color:#64748b;line-height:1.5}
+.rel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.rel-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-decoration:none;display:block;transition:all .2s}
+.rel-card:hover{border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.06)}
+.rel-icon{font-size:1.3rem;margin-bottom:4px}
+.rel-name{font-size:.78rem;font-weight:800;color:#f1f5f9}
+.rel-desc{font-size:.68rem;color:#64748b;margin-top:2px}
+.back-btn{display:inline-block;padding:10px 20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#e2e8f0;text-decoration:none;font-size:.78rem;font-weight:700;margin-top:20px}
+#not-found{display:none;text-align:center;padding:80px 24px;color:#64748b}
+#pg-wrap{display:none}
+</style>
+<div id="not-found"><p style="font-size:1.1rem;margin-bottom:12px">도량 정보를 찾을 수 없습니다.</p><a href="page-gido-list.html" style="color:#a78bfa">← 기도도량 목록으로</a></div>
+<div id="pg-wrap">
+<div class="hero"><img class="hero-img" id="pg-img" src="" alt=""><div class="hero-ov"></div>
+<div class="hero-ct"><div id="pg-badges"></div><div class="hero-name" id="pg-name"></div><div class="hero-loc" id="pg-loc"></div></div></div>
+<div class="body">
+  <div class="info-row" id="pg-info"></div>
+  <div class="sec"><div class="sec-t">🙏 도량 소개</div><div class="sec-b" id="pg-intro"></div></div>
+  <div class="sec"><div class="sec-t">📿 기도 안내</div><div id="pg-prayer"></div></div>
+  <div class="sec"><div class="sec-t">🪜 기도 순서</div><ul class="step-list" id="pg-steps"></ul></div>
+  <div class="sec"><div class="sec-t">🚗 교통 안내</div><div class="sec-b" id="pg-access"></div></div>
+  <div class="sec"><div class="sec-t">🔗 함께 찾는 도량</div><div class="rel-grid" id="pg-rel"></div></div>
+  <a class="back-btn" href="page-gido-list.html">← 기도도량 목록으로</a>
+</div></div>
+<script>
+var DB={
+  haedong:{name:"해동용궁사",loc:"부산 기장",cat:"관음·소원·인연 기도",icon:"🐉",
+    badges:[{t:"바다 위 관음도량",c:"hb-g"},{t:"3대 소원성취",c:"hb-v"}],
+    info:[{l:"창건",v:"1376년"},{l:"본존",v:"해수관음"},{l:"특징",v:"바다 위 사찰",g:true},{l:"입장료",v:"무료"},{l:"주차",v:"무료"},{l:"기도",v:"연중 24시간"}],
+    intro:"<strong>해동용궁사</strong>는 부산 기장 해안 절벽 위에 자리한 한국에서 보기 드문 바다 위 관음 사찰입니다. 1376년 공민왕 때 나옹화상이 창건했으며, 해수관세음보살상이 동해 바다를 굽어보는 장관이 인상적입니다. 소원을 빌면 한 가지는 반드시 이루어진다고 알려져 연인·부부·수험생 등 수많은 참배객이 찾습니다.",
+    prayer:[{title:"해수관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n관세음보살님, 동해 용궁에서 중생을 굽어보시는 자비로운 눈길로 저의 소원을 들어주소서. 간절한 마음으로 발원하오니 원하는 바가 이루어지기를 빕니다."}],
+    steps:[{t:"입구 매표소",d:"입장 무료. 해안 절벽 계단 따라 하산"},{t:"관음상 참배",d:"21m 해수관음보살상 앞 삼배"},{t:"용궁사 본전",d:"향 올리고 기도문 독경"},{t:"소원 돌탑",d:"돌탑 쌓으며 소원 기원"},{t:"복 터널",d:"터널 통과하며 소원 성취 기원"}],
+    access:"<strong>자가용:</strong> 동해고속도로 → 기장IC → 해동용궁사 (부산역에서 약 40분)<br><strong>버스:</strong> 부산역·해운대 → 181번 버스 → 해동용궁사 하차<br><strong>주차:</strong> 무료 대형 주차장",
+    rel:[{id:"naksan",icon:"🌊",name:"낙산사 홍련암",desc:"강원 관음 성지",pg:"page-gido-detail"},{id:"hyangilam",icon:"🌄",name:"향일암",desc:"여수 관음 도량",pg:"page-gido-detail"}]},
+  seonamsa:{name:"선암사",loc:"전남 순천",cat:"관음·소원 기도",icon:"🌸",
+    badges:[{t:"유네스코 세계유산",c:"hb-g"},{t:"천년 매화 고찰",c:"hb-v"}],
+    info:[{l:"창건",v:"875년"},{l:"본존",v:"석가모니불"},{l:"특징",v:"천년 매화",g:true},{l:"입장료",v:"3,000원"},{l:"종단",v:"태고종"},{l:"교구",v:"제20교구"}],
+    intro:"<strong>선암사</strong>는 전남 순천 조계산에 자리한 875년 도선국사 창건의 천년 고찰입니다. 유네스코 세계유산 '한국의 산지 승원'에 등재됐으며, 경내 천년 매화나무(천연기념물 488호)가 봄이면 장관입니다. 태고종 본산으로 조계사와 함께 한국 불교 양종의 하나를 대표합니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n천년 고찰 선암사에서 관세음보살님께 간절히 기도드립니다. 자비로운 손길로 저의 소원을 들어주시고 가정에 평화와 행복이 깃들기를 발원합니다."}],
+    steps:[{t:"승선교 통과",d:"보물 제400호 홍교 아치를 지나 입사"},{t:"강선루 참배",d:"조선 후기 누각에서 잠시 묵상"},{t:"대웅전 기도",d:"삼배 후 기도문 독경"},{t:"천년 매화",d:"경내 천년 매화 나무 참배"},{t:"원통전 관음",d:"관세음보살 친견 기도"}],
+    access:"<strong>자가용:</strong> 순천완주고속도로 → 주암IC → 선암사 (광주 약 1시간)<br><strong>버스:</strong> 순천버스터미널 → 선암사행 버스 (30분)<br><strong>주차:</strong> 선암사 주차장 (유료)",
+    rel:[{id:"songgwangsa",icon:"🌿",name:"송광사",desc:"조계산 승보종찰",pg:"page-gido-detail-part3"},{id:"hwaeomsa",icon:"🍂",name:"화엄사",desc:"구례 화엄 도량",pg:"page-gido-detail-part2"}]},
+  ssanggyesa:{name:"쌍계사",loc:"경남 하동",cat:"관음·소원 기도",icon:"🍃",
+    badges:[{t:"지리산 고찰",c:"hb-v"},{t:"화개장터 인근",c:"hb-g"}],
+    info:[{l:"창건",v:"722년"},{l:"본존",v:"비로자나불"},{l:"특징",v:"벚꽃 십리길",g:true},{l:"입장료",v:"2,000원"},{l:"교구",v:"제13교구"},{l:"주변",v:"화개장터"}],
+    intro:"<strong>쌍계사</strong>는 경남 하동 지리산 자락에 자리한 722년 의상대사 제자 삼법화상 창건의 고찰입니다. 경내에 신라 진감선사탑비(국보 제47호)와 최치원이 새긴 쌍계석문이 있습니다. 봄이면 화개장터에서 쌍계사까지 십 리 벚꽃길이 장관을 이룹니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n지리산 쌍계사에서 간절히 기도드립니다. 자비로운 관세음보살님, 저의 소원을 들어주시고 가정과 나라에 평화가 깃들기를 발원합니다."}],
+    steps:[{t:"쌍계석문",d:"최치원 글씨 '쌍계석문' 감상"},{t:"진감선사탑비",d:"국보 탑비 참배"},{t:"대웅전 기도",d:"비로자나불 삼배 기도"},{t:"금당",d:"육조 혜능 정상탑 친견"},{t:"팔상전",d:"석가모니 팔상도 참배"}],
+    access:"<strong>자가용:</strong> 광주대구고속도로 → 하동IC → 19번 국도 → 화개 → 쌍계사 (부산 약 2시간)<br><strong>버스:</strong> 하동버스터미널 → 화개장터 → 쌍계사행 버스<br><strong>주차:</strong> 쌍계사 주차장 (유료)",
+    rel:[{id:"seonamsa",icon:"🌸",name:"선암사",desc:"순천 천년 매화",pg:"page-gido-detail-part2"},{id:"hwaeomsa",icon:"🍂",name:"화엄사",desc:"구례 지리산",pg:"page-gido-detail-part2"}]},
+  magoksa:{name:"마곡사",loc:"충남 공주",cat:"가정화합·소원 기도",icon:"🌲",
+    badges:[{t:"유네스코 세계유산",c:"hb-g"},{t:"봄 춘경 최고",c:"hb-v"}],
+    info:[{l:"창건",v:"640년"},{l:"본존",v:"석가모니불"},{l:"국보",v:"5층석탑",g:true},{l:"입장료",v:"3,000원"},{l:"교구",v:"제6교구"},{l:"특징",v:"김구 은신처"}],
+    intro:"<strong>마곡사</strong>는 충남 공주 태화산에 자리한 640년 자장율사 창건의 유네스코 세계유산 사찰입니다. '춘마곡추갑사'라 하여 봄 경치가 으뜸으로 꼽히며, 독립운동가 김구 선생이 항일 운동 중 은신했던 유서 깊은 도량입니다. 라마교 양식의 5층석탑(보물)이 독특한 자태를 자랑합니다.",
+    prayer:[{title:"가정화합 기도",text:"나무석가모니불 나무석가모니불 나무석가모니불.\n마곡사 부처님 전에 간절히 발원합니다. 가정에 화목과 평화가 넘치고, 모든 가족이 건강하고 행복하게 살아갈 수 있도록 자비를 베풀어 주소서."}],
+    steps:[{t:"천왕문 통과",d:"사천왕 참배"},{t:"해탈문",d:"해탈 서원 다짐"},{t:"대광보전",d:"비로자나불 삼배 기도"},{t:"대웅보전",d:"석가모니불 기도"},{t:"5층석탑",d:"라마교 양식 보물 석탑 참배"}],
+    access:"<strong>자가용:</strong> 당진영덕고속도로 → 정안IC → 마곡사 (서울 약 1.5시간)<br><strong>버스:</strong> 공주버스터미널 → 마곡사행 버스 (40분)<br><strong>주차:</strong> 마곡사 주차장 (유료)",
+    rel:[{id:"haeinsa",icon:"📜",name:"해인사",desc:"법보사찰 기도",pg:"page-gido-detail"},{id:"beopjusa",icon:"🌅",name:"법주사",desc:"미륵 도량",pg:"page-gido-detail-part3"}]},
+  yakcheonsa:{name:"약천사",loc:"제주",cat:"약사·건강·소원 기도",icon:"💊",
+    badges:[{t:"동양 최대 법당",c:"hb-g"},{t:"제주 최대 사찰",c:"hb-v"}],
+    info:[{l:"창건",v:"1981년"},{l:"본존",v:"약사여래"},{l:"특징",v:"동양 최대 법당",g:true},{l:"입장료",v:"무료"},{l:"교구",v:"제23교구"},{l:"주변",v:"서귀포 중문"}],
+    intro:"<strong>약천사</strong>는 제주 서귀포시 중문 인근에 자리한 동양 최대 규모의 법당을 보유한 사찰입니다. 1981년 혜인스님이 창건했으며, 약사여래를 봉안한 대법보전은 3층 규모로 연건평 3,305㎡에 달합니다. 연중 따뜻한 제주 기후 속에서 건강과 치유를 기원하는 약사 기도도량으로 유명합니다.",
+    prayer:[{title:"약사여래 기도",text:"나무약사유리광여래 나무약사유리광여래 나무약사유리광여래.\n약사여래 부처님, 몸과 마음의 모든 병고를 거두어 주소서. 건강하게 살아갈 힘을 주시고 가정에 평안이 깃들기를 발원합니다."}],
+    steps:[{t:"대법보전 입장",d:"동양 최대 법당 입장"},{t:"약사여래 삼배",d:"약사유리광여래 앞 기도"},{t:"약사진언 독송",d:"옴 베카제 베카제 마하베카제"},{t:"소원 기도",d:"건강·치유 소원 기원"},{t:"경내 산책",d:"제주 바다 전망 산책로"}],
+    access:"<strong>자가용:</strong> 제주국제공항 → 1131번 도로 → 서귀포 → 약천사 (약 50분)<br><strong>버스:</strong> 서귀포 버스터미널 → 약천사 방면 버스<br><strong>주차:</strong> 약천사 무료 주차장",
+    rel:[{id:"naksan",icon:"🌊",name:"낙산사 홍련암",desc:"관음 기도",pg:"page-gido-detail"},{id:"jogyesa",icon:"🏯",name:"조계사",desc:"서울 총본산",pg:"page-gido-detail"}]},
+  hwaeomsa:{name:"화엄사",loc:"전남 구례",cat:"소원·원력 기도",icon:"🍂",
+    badges:[{t:"각황전 국보",c:"hb-g"},{t:"지리산 화엄 도량",c:"hb-v"}],
+    info:[{l:"창건",v:"544년"},{l:"본존",v:"비로자나불"},{l:"국보",v:"각황전 외 3건",g:true},{l:"입장료",v:"3,500원"},{l:"교구",v:"제19교구"},{l:"주변",v:"지리산 노고단"}],
+    intro:"<strong>화엄사</strong>는 전남 구례 지리산에 자리한 544년 연기조사 창건의 대가람입니다. 각황전(국보 제67호)은 우리나라 목조 건물 중 가장 크며, 경내에 국보 3건·보물 4건이 있습니다. 화엄 사상의 근본 도량으로 가을 단풍과 봄 벚꽃이 장관입니다.",
+    prayer:[{title:"화엄 기도",text:"나무비로자나불 나무비로자나불 나무비로자나불.\n화엄사 비로자나불 전에 발원합니다. 모든 존재가 하나로 연결된 화엄의 세계처럼 제 소원이 우주와 조화를 이루어 이루어지기를 기도드립니다."}],
+    steps:[{t:"일주문 통과",d:"마음을 하나로 모으며 입사"},{t:"각황전 참배",d:"국보 각황전 대형 불상 삼배"},{t:"대웅전 기도",d:"비로자나불 기도"},{t:"사사자삼층석탑",d:"국보 석탑 참배"},{t:"노고단 산행",d:"지리산 노고단 방면 트레킹 (선택)"}],
+    access:"<strong>자가용:</strong> 광주대구고속도로 → 구례화엄사IC → 화엄사 (광주 약 1시간)<br><strong>버스:</strong> 구례공용버스터미널 → 화엄사행 버스<br><strong>주차:</strong> 화엄사 주차장 (유료)",
+    rel:[{id:"seonamsa",icon:"🌸",name:"선암사",desc:"순천 조계산",pg:"page-gido-detail-part2"},{id:"ssanggyesa",icon:"🍃",name:"쌍계사",desc:"하동 지리산",pg:"page-gido-detail-part2"}]},
+  daeheungsa:{name:"대흥사",loc:"전남 해남",cat:"관음·원력 기도",icon:"🌊",
+    badges:[{t:"유네스코 세계유산",c:"hb-g"},{t:"서산대사 도량",c:"hb-v"}],
+    info:[{l:"창건",v:"426년"},{l:"본존",v:"석가모니불"},{l:"특징",v:"서산대사 유물",g:true},{l:"입장료",v:"2,500원"},{l:"교구",v:"제22교구"},{l:"주변",v:"두륜산 케이블카"}],
+    intro:"<strong>대흥사</strong>는 전남 해남 두륜산에 자리한 유네스코 세계유산 사찰입니다. 임진왜란 때 조선 불교를 지킨 서산대사의 의발이 봉안된 표충사가 있으며, 13명의 대종사와 대강사를 배출한 도량입니다. 동백꽃과 두륜산 케이블카로도 유명합니다.",
+    prayer:[{title:"서원 기도",text:"나무석가모니불 나무석가모니불 나무석가모니불.\n서산대사의 원력이 서린 대흥사에서 간절히 발원합니다. 부처님의 가피로 저의 소원이 이루어지고 나라와 가정에 평화가 깃들기를 기도드립니다."}],
+    steps:[{t:"표충사 참배",d:"서산대사 의발과 영정 참배"},{t:"대웅보전",d:"석가모니불 삼배 기도"},{t:"천불전",d:"천불 앞에서 소원 기도"},{t:"탑산사",d:"두륜산 중턱 암자 참배"},{t:"두륜산 케이블카",d:"정상 만일암 탐방 (선택)"}],
+    access:"<strong>자가용:</strong> 서해안고속도로 → 목포IC → 13번 국도 → 해남 → 대흥사 (서울 약 4시간)<br><strong>버스:</strong> 해남버스터미널 → 대흥사행 버스 (20분)<br><strong>주차:</strong> 대흥사 주차장 (유료)",
+    rel:[{id:"bomunsa",icon:"🌿",name:"보문사",desc:"인천 강화 관음",pg:"page-gido-detail"},{id:"hyangilam",icon:"🌄",name:"향일암",desc:"여수 일출 관음",pg:"page-gido-detail"}]},
+  eunseonsa:{name:"은선사",loc:"서울 관악산",cat:"지장·관음 기도",icon:"⛰️",
+    badges:[{t:"관악산 지장 도량",c:"hb-v"},{t:"서울 근교",c:"hb-g"}],
+    info:[{l:"창건",v:"1395년"},{l:"본존",v:"지장보살"},{l:"특징",v:"관악산 암자",g:true},{l:"입장료",v:"무료"},{l:"교통",v:"지하철 접근"},{l:"산행",v:"약 40분"}],
+    intro:"<strong>은선사</strong>는 서울 관악산 중턱에 자리한 지장 기도 암자입니다. 관악산을 오르는 코스 중 하나에 위치해 서울 시민들이 즐겨 찾는 기도처입니다. 지장보살을 봉안한 지장전에서 조상 천도와 죄업 소멸을 기원하는 기도가 이루어집니다.",
+    prayer:[{title:"지장 기도",text:"나무지장보살 나무지장보살 나무지장보살.\n은선사 지장보살님, 조상과 영가들을 극락정토로 인도해 주소서. 업장이 소멸되고 밝은 마음으로 살아갈 수 있도록 자비를 내려주소서."}],
+    steps:[{t:"관악산 입구",d:"지하철 서울대입구역 → 관악산 등산로"},{t:"은선사 도착",d:"약 40분 산행 후 도착"},{t:"지장전 삼배",d:"지장보살 앞 기도"},{t:"산신각",d:"관악산 산신 참배"},{t:"하산",d:"기도 후 원점 회귀"}],
+    access:"<strong>지하철:</strong> 2호선 서울대입구역 → 관악산 공원 → 은선사 (도보 40분)<br><strong>자가용:</strong> 서울대학교 방향 → 관악산 주차장 이용<br><strong>주차:</strong> 관악산 공원 주차장 (유료)",
+    rel:[{id:"jogyesa",icon:"🏯",name:"조계사",desc:"서울 총본산",pg:"page-gido-detail"},{id:"mangwolsa",icon:"🌑",name:"망월사",desc:"의정부 지장",pg:"page-gido-detail-part4"}]},
+  cheoneunsa:{name:"천은사",loc:"전남 구례",cat:"지장·관음 기도",icon:"🌿",
+    badges:[{t:"지리산 3대 사찰",c:"hb-v"},{t:"게으름 바위",c:"hb-g"}],
+    info:[{l:"창건",v:"828년"},{l:"본존",v:"아미타불"},{l:"특징",v:"지리산 청정",g:true},{l:"입장료",v:"2,500원"},{l:"교구",v:"제19교구"},{l:"주변",v:"화엄사 인접"}],
+    intro:"<strong>천은사</strong>는 전남 구례 지리산에 자리한 828년 창건의 사찰로 화엄사·쌍계사와 함께 지리산 3대 사찰 중 하나입니다. 경내 수홍루 앞 연못 풍경이 아름답기로 유명하며, 조선 정조 때 이광사가 쓴 '지리산 천은사' 현판이 명필로 손꼽힙니다.",
+    prayer:[{title:"관음 기도",text:"나무관세음보살 나무관세음보살 나무관세음보살.\n지리산 천은사에서 기도드립니다. 청정한 산사의 기운을 빌려 간절히 소원을 발원합니다. 자비로운 가피를 내려주소서."}],
+    steps:[{t:"수홍루",d:"수홍루 연못 앞 묵상"},{t:"극락보전",d:"아미타불 삼배"},{t:"관음전",d:"관세음보살 기도"},{t:"지장전",d:"지장보살 조상 천도 기도"},{t:"경내 산책",d:"지리산 청정 기운 감상"}],
+    access:"<strong>자가용:</strong> 광주대구고속도로 → 구례화엄사IC → 천은사 (화엄사 인근)<br><strong>버스:</strong> 구례 → 천은사행 버스<br><strong>주차:</strong> 천은사 주차장 (유료)",
+    rel:[{id:"hwaeomsa",icon:"🍂",name:"화엄사",desc:"구례 국보 도량",pg:"page-gido-detail-part2"},{id:"ssanggyesa",icon:"🍃",name:"쌍계사",desc:"하동 지리산",pg:"page-gido-detail-part2"}]},
+  cheontaesa:{name:"천태사",loc:"충북 영동",cat:"지장·소원 기도",icon:"🌑",
+    badges:[{t:"지장 기도 명소",c:"hb-v"},{t:"영동 고찰",c:"hb-g"}],
+    info:[{l:"창건",v:"신라시대"},{l:"본존",v:"지장보살"},{l:"특징",v:"지장 기도처",g:true},{l:"입장료",v:"무료"},{l:"교구",v:"제5교구"},{l:"주변",v:"영동 과일"}],
+    intro:"<strong>천태사</strong>는 충북 영동에 자리한 지장 기도 사찰입니다. 지장보살을 모신 지장전이 주법당으로 조상 천도와 사업 성취를 위한 기도로 유명합니다. 포도·사과 등 과일 산지 영동의 자연 속에 위치해 청정한 기도 환경을 제공합니다.",
+    prayer:[{title:"지장 기도",text:"나무지장보살 나무지장보살 나무지장보살.\n천태사 지장보살님께 간절히 기도드립니다. 조상님들을 극락세계로 인도하시고 저의 업장을 소멸시켜 소원이 이루어지게 해주소서."}],
+    steps:[{t:"일주문",d:"마음을 가다듬고 입사"},{t:"지장전",d:"지장보살 삼배 기도"},{t:"지장진언",d:"옴 하하하 비스마예 사바하 독송"},{t:"소원지",d:"소원을 적어 불전에 올림"},{t:"하산",d:"청정한 마음으로 귀가"}],
+    access:"<strong>자가용:</strong> 경부고속도로 → 영동IC → 천태사<br><strong>버스:</strong> 영동버스터미널 → 천태사 방면<br><strong>주차:</strong> 사찰 주차장",
+    rel:[{id:"eunseonsa",icon:"⛰️",name:"은선사",desc:"서울 관악 지장",pg:"page-gido-detail-part2"},{id:"mangwolsa",icon:"🌑",name:"망월사",desc:"의정부 지장",pg:"page-gido-detail-part4"}]},
+  geumsansa:{name:"금산사",loc:"전북 김제",cat:"미륵·소원 기도",icon:"🌅",
+    badges:[{t:"미륵 본존 대찰",c:"hb-g"},{t:"모악산 미륵 도량",c:"hb-v"}],
+    info:[{l:"창건",v:"599년"},{l:"본존",v:"미륵불(11.8m)"},{l:"국보",v:"미륵전 외 2건",g:true},{l:"입장료",v:"3,000원"},{l:"교구",v:"제17교구"},{l:"특징",v:"미륵삼존 대불"}],
+    intro:"<strong>금산사</strong>는 전북 김제 모악산에 자리한 599년 법왕 때 창건의 고찰입니다. 미륵전(국보 제62호)은 한국 유일의 3층 목조 불전으로, 내부에 11.8m 미륵삼존불이 웅장하게 봉안돼 있습니다. 후백제 견훤이 말년을 보낸 역사적 장소이기도 합니다.",
+    prayer:[{title:"미륵 기도",text:"나무당래하생미륵존불 나무당래하생미륵존불 나무당래하생미륵존불.\n금산사 미륵부처님, 미래의 희망과 변화를 주관하시는 미륵보살님께 발원합니다. 새 시대의 복덕과 지혜를 내려주시어 소원이 이루어지기를 기도드립니다."}],
+    steps:[{t:"천왕문",d:"사천왕 참배"},{t:"미륵전 입장",d:"국보 3층 목조 불전 입장"},{t:"미륵삼존 삼배",d:"11.8m 미륵불 앞 기도"},{t:"대장전",d:"석가모니불 참배"},{t:"방등계단",d:"국보 계단 참배"}],
+    access:"<strong>자가용:</strong> 호남고속도로 → 김제IC → 금산사 (전주 약 30분)<br><strong>버스:</strong> 김제버스터미널 → 금산사행 버스<br><strong>주차:</strong> 금산사 주차장 (유료)",
+    rel:[{id:"beopjusa",icon:"🌅",name:"법주사",desc:"충북 미륵 도량",pg:"page-gido-detail-part3"},{id:"tongdosa",icon:"🔥",name:"통도사",desc:"불보사찰",pg:"page-gido-detail"}]},
+  seonoam:{name:"선운사",loc:"전북 고창",cat:"미륵·관음·소원 기도",icon:"🌸",
+    badges:[{t:"국보 금동보살좌상",c:"hb-g"},{t:"동백꽃 성지",c:"hb-v"}],
+    info:[{l:"창건",v:"577년"},{l:"본존",v:"지장보살"},{l:"국보",v:"금동보살좌상",g:true},{l:"입장료",v:"3,000원"},{l:"교구",v:"제24교구"},{l:"주변",v:"고창 읍성"}],
+    intro:"<strong>선운사</strong>는 전북 고창 도솔산에 자리한 577년 검단선사 창건의 고찰입니다. 봄이면 3,000그루 동백나무가 붉게 피어나 전국적으로 유명하며, 도솔암 마애불(높이 15m)은 미륵 기도 명소입니다. 국보 금동보살좌상을 봉안한 박물관도 있습니다.",
+    prayer:[{title:"미륵 기도",text:"나무당래하생미륵존불 나무당래하생미륵존불 나무당래하생미륵존불.\n선운사 도솔암 미래부처님께 간절히 발원합니다. 미래의 복덕이 지금 저에게도 내려오기를, 소원이 이루어지기를 기도드립니다."}],
+    steps:[{t:"천왕문",d:"사천왕 참배"},{t:"대웅전",d:"지장보살 삼배 기도"},{t:"도솔암 산행",d:"왕복 약 40분 — 마애불 참배"},{t:"마애불 기도",d:"15m 거대 마애불 앞 소원 기도"},{t:"동백 숲",d:"계절 따라 동백꽃 감상"}],
+    access:"<strong>자가용:</strong> 서해안고속도로 → 고창IC → 22번 국도 → 선운사<br><strong>버스:</strong> 고창버스터미널 → 선운사행 버스<br><strong>주차:</strong> 선운사 주차장 (유료)",
+    rel:[{id:"geumsansa",icon:"🌅",name:"금산사",desc:"김제 미륵 도량",pg:"page-gido-detail-part2"},{id:"bomunsa",icon:"🌿",name:"보문사",desc:"강화 관음",pg:"page-gido-detail"}]},
+  "seonamsa-nahan":{name:"선암사 응진전",loc:"전남 순천",cat:"나한·소원 기도",icon:"🙏",
+    badges:[{t:"나한 기도 명소",c:"hb-v"},{t:"500나한 봉안",c:"hb-g"}],
+    info:[{l:"위치",v:"선암사 내"},{l:"본존",v:"500나한"},{l:"특징",v:"나한 기도",g:true},{l:"입장료",v:"3,000원(선암사)"},{l:"교구",v:"제20교구"},{l:"기도",v:"득도·합격·취업"}],
+    intro:"<strong>선암사 응진전</strong>은 전남 순천 선암사 경내에 자리한 나한 기도처입니다. 응진전(應眞殿)에는 500나한이 봉안돼 있으며, 각 나한상이 모두 다른 표정과 모습을 하고 있어 독특합니다. 공부·합격·득도를 기원하는 나한 기도처로 수험생과 취업 준비생이 많이 찾습니다.",
+    prayer:[{title:"나한 기도",text:"나무석가모니불 나무응진전 오백나한.\n나한님들의 지혜와 가피로 저의 공부가 이루어지고 원하는 목표를 달성할 수 있도록 인도해 주소서. 지혜를 내려주소서."}],
+    steps:[{t:"선암사 입장",d:"입장료 납부 후 경내 진입"},{t:"대웅전 참배",d:"본존불 삼배"},{t:"응진전 입장",d:"500나한에게 삼배"},{t:"나한 기도",d:"소원 나한을 찾아 기도"},{t:"천년 매화",d:"경내 천연기념물 매화 참배"}],
+    access:"<strong>자가용:</strong> 순천완주고속도로 → 주암IC → 선암사<br><strong>버스:</strong> 순천버스터미널 → 선암사행 버스<br><strong>주차:</strong> 선암사 주차장 (유료)",
+    rel:[{id:"seonamsa",icon:"🌸",name:"선암사",desc:"순천 천년 고찰",pg:"page-gido-detail-part2"},{id:"tongdosa-nahan",icon:"🙏",name:"통도사 응진전",desc:"양산 나한 도량",pg:"page-gido-detail-part2"}]},
+  "tongdosa-nahan":{name:"통도사 응진전",loc:"경남 양산",cat:"나한·소원 기도",icon:"🙏",
+    badges:[{t:"나한 기도 명소",c:"hb-v"},{t:"불보종찰 내",c:"hb-g"}],
+    info:[{l:"위치",v:"통도사 내"},{l:"본존",v:"500나한"},{l:"특징",v:"나한 기도",g:true},{l:"입장료",v:"3,000원(통도사)"},{l:"교구",v:"제15교구"},{l:"기도",v:"합격·득도·취업"}],
+    intro:"<strong>통도사 응진전</strong>은 경남 양산 통도사 경내에 자리한 나한 기도처입니다. 불보종찰 통도사 안에 있어 기도 기운이 강한 곳으로 알려져 있습니다. 500나한이 봉안된 응진전에서 합격·취업·득도를 기원하는 나한 기도가 이루어집니다.",
+    prayer:[{title:"나한 기도",text:"나무석가모니불 나무응진전 오백나한.\n통도사 나한님들의 지혜로운 가피를 내려주소서. 공부와 취업, 사업에서 원하는 목표를 이루고 지혜롭게 살아갈 수 있도록 도와주소서."}],
+    steps:[{t:"통도사 입장",d:"불보종찰 경내 진입"},{t:"금강계단",d:"사리탑 참배"},{t:"대웅전",d:"본존불 삼배"},{t:"응진전",d:"500나한 기도"},{t:"경내 탐방",d:"성보박물관 관람"}],
+    access:"<strong>자가용:</strong> 경부고속도로 → 통도사IC → 통도사 (부산 약 40분)<br><strong>버스:</strong> 양산버스터미널 → 통도사행 버스<br><strong>주차:</strong> 통도사 주차장 (유료)",
+    rel:[{id:"tongdosa",icon:"🔥",name:"통도사",desc:"불보종찰",pg:"page-gido-detail"},{id:"seonamsa-nahan",icon:"🙏",name:"선암사 응진전",desc:"순천 나한",pg:"page-gido-detail-part2"}]},
+  odaesan:{name:"오대산 상원사",loc:"강원 평창",cat:"문수·지혜·소원 기도",icon:"⭐",
+    badges:[{t:"문수보살 기도처",c:"hb-g"},{t:"적멸보궁 관련",c:"hb-v"}],
+    info:[{l:"창건",v:"705년"},{l:"본존",v:"문수동자"},{l:"국보",v:"동종(국보36호)",g:true},{l:"입장료",v:"무료(탐방로)"},{l:"교구",v:"제4교구"},{l:"고도",v:"1,000m"}],
+    intro:"<strong>오대산 상원사</strong>는 강원 평창 오대산 1,000m 고지에 자리한 705년 창건의 고찰입니다. 문수동자상과 국보 동종(36호, 725년)을 봉안한 사찰로, 조선 세조가 문수보살을 친견했다는 전설이 전해집니다. 월정사에서 약 9km 탐방로를 걸어 오르는 길이 아름답습니다.",
+    prayer:[{title:"문수 기도",text:"나무문수사리보살 나무문수사리보살 나무문수사리보살.\n오대산 문수보살님, 지혜의 빛으로 어리석은 마음을 밝혀 주소서. 공부와 사업에서 지혜롭게 판단하고 성취할 수 있도록 인도해 주소서."}],
+    steps:[{t:"월정사 출발",d:"월정사에서 탐방로 걷기 시작 (약 9km)"},{t:"전나무 숲길",d:"아름다운 전나무 숲길 산행"},{t:"상원사 도착",d:"약 2시간 도보 후 도착"},{t:"문수전",d:"문수동자 삼배 기도"},{t:"국보 동종",d:"725년 주조 동종 참배"}],
+    access:"<strong>자가용:</strong> 영동고속도로 → 진부IC → 오대산국립공원 → 상원사<br><strong>셔틀버스:</strong> 월정사 → 상원사 셔틀 운행 (성수기)<br><strong>주차:</strong> 상원사 입구 주차장",
+    rel:[{id:"woljeongsa",icon:"⭐",name:"월정사",desc:"오대산 적멸보궁",pg:"page-gido-detail-part3"},{id:"seoraksan",icon:"⛰️",name:"봉정암",desc:"설악산 적멸보궁",pg:"page-gido-detail-part3"}]}
+};
+(function(){
+  var id=(new URLSearchParams(location.search).get('id')||'').toLowerCase();
+  var d=DB[id];
+  if(!d){document.getElementById('not-found').style.display='block';return;}
+  document.getElementById('pg-wrap').style.display='block';
+  document.title=d.name+' 기도도량 | 잼공인연사찰';
+  document.getElementById('pg-title').textContent=d.name+' | 잼공인연사찰';
+  var img=document.getElementById('pg-img');
+  img.alt=d.name;
+  fetch('https://ko.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(d.name))
+    .then(function(r){return r.json();})
+    .then(function(w){var s=w.originalimage||w.thumbnail;if(s&&s.source)img.src=s.source.replace(/\/\d+px-/,'/800px-');})
+    .catch(function(){});
+  document.getElementById('pg-badges').innerHTML=d.badges.map(function(b){return'<span class="hb '+b.c+'">'+b.t+'</span>';}).join('');
+  document.getElementById('pg-name').textContent=d.name;
+  document.getElementById('pg-loc').textContent='📍 '+d.loc+' · '+d.cat;
+  document.getElementById('pg-info').innerHTML=d.info.map(function(i){return'<div class="ib"><div class="ib-l">'+i.l+'</div><div class="ib-v'+(i.g?' g':'')+'">'+i.v+'</div></div>';}).join('');
+  document.getElementById('pg-intro').innerHTML=d.intro;
+  document.getElementById('pg-prayer').innerHTML=d.prayer.map(function(p){return'<div class="prayer-box"><div class="prayer-title">'+p.title+'</div><div class="prayer-text">'+p.text.replace(/\n/g,'<br>')+'</div></div>';}).join('');
+  document.getElementById('pg-steps').innerHTML=d.steps.map(function(s){return'<li class="step-item"><div class="step-num">'+(d.steps.indexOf(s)+1)+'</div><div><div class="step-t">'+s.t+'</div><div class="step-d">'+s.d+'</div></div></li>';}).join('');
+  document.getElementById('pg-access').innerHTML=d.access;
+  document.getElementById('pg-rel').innerHTML=d.rel.map(function(r){return'<a class="rel-card" href="'+(r.pg||'page-gido-detail')+'.html?id='+r.id+'"><div class="rel-icon">'+r.icon+'</div><div class="rel-name">'+r.name+'</div><div class="rel-desc">'+r.desc+'</div></a>';}).join('');
+})();
+</script>
