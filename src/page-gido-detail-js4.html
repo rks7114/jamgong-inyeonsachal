@@ -1,0 +1,153 @@
+<script>
+if(typeof GIDO_DB==='undefined')window.GIDO_DB={};
+Object.assign(GIDO_DB,{
+/* ── 수덕사 ── */
+"sudoksa": {
+name:"수덕사", category:"관음기도 도량", categoryIcon:"🌸",
+region:"충남 예산", address:"충청남도 예산군 덕산면 수덕사안길 79", mapQuery:"수덕사+예산+충남",
+tags:[
+{text:"대웅전 국보",color:"rgba(244,114,182,.15)",border:"rgba(244,114,182,.4)",textColor:"#f472b6"},
+{text:"비구니 강원",color:"rgba(167,139,250,.1)",border:"rgba(167,139,250,.35)",textColor:"#a78bfa"},
+{text:"덕숭산 청정 도량",color:"rgba(52,211,153,.1)",border:"rgba(52,211,153,.35)",textColor:"#34d399"}
+],
+info:[
+{label:"소재지",value:"충남 예산"},{label:"기도 대상",value:"관세음보살"},
+{label:"창건 시기",value:"599년 (백제)"},{label:"기도 유형",value:"관음·소원·건강"},
+{label:"명물",value:"대웅전(국보)·비구니 강원"},{label:"관람 시간",value:"04:00~20:00"}
+],
+intro:`수덕사는 <strong>백제 법왕 원년(599년)</strong> 창건된 충남 최대의 천년 고찰입니다. 고려 시대(1308년) 중건된 <strong>대웅전(국보 제49호)</strong>은 현존하는 가장 오래된 목조건물 중 하나로, 배흘림기둥의 아름다움이 일품입니다.<br><br>한국 최대 비구니 강원이 있어 여성 수행자들이 많이 수행하는 청정 도량으로, 관음기도와 소원성취 기도처로 수도권에서 많은 신도들이 찾습니다.`,
+effects:["관음기도","소원성취","건강기도","인연기도","합격·취업","사업번창","가족안녕"],
+steps:[
+{title:"대웅전 삼배",desc:"국보 대웅전 석가모니불 앞에 삼배를 올립니다."},
+{title:"관음전 정근",desc:"<strong>「나무관세음보살」</strong>을 108번 독송합니다."},
+{title:"덕숭산 정기 기도",desc:"덕숭산의 맑은 기운을 받으며 소원을 발원합니다."},
+{title:"산신각 기도",desc:"덕숭산 산신께 건강과 안녕을 기원합니다."},
+{title:"새벽 예불",desc:"새벽 4시 예불 참석 후 청정한 도량에서 기도합니다."}
+],
+history:`599년 백제 법왕 때 창건됐다고 전해집니다. 고려 충숙왕 때(1308년) 중건된 대웅전은 맞배지붕·배흘림기둥 양식의 걸작으로 국보 제49호로 지정됐습니다. 근현대에는 만공스님이 주석하며 수덕사를 중흥시켰으며, 화가 나혜석이 이곳에 머물기도 했습니다.`,
+prayers:[
+{title:"관세음보살 정근",text:`나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살`,note:"관음전에서 108번 독송합니다."},
+{title:"신묘장구 대다라니",text:`나모라 다나다라 야야\n나막 알약 바로기제 새바라야\n모지 사다바야 마하사다바야\n마하가로니가야 옴 살바 바예수\n다라나 가라야 다사명\n나막 가리다바 이맘 알야\n바로기제 새바라 다바\n니라간타 나막 하리나야\n마발다 이사미\n\n나무관세음보살`,note:"관음전에서 7번 독송하면 영험합니다."},
+{title:"소원 발원문",text:`백제의 숨결이 깃든\n수덕사 대웅전 앞에서 발원합니다.\n\n천년의 법력이 저와 함께하여\n건강하고 지혜롭게 살아가게 해주시고\n소원하는 바가 이루어지기를\n관세음보살님께 기원합니다.\n\n나무관세음보살`,note:"대웅전 삼배 후 독송합니다."}
+],
+access:`<strong>자가용:</strong> 서해안고속도로 해미IC → 예산 덕산면 → 수덕사 (서울에서 약 1시간 30분)<br><strong>버스:</strong> 센트럴시티→예산터미널→덕산→수덕사<br><strong>주차:</strong> 수덕사 입구 유료 주차장`,
+related:[{id:"magoksa",icon:"🏔️",name:"마곡사",desc:"충남 공주 유네스코 세계유산"},{id:"beopjusa",icon:"🌅",name:"법주사",desc:"충북 보은 미륵도량"}]
+},
+/* ── 은선사 ── */
+"eunseonsa":{
+name:"은선사",category:"지장·관음 기도 도량",categoryIcon:"⛰️",
+region:"서울 관악",address:"서울특별시 관악구 관악산 중턱",mapQuery:"은선사+관악산+서울",
+tags:[{text:"관악산 지장 도량",color:"rgba(139,92,246,.15)",border:"rgba(139,92,246,.4)",textColor:"#a78bfa"},{text:"서울 근교",color:"rgba(52,211,153,.12)",border:"rgba(52,211,153,.3)",textColor:"#6ee7b7"}],
+info:[{label:"소재지",value:"서울 관악구"},{label:"기도 대상",value:"지장보살·관음보살"},{label:"창건",value:"1395년"},{label:"특징",value:"관악산 암자"},{label:"교통",value:"지하철 접근"},{label:"산행",value:"약 40분"}],
+intro:`<strong>은선사</strong>는 서울 관악산 중턱에 자리한 지장 기도 암자입니다. 조선 태조 4년(1395년) 창건된 유서 깊은 암자로, 지장보살을 봉안한 지장전에서 조상 천도와 죄업 소멸을 기원하는 기도가 이루어집니다.<br><br>관악산을 오르는 코스에 위치해 서울 시민들이 즐겨 찾는 기도처이며, 도심에서 가깝지만 깊은 산중의 청정한 기운을 느낄 수 있는 곳입니다.`,
+effects:["조상천도","업장소멸","소원성취","건강기도","가족안녕","재난소멸"],
+steps:[{title:"관악산 입구",desc:"지하철 서울대입구역 → 관악산 공원 → 은선사 방면 등산로"},{title:"은선사 도착",desc:"약 40분 산행 후 도착. 지장전 앞에서 잠시 합장 묵념"},{title:"지장전 삼배",desc:"<strong>「나무지장보살」</strong>을 108번 독송하며 조상과 영가를 위해 발원"},{title:"산신각 참배",desc:"관악산 산신에게 합장 삼배"},{title:"하산 및 회향",desc:"기도 후 조용히 마음을 모아 하산합니다"}],
+history:`1395년 창건 후 수차례 중수를 거쳤습니다. 관악산의 불기운을 잠재우는 기도처로 알려져 왔으며, 지장보살의 가피로 조상 천도와 업장 소멸이 이루어진다고 전해집니다. 서울 근교의 대표적인 지장 기도처로 많은 신도들이 찾습니다.`,
+prayers:[{title:"지장보살 정근",text:`나무지장보살 나무지장보살\n나무지장보살 나무지장보살\n나무지장보살 마하살\n\n(108번 반복)`,note:"지장전 앞에서 조상과 영가를 위해 독송합니다."},{title:"지장 발원문",text:`지장보살님, 이 도량의 청정한 기운으로\n저의 조상과 영가들이 극락왕생하기를 발원합니다.\n업장이 소멸되고 밝은 마음으로 살아갈 수 있도록\n자비를 내려주소서.\n\n나무지장보살 나무지장보살 나무지장보살`,note:"지장전 삼배 후 독송합니다."}],
+access:`<strong>지하철:</strong> 2호선 서울대입구역 → 관악산 공원 입구 → 은선사 (도보 40분)<br><strong>자가용:</strong> 서울대학교 방향 → 관악산 주차장 이용<br><strong>주차:</strong> 관악산 공원 주차장 (유료)`,
+related:[{id:"naksan",icon:"🌊",name:"낙산사",desc:"강원 양양 관음도량"},{id:"jogyesa",icon:"🏯",name:"조계사",desc:"서울 총본산"}]
+}
+});
+
+/* 오행 도량 점수 */
+const TO={
+eunseonsa:[30,20,15,10,65],naksan:[40,25,20,15,65],bomunsa:[35,20,30,45,30],hyangilam:[50,30,20,20,45],
+jogyesa:[30,45,55,20,20],haeinsa:[55,20,25,30,20],tongdosa:[45,35,20,25,30],
+beomeosa:[40,30,20,25,35],buseoksa:[60,15,20,20,30],
+songgwangsa:[50,20,25,20,35],beopjusa:[45,30,20,15,30],woljeongsa:[55,15,20,15,35],
+bulguksa:[50,20,20,20,30],sudoksa:[35,25,30,20,30]
+};
+const DATES=[
+{date:"2026년 8월 15일 (토)",lunar:"음력 6월 22일",note:"보름·관음재일"},
+{date:"2026년 9월 9일 (수)",lunar:"음력 7월 18일",note:"중양절·기도길일"},
+{date:"2026년 10월 4일 (일)",lunar:"음력 8월 14일",note:"한가위 전날"},
+{date:"2026년 10월 22일 (목)",lunar:"음력 9월 1일",note:"초하루·소원기도"},
+{date:"2026년 11월 20일 (금)",lunar:"음력 10월 1일",note:"동안거 시작"}
+];
+const PA={소원:"관세음보살님, 이 도량의 기운을 빌려 간절히 발원합니다. 저의 소원이 하늘에 닿아 이루어지기를 기도드립니다. 지혜와 복덕을 내려주시어 모든 것이 원만하게 성취되기를 바랍니다. 나무관세음보살.",건강:"관세음보살님, 자비로운 손길로 이 몸과 마음을 보살펴 주소서. 병환이 사라지고 건강하게 일상을 보낼 수 있도록 인도해 주소서. 나무관세음보살.",합격:"관세음보살님, 오늘 이 도량에서 간절히 발원합니다. 지혜를 내려주시어 시험에 통과하고 꿈에 그리던 자리에 오를 수 있도록 도와주소서. 나무관세음보살.",사업:"관세음보살님, 모든 장애를 거두어 주시고 사업이 번창하도록 도와주소서. 거래마다 신용이 쌓이고 이익이 넘치게 해주소서. 나무관세음보살.",인연:"관세음보살님, 좋은 인연을 점지해 주소서. 서로를 아끼고 존중하는 반려를 만나 행복한 삶을 이루게 해주소서. 나무관세음보살."};
+
+const EC=['#4ade80','#f87171','#fbbf24','#cbd5e1','#60a5fa'],EN=['木','火','土','金','水'];
+
+/* ── 파티클 ── */
+(function(){
+const wrap=document.getElementById('particles');
+for(let i=0;i<28;i++){
+const p=document.createElement('div');p.className='p';
+p.style.cssText=`left:${Math.random()*100}%;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s;--dx:${(Math.random()-.5)*80}px;${Math.random()>.6?'background:#f5c842':''}`;
+wrap.appendChild(p);
+}
+})();
+
+/* ── 기본 기도문 (타입별) ── */
+var PRAYER_MAP={
+'관음':{title:'관세음보살 정근',text:'나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 나무관세음보살\n나무관세음보살 마하살\n\n(108번 반복)'},
+'약사':{title:'약사여래 정근',text:'나무약사유리광여래 나무약사유리광여래\n나무약사유리광여래 나무약사유리광여래\n나무약사유리광여래 마하살\n\n(108번 반복)'},
+'지장':{title:'지장보살 정근',text:'나무지장보살 나무지장보살\n나무지장보살 나무지장보살\n나무지장보살 마하살\n\n(108번 반복)'},
+'미륵':{title:'미륵보살 정근',text:'나무미륵보살 나무미륵보살\n나무미륵보살 나무미륵보살\n나무미륵보살 마하살\n\n(108번 반복)'},
+'아미타':{title:'아미타불 정근',text:'나무아미타불 나무아미타불\n나무아미타불 나무아미타불\n나무아미타불 마하살\n\n(108번 반복)'},
+'문수':{title:'문수보살 정근',text:'나무문수사리보살 나무문수사리보살\n나무문수사리보살 마하살\n\n(108번 반복)'},
+'화엄':{title:'비로자나불 정근',text:'나무비로자나불 나무비로자나불\n나무비로자나불 마하살\n\n(108번 반복)'},
+'산신':{title:'산신기도',text:'山神大王 산신대왕님이시여\n이 도량을 굽어살피시고\n기도하는 저를 보살펴 주소서\n복덕과 수명을 더하여 주소서\n\n(108번 합장 기도)'},
+'칠성':{title:'칠성기도',text:'北斗七星 칠성여래시여\n수명장수 복덕을 내려주소서\n이 몸과 마음을 보살피시어\n건강과 행운을 주소서\n\n(108번 합장 기도)'},
+'독성':{title:'나반존자 기도',text:'나무독성나반존자\n나무독성나반존자\n나무독성나반존자\n\n복덕과 소원을 성취하게 하소서\n(108번 반복)'},
+'나한':{title:'나한기도',text:'나무오백나한 나무오백나한\n나무오백나한 마하살\n\n소원을 성취하게 하소서\n(108번 반복)'},
+'default':{title:'기도 정근',text:'지심귀명례 삼계도사 사생자부\n시아본사 석가모니불\n\n나무석가모니불 나무석가모니불\n나무시아본사 석가모니불\n\n(108번 반복)'}
+};
+
+/* ── 기본 fallback 렌더러 ── */
+function renderBasic(e){
+var ttype=e.type&&e.type[0]||'관음';
+var pr=PRAYER_MAP[ttype]||PRAYER_MAP['default'];
+var tagColor={'관음':'rgba(59,130,246,.15)','약사':'rgba(52,211,153,.15)','지장':'rgba(139,92,246,.15)','미륵':'rgba(245,200,66,.15)','아미타':'rgba(139,92,246,.15)','산신':'rgba(124,58,237,.15)','화엄':'rgba(124,58,237,.15)'};
+var tc=tagColor[ttype]||'rgba(167,139,250,.15)';
+document.title=e.name+' — 기도도량 | 잼공인연사찰';
+document.getElementById('pg-title').textContent=e.name+' | 잼공인연사찰';
+document.getElementById('pg-desc').setAttribute('content',e.region+' '+e.name+' '+ttype+' 기도도량');
+document.getElementById('id-badge').innerHTML=e.icon+' '+ttype+' 도량';
+document.getElementById('id-title').textContent=e.name;
+document.getElementById('id-sub').textContent='📍 '+e.region;
+var tagsEl=document.getElementById('id-tags');
+(e.tags||[]).forEach(function(t){var s=document.createElement('span');s.className='hero-tag';s.textContent=t;s.style.cssText='background:'+tc+';border-color:rgba(167,139,250,.4);color:#a78bfa';tagsEl.appendChild(s);});
+document.getElementById('id-btns').innerHTML='<a class="hero-btn hero-btn-map" href="https://map.naver.com/v5/search/'+encodeURIComponent(e.mapQuery||e.name+' '+e.region)+'" target="_blank">🗺️ 네이버 지도</a><a class="hero-btn hero-btn-kakao" href="https://map.kakao.com/?q='+encodeURIComponent(e.name+' '+(e.mapQuery||e.region))+'" target="_blank">📍 카카오 지도</a><a class="hero-btn hero-btn-back" href="/gido">← 목록으로</a>';
+document.getElementById('id-info-grid').innerHTML='<div class="info-item"><div class="info-label">소재지</div><div class="info-value">'+e.region+'</div></div><div class="info-item"><div class="info-label">기도 유형</div><div class="info-value">'+ttype+' 기도</div></div><div class="info-item"><div class="info-label">분류</div><div class="info-value">'+e.badge+'</div></div><div class="info-item"><div class="info-label">기도 방법</div><div class="info-value">108배 · 정근 · 발원</div></div>';
+document.getElementById('id-intro').innerHTML='<strong>'+e.name+'</strong>은(는) '+e.region+'에 위치한 '+ttype+' 기도 도량입니다.<br><br>'+e.desc+'<br><br>'+ttype+' 기도의 영험함으로 전국에서 신도들이 찾아오는 청정 도량입니다. 진심을 다해 발원하면 관세음보살의 자비가 응답한다고 전해집니다.';
+document.getElementById('id-history').innerHTML=e.name+'은(는) '+e.region+'의 유서 깊은 '+ttype+' 도량입니다. 오랜 역사 속에서 많은 신도들의 기도처가 되어왔으며, 지금도 기도객들의 발길이 끊이지 않는 영험한 도량입니다.';
+document.getElementById('id-access').innerHTML='<strong>네이버/카카오 지도</strong>에서 <strong>"'+e.name+'"</strong>으로 검색하시면 정확한 위치와 교통편을 확인하실 수 있습니다.';
+['소원성취','기도','마음의 평화','건강기도','108배'].forEach(function(ef){document.getElementById('id-effects').innerHTML+='<span class="effect-badge">'+ef+'</span>';});
+['합장 삼배','정근 108번','발원문 낭독','회향'].forEach(function(st,i){document.getElementById('id-steps').innerHTML+='<div class="step"><div class="step-num">'+(i+1)+'</div><div class="step-content"><strong>'+st+'</strong></div></div>';});
+window._prayerData=[{title:pr.title,text:pr.text,note:e.region+' '+e.name+'에서 진심으로 기도하세요.'}];
+document.getElementById('id-prayers').innerHTML='<div class="prayer-tabs"><button class="prayer-tab active">'+pr.title+'</button></div><div class="prayer-wrap"><div class="prayer-text" id="prayer-text">'+pr.text+'</div><button class="prayer-audio-btn" id="audio-btn" onclick="playPrayer()">▶ 음성 듣기</button></div><div class="prayer-note" id="prayer-note">💡 '+e.region+' '+e.name+'에서 진심으로 기도하세요.</div>';
+document.getElementById('id-map').innerHTML='<iframe src="https://www.google.com/maps?q='+encodeURIComponent(e.name+' '+e.region)+'&output=embed" loading="lazy" style="width:100%;height:100%;border:none"></iframe>';
+document.getElementById('id-related').innerHTML='<a class="related-card" href="/gido"><div class="related-icon">🙏</div><div class="related-name">기도도량 목록</div><div class="related-desc">전국 465개 기도도량 보기</div></a>';
+}
+
+/* ── 렌더링 ── */
+(function(){
+const q=new URLSearchParams(location.search),id=q.get('id')||'naksan',d=GIDO_DB[id];
+if(!d){
+// GIDO_DB에 없으면 gido-data.js에서 fallback
+var url='https://raw.githubusercontent.com/rks7114/jamgong-inyeonsachal/main/src/data/gido-data.js';
+fetch(url).then(function(r){return r.ok?r.text():Promise.reject();})
+.then(function(txt){
+try{(new Function(txt))();}catch(e){}
+var extra=window.GIDO_EXTRA||[];
+var found=extra.find(function(x){return x.id===id;});
+if(found){renderBasic(found);}
+else{document.body.innerHTML='<div style="text-align:center;padding:120px 24px;font-family:\'Noto Sans KR\'"><div style="font-size:52px;margin-bottom:16px">🙏</div><h2 style="color:#f5f3ff;margin-bottom:10px">도량 정보를 찾을 수 없습니다</h2><a href="/gido" style="color:#a78bfa">← 기도도량 목록으로</a></div>';}
+})
+.catch(function(){document.body.innerHTML='<div style="text-align:center;padding:120px 24px;font-family:\'Noto Sans KR\'"><div style="font-size:52px;margin-bottom:16px">🙏</div><h2 style="color:#f5f3ff;margin-bottom:10px">도량 정보를 찾을 수 없습니다</h2><a href="/gido" style="color:#a78bfa">← 기도도량 목록으로</a></div>';});
+return;
+}
+
+document.title=d.name+' — 기도도량 | 잼공인연사찰';
+document.getElementById('pg-title').textContent=d.name+' | 잼공인연사찰';
+document.getElementById('pg-desc').setAttribute('content',d.region+' '+d.name+' '+d.category);
+document.getElementById('id-badge').innerHTML=d.categoryIcon+' '+d.category;
+document.getElementById('id-title').textContent=d.name;
+document.getElementById('id-sub').textContent='📍 '+d.address;
+
+const tagsEl=document.getElementById('id-tags');
+d.tags.forEach(t=>{const s=document.createElement('span');s.className='hero-tag';s.textContent=t.text;s.style.cssText=`background:${t.color};border-color:${t.border};color:${t.textColor}`;tagsEl.appendChild(s);});
+window._gidoData=d;
+})();
+</script>
