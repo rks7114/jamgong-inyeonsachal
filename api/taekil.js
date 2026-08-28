@@ -120,8 +120,9 @@ ${tyear}년 ${tmonth}월 [일자]일 — [이유 1문장]
     const text = msg.content?.[0]?.text || '';
     return res.status(200).json({ result: text });
   } catch (e) {
+    console.error('taekil error:', e.message, 'key exists:', !!process.env.ANTHROPIC_API_KEY);
     const days = [1, 2, 3, 5, 7, 11, 12, 15, 17, 20, 22, 25, 27];
-    const fallback = `${tmonth}월 길일: ${days.join(', ')}
+    const fallback = `[DEBUG: ${e.message}] ${tmonth}월 길일: ${days.join(', ')}
 
 ★★★★★ 최상 길일 (대길·大吉)
 ${tyear}년 ${tmonth}월 1일 (일) — 천덕합일(天德合日), 월덕합일(月德合日), 손없는날
