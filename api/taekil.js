@@ -103,15 +103,19 @@ ${tyear}년 ${tmonth}월 [일자]일 — [이유 1문장]
 
   try {
     if (!process.env.ANTHROPIC_API_KEY) throw new Error('no key');
-    const Anthropic = require('@anthropic-ai/sdk');
-    const client = new Anthropic.default ? new Anthropic.default() : new Anthropic();
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 28000);
-    const msg = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1800,
-      messages: [{ role: 'user', content: prompt }],
-    }, { signal: controller.signal });
+    const AnthropicMod = require('@anthropic-ai/sdk');
+    const AnthropicClass = AnthropicMod.default || AnthropicMod;
+    const client = new AnthropicClass({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const timer = setTimeout(() => { /* timeout handled below */ }, 28000);
+    const msg = await Promise.race([
+      client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1800,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 27000))
+    ]);
+    clearTimeout(timer);
     clearTimeout(timer);
     const text = msg.content?.[0]?.text || '';
     return res.status(200).json({ result: text });
