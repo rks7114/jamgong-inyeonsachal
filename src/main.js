@@ -10756,17 +10756,26 @@ render();
   const regionList = document.getElementById('region-list');
   if (!input || !resultsBox) return;
 
-  let allTemples = [], templeMap = {}, selectedRegion = '', dataReady = false;
+  let allTemples = [], selectedRegion = '', dataReady = false;
   var SEARCH_RENDER_CAP = 60; // 지역별 목록(renderFullList)과 동일한 상한
   var _koCollator = new Intl.Collator('ko'); // localeCompare 반복 호출보다 훨씬 빠름
 
-  fetch('/api/temple-list').then(function(r){ return r.ok ? r.json() : []; })
+  // 초기 로드는 검색에 필요한 필드만 담은 슬림 목록(1.14MB, gzip 367KB — 전체 3.65MB 대비 69% 절감).
+  // lat/lng 등 전체 레코드는 사찰 클릭 시 ?id= 단건 조회로 가져온다.
+  fetch('/api/temple-search-slim').then(function(r){ return r.ok ? r.json() : []; })
     .then(function(data){
-      allTemples = data; templeMap = {};
-      data.forEach(function(t){ if (t.id) templeMap[t.id] = t; });
+      allTemples = data;
       dataReady = true;
       if (selectedRegion || input.value.trim()) showResults(input.value);
     }).catch(function(){ allTemples = []; dataReady = true; });
+
+  // 클릭한 사찰의 전체 레코드(좌표·창건연도 등)를 필요 시점에만 조회. 실패하면 슬림 정보로 폴백.
+  function fetchFullTemple(slim) {
+    if (!slim || !slim.id) return Promise.resolve(slim);
+    return fetch('/api/temple-search-slim?id=' + encodeURIComponent(slim.id))
+      .then(function(r){ return r.ok ? r.json() : slim; })
+      .catch(function(){ return slim; });
+  }
 
   if (regionBtn && regionList) {
     regionBtn.addEventListener('click', function(e) {
@@ -10883,21 +10892,24 @@ render();
     if (item) {
       var idx = parseInt(item.dataset.idx);
       var matches = window._lastSearchMatches || [];
-      var temple = (idx >= 0 && matches[idx]) ? matches[idx] : null;
-      if (!temple) return;
+      var slimTemple = (idx >= 0 && matches[idx]) ? matches[idx] : null;
+      if (!slimTemple) return;
       input.value = ''; resultsBox.style.display = 'none'; clearBtn.style.display = 'none';
-      var fakeResult = {
-        temple: temple,
-        detail: { templeOhaeng: '금', bearing: '—', distanceKm: null },
-        score: 0, reason: '직접 검색하신 사찰입니다.', weather: null
-      };
-      var resultsEl = document.getElementById('results');
-      var formEl = document.getElementById('match-form');
-      var searchWrap = document.getElementById('temple-search-wrap');
-      renderTempleDetailPage(fakeResult, null, false, function() {
-        if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.classList.add('hidden'); }
-        if (formEl) formEl.style.display = '';
-        if (searchWrap) searchWrap.style.display = '';
+      // 슬림 목록에는 좌표·창건연도가 없으므로 상세 페이지 진입 시에만 전체 레코드 조회
+      fetchFullTemple(slimTemple).then(function(temple) {
+        var fakeResult = {
+          temple: temple,
+          detail: { templeOhaeng: '금', bearing: '—', distanceKm: null },
+          score: 0, reason: '직접 검색하신 사찰입니다.', weather: null
+        };
+        var resultsEl = document.getElementById('results');
+        var formEl = document.getElementById('match-form');
+        var searchWrap = document.getElementById('temple-search-wrap');
+        renderTempleDetailPage(fakeResult, null, false, function() {
+          if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.classList.add('hidden'); }
+          if (formEl) formEl.style.display = '';
+          if (searchWrap) searchWrap.style.display = '';
+        });
       });
       return;
     }
