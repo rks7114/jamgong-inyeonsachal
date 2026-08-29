@@ -17,6 +17,14 @@
       "cron_utc": "0 1 * * 1",
       "task": "벤치마크 3회 실행 + 지난 7일간 매칭 관련 커밋(src/matching-engine.js, src/main.js, src/temple-db.full.js, api/) 수집 + --ref로 일주일 전 커밋과 성능·결과 비교 → 마크다운 주간 리포트 생성.",
       "mode": "매 실행마다 새 세션, 레포에 커밋/푸시 없음"
+    },
+    {
+      "name": "DB v2 데이터 품질 주간 검증",
+      "trigger_id": "trig_011CxehcCRvZppmjKhKThHfC",
+      "when": "매주 월요일 10:00 KST",
+      "cron_utc": "0 1 * * 1",
+      "task": "feature/temple-db-v2 브랜치에서 scripts/db-quality-check.js 실행 → 기준선(2026-08-29: id 중복 3,484 / 좌표 미확보 4,175 / 비사찰 의심 237) 대비 진행 상황 평가 → GitHub 이슈 'DB 품질 주간 리포트'로 기록 (이슈 도구 없으면 .claude/db-quality-reports/에 커밋으로 폴백).",
+      "mode": "매 실행마다 새 세션, 리포트 기록 외 데이터 수정 금지"
     }
   ]
 }
