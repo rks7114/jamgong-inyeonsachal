@@ -1,0 +1,22 @@
+{
+  "_comment": "정기 성능 검증 스케줄 기록. 이 파일 자체는 Claude Code가 읽는 설정이 아니라, claude.ai Routines(스케줄 트리거)로 등록된 작업의 문서입니다. 수정/중지하려면 claude.ai의 Routines UI 또는 Claude 세션에서 trigger id로 요청하세요.",
+  "timezone": "Asia/Seoul (KST, UTC+9) — cron은 UTC로 저장됨",
+  "schedules": [
+    {
+      "name": "saju-test 일일 벤치마크",
+      "trigger_id": "trig_012pmz1eKqDfvJb31dKhRnvh",
+      "when": "매일 00:00 KST",
+      "cron_utc": "0 15 * * *",
+      "task": "saju-test 스킬 벤치마크 실행 — node .claude/skills/saju-test/scripts/benchmark.js. 성능 목표(matchTemples 11.7ms, matchCoupleTemples 16.6ms, +10% 허용)와 이전 커밋 대비 추천 결과 동일성을 자동 검증. 실패 시 원인 분석 보고.",
+      "mode": "매 실행마다 새 세션, 레포에 커밋/푸시 없음"
+    },
+    {
+      "name": "오행 매칭 주간 성능 리포트",
+      "trigger_id": "trig_01MjUEAcXsXLbeC7YdpXkeoD",
+      "when": "매주 월요일 10:00 KST",
+      "cron_utc": "0 1 * * 1",
+      "task": "벤치마크 3회 실행 + 지난 7일간 매칭 관련 커밋(src/matching-engine.js, src/main.js, src/temple-db.full.js, api/) 수집 + --ref로 일주일 전 커밋과 성능·결과 비교 → 마크다운 주간 리포트 생성.",
+      "mode": "매 실행마다 새 세션, 레포에 커밋/푸시 없음"
+    }
+  ]
+}
