@@ -1,5 +1,29 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r '.tool_input.command // empty' 2>/dev/null); case \"$cmd\" in *'rm -rf dist'*|*'rm -rf src/temple-db'*|*'git push --force'*|*'git reset --hard'*|*'DROP TABLE'*) echo '{\"systemMessage\":\"⚠️ 팁26: 위험한 명령어 차단됨\\n거부된 패턴: rm -rf dist, git push --force, DROP TABLE\\n제한 이유: dist/, 주요 DB, main 브랜치 보호\\n필요시 브랜치 전환 후 재검토하세요\"}' && exit 1;; esac",
+            "timeout": 5,
+            "statusMessage": "위험 명령어 검사 중..."
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "path=$(jq -r '.tool_input.file_path // empty' 2>/dev/null); case \"$path\" in *'.env'*|*'vercel.json'*|*'temple-db.full.js') echo '{\"systemMessage\":\"⚠️ 팁26: 중요 파일 보호\\n파일: '$path'\\n배포/보안 영향도 높음\"}';; esac",
+            "timeout": 5,
+            "statusMessage": "중요 파일 보호 검사 중..."
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
