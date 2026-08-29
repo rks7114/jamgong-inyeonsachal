@@ -308,6 +308,27 @@ function bearingToOhaeng(bearing) {
  * @param {object} temple - {id, name, lat, lng, verified, tags}
  * @param {object} matchContext - {targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng}
  */
+const PURPOSE_TAG_MAP = {
+  재물운: ["재물", "나한", "관음"],
+  건강운: ["약사도량", "치유"],
+  학업운: ["문수", "학업"],
+  인연운: ["관음도량", "인연"],
+  가정운: ["평안", "가족"],
+};
+
+// temple.id → 숫자 키 캐시 (요청마다 정규식 재실행 방지)
+const _templeKeyCache = new Map();
+function getTempleKey(temple) {
+  let k = _templeKeyCache.get(temple.id);
+  if (k === undefined) {
+    k = temple.id
+      ? (parseInt(String(temple.id).replace(/\D/g, "").slice(-3)) || temple.name.length)
+      : temple.name.charCodeAt(0);
+    _templeKeyCache.set(temple.id, k);
+  }
+  return k;
+}
+
 function scoreTemple(temple, matchContext) {
   const { targetOhaeng, personalOhaeng, distribution, purpose, userLat, userLng } = matchContext;
 
@@ -335,27 +356,18 @@ function scoreTemple(temple, matchContext) {
   const birthYear = matchContext.birthYear || 2000;
   const birthMonth = matchContext.birthMonth || 1;
   const birthDay = matchContext.birthDay || 1;
-  const templeKey = temple.id
-    ? (parseInt(String(temple.id).replace(/\D/g, "").slice(-3)) || temple.name.length)
-    : temple.name.charCodeAt(0);
+  const templeKey = getTempleKey(temple);
   const affinityRaw = (birthYear * 7 + birthMonth * 31 + birthDay * 17 + templeKey * 11) % 61;
   const birthAffinity = affinityRaw - 30; // -30 ~ +30점
 
   // 2) 목적 태그 일치도 (30점)
-  const purposeTagMap = {
-    재물운: ["재물", "나한", "관음"],
-    건강운: ["약사도량", "치유"],
-    학업운: ["문수", "학업"],
-    인연운: ["관음도량", "인연"],
-    가정운: ["평안", "가족"],
-  };
-  const relevantTags = purposeTagMap[purpose] || [];
+  const relevantTags = PURPOSE_TAG_MAP[purpose] || [];
   const tagMatch = (temple.tags || []).some((t) => relevantTags.includes(t));
   const purposeScore = tagMatch ? 30 : 10;
 
   // 3) 접근성 점수 — 인연사찰은 거리/지역 무관, 사주 오행으로만 전국에서 찾음
   // 거리 점수 완전 제거: 서울에서 멀어도 인연이 맞으면 추천
-  const distance = (userLat && userLng) ? calculateDistance(userLat, userLng, temple.lat, temple.lng) : 0;
+  // 거리는 점수에 반영되지 않으므로(distanceScore=0) 최종 선택된 3곳에서만 지연 계산
   const distanceScore = 0; // 거리 점수 제거 — 전국 동등 경쟁
 
   // 4) 데이터 신뢰도 + 조계종 보너스 (최대 13점)
@@ -377,7 +389,7 @@ function scoreTemple(temple, matchContext) {
   return {
     temple,
     score: Math.round(totalScore * 10) / 10,
-    detail: { bearing, templeOhaeng, bangwiScore, purposeScore, distanceScore, trustScore, synergyBonus: Math.round(synergyBonus * 10) / 10, distanceKm: Math.round(distance) },
+    detail: { bearing, templeOhaeng, bangwiScore, purposeScore, distanceScore, trustScore, synergyBonus: Math.round(synergyBonus * 10) / 10, distanceKm: null },
   };
 }
 
@@ -412,6 +424,29 @@ function generateReason(result, targetOhaeng, purpose, personalOhaeng, purposeOh
   return `${templeEunNeun} ${purpose} 목적과 연관된 기운을 지닌 사찰로, 사주 오행 분포와 인연이 있는 것으로 나옵니다.`;
 }
 
+// 기도 공간이 부족하거나 방문 추천에 적합하지 않은 소규모 도심 사찰 제외 목록
+// (법당이 하나뿐이거나 단체 기도 방문이 어려운 경우)
+const EXCLUDE_TEMPLES = new Set([
+  '대각사',  // 서울 종로구 — 법당 1개, 기도 공간 부족
+]);
+
+// 비사찰 이름 패턴 — 불교용품점, 굿당, 마트, 주유소, 음식점, 치킨집 등 사찰이 아닌 항목 제외
+const NON_TEMPLE_PATTERN = /용품|상회|마트|주유소|굿당|무속|철물|식당|카페|홈쇼핑|불교마트|불교서적|장례|요양병원|수녀원|찐빵|음식체험|음식연구|음식문화원|음식협회|일관도|주점|편의점|농협(?!사)|슈퍼|마켓|주차|게스트하우스|펜션|호텔|모텔|민박|캠핑|공장|회사(?!불)|재단(?!불|법)|아파트|치킨|횟집|국수(?!암)|김밥나라|피자|커피(?!붓다)|벌크|코리엔탈|굽네|bhc|bhc/i;
+
+const _validTemplesCache = new WeakMap();
+function getValidTemples(templeDB) {
+  let cached = _validTemplesCache.get(templeDB);
+  if (!cached) {
+    cached = templeDB.filter((t) =>
+      t.lat != null && t.lng != null &&
+      !EXCLUDE_TEMPLES.has(t.name) &&
+      !NON_TEMPLE_PATTERN.test(t.name)
+    );
+    _validTemplesCache.set(templeDB, cached);
+  }
+  return cached;
+}
+
 /** 메인 매칭 함수 */
 function matchTemples(request, templeDB) {
   const { distribution, branches } = calculateOhaeng(request.birthInput ?? request.birthDateTime);
@@ -439,21 +474,9 @@ function matchTemples(request, templeDB) {
     birthDay: bi.day || 1,
   };
 
-  // 기도 공간이 부족하거나 방문 추천에 적합하지 않은 소규모 도심 사찰 제외 목록
-  // (법당이 하나뿐이거나 단체 기도 방문이 어려운 경우)
-  const EXCLUDE_TEMPLES = new Set([
-    '대각사',  // 서울 종로구 — 법당 1개, 기도 공간 부족
-  ]);
-
-  // 비사찰 이름 패턴 — 불교용품점, 굿당, 마트, 주유소, 음식점, 치킨집 등 사찰이 아닌 항목 제외
-  const NON_TEMPLE_PATTERN = /용품|상회|마트|주유소|굿당|무속|철물|식당|카페|홈쇼핑|불교마트|불교서적|장례|요양병원|수녀원|찐빵|음식체험|음식연구|음식문화원|음식협회|일관도|주점|편의점|농협(?!사)|슈퍼|마켓|주차|게스트하우스|펜션|호텔|모텔|민박|캠핑|공장|회사(?!불)|재단(?!불|법)|아파트|치킨|횟집|국수(?!암)|김밥나라|피자|커피(?!붓다)|벌크|코리엔탈|굽네|bhc|bhc/i;
-
   // 좌표 정보 없는 사찰 + 제외 목록 사찰 + 비사찰 항목 모두 매칭 대상에서 제외
-  let validTemples = templeDB.filter((t) =>
-    t.lat != null && t.lng != null &&
-    !EXCLUDE_TEMPLES.has(t.name) &&
-    !NON_TEMPLE_PATTERN.test(t.name)
-  );
+  // DB가 정적이므로 결과를 캐시 — 콜드스타트 후 요청마다 정규식 17,497회 재실행 방지
+  let validTemples = getValidTemples(templeDB);
 
   // 기도 여행 지역 필터 — 특정 시/도를 선택하면 해당 지역 사찰만 대상으로 함
   if (request.region) {
@@ -530,6 +553,11 @@ function matchTemples(request, templeDB) {
     const t = shuffled[i];
     if (t.score >= MIN_SCORE && !seenNames.has(t.temple.name)) {
       seenNames.add(t.temple.name);
+      if (request.userLat && request.userLng) {
+        t.detail.distanceKm = Math.round(calculateDistance(request.userLat, request.userLng, t.temple.lat, t.temple.lng));
+      } else {
+        t.detail.distanceKm = 0;
+      }
       scored.push({ ...t, reason: generateReason(t, targetOhaeng, request.purpose, weak.부족오행, purposeOhaeng) });
     }
   }
@@ -650,6 +678,10 @@ function matchCoupleTemples(request, templeDB) {
     const t = coupleShuffled[i];
     if (!coupleSeenNames.has(t.temple.name)) {
       coupleSeenNames.add(t.temple.name);
+      const dKm = (userLat && userLng) ? Math.round(calculateDistance(userLat, userLng, t.temple.lat, t.temple.lng)) : 0;
+      t.detail.distanceKm = dKm;
+      if (t.detailA) t.detailA.distanceKm = dKm;
+      if (t.detailB) t.detailB.distanceKm = dKm;
       scored.push({ ...t, reason: generateCoupleReason(t, targetA, targetB) });
     }
   }

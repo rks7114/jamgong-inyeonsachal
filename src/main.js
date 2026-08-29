@@ -5108,14 +5108,23 @@ window.showPilgrimageSpots = function() {
     ov.addEventListener('click', function(e){ if(e.target===ov) ov.remove(); });
   };
 
+  // 시/도별 사찰 수 — DB가 정적이므로 1회만 집계 (검색 키 입력마다 17,000건 순회 방지)
+  var _sidoCntCache = null;
+  function getSidoCnt() {
+    if (!_sidoCntCache) {
+      _sidoCntCache = {};
+      TEMPLE_FULL_DB.forEach(function(t){ _sidoCntCache[t.s] = (_sidoCntCache[t.s]||0) + 1; });
+    }
+    return _sidoCntCache;
+  }
+
   window.renderFullList = function(arg) {
     // arg: sido 문자열 또는 undefined
     if (arg !== undefined) { _selSido = arg; _templeSearch = ''; }
     var container = document.getElementById('pilgrim-text-list');
     if (!container) return;
 
-    var sidoCnt = {};
-    TEMPLE_FULL_DB.forEach(function(t){ sidoCnt[t.s] = (sidoCnt[t.s]||0) + 1; });
+    var sidoCnt = getSidoCnt();
 
     var html = '';
 
@@ -10748,6 +10757,8 @@ render();
   if (!input || !resultsBox) return;
 
   let allTemples = [], templeMap = {}, selectedRegion = '', dataReady = false;
+  var SEARCH_RENDER_CAP = 60; // 지역별 목록(renderFullList)과 동일한 상한
+  var _koCollator = new Intl.Collator('ko'); // localeCompare 반복 호출보다 훨씬 빠름
 
   fetch('/api/temple-list').then(function(r){ return r.ok ? r.json() : []; })
     .then(function(data){
@@ -10784,25 +10795,28 @@ render();
       resultsBox.innerHTML = '<div style="padding:14px 18px;font-size:13px;color:rgba(255,255,255,0.5);">⏳ 사찰 목록 로딩 중...</div>';
       resultsBox.style.display = 'block'; return;
     }
-    var seen = {}, nameMatches = [], addrMatches = [], histMatches = [];
-    allTemples.forEach(function(t) {
-      if (seen[t.id]) return;
-      var regionOk = !selectedRegion || (t.address && t.address.includes(selectedRegion));
-      if (!regionOk) return;
-      var nameHit  = !query || (t.name && t.name.includes(query));
-      var addrHit  = query && (t.address && t.address.includes(query));
-      var histHit  = query && (t.history && t.history.includes(query));
-      if (nameHit)      { seen[t.id] = true; nameMatches.push(t); }
-      else if (addrHit) { seen[t.id] = true; addrMatches.push(t); }
-      else if (histHit) { seen[t.id] = true; histMatches.push(t); }
-    });
-    var matches = nameMatches.concat(addrMatches).concat(histMatches).sort(function(a, b) {
-      return (a.name||'').localeCompare(b.name||'', 'ko');
-    });
+    var nameMatches = [], addrMatches = [], histMatches = [], seen = {};
+    for (var ti = 0; ti < allTemples.length; ti++) {
+      var t = allTemples[ti];
+      if (seen[t.id]) continue; // DB에 같은 id 중복 레코드 3,000여 건 존재 — 매칭된 id는 1회만
+      if (selectedRegion && !(t.address && t.address.includes(selectedRegion))) continue;
+      if (!query || (t.name && t.name.includes(query)))            { seen[t.id] = true; nameMatches.push(t); }
+      else if (t.address && t.address.includes(query))             { seen[t.id] = true; addrMatches.push(t); }
+      else if (t.history && t.history.includes(query))             { seen[t.id] = true; histMatches.push(t); }
+    }
+    var allMatches = nameMatches.concat(addrMatches).concat(histMatches);
+    allMatches.sort(function(a, b) { return _koCollator.compare(a.name||'', b.name||''); });
+    var totalCount = allMatches.length;
+    // 렌더링 상한 — "사" 같은 흔한 글자로 수천 개 DOM 노드가 생기는 것 방지
+    var matches = allMatches.slice(0, SEARCH_RENDER_CAP);
+    // 카카오 중복제거는 전체 매칭 기준 (렌더링 안 된 사찰과의 중복도 걸러냄)
+    var dbNameSet = {};
+    for (var ni = 0; ni < allMatches.length; ni++) dbNameSet[allMatches[ni].name] = true;
     window._lastSearchMatches = matches;
     var localHtml = '';
     if (matches.length) {
-      var countHdr = '<div style="padding:8px 16px 6px;font-size:11px;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.06);">🏯 데이터베이스 ' + matches.length + '개</div>';
+      var capNote = totalCount > matches.length ? ' (상위 ' + matches.length + '개 표시)' : '';
+      var countHdr = '<div style="padding:8px 16px 6px;font-size:11px;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.06);">🏯 데이터베이스 ' + totalCount + '개' + capNote + '</div>';
       localHtml = countHdr + matches.map(function(t, idx) {
         var sub = (t.address||'').slice(0,28);
         if (query && t.history && t.history.includes(query) && !(t.name||'').includes(query) && !(t.address||'').includes(query)) {
@@ -10828,7 +10842,7 @@ render();
         if (!kakaoEl) return;
         var places = (data.places || []).filter(function(p) {
           // 로컬 DB에 이미 있는 이름 중복 제거
-          return !matches.some(function(m) { return m.name === p.name; });
+          return !dbNameSet[p.name];
         });
         if (!places.length) { kakaoEl.innerHTML = ''; return; }
         window._kakaoPlaces = places;
@@ -10851,8 +10865,15 @@ render();
     }
   }
 
-  input.addEventListener('input', function() { showResults(this.value); });
+  // 디바운스 — 키 입력마다 17,000건 전체 스캔 + DOM 재구성이 일어나지 않도록
+  var _searchTimer = null;
+  input.addEventListener('input', function() {
+    var v = this.value;
+    clearTimeout(_searchTimer);
+    _searchTimer = setTimeout(function() { showResults(v); }, 150);
+  });
   clearBtn.addEventListener('click', function() {
+    clearTimeout(_searchTimer);
     input.value = ''; clearBtn.style.display = 'none'; resultsBox.style.display = 'none'; input.focus();
   });
 
