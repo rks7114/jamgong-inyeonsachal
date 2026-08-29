@@ -4,27 +4,30 @@
   "schedules": [
     {
       "name": "saju-test 일일 벤치마크",
-      "trigger_id": "trig_012pmz1eKqDfvJb31dKhRnvh",
+      "trigger_id": "trig_01AgQ84cckRgetQ5jyHZwgzQ",
       "when": "매일 00:00 KST",
       "cron_utc": "0 15 * * *",
       "task": "saju-test 스킬 벤치마크 실행 — node .claude/skills/saju-test/scripts/benchmark.js. 성능 목표(matchTemples 11.7ms, matchCoupleTemples 16.6ms, +10% 허용)와 이전 커밋 대비 추천 결과 동일성을 자동 검증. 실패 시 원인 분석 보고.",
-      "mode": "매 실행마다 새 세션, 레포에 커밋/푸시 없음"
+      "mode": "매 실행마다 새 세션, 레포에 커밋/푸시 없음",
+      "notifications": "push (모바일 알림 ON, 2026-08-29 재생성)"
     },
     {
       "name": "오행 매칭 주간 성능 리포트",
-      "trigger_id": "trig_01MjUEAcXsXLbeC7YdpXkeoD",
+      "trigger_id": "trig_01Vqr71A3XfdggDVtcWoGQN9",
       "when": "매주 월요일 10:00 KST",
       "cron_utc": "0 1 * * 1",
       "task": "벤치마크 3회 실행 + 지난 7일간 매칭 관련 커밋(src/matching-engine.js, src/main.js, src/temple-db.full.js, api/) 수집 + --ref로 일주일 전 커밋과 성능·결과 비교 → 마크다운 주간 리포트 생성.",
-      "mode": "매 실행마다 새 세션, 레포에 커밋/푸시 없음"
+      "mode": "매 실행마다 새 세션, 레포에 커밋/푸시 없음",
+      "notifications": "push (모바일 알림 ON, 2026-08-29 재생성)"
     },
     {
       "name": "DB v2 데이터 품질 주간 검증",
-      "trigger_id": "trig_011CxehcCRvZppmjKhKThHfC",
+      "trigger_id": "trig_01XRnyw3vJEuVyZgVSH16Y2F",
       "when": "매주 월요일 10:00 KST",
       "cron_utc": "0 1 * * 1",
       "task": "feature/temple-db-v2 브랜치에서 scripts/db-quality-check.js 실행 → 기준선(2026-08-29: id 중복 3,484 / 좌표 미확보 4,175 / 비사찰 의심 237) 대비 진행 상황 평가 → GitHub 이슈 'DB 품질 주간 리포트'로 기록 (이슈 도구 없으면 .claude/db-quality-reports/에 커밋으로 폴백).",
-      "mode": "매 실행마다 새 세션, 리포트 기록 외 데이터 수정 금지"
+      "mode": "매 실행마다 새 세션, 리포트 기록 외 데이터 수정 금지",
+      "notifications": "push (모바일 알림 ON, 2026-08-29 재생성)"
     }
   ]
 }
