@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath // empty' | { read -r f; case \"$f\" in */src/*.js) npm run build >/dev/null 2>&1 && echo '{\"systemMessage\":\"✅ 빌드 완료: dist/ 업데이트됨\"}' || echo '{\"systemMessage\":\"❌ 빌드 실패: npm run build 로그를 확인하세요\"}';; esac; }",
+            "timeout": 120,
+            "statusMessage": "src 변경 감지 — dist/ 빌드 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
