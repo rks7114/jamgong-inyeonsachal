@@ -55,3 +55,52 @@ Vercel does **not** build this repo: `vercel.json` sets `buildCommand: "echo ski
 - Root-level `main.js` and `matching-engine.js` are older superseded copies of the `src/` versions.
 - `dist/` is committed and contains many stale hashed bundles (plus a nested `dist/dist/`); the live entry is whatever `dist/index.html` currently references.
 - Membership gating is a plain string check in `src/main.js` (`MEMBER_CODE`), stored in localStorage — it is an access code for YouTube channel members, not a payment system.
+
+## 팁 21: MCP vs API 선택 기준
+
+### 전제
+MCP = Claude(개발 도구) 접근 프로토콜
+API = 서비스 사용자(브라우저) 접근 경로
+→ 프로덕션 기능은 무조건 API/클라이언트
+→ MCP는 "개발 보조" 도구로만 의미 있음
+
+### 선택 기준표
+| 기준 | 클라이언트 직접 구현 | API 엔드포인트 | MCP 서버(개발 보조) |
+|------|---------|------|-----|
+| 복잡도 | 낮음 (현 구조) | 중간 (함수 추가) | 높음 (별도 서버) |
+| 유지보수 | main.js 집중 | api/ 파일 분리 | 관리 대상 추가 |
+| 비용 | 0 (정적 서빙) | 함수 호출 과금 | 호스팅 비용 |
+| 성능 | 최고 (네트워크 0) | 왕복 지연 있음 | 사용자 성능 무관 |
+| 보안 | 공개 데이터만 | API 키 은닉 가능 | 자체 인증 필요 |
+
+### 워크트리 1: 검색 성능 재정의
+선택: 직접 구현 + 기존 API 보조 (MCP 불필요)
+
+현실:
+- 검색은 사용자 대면 기능 (왕복 지연 치명적)
+- /api/temple-list 3.65MB 전체 전송 = 진짜 병목
+
+해결책:
+- 슬림 API 분리 (name/address/id만)
+- 초기 로딩 최적화
+- history 전문 검색만 서버로
+
+### 워크트리 2: 사찰 DB v2
+선택: 직접 구현 유지, MCP는 개발 보조만 (선택적)
+
+상황:
+- 17,497건 = 외부 DB 도입 불필요 (콜드스타트 0 비용)
+- 복잡도·비용·지연만 증가
+
+실제 과제:
+- 데이터 품질 (id 중복 3,484건, 좌표 미확보)
+- 파일 분리 (6.4MB → 검색용/상세용)
+
+MCP 활용:
+- 선택적: 반복 쿼리 도구 (필수 아님)
+- 순서: 스크립트로 시작 → 쿼리 증가 시 MCP 승격
+
+### 한 줄 요약
+사용자가 부르는 기능 = API/클라이언트
+Claude가 부르는 도구 = MCP
+→ 이 프로젝트는 MCP 프로덕션 코드 없음, DB 정제 개발 편의만
