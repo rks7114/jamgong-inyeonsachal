@@ -407,21 +407,18 @@ function generateReason(result, targetOhaeng, purpose, personalOhaeng, purposeOh
   const { temple, detail } = result;
   const templeWaGwa = attachJosa(temple.name, ["과", "와"]);
   const templeEunNeun = attachJosa(temple.name, ["은", "는"]);
-  const oh = targetOhaeng; // 사주 부족오행 (주 기준)
+  const oh = targetOhaeng;
   const poh = purposeOhaeng || oh;
 
   if (detail.templeOhaeng === oh && oh === poh) {
-    // 사주 부족오행 = 기도목적 오행 완전 일치
-    return `사주에서 ${oh}(${OHAENG_BANGWI[oh]}) 기운이 가장 부족하며 ${purpose}에도 최적인 방위(${detail.bearing}쪽)에 위치한 ${templeWaGwa} 인연이 매우 깊은 것으로 나옵니다.`;
+    return `${templeWaGwa} 당신의 사주와 ${purpose} 목적에 모두 맞는 운의 흐름이 확인되었습니다. 이곳에서의 기도가 당신의 운을 한층 깊게 할 것으로 생각됩니다.`;
   } else if (detail.templeOhaeng === oh) {
-    // 사주 부족오행 방위 일치 (기도목적은 다름)
-    const purposeNote = poh !== oh ? ` ${purpose}을(를) 위한 ${poh}(${OHAENG_BANGWI[poh]}) 기운도 함께 보완됩니다.` : "";
-    return `사주에서 부족한 ${oh}(${OHAENG_BANGWI[oh]}) 기운을 채워주는 ${detail.bearing}쪽에 위치한 ${templeWaGwa} 인연이 깊은 것으로 나옵니다.${purposeNote}`;
+    const purposeNote = poh !== oh ? ` ${purpose}을(를) 위한 에너지도 함께 느낄 수 있을 것으로 예상됩니다.` : "";
+    return `${templeWaGwa} 당신의 사주 에너지와 잘 맞는 것으로 확인됩니다. 이곳에서 기도하면 당신의 부족한 부분을 채우는 데 도움이 될 수 있습니다.${purposeNote}`;
   } else if (detail.templeOhaeng === poh) {
-    // 기도목적 오행 방위 일치
-    return `${purpose} 기도에 적합한 ${poh}(${OHAENG_BANGWI[poh]}) 기운의 방위(${detail.bearing}쪽)에 위치한 ${templeWaGwa} 인연이 닿아 있습니다. 사주의 ${oh}(${OHAENG_BANGWI[oh]}) 기운 보완도 함께 고려됩니다.`;
+    return `${templeWaGwa} ${purpose} 기도에 적합한 에너지를 지닌 사찰입니다. 당신의 사주와도 좋은 상호작용이 있을 것으로 예상됩니다.`;
   }
-  return `${templeEunNeun} ${purpose} 목적과 연관된 기운을 지닌 사찰로, 사주 오행 분포와 인연이 있는 것으로 나옵니다.`;
+  return `${templeEunNeun} ${purpose} 목적과 당신의 사주 흐름이 만나는 지점에 위치한 것으로 확인됩니다. 이곳에서의 기도가 의미있을 것으로 생각됩니다.`;
 }
 
 // 기도 공간이 부족하거나 방문 추천에 적합하지 않은 소규모 도심 사찰 제외 목록
